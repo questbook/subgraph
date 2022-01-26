@@ -1,0 +1,55 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "grantAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint96",
+        "name": "workspaceId",
+        "type": "uint96"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "rewardCommited",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "rewardAsset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "metadataHash",
+        "type": "string"
+      }
+    ],
+    "name": "GrantCreated",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint96", "name": "_workspaceId", "type": "uint96" },
+      {
+        "internalType": "uint256",
+        "name": "_rewardCommited",
+        "type": "uint256"
+      },
+      { "internalType": "address", "name": "_rewardAsset", "type": "address" },
+      { "internalType": "string", "name": "_metadataHash", "type": "string" }
+    ],
+    "name": "createGrant",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

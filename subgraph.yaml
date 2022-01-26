@@ -1,0 +1,23 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: QBGrantsContract
+    network: rinkeby
+    source:
+      address: "0xF5866fB09175235dbf1D7D0273b5fD7013285c2E"
+      abi: QBGrantsContract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - GrantCreated
+      abis:
+        - name: QBGrantsContract
+          file: ./abis/QBGrantsContract.json
+      eventHandlers:
+        - event: GrantCreated(address,uint96,uint256,address,string)
+          handler: handleGrantCreated
+      file: ./src/mapping.ts
