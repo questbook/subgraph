@@ -1,6 +1,52 @@
-type ExampleEntity @entity {
+enum GrantFieldInputType {
+    short_form
+    long_form
+    numeric
+}
+
+type GrantField @entity {
   id: ID!
-  count: BigInt!
-  grantAddress: Bytes! # address
-  workspaceId: BigInt! # uint96
+  title: String!
+  inputType: GrantFieldInputType!
+  possibleValues: [String!]
+}
+
+type GrantFieldAnswer @entity {
+  id: ID!
+  field: GrantField!
+  value: String!
+}
+
+type Reward @entity {
+  id: ID!
+	asset: Bytes!
+	committed: Int!
+  alloted: Int!
+  paid: Int!
+}
+
+type Grant @entity {
+  id: ID!
+  creatorId: Bytes!
+	title: String!
+  summary: String!
+  details: String!
+  reward: Reward!
+  workspace: Workspace
+  "ISO formatted date string"
+  deadline: String
+  fields: [GrantField!]!
+
+  metadataHash: String!
+}
+
+type Workspace @entity {
+  id: ID!
+  ownerId: Bytes!
+  title: String!
+  about: String!
+  logoIpfsHash: String!
+  supportedNetworks: [Bytes!]!
+
+  metadataHash: String!
 }

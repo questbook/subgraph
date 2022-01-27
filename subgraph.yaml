@@ -3,11 +3,37 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
+    name: QBWorkspaceRegistryContract
+    network: rinkeby
+    source:
+      address: "0x2720773847657Ff4620B527E32809Fda7Cf73023"
+      abi: QBWorkspaceRegistryContract
+      startBlock: 10062929
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - WorkspaceAdminsAdded
+        - WorkspaceAdminsRemoved
+        - WorkspaceCreated
+        - WorkspaceUpdated
+      abis:
+        - name: QBWorkspaceRegistryContract
+          file: ./abis/QBWorkspaceRegistryContract.json
+      eventHandlers:
+        - event: WorkspaceCreated(indexed uint96,indexed address,string,uint256)
+          handler: handleWorkspaceCreated
+        - event: WorkspaceUpdated(indexed uint96,indexed address,string,uint256)
+          handler: handleWorkspaceUpdated
+      file: ./src/workspace-mapping.ts
+  - kind: ethereum
     name: QBGrantsContract
     network: rinkeby
     source:
       address: "0xF5866fB09175235dbf1D7D0273b5fD7013285c2E"
       abi: QBGrantsContract
+      startBlock: 10059849
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -20,4 +46,4 @@ dataSources:
       eventHandlers:
         - event: GrantCreated(address,uint96,uint256,address,string)
           handler: handleGrantCreated
-      file: ./src/mapping.ts
+      file: ./src/grant-mapping.ts
