@@ -1,4 +1,4 @@
-import { Entity, JSONValue, JSONValueKind, TypedMap, Value } from "@graphprotocol/graph-ts";
+import { Entity, ipfs, json, JSONValue, JSONValueKind, TypedMap, Value } from "@graphprotocol/graph-ts";
 
 /** Generic result structure to catch successful & errorred results */
 export class Result<T> {
@@ -43,4 +43,22 @@ export function setEntityValueSafe<T extends Entity>(entity: T, key: string, jso
 	}
 	
 	return { value: entity, error: null }
+}
+
+export function getJSONObjectFromIPFS(hash: string): Result<TypedMap<string, JSONValue>> {
+	const data = ipfs.cat(hash)
+	if(!data) {
+		return { value: null, error: 'File not found' }
+	}
+
+	const jsonDataResult = json.try_fromBytes(data)
+	if(!jsonDataResult.isOk) {
+		return { value: null, error: 'Invalid JSON' }
+	}
+
+	if(jsonDataResult.value.kind !== JSONValueKind.OBJECT) {
+		return { value: null, error: 'JSON not object' }
+	}
+
+	return { value: jsonDataResult.value.toObject(), error: null }
 }

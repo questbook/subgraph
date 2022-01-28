@@ -16,6 +16,12 @@
 			},
 			{
 				"indexed": false,
+				"internalType": "string[]",
+				"name": "emails",
+				"type": "string[]"
+			},
+			{
+				"indexed": false,
 				"internalType": "uint256",
 				"name": "time",
 				"type": "uint256"
@@ -122,6 +128,11 @@
 				"internalType": "address[]",
 				"name": "_admins",
 				"type": "address[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_emails",
+				"type": "string[]"
 			}
 		],
 		"name": "addWorkspaceAdmins",
@@ -140,6 +151,30 @@
 		"name": "createWorkspace",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint96",
+				"name": "_id",
+				"type": "uint96"
+			},
+			{
+				"internalType": "address",
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "isWorkspaceAdmin",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{

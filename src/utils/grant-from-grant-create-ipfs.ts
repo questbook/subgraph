@@ -1,23 +1,14 @@
-import { ipfs, json, JSONValueKind } from "@graphprotocol/graph-ts"
+import { JSONValueKind } from "@graphprotocol/graph-ts"
 import { Grant, GrantField } from "../../generated/schema"
-import { getJSONValueSafe, setEntityValueSafe, Result } from "./json"
+import { getJSONValueSafe, setEntityValueSafe, Result, getJSONObjectFromIPFS } from "./json"
 
 export function grantFromGrantCreateIPFS(id: string, hash: string): Result<Grant> {
-	const data = ipfs.cat(hash)
-	if(!data) {
-		return { value: null, error: 'File not found' }
+	const jsonObjResult = getJSONObjectFromIPFS(hash)
+	if(!jsonObjResult.value) {
+		return { value: null, error: jsonObjResult.error! }
 	}
 
-	const jsonDataResult = json.try_fromBytes(data)
-	if(!jsonDataResult.isOk) {
-		return { value: null, error: 'Invalid JSON' }
-	}
-
-	if(jsonDataResult.value.kind !== JSONValueKind.OBJECT) {
-		return { value: null, error: 'JSON not object' }
-	}
-
-	const obj = jsonDataResult.value.toObject()
+	const obj = jsonObjResult.value!
 	
 	const entity = new Grant(id)
 	entity.metadataHash = hash

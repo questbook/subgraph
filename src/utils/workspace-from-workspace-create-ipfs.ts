@@ -1,35 +1,22 @@
-import { Bytes, ipfs, json, JSONValueKind } from "@graphprotocol/graph-ts"
+import { Bytes, JSONValueKind } from "@graphprotocol/graph-ts"
 import { Workspace } from "../../generated/schema"
-import { getJSONValueSafe, setEntityValueSafe, Result } from "./json"
+import { applyWorkspaceUpdateFromJSON } from "./apply-workspace-update-ipfs"
+import { getJSONValueSafe, Result, getJSONObjectFromIPFS } from "./json"
 
 export function workspaceFromWorkspaceCreateIPFS(id: string, hash: string): Result<Workspace> {
-	const data = ipfs.cat(hash)
-	if(!data) {
-		return { value: null, error: 'File not found' }
+	const jsonObjResult = getJSONObjectFromIPFS(hash)
+	if(!jsonObjResult.value) {
+		return { value: null, error: jsonObjResult.error! }
 	}
 
-	const jsonDataResult = json.try_fromBytes(data)
-	if(!jsonDataResult.isOk) {
-		return { value: null, error: 'Invalid JSON' }
-	}
-
-	if(jsonDataResult.value.kind !== JSONValueKind.OBJECT) {
-		return { value: null, error: 'JSON not object' }
-	}
-
-	const obj = jsonDataResult.value.toObject()
+	const obj = jsonObjResult.value!
 
 	const entity = new Workspace(id)
 	entity.metadataHash = hash
 
-	let result = setEntityValueSafe(entity, 'title', obj, JSONValueKind.STRING)
-	if(result.error) return result
-
-	result = setEntityValueSafe(entity, 'about', obj, JSONValueKind.STRING)
-	if(result.error) return result
-
-	result = setEntityValueSafe(entity, 'logoIpfsHash', obj, JSONValueKind.STRING)
-	if(result.error) return result
+	// update is a subset of the create request
+	// so we can apply the properties in the update via this function
+	applyWorkspaceUpdateFromJSON(entity, obj, true)
 
 	entity.supportedNetworks = []
 

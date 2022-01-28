@@ -1,7 +1,33 @@
 enum GrantFieldInputType {
-    short_form
-    long_form
-    numeric
+  short_form
+  long_form
+  numeric
+}
+
+enum WorkspaceMemberAccessLevel {
+  owner
+  admin
+  member
+}
+
+enum MilestoneState { 
+  submitted,
+  requested,
+  approved
+}
+
+enum ApplicationState { 
+  submitted,
+  resubmit,
+  approved,
+  rejected
+}
+
+type Social @entity {
+  id: ID!
+
+  name: String!
+  value: String!
 }
 
 type GrantField @entity {
@@ -36,8 +62,18 @@ type Grant @entity {
   "ISO formatted date string"
   deadline: String
   fields: [GrantField!]!
+  acceptingApplications: Boolean!
 
   metadataHash: String!
+}
+
+type WorkspaceMember @entity {
+  "globally unique ID of the member"
+  id: ID!
+  "the ID of the member itself"
+  actorId: Bytes!
+  email: String
+  accessLevel: WorkspaceMemberAccessLevel!
 }
 
 type Workspace @entity {
@@ -46,7 +82,39 @@ type Workspace @entity {
   title: String!
   about: String!
   logoIpfsHash: String!
+  coverImageIpfsHash: String!
   supportedNetworks: [Bytes!]!
+  "in seconds since epoch"
+  createdAtS: Int!
+  "in seconds since epoch"
+  updatedAtS: Int!
 
   metadataHash: String!
+  members: [WorkspaceMember!]!
+  socials: [Social!]!
+}
+
+type ApplicationMilestone @entity {
+  id: ID!
+  state: ApplicationMilestone!
+
+  title: String!
+}
+
+type ApplicationMember @entity {
+  id: ID!
+  details: String!
+}
+
+type GrantApplication @entity {
+  id: ID!
+
+  grant: Grant!
+  applicantId: Bytes!
+  state: ApplicationState!
+  details: String!
+  fields: [GrantFieldAnswer!]!
+  members: [ApplicationMember!]!
+
+  milestones: [ApplicationMilestone!]!
 }

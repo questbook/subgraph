@@ -31,8 +31,12 @@ export class WorkspaceAdminsAdded__Params {
     return this._event.parameters[1].value.toAddressArray();
   }
 
+  get emails(): Array<string> {
+    return this._event.parameters[2].value.toStringArray();
+  }
+
   get time(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[3].value.toBigInt();
   }
 }
 
@@ -130,6 +134,38 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     );
   }
 
+  isWorkspaceAdmin(_id: BigInt, _address: Address): boolean {
+    let result = super.call(
+      "isWorkspaceAdmin",
+      "isWorkspaceAdmin(uint96,address):(bool)",
+      [
+        ethereum.Value.fromUnsignedBigInt(_id),
+        ethereum.Value.fromAddress(_address)
+      ]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_isWorkspaceAdmin(
+    _id: BigInt,
+    _address: Address
+  ): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "isWorkspaceAdmin",
+      "isWorkspaceAdmin(uint96,address):(bool)",
+      [
+        ethereum.Value.fromUnsignedBigInt(_id),
+        ethereum.Value.fromAddress(_address)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
   workspaceCount(): BigInt {
     let result = super.call("workspaceCount", "workspaceCount():(uint96)", []);
 
@@ -173,6 +209,10 @@ export class AddWorkspaceAdminsCall__Inputs {
 
   get _admins(): Array<Address> {
     return this._call.inputValues[1].value.toAddressArray();
+  }
+
+  get _emails(): Array<string> {
+    return this._call.inputValues[2].value.toStringArray();
   }
 }
 

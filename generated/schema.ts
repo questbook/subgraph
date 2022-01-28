@@ -11,6 +11,60 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
+export class Social extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("name", Value.fromString(""));
+    this.set("value", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Social entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Social entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Social", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Social | null {
+    return changetype<Social | null>(store.get("Social", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get name(): string {
+    let value = this.get("name");
+    return value!.toString();
+  }
+
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
+  }
+
+  get value(): string {
+    let value = this.get("value");
+    return value!.toString();
+  }
+
+  set value(value: string) {
+    this.set("value", Value.fromString(value));
+  }
+}
+
 export class GrantField extends Entity {
   constructor(id: string) {
     super();
@@ -337,6 +391,15 @@ export class Grant extends Entity {
     this.set("fields", Value.fromStringArray(value));
   }
 
+  get acceptingApplications(): boolean {
+    let value = this.get("acceptingApplications");
+    return value!.toBoolean();
+  }
+
+  set acceptingApplications(value: boolean) {
+    this.set("acceptingApplications", Value.fromBoolean(value));
+  }
+
   get metadataHash(): string {
     let value = this.get("metadataHash");
     return value!.toString();
@@ -344,6 +407,77 @@ export class Grant extends Entity {
 
   set metadataHash(value: string) {
     this.set("metadataHash", Value.fromString(value));
+  }
+}
+
+export class WorkspaceMember extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("actorId", Value.fromBytes(Bytes.empty()));
+    this.set("accessLevel", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save WorkspaceMember entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save WorkspaceMember entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("WorkspaceMember", id.toString(), this);
+    }
+  }
+
+  static load(id: string): WorkspaceMember | null {
+    return changetype<WorkspaceMember | null>(store.get("WorkspaceMember", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get actorId(): Bytes {
+    let value = this.get("actorId");
+    return value!.toBytes();
+  }
+
+  set actorId(value: Bytes) {
+    this.set("actorId", Value.fromBytes(value));
+  }
+
+  get email(): string | null {
+    let value = this.get("email");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set email(value: string | null) {
+    if (!value) {
+      this.unset("email");
+    } else {
+      this.set("email", Value.fromString(<string>value));
+    }
+  }
+
+  get accessLevel(): string {
+    let value = this.get("accessLevel");
+    return value!.toString();
+  }
+
+  set accessLevel(value: string) {
+    this.set("accessLevel", Value.fromString(value));
   }
 }
 
@@ -356,8 +490,11 @@ export class Workspace extends Entity {
     this.set("title", Value.fromString(""));
     this.set("about", Value.fromString(""));
     this.set("logoIpfsHash", Value.fromString(""));
+    this.set("coverImageIpfsHash", Value.fromString(""));
     this.set("supportedNetworks", Value.fromBytesArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
+    this.set("members", Value.fromStringArray(new Array(0)));
+    this.set("socials", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
@@ -422,6 +559,15 @@ export class Workspace extends Entity {
     this.set("logoIpfsHash", Value.fromString(value));
   }
 
+  get coverImageIpfsHash(): string {
+    let value = this.get("coverImageIpfsHash");
+    return value!.toString();
+  }
+
+  set coverImageIpfsHash(value: string) {
+    this.set("coverImageIpfsHash", Value.fromString(value));
+  }
+
   get supportedNetworks(): Array<Bytes> {
     let value = this.get("supportedNetworks");
     return value!.toBytesArray();
@@ -431,6 +577,24 @@ export class Workspace extends Entity {
     this.set("supportedNetworks", Value.fromBytesArray(value));
   }
 
+  get createdAtS(): i32 {
+    let value = this.get("createdAtS");
+    return value!.toI32();
+  }
+
+  set createdAtS(value: i32) {
+    this.set("createdAtS", Value.fromI32(value));
+  }
+
+  get updatedAtS(): i32 {
+    let value = this.get("updatedAtS");
+    return value!.toI32();
+  }
+
+  set updatedAtS(value: i32) {
+    this.set("updatedAtS", Value.fromI32(value));
+  }
+
   get metadataHash(): string {
     let value = this.get("metadataHash");
     return value!.toString();
@@ -438,5 +602,231 @@ export class Workspace extends Entity {
 
   set metadataHash(value: string) {
     this.set("metadataHash", Value.fromString(value));
+  }
+
+  get members(): Array<string> {
+    let value = this.get("members");
+    return value!.toStringArray();
+  }
+
+  set members(value: Array<string>) {
+    this.set("members", Value.fromStringArray(value));
+  }
+
+  get socials(): Array<string> {
+    let value = this.get("socials");
+    return value!.toStringArray();
+  }
+
+  set socials(value: Array<string>) {
+    this.set("socials", Value.fromStringArray(value));
+  }
+}
+
+export class ApplicationMilestone extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("state", Value.fromString(""));
+    this.set("title", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ApplicationMilestone entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save ApplicationMilestone entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("ApplicationMilestone", id.toString(), this);
+    }
+  }
+
+  static load(id: string): ApplicationMilestone | null {
+    return changetype<ApplicationMilestone | null>(
+      store.get("ApplicationMilestone", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get state(): string {
+    let value = this.get("state");
+    return value!.toString();
+  }
+
+  set state(value: string) {
+    this.set("state", Value.fromString(value));
+  }
+
+  get title(): string {
+    let value = this.get("title");
+    return value!.toString();
+  }
+
+  set title(value: string) {
+    this.set("title", Value.fromString(value));
+  }
+}
+
+export class ApplicationMember extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("details", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ApplicationMember entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save ApplicationMember entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("ApplicationMember", id.toString(), this);
+    }
+  }
+
+  static load(id: string): ApplicationMember | null {
+    return changetype<ApplicationMember | null>(
+      store.get("ApplicationMember", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get details(): string {
+    let value = this.get("details");
+    return value!.toString();
+  }
+
+  set details(value: string) {
+    this.set("details", Value.fromString(value));
+  }
+}
+
+export class GrantApplication extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("grant", Value.fromString(""));
+    this.set("applicantId", Value.fromBytes(Bytes.empty()));
+    this.set("state", Value.fromString(""));
+    this.set("details", Value.fromString(""));
+    this.set("fields", Value.fromStringArray(new Array(0)));
+    this.set("members", Value.fromStringArray(new Array(0)));
+    this.set("milestones", Value.fromStringArray(new Array(0)));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save GrantApplication entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save GrantApplication entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("GrantApplication", id.toString(), this);
+    }
+  }
+
+  static load(id: string): GrantApplication | null {
+    return changetype<GrantApplication | null>(
+      store.get("GrantApplication", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get grant(): string {
+    let value = this.get("grant");
+    return value!.toString();
+  }
+
+  set grant(value: string) {
+    this.set("grant", Value.fromString(value));
+  }
+
+  get applicantId(): Bytes {
+    let value = this.get("applicantId");
+    return value!.toBytes();
+  }
+
+  set applicantId(value: Bytes) {
+    this.set("applicantId", Value.fromBytes(value));
+  }
+
+  get state(): string {
+    let value = this.get("state");
+    return value!.toString();
+  }
+
+  set state(value: string) {
+    this.set("state", Value.fromString(value));
+  }
+
+  get details(): string {
+    let value = this.get("details");
+    return value!.toString();
+  }
+
+  set details(value: string) {
+    this.set("details", Value.fromString(value));
+  }
+
+  get fields(): Array<string> {
+    let value = this.get("fields");
+    return value!.toStringArray();
+  }
+
+  set fields(value: Array<string>) {
+    this.set("fields", Value.fromStringArray(value));
+  }
+
+  get members(): Array<string> {
+    let value = this.get("members");
+    return value!.toStringArray();
+  }
+
+  set members(value: Array<string>) {
+    this.set("members", Value.fromStringArray(value));
+  }
+
+  get milestones(): Array<string> {
+    let value = this.get("milestones");
+    return value!.toStringArray();
+  }
+
+  set milestones(value: Array<string>) {
+    this.set("milestones", Value.fromStringArray(value));
   }
 }
