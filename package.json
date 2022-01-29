@@ -4,13 +4,17 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ subgraph-grants-contract",
-    "create-local": "graph create --node http://localhost:8020/ subgraph-grants-contract",
+    "test": "graph test",
+    "deploy": "graph deploy --node https://the-graph.questbook.app/ --ipfs https://ipfs.infura.io:5001 subgraph-grants-contract",
+    "create-local": "graph create --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 subgraph-grants-contract",
     "remove-local": "graph remove --node http://localhost:8020/ subgraph-grants-contract",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 subgraph-grants-contract"
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 subgraph-grants-contract"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.25.2",
     "@graphprotocol/graph-ts": "0.24.1"
+  },
+  "devDependencies": {
+    "matchstick-as": "^0.2.3"
   }
 }
