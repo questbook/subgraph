@@ -1,4 +1,10 @@
-import { Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, log, TypedMap, Value } from "@graphprotocol/graph-ts";
+import { BigDecimal, ByteArray, Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, log, TypedMap, Value } from "@graphprotocol/graph-ts";
+
+class SavableEntity extends Entity {
+	save(): void {
+		
+	}
+}
 
 /** Generic result structure to catch successful & errorred results */
 export class Result<T> {
@@ -33,7 +39,7 @@ export function setEntityValueSafe<T extends Entity>(entity: T, key: string, jso
 			entity.set(key, Value.fromBoolean(value.toBool()))
 			break
 		case JSONValueKind.NUMBER:
-			entity.set(key, Value.fromBigInt(value.toBigInt()))
+			entity.set(key, Value.fromBigDecimal( BigDecimal.fromString(value.toF64().toString()) ))
 			break
 		case JSONValueKind.STRING:
 			entity.set(key, Value.fromString(value.toString()))
@@ -41,6 +47,38 @@ export function setEntityValueSafe<T extends Entity>(entity: T, key: string, jso
 		default:
 			return { value: null, error: `Internal map error` }
 	}
+	
+	return { value: entity, error: null }
+}
+
+/** sets the key in the provided entity from the given JSON. Type checks before setting the value */
+export function setEntityArrayValueSafe<T extends Entity, E extends SavableEntity>(
+	entity: T, 
+	key: string, 
+	json: TypedMap<string, JSONValue>, 
+	elementKind: JSONValueKind, 
+	perElement: (json: JSONValue, id: string, index: i32) => Result<E>
+): Result<T> {
+	const valueResult = getJSONValueSafe(key, json, JSONValueKind.ARRAY)
+	if(valueResult.error) return { value: null, error: valueResult.error }
+
+	const jsonArray = valueResult.value!.toArray()
+	const elements: string[] = []
+
+	for(let i = 0; i < jsonArray.length;i++) {
+		const jsonEl = jsonArray[i]
+		if(jsonEl.kind !== elementKind) {
+			return { value: null, error: `Expected element in "${key}" to be "${elementKind}"` }
+		}
+
+		const result = perElement(jsonEl, entity.get('id')!.toString(), i)
+		if(result.error) return { value: null, error: result.error }
+
+		result.value!.save()
+		elements.push(result.value!.get('id')!.toString())
+	}
+
+	entity.set(key, Value.fromStringArray(elements))
 	
 	return { value: entity, error: null }
 }
@@ -69,4 +107,18 @@ export function getJSONObjectFromIPFS(hash: string): Result<TypedMap<string, JSO
 	}
 
 	return { value: jsonDataResult.value.toObject(), error: null }
+}
+
+export function byteArrayFromHexStringSafe(str: string): Result<Bytes> {
+	if(str.startsWith('0x')) {
+		// remove the 0x
+		str = str.slice(2)
+	}
+
+	if(str.length % 2 !== 0) {
+		return { value: null, error: 'String must be multiple of 2' }
+	}
+
+	const network = Bytes.fromHexString(str)
+	return { value: Bytes.fromByteArray(network), error: null }
 }

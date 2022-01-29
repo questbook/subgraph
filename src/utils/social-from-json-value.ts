@@ -2,7 +2,7 @@ import { JSONValue, JSONValueKind } from "@graphprotocol/graph-ts"
 import { Social } from "../../generated/schema"
 import { setEntityValueSafe, Result } from "./json"
 
-export function socialFromJSONValue(parentId: string, jsonValue: JSONValue): Result<Social> {
+export function socialFromJSONValue(jsonValue: JSONValue, parentId: string, _: i32): Result<Social> {
 	if(jsonValue.kind !== JSONValueKind.OBJECT) {
 		return { value: null, error: 'supported social expected to be an object' }
 	}

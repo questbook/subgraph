@@ -1,6 +1,6 @@
 import { JSONValue, JSONValueKind, TypedMap } from "@graphprotocol/graph-ts"
 import { Workspace } from "../../generated/schema"
-import { getJSONValueSafe, setEntityValueSafe, Result, getJSONObjectFromIPFS } from "./json"
+import { setEntityValueSafe, Result, getJSONObjectFromIPFS, setEntityArrayValueSafe } from "./json"
 import { socialFromJSONValue } from "./social-from-json-value"
 
 export function applyWorkspaceUpdateIpfs(entity: Workspace, hash: string): Result<Workspace> {
@@ -27,28 +27,9 @@ export function applyWorkspaceUpdateFromJSON(entity: Workspace, obj: TypedMap<st
 
 	setEntityValueSafe(entity, 'coverImageIpfsHash', obj, JSONValueKind.STRING)
 
-	const socialsJSONArrayResult = getJSONValueSafe('socials', obj, JSONValueKind.ARRAY)
-	if(socialsJSONArrayResult.error && expectAllPresent) {
-		return { value: null, error: socialsJSONArrayResult.error }
-	}
-
-	if(socialsJSONArrayResult.value) {
-
-		const socials: string[] = []
-
-		const socialsJSONArray = socialsJSONArrayResult.value!.toArray()
-		for(let i = 0;i < socialsJSONArray.length;i++) {
-			const socialResult = socialFromJSONValue(entity.id, socialsJSONArray[i])
-			if(socialResult.error) {
-				return { value: null, error: socialResult.error }
-			}
-	
-			socialResult.value!.save()
-	
-			socials.push(socialResult.value!.id)
-		}
-
-		entity.socials = socials
+	result = setEntityArrayValueSafe(entity, 'socials', obj, JSONValueKind.OBJECT, socialFromJSONValue)
+	if(result.error && expectAllPresent) {
+		return { value: null, error: result.error }
 	}
 
 	return { value: entity, error: null }
