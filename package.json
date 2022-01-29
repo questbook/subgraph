@@ -1,5 +1,5 @@
 {
-  "name": "subgraph-grants-contract",
+  "name": "@questbook/subgraph",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
