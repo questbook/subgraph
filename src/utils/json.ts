@@ -1,8 +1,8 @@
-import { BigDecimal, ByteArray, Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, log, TypedMap, Value } from "@graphprotocol/graph-ts";
+import { BigDecimal, Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, TypedMap, Value } from "@graphprotocol/graph-ts";
 
 class SavableEntity extends Entity {
 	save(): void {
-		
+		throw new Error('not implemented')
 	}
 }
 
@@ -71,7 +71,8 @@ export function setEntityArrayValueSafe<T extends Entity, E extends SavableEntit
 			return { value: null, error: `Expected element in "${key}" to be "${elementKind}"` }
 		}
 
-		const result = perElement(jsonEl, entity.get('id')!.toString(), i)
+		const id = entity.get('id')!.toString()
+		const result = perElement(jsonEl, id, i)
 		if(result.error) return { value: null, error: result.error }
 
 		result.value!.save()
