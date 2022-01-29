@@ -95,9 +95,6 @@ function rewardFromJSONValue(json: JSONValue, grantId: string): Result<Reward> {
 	if(hexResult.error) return { value: null, error: hexResult.error }
 	
 	reward.asset = hexResult.value!
-    // initially nothing is allotted or paid
-    reward.alloted = 0
-    reward.paid = 0
 
 	return { value: reward, error: null }
 }

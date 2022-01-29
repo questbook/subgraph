@@ -198,6 +198,7 @@ export class Reward extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("asset", Value.fromBytes(Bytes.empty()));
+    this.set("committed", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
@@ -235,31 +236,13 @@ export class Reward extends Entity {
     this.set("asset", Value.fromBytes(value));
   }
 
-  get committed(): i32 {
+  get committed(): BigDecimal {
     let value = this.get("committed");
-    return value!.toI32();
+    return value!.toBigDecimal();
   }
 
-  set committed(value: i32) {
-    this.set("committed", Value.fromI32(value));
-  }
-
-  get alloted(): i32 {
-    let value = this.get("alloted");
-    return value!.toI32();
-  }
-
-  set alloted(value: i32) {
-    this.set("alloted", Value.fromI32(value));
-  }
-
-  get paid(): i32 {
-    let value = this.get("paid");
-    return value!.toI32();
-  }
-
-  set paid(value: i32) {
-    this.set("paid", Value.fromI32(value));
+  set committed(value: BigDecimal) {
+    this.set("committed", Value.fromBigDecimal(value));
   }
 }
 
@@ -630,6 +613,7 @@ export class ApplicationMilestone extends Entity {
 
     this.set("state", Value.fromString(""));
     this.set("title", Value.fromString(""));
+    this.set("amount", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
@@ -676,6 +660,41 @@ export class ApplicationMilestone extends Entity {
 
   set title(value: string) {
     this.set("title", Value.fromString(value));
+  }
+
+  get amount(): BigDecimal {
+    let value = this.get("amount");
+    return value!.toBigDecimal();
+  }
+
+  set amount(value: BigDecimal) {
+    this.set("amount", Value.fromBigDecimal(value));
+  }
+
+  get updatedAtS(): i32 {
+    let value = this.get("updatedAtS");
+    return value!.toI32();
+  }
+
+  set updatedAtS(value: i32) {
+    this.set("updatedAtS", Value.fromI32(value));
+  }
+
+  get text(): string | null {
+    let value = this.get("text");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set text(value: string | null) {
+    if (!value) {
+      this.unset("text");
+    } else {
+      this.set("text", Value.fromString(<string>value));
+    }
   }
 }
 

@@ -46,9 +46,7 @@ type GrantFieldAnswer @entity {
 type Reward @entity {
   id: ID!
 	asset: Bytes!
-	committed: Int!
-  alloted: Int!
-  paid: Int!
+	committed: BigDecimal!
 }
 
 type Grant @entity {
@@ -96,9 +94,15 @@ type Workspace @entity {
 
 type ApplicationMilestone @entity {
   id: ID!
-  state: ApplicationMilestone!
-
+  state: MilestoneState!
   title: String!
+
+  amount: BigDecimal!
+
+  "in seconds since epoch"
+  updatedAtS: Int
+  "text that was sent with the milestone update"
+  text: String
 }
 
 type ApplicationMember @entity {
