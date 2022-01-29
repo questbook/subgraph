@@ -32,7 +32,7 @@ export function grantFromGrantCreateIPFS(id: string, hash: string): Result<Grant
 
 	const fieldsJSONArray = fieldsJSONResult.value!.toArray()
 
-	entity.fields = []
+	const fields: string[] = []
 	for(let i = 0;i < fieldsJSONArray.length;i++) {
 		const jsonValue = fieldsJSONArray[i]
 		if(jsonValue.kind !== JSONValueKind.OBJECT) {
@@ -75,8 +75,10 @@ export function grantFromGrantCreateIPFS(id: string, hash: string): Result<Grant
 
 		field.save()
 
-		entity.fields.push(field.id)
+		fields.push(field.id)
 	}
+
+	entity.fields = fields
 
 	return { value: entity, error: null }
 }

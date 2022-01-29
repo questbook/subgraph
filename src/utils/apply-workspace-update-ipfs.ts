@@ -27,14 +27,15 @@ export function applyWorkspaceUpdateFromJSON(entity: Workspace, obj: TypedMap<st
 
 	setEntityValueSafe(entity, 'coverImageIpfsHash', obj, JSONValueKind.STRING)
 
-	entity.socials = []
-
 	const socialsJSONArrayResult = getJSONValueSafe('socials', obj, JSONValueKind.ARRAY)
 	if(socialsJSONArrayResult.error && expectAllPresent) {
 		return { value: null, error: socialsJSONArrayResult.error }
 	}
 
 	if(socialsJSONArrayResult.value) {
+
+		const socials: string[] = []
+
 		const socialsJSONArray = socialsJSONArrayResult.value!.toArray()
 		for(let i = 0;i < socialsJSONArray.length;i++) {
 			const socialResult = socialFromJSONValue(entity.id, socialsJSONArray[i])
@@ -44,8 +45,10 @@ export function applyWorkspaceUpdateFromJSON(entity: Workspace, obj: TypedMap<st
 	
 			socialResult.value!.save()
 	
-			entity.socials.push(socialResult.value!.id)
+			socials.push(socialResult.value!.id)
 		}
+
+		entity.socials = socials
 	}
 
 	return { value: entity, error: null }

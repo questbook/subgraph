@@ -1,4 +1,4 @@
-import { Entity, ipfs, json, JSONValue, JSONValueKind, TypedMap, Value } from "@graphprotocol/graph-ts";
+import { Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, log, TypedMap, Value } from "@graphprotocol/graph-ts";
 
 /** Generic result structure to catch successful & errorred results */
 export class Result<T> {
@@ -46,7 +46,15 @@ export function setEntityValueSafe<T extends Entity>(entity: T, key: string, jso
 }
 
 export function getJSONObjectFromIPFS(hash: string): Result<TypedMap<string, JSONValue>> {
-	const data = ipfs.cat(hash)
+	let data: Bytes | null
+	// this mechanism exists to prevent IPFS calls while testing
+	// since IPFS is not supported on matchstick as of now
+	if(hash.slice(0, 5) == 'json:') {
+		data = Bytes.fromUTF8(hash.slice(5))
+	} else {
+		data = ipfs.cat(hash)
+	}
+
 	if(!data) {
 		return { value: null, error: 'File not found' }
 	}
