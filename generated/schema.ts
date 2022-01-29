@@ -821,6 +821,24 @@ export class GrantApplication extends Entity {
     this.set("members", Value.fromStringArray(value));
   }
 
+  get createdAtS(): i32 {
+    let value = this.get("createdAtS");
+    return value!.toI32();
+  }
+
+  set createdAtS(value: i32) {
+    this.set("createdAtS", Value.fromI32(value));
+  }
+
+  get updatedAtS(): i32 {
+    let value = this.get("updatedAtS");
+    return value!.toI32();
+  }
+
+  set updatedAtS(value: i32) {
+    this.set("updatedAtS", Value.fromI32(value));
+  }
+
   get milestones(): Array<string> {
     let value = this.get("milestones");
     return value!.toStringArray();

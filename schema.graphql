@@ -116,5 +116,10 @@ type GrantApplication @entity {
   fields: [GrantFieldAnswer!]!
   members: [ApplicationMember!]!
 
+  "in seconds since epoch"
+  createdAtS: Int!
+  "in seconds since epoch"
+  updatedAtS: Int!
+
   milestones: [ApplicationMilestone!]!
 }
