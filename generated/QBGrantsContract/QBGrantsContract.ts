@@ -31,16 +31,8 @@ export class GrantCreated__Params {
     return this._event.parameters[1].value.toBigInt();
   }
 
-  get rewardCommited(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
-  get rewardAsset(): Address {
-    return this._event.parameters[3].value.toAddress();
-  }
-
   get metadataHash(): string {
-    return this._event.parameters[4].value.toString();
+    return this._event.parameters[2].value.toString();
   }
 }
 
@@ -71,16 +63,16 @@ export class CreateGrantCall__Inputs {
     return this._call.inputValues[0].value.toBigInt();
   }
 
-  get _rewardCommited(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+  get _metadataHash(): string {
+    return this._call.inputValues[1].value.toString();
   }
 
-  get _rewardAsset(): Address {
+  get _workspaceRegAddr(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
 
-  get _metadataHash(): string {
-    return this._call.inputValues[3].value.toString();
+  get _applicationRegAddr(): Address {
+    return this._call.inputValues[3].value.toAddress();
   }
 }
 

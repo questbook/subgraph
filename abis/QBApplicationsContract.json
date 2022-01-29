@@ -1,0 +1,285 @@
+[
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint96",
+				"name": "applicationId",
+				"type": "uint96"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "grant",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "metadataHash",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "enum ApplicationRegistry.ApplicationState",
+				"name": "state",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "enum ApplicationRegistry.MilestoneState[]",
+				"name": "milestones",
+				"type": "uint8[]"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			}
+		],
+		"name": "ApplicationSubmitted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint96",
+				"name": "applicationId",
+				"type": "uint96"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "metadataHash",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "enum ApplicationRegistry.ApplicationState",
+				"name": "state",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			}
+		],
+		"name": "ApplicationUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint96",
+				"name": "_id",
+				"type": "uint96"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint96",
+				"name": "_milestoneId",
+				"type": "uint96"
+			},
+			{
+				"indexed": false,
+				"internalType": "enum ApplicationRegistry.MilestoneState",
+				"name": "_state",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_metadataHash",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			}
+		],
+		"name": "MilestoneUpdated",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "applicationCount",
+		"outputs": [
+			{
+				"internalType": "uint96",
+				"name": "",
+				"type": "uint96"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint96",
+				"name": "_applicationId",
+				"type": "uint96"
+			}
+		],
+		"name": "getApplicationOwner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_newOwner",
+				"type": "address"
+			}
+		],
+		"name": "setContractOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_workspaceRegAddr",
+				"type": "address"
+			}
+		],
+		"name": "setWorkspaceReg",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_grant",
+				"type": "address"
+			},
+			{
+				"internalType": "uint96",
+				"name": "_workspaceId",
+				"type": "uint96"
+			},
+			{
+				"internalType": "string",
+				"name": "_metadataHash",
+				"type": "string"
+			},
+			{
+				"internalType": "enum ApplicationRegistry.MilestoneState[]",
+				"name": "_milestones",
+				"type": "uint8[]"
+			}
+		],
+		"name": "submitApplication",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint96",
+				"name": "_id",
+				"type": "uint96"
+			},
+			{
+				"internalType": "string",
+				"name": "_metadataHash",
+				"type": "string"
+			}
+		],
+		"name": "updateApplicationMetadata",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint96",
+				"name": "_id",
+				"type": "uint96"
+			},
+			{
+				"internalType": "uint48",
+				"name": "_milestoneId",
+				"type": "uint48"
+			},
+			{
+				"internalType": "enum ApplicationRegistry.MilestoneState",
+				"name": "_state",
+				"type": "uint8"
+			},
+			{
+				"internalType": "string",
+				"name": "_metadataHash",
+				"type": "string"
+			}
+		],
+		"name": "updateApplicationMilestone",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint96",
+				"name": "_id",
+				"type": "uint96"
+			},
+			{
+				"internalType": "enum ApplicationRegistry.ApplicationState",
+				"name": "_state",
+				"type": "uint8"
+			},
+			{
+				"internalType": "string",
+				"name": "_metadataHash",
+				"type": "string"
+			}
+		],
+		"name": "updateApplicationState",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]

@@ -32,6 +32,32 @@ dataSources:
           handler: handleWorkspaceAdminsRemoved
       file: ./src/workspace-mapping.ts
   - kind: ethereum
+    name: QBApplicationsContract
+    network: rinkeby
+    source:
+      address: "0x403441A681FfD40f1F8195b3164Cf8985DF19F37"
+      abi: QBApplicationsContract
+      startBlock: 10059849
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ApplicationSubmitted
+        - ApplicationUpdated
+        - MilestoneUpdated
+      abis:
+        - name: QBApplicationsContract
+          file: ./abis/QBApplicationsContract.json
+      eventHandlers:
+        - event: ApplicationSubmitted(indexed uint96,address,address,string,uint8,uint8[],uint256)
+          handler: handleApplicationSubmitted
+        - event: ApplicationUpdated(indexed uint96,address,string,uint8,uint256)
+          handler: handleApplicationUpdated
+        - event: MilestoneUpdated(uint96,uint96,uint8,string,uint256)
+          handler: handleMilestoneUpdated
+      file: ./src/application-mapping.ts
+  - kind: ethereum
     name: QBGrantsContract
     network: rinkeby
     source:
@@ -48,6 +74,6 @@ dataSources:
         - name: QBGrantsContract
           file: ./abis/QBGrantsContract.json
       eventHandlers:
-        - event: GrantCreated(address,uint96,uint256,address,string)
+        - event: GrantCreated(address,uint96,string)
           handler: handleGrantCreated
       file: ./src/grant-mapping.ts
