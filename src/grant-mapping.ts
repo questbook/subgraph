@@ -1,5 +1,6 @@
 import { log } from "@graphprotocol/graph-ts"
-import { GrantCreated } from "../generated/QBGrantsContract/QBGrantsContract"
+import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
+import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { grantFromGrantCreateIPFS } from "./utils/grant-from-grant-create-ipfs"
 
 export function handleGrantCreated(event: GrantCreated): void {
@@ -19,4 +20,24 @@ export function handleGrantCreated(event: GrantCreated): void {
   } else {
     log.warning(`error in mapping entity: "${entityResult.error!}"`, [])
   }
+}
+
+export function handleDisburseReward(event: DisburseReward): void {
+
+}
+
+export function handleDisburseRewardFailed(event: DisburseRewardFailed): void {
+  
+}
+
+export function handleFundsDepositFailed(event: FundsDepositFailed): void {
+  
+}
+
+export function handleFundsDeposited(event: FundsDeposited): void {
+  
+}
+
+export function handleGrantUpdated(event: GrantUpdated): void {
+  
 }

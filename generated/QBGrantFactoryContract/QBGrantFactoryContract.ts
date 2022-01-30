@@ -36,9 +36,9 @@ export class GrantCreated__Params {
   }
 }
 
-export class QBGrantsContract extends ethereum.SmartContract {
-  static bind(address: Address): QBGrantsContract {
-    return new QBGrantsContract("QBGrantsContract", address);
+export class QBGrantFactoryContract extends ethereum.SmartContract {
+  static bind(address: Address): QBGrantFactoryContract {
+    return new QBGrantFactoryContract("QBGrantFactoryContract", address);
   }
 }
 

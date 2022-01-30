@@ -1,6 +1,6 @@
 import { Address, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
-import { GrantCreated } from '../generated/QBGrantsContract/QBGrantsContract'
+import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { Grant } from "../generated/schema"
 import { handleGrantCreated } from '../src/grant-mapping'
 
