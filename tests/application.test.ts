@@ -2,7 +2,9 @@ import { Address, BigDecimal, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
 import { ApplicationMember, ApplicationMilestone, GrantApplication, GrantFieldAnswer } from "../generated/schema"
+import { DisburseReward } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleApplicationSubmitted, handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
+import { handleDisburseReward } from "../src/grant-mapping"
 import { assertArrayNotEmpty, assertStringNotEmpty } from './utils' 
 
 export function runTests(): void {
@@ -116,6 +118,31 @@ export function runTests(): void {
 		assert.assertNotNull(gUpdate!.text)
 		assert.stringEquals(gUpdate!.text!, '')
 		assert.stringEquals(gUpdate!.state, 'approved')
+	})
+
+	test('should disburse funding to application', () => {
+		const g = createApplication()
+
+		const milestoneId = g!.milestones[0]
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
+			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32( 0x00 )),
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress( Address.fromString("0xC23081F360e3847006dB660bae1c6d1b2e17eC2B") )),
+			// the IPFS hash contains mock data for the workspace
+			new ethereum.EventParam('sender', ethereum.Value.fromString(APPROVE_MILESTONE_JSON)),
+			new ethereum.EventParam('amount', ethereum.Value.fromI32( 100 )),
+			new ethereum.EventParam('time', ethereum.Value.fromI32( 127 )),
+		]
+
+		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleDisburseReward(event)		
+
+		const gUpdate = ApplicationMilestone.load(milestoneId)
+		assert.i32Equals(gUpdate!.updatedAtS, 127)
+		assert.assertTrue(gUpdate!.amountPaid.ge( BigDecimal.fromString('100') ))
 	})
 }
 

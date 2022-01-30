@@ -258,6 +258,7 @@ export class Grant extends Entity {
     this.set("reward", Value.fromString(""));
     this.set("fields", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
+    this.set("funding", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
@@ -390,6 +391,24 @@ export class Grant extends Entity {
 
   set metadataHash(value: string) {
     this.set("metadataHash", Value.fromString(value));
+  }
+
+  get updatedAtS(): i32 {
+    let value = this.get("updatedAtS");
+    return value!.toI32();
+  }
+
+  set updatedAtS(value: i32) {
+    this.set("updatedAtS", Value.fromI32(value));
+  }
+
+  get funding(): BigDecimal {
+    let value = this.get("funding");
+    return value!.toBigDecimal();
+  }
+
+  set funding(value: BigDecimal) {
+    this.set("funding", Value.fromBigDecimal(value));
   }
 }
 

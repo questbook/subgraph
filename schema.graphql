@@ -63,6 +63,11 @@ type Grant @entity {
   acceptingApplications: Boolean!
 
   metadataHash: String!
+
+  "in seconds since epoch"
+  updatedAtS: Int
+
+  funding: BigDecimal!
 }
 
 type WorkspaceMember @entity {
@@ -92,6 +97,7 @@ type Workspace @entity {
   socials: [Social!]!
 }
 
+"the milestone of a grant application"
 type ApplicationMilestone @entity {
   id: ID!
   state: MilestoneState!
