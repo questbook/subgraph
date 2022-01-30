@@ -1,4 +1,4 @@
-import { JSONValueKind } from "@graphprotocol/graph-ts";
+import { JSONValue, JSONValueKind, TypedMap } from "@graphprotocol/graph-ts";
 import { GrantApplication } from "../../generated/schema";
 import { getJSONObjectFromIPFS, Result, setEntityValueSafe } from "./json";
 
@@ -9,7 +9,12 @@ export function applyApplicationUpdateIpfs(entity: GrantApplication, hash: strin
 	}
 
 	const obj = jsonObjResult.value!
+	return applyApplicationUpdateFromJSON(entity, obj, false)
+}
 
+export function applyApplicationUpdateFromJSON(entity: GrantApplication, obj: TypedMap<string, JSONValue>, expectAllPresent: boolean): Result<GrantApplication> {
+	let result = setEntityValueSafe(entity, 'details', obj, JSONValueKind.STRING)
+	if(result.error && expectAllPresent) return result
 
 	return { value: entity, error: null }
 }

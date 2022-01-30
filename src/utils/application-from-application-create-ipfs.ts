@@ -1,5 +1,6 @@
 import { BigDecimal, JSONValue, JSONValueKind } from "@graphprotocol/graph-ts";
 import { ApplicationMember, ApplicationMilestone, GrantApplication, GrantFieldAnswer } from "../../generated/schema";
+import { applyApplicationUpdateFromJSON } from "./apply-application-update-ipfs";
 import { getJSONObjectFromIPFS, getJSONValueSafe, Result, setEntityArrayValueSafe, setEntityValueSafe } from "./json";
 
 export function applicationFromApplicationCreateIpfs(id: string, hash: string): Result<GrantApplication> {
@@ -11,7 +12,7 @@ export function applicationFromApplicationCreateIpfs(id: string, hash: string): 
 	const obj = jsonObjResult.value!
 	
 	const entity = new GrantApplication(id)
-	let result = setEntityValueSafe(entity, 'details', obj, JSONValueKind.STRING)
+	let result = applyApplicationUpdateFromJSON(entity, obj, true)
 	if(result.error) return result
 
 	setEntityArrayValueSafe(entity, 'fields', obj, JSONValueKind.OBJECT, grantFieldAnswerFromJSONValue)
