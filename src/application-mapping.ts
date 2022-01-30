@@ -1,7 +1,8 @@
 import { log } from '@graphprotocol/graph-ts'
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationMilestone } from '../generated/schema'
+import { ApplicationMilestone, GrantApplication } from '../generated/schema'
 import { applicationFromApplicationCreateIpfs } from './utils/application-from-application-create-ipfs'
+import { applyApplicationUpdateIpfs } from './utils/apply-application-update-ipfs'
 import { applyMilestoneUpdateIpfs } from './utils/apply-milestone-update-ipfs'
 
 export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
@@ -23,7 +24,36 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 }
 
 export function handleApplicationUpdated(event: ApplicationUpdated): void {
+	const applicationId = event.params.applicationId.toHex()
 
+	const entity = GrantApplication.load(applicationId)
+	if(entity) {
+		entity.updatedAtS = event.params.time.toI32()
+		switch(event.params.state) {
+			case 0:
+				entity.state = 'submitted'
+			break
+			case 1:
+				entity.state = 'resubmit'
+			break
+			case 2:
+				entity.state = 'approved'
+			break
+			case 3:
+				entity.state = 'rejected'
+			break
+		}
+
+		const updateResult = applyApplicationUpdateIpfs(entity, event.params.metadataHash)
+		if(updateResult.error) {
+			log.warning(`invalid metadata update for application: ID="${applicationId}", error=${updateResult.error!}`, [])
+			return
+		}
+
+		entity.save()
+	} else {
+		log.warning(`recv update for unknown application: ID="${applicationId}"`, [])
+	}
 }
 
 export function handleMilestoneUpdated(event: MilestoneUpdated): void {

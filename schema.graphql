@@ -97,7 +97,10 @@ type ApplicationMilestone @entity {
   state: MilestoneState!
   title: String!
 
+  "amount expected by applicant"
   amount: BigDecimal!
+  "amount paid by DAO"
+  amountPaid: BigDecimal!
 
   "in seconds since epoch"
   updatedAtS: Int

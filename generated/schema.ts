@@ -614,6 +614,7 @@ export class ApplicationMilestone extends Entity {
     this.set("state", Value.fromString(""));
     this.set("title", Value.fromString(""));
     this.set("amount", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("amountPaid", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
@@ -669,6 +670,15 @@ export class ApplicationMilestone extends Entity {
 
   set amount(value: BigDecimal) {
     this.set("amount", Value.fromBigDecimal(value));
+  }
+
+  get amountPaid(): BigDecimal {
+    let value = this.get("amountPaid");
+    return value!.toBigDecimal();
+  }
+
+  set amountPaid(value: BigDecimal) {
+    this.set("amountPaid", Value.fromBigDecimal(value));
   }
 
   get updatedAtS(): i32 {

@@ -1,4 +1,4 @@
-import { JSONValue, JSONValueKind } from "@graphprotocol/graph-ts";
+import { BigDecimal, JSONValue, JSONValueKind } from "@graphprotocol/graph-ts";
 import { ApplicationMember, ApplicationMilestone, GrantApplication, GrantFieldAnswer } from "../../generated/schema";
 import { getJSONObjectFromIPFS, getJSONValueSafe, Result, setEntityArrayValueSafe, setEntityValueSafe } from "./json";
 
@@ -56,6 +56,8 @@ function milestoneFromJSONValue(json: JSONValue, applicationId: string, index: i
 
 	result = setEntityValueSafe(milestone, 'amount', objResult, JSONValueKind.NUMBER)
 	if(result.error) return result
+
+	milestone.amountPaid = BigDecimal.fromString('0')
 
 	return { value: milestone, error: null }
 }

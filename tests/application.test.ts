@@ -1,8 +1,8 @@
 import { Address, BigDecimal, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
-import { ApplicationSubmitted, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
+import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
 import { ApplicationMember, ApplicationMilestone, GrantApplication, GrantFieldAnswer } from "../generated/schema"
-import { handleApplicationSubmitted, handleMilestoneUpdated } from '../src/application-mapping'
+import { handleApplicationSubmitted, handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty } from './utils' 
 
 export function runTests(): void {
@@ -39,6 +39,31 @@ export function runTests(): void {
 			assert.stringEquals(milestone!.state, 'submitted')
 			assert.assertTrue(milestone!.amount.gt(BigDecimal.fromString('0')))
 		}
+	})
+
+
+	test('should update an application', () => {
+		const g = createApplication()
+
+		const milestoneId = g!.milestones[0]
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
+			new ethereum.EventParam('owner', ethereum.Value.fromAddress( Address.fromString("0xB25191F360e3847006dB660bae1c6d1b2e17eC2B") )),
+			// the IPFS hash contains mock data for the workspace
+			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(UPDATE_JSON)),
+			new ethereum.EventParam('state', ethereum.Value.fromI32( 0x01 )),
+			new ethereum.EventParam('time', ethereum.Value.fromI32( 125 )),
+		]
+
+		const event = new ApplicationUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleApplicationUpdated(event)
+
+		const gUpdate = GrantApplication.load(g!.id)
+		assert.i32Equals(gUpdate!.updatedAtS, 125)
+		assert.stringEquals(gUpdate!.state, 'resubmit')
 	})
 
 	test('should update a milestone with requesing payment', () => {
@@ -119,6 +144,7 @@ function createApplication(): GrantApplication | null {
 
 const MOCK_APPLICATION_ID = ethereum.Value.fromI32( 0x0123 )
 const CREATE_JSON = 'json:{"grantId":"af391751-cfa5-5afd-a1f4-0a798e9d0a54","applicantId":"41448a2a-b7e7-5471-9758-1da90cd7745f","details":"Ijni orodoru didub sohfova nodik na gagtukit lasmodwu noov ba cu levun. Zubso toz pahibrus sehfutri ocawu amjemwef ura cu kalmarkec fokof sikwu keotaur aguneb dipasmuw erfavin od eztas. Orakor jinooda pa died al lufa bim japebzi tej ebdujpo lapustif bec azo wigjoftih. Jugeh num gu ze hatikbeb ahnuva co depmo ec coktil nulobin tajib isiwo.","fields":[{"id":"0","value":"Siphelot lipuv kit sefe suldo raboj et esokju edehuj gej ifrif zab rimus mitfe rulafus."},{"id":"1","value":"Caoti fig beh bowbus agi esebu wokwino vaw didlaaro zeelbi wat vaowgid levav."},{"id":"2","value":"Ezaeru nuwupe hajnot mobre fus zovufvu givhara libvoum vazidi we eti sivnesama nugu luteiru vekaje sutep cevdi."},{"id":"3","value":"Ifoci uw zu murap agago kaz tilagigo juvtos ti az kol mo akkumuz."}],"members":[{"details":"Hijowi las jiwwi ninihu usfembo def nu pitkol ga hadgeeb ruro potdu icacot. Agealo amna overi ekusuf jum lusban gekeftiz cieti ohwih gauh hag wu takluc. Nah etagupkas muva powahza re wuje zabanjed to zectilze evwadu ta nengi. Wor zojit zeghul evbimij zaazzuh cupdori maih gubekzo hemotwam ve zic tigodco viseuz macajbu coc gomicla. Anga tig rewaza ovu popjum aho sieg pejsuwag hotipub afe mulire zifkizi fevahul loh voba."},{"details":"Jate osi gejuvof utana wugbu wugep ic uno taldo mijalo zegajzi opwi pec ce bo. Odues tok vip pidjabim pogsepho zid wulgitum ju vez nusaol ermuc cafa noasebi ra ot. Jon kiwcub jecioha igu ehaem kojimek fujvuh wav jur eweci now gotiw bib godumol sa vepor. Lod faoc guwafoj sazicige akakanur dizoij ve vejur bok sovaw se efku lan mew rotuum. Ebiwimah we mosudja gusbomu leludupiv seariwa na fobrecof owa wi nowpacik nimog cavotu oci daji."},{"details":"Ruwal cufab wisfojbac jahto mijein kotav deduwap jetuvti gag voge emmut ebocufam. Sives ag ivfoh bu jetieve ma zicniduce jilez ka jivvihka at puj bezul ece tikocaf. Rututre possepud now zih tulugvok de wovviabu wove jowcodub vap kok vuf dem."}],"milestones":[{"title":"Bigeh avbutkut be da fegpi ta dem jifacehi zaduwe kojut ale upajusad hiwo.","amount":7},{"title":"Mojobasa retlamzo baab tij giwob heabe lorsikonu huh koket zamfat cojigo ac gizje ho nivgunlec.","amount":27},{"title":"Eli foham ajezuji mim me zo iju ibiibi inpo denujlu rivvo za rur nutziwjup.","amount":25},{"title":"Te zuzpad ked jakunuede jacewot pib soak so comta tucog fa uvacibase pumju cez.","amount":67},{"title":"Cawpoge wobzak mo tap kikolwi feuvav si hajvamki cepus len koig esi meh.","amount":60}]}'
+const UPDATE_JSON = 'json:{}'
 const UPDATE_MILESTONE_JSON = 'json:{"text":"hello there"}'
 const APPROVE_MILESTONE_JSON = 'json:{"text":""}'
 
