@@ -1,6 +1,7 @@
 import { JSONValue, JSONValueKind } from "@graphprotocol/graph-ts"
-import { Grant, GrantField, Reward } from "../../generated/schema"
-import { getJSONValueSafe, setEntityValueSafe, Result, getJSONObjectFromIPFS, setEntityArrayValueSafe, byteArrayFromHexStringSafe } from "./json"
+import { Grant, Reward } from "../../generated/schema"
+import { applyGrantUpdateFromJSON } from "./apply-grant-update-ipfs"
+import { getJSONValueSafe, setEntityValueSafe, Result, getJSONObjectFromIPFS, byteArrayFromHexStringSafe } from "./json"
 
 export function grantFromGrantCreateIPFS(id: string, hash: string): Result<Grant> {
 	const jsonObjResult = getJSONObjectFromIPFS(hash)
@@ -19,13 +20,8 @@ export function grantFromGrantCreateIPFS(id: string, hash: string): Result<Grant
 	result = setEntityValueSafe(entity, 'summary', obj, JSONValueKind.STRING)
 	if(result.error) return result
 	
-	result = setEntityValueSafe(entity, 'details', obj, JSONValueKind.STRING)
+	result = applyGrantUpdateFromJSON(entity, obj, true)
 	if(result.error) return result
-
-	// optional field, don't care if not present
-	result = setEntityValueSafe(entity, 'deadline', obj, JSONValueKind.STRING)
-	
-	setEntityArrayValueSafe(entity, 'fields', obj, JSONValueKind.OBJECT, fieldFromJSONValue)
 
 	const rewardObj = obj.get('reward')
 	if(!rewardObj) {
@@ -38,44 +34,6 @@ export function grantFromGrantCreateIPFS(id: string, hash: string): Result<Grant
 	entity.reward = reward.value!.id
 
 	return { value: entity, error: null }
-}
-
-function fieldFromJSONValue(json: JSONValue, grantId: string, _: i32): Result<GrantField> {
-	const fieldObj = json.toObject()
-	const fieldIdResult = getJSONValueSafe('id', fieldObj, JSONValueKind.STRING)
-	if(fieldIdResult.error) return { value: null, error: fieldIdResult.error }
-
-	const field = new GrantField(`${grantId}.${fieldIdResult.value!.toString()}`)
-
-	let result = setEntityValueSafe(field, 'title', fieldObj, JSONValueKind.STRING)
-	if(result.error) return result
-
-	if(fieldObj.get('enum')) {
-		const enumsResult = getJSONValueSafe('enum', fieldObj, JSONValueKind.ARRAY)
-		if(!enumsResult.error) return { value: null, error: enumsResult.error }
-
-		const enumsArray = enumsResult.value!.toArray()
-		field.possibleValues = []
-		for(let j = 0;j < enumsArray.length;j++) {
-			const value = enumsArray[j]
-			if(value.kind !== JSONValueKind.STRING) {
-				return { value: null, error: 'Enum value not string' }
-			}
-			field.possibleValues!.push(value.toString())
-		}
-	}
-
-	const inputTypeResult = getJSONValueSafe('inputType', fieldObj, JSONValueKind.STRING)
-	const inputTypeValue = inputTypeResult.value!.toString()
-	if(inputTypeValue === 'long-form') {
-		field.inputType = 'long_form'
-	} else if(inputTypeValue === 'numeric') {
-		field.inputType = 'numeric'
-	} else {
-		field.inputType = 'short_form'
-	} 
-
-	return { value: field, error: null }
 }
 
 function rewardFromJSONValue(json: JSONValue, grantId: string): Result<Reward> {
