@@ -150,3 +150,15 @@ type FundsDeposit @entity {
   "in seconds since epoch"
   createdAtS: Int!
 }
+
+type FundsDisburse @entity {
+  id: ID!
+
+  application: GrantApplication!
+  milestone: ApplicationMilestone!
+  amount: BigInt!
+
+  to: Bytes!
+  "in seconds since epoch"
+  createdAtS: Int!
+}

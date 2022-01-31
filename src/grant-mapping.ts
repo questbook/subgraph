@@ -1,6 +1,6 @@
 import { log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
-import { ApplicationMilestone, FundsDeposit, Grant } from "../generated/schema"
+import { ApplicationMilestone, FundsDeposit, FundsDisburse, Grant } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
 import { grantFromGrantCreateIPFS } from "./utils/grant-from-grant-create-ipfs"
@@ -29,6 +29,15 @@ export function handleDisburseReward(event: DisburseReward): void {
   const milestoneIndex = event.params.milestoneId.toI32()
   const milestoneId = `${applicationId}.${milestoneIndex}.milestone`
   const amountPaid = event.params.amount
+
+  const disburseEntity = new FundsDisburse(event.transaction.index.toHex())
+  disburseEntity.createdAtS = event.params.time.toI32()
+  disburseEntity.amount = amountPaid
+  disburseEntity.to = event.transaction.to!
+  disburseEntity.application = applicationId
+  disburseEntity.milestone = milestoneId
+
+  disburseEntity.save()
 
   const entity = ApplicationMilestone.load(milestoneId)
   if(entity) {
