@@ -29,6 +29,9 @@ export function grantFromGrantCreateIPFS(id: string, hash: string): Result<Grant
 	}
 
 	const reward = rewardFromJSONValue(rewardObj, entity.id)
+	if(reward.error) {
+		return { value: null, error: reward.error }
+	}
 	reward.value!.save()
 
 	entity.reward = reward.value!.id
