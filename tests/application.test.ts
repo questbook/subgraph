@@ -55,6 +55,7 @@ export function runTests(): void {
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(UPDATE_JSON)),
 			new ethereum.EventParam('state', ethereum.Value.fromI32( 0x01 )),
+			new ethereum.EventParam('milestoneCount', ethereum.Value.fromI32( 0x00 )),
 			new ethereum.EventParam('time', ethereum.Value.fromI32( 125 )),
 		]
 
@@ -66,6 +67,8 @@ export function runTests(): void {
 		assert.stringEquals(gUpdate!.state, 'resubmit')
 
 		assert.assertTrue(gUpdate!.details != g!.details)
+		// did not update milestones, should remain the same
+		assert.stringEquals(gUpdate!.milestones[0], g!.milestones[0])
 	})
 
 	test('should update a milestone with requesing payment', () => {
@@ -150,16 +153,14 @@ function createApplication(): GrantApplication | null {
 	const ev = newMockEvent()
 
 	ev.parameters = [
-		new ethereum.EventParam('applicationID', MOCK_APPLICATION_ID),
+		new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
 		new ethereum.EventParam('grant', ethereum.Value.fromAddress( Address.fromString("0xB23081F360e3847006dB660bae1c6d1b2e17eC2B") )),
 		new ethereum.EventParam('owner', ethereum.Value.fromAddress( Address.fromString("0xB25191F360e3847006dB660bae1c6d1b2e17eC2B") )),
 		// the IPFS hash contains mock data for the workspace
 		new ethereum.EventParam('metadataHash', ethereum.Value.fromString(CREATE_JSON)),
-		new ethereum.EventParam('state', ethereum.Value.fromI32( 0x0 )),
-		new ethereum.EventParam('milestones', ethereum.Value.fromI32Array( [ 0x01, 0x02, 0x03, 0x04, 0x05 ] )),
+		new ethereum.EventParam('milestoneCount', ethereum.Value.fromI32( 5 )),
 		new ethereum.EventParam('time', ethereum.Value.fromI32( 123 )),
 	]
-
 	const event = new ApplicationSubmitted(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 	handleApplicationSubmitted(event)
 

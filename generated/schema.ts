@@ -393,6 +393,15 @@ export class Grant extends Entity {
     this.set("metadataHash", Value.fromString(value));
   }
 
+  get createdAtS(): i32 {
+    let value = this.get("createdAtS");
+    return value!.toI32();
+  }
+
+  set createdAtS(value: i32) {
+    this.set("createdAtS", Value.fromI32(value));
+  }
+
   get updatedAtS(): i32 {
     let value = this.get("updatedAtS");
     return value!.toI32();

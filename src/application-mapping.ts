@@ -7,10 +7,16 @@ import { applyMilestoneUpdateIpfs } from './utils/apply-milestone-update-ipfs'
 
 export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	const applicationId = event.params.applicationId.toHex()
+	const milestoneCount = event.params.milestoneCount.toI32()
 
 	const entityResult = applicationFromApplicationCreateIpfs(applicationId, event.params.metadataHash)
 	if(entityResult.value) {
 		const entity = entityResult.value!
+		if(entity.milestones.length !== milestoneCount) {
+			log.warning(`metadata has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
+			return
+		}
+
 		entity.createdAtS = event.params.time.toI32()
 		entity.updatedAtS = entity.createdAtS
 		entity.applicantId = event.params.owner
@@ -25,6 +31,8 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 
 export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	const applicationId = event.params.applicationId.toHex()
+	const metaHash = event.params.metadataHash
+	const milestoneCount = event.params.milestoneCount.toI32()
 
 	const entity = GrantApplication.load(applicationId)
 	if(entity) {
@@ -44,10 +52,17 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 			break
 		}
 
-		const updateResult = applyApplicationUpdateIpfs(entity, event.params.metadataHash)
-		if(updateResult.error) {
-			log.warning(`invalid metadata update for application: ID="${applicationId}", error=${updateResult.error!}`, [])
-			return
+		if(metaHash) {
+			const updateResult = applyApplicationUpdateIpfs(entity, event.params.metadataHash)
+			if(updateResult.error) {
+				log.warning(`invalid metadata update for application: ID="${applicationId}", error=${updateResult.error!}`, [])
+				return
+			}
+	
+			if(entity.milestones.length !== milestoneCount && milestoneCount > 0) {
+				log.warning(`metadata update has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
+				return
+			}
 		}
 
 		entity.save()

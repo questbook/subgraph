@@ -16,6 +16,7 @@ export function handleGrantCreated(event: GrantCreated): void {
     entity.creatorId = event.transaction.from
     entity.workspace = workspaceId.toHex()
     entity.acceptingApplications = true
+    entity.createdAtS = event.params.time.toI32()
 
     entity.save()
   } else {

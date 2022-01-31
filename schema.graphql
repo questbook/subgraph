@@ -63,7 +63,9 @@ type Grant @entity {
   acceptingApplications: Boolean!
 
   metadataHash: String!
-
+  
+  "in seconds since epoch"
+  createdAtS: Int!
   "in seconds since epoch"
   updatedAtS: Int
 

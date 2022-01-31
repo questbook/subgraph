@@ -33,15 +33,9 @@
 			},
 			{
 				"indexed": false,
-				"internalType": "enum ApplicationRegistry.ApplicationState",
-				"name": "state",
-				"type": "uint8"
-			},
-			{
-				"indexed": false,
-				"internalType": "enum ApplicationRegistry.MilestoneState[]",
-				"name": "milestones",
-				"type": "uint8[]"
+				"internalType": "uint48",
+				"name": "milestoneCount",
+				"type": "uint48"
 			},
 			{
 				"indexed": false,
@@ -79,6 +73,12 @@
 				"internalType": "enum ApplicationRegistry.ApplicationState",
 				"name": "state",
 				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint48",
+				"name": "milestoneCount",
+				"type": "uint48"
 			},
 			{
 				"indexed": false,
@@ -203,9 +203,9 @@
 				"type": "string"
 			},
 			{
-				"internalType": "enum ApplicationRegistry.MilestoneState[]",
-				"name": "_milestones",
-				"type": "uint8[]"
+				"internalType": "uint48",
+				"name": "_milestoneCount",
+				"type": "uint48"
 			}
 		],
 		"name": "submitApplication",
@@ -224,6 +224,11 @@
 				"internalType": "string",
 				"name": "_metadataHash",
 				"type": "string"
+			},
+			{
+				"internalType": "uint48",
+				"name": "_milestoneCount",
+				"type": "uint48"
 			}
 		],
 		"name": "updateApplicationMetadata",
@@ -252,6 +257,21 @@
 				"internalType": "string",
 				"name": "_metadataHash",
 				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_disbursalType",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_disbursalAsset",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_disbursalAmount",
+				"type": "uint256"
 			}
 		],
 		"name": "updateApplicationMilestone",

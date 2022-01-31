@@ -9,6 +9,7 @@ export function runTests(): void {
 
 	test('should create a grant', () => {
 		const g = createGrant()
+		assert.i32Equals(g!.createdAtS, 123)
 		assert.assertTrue(g!.title.length > 0)
 		assert.assertTrue(g!.summary.length > 0)
 		assert.booleanEquals(g!.acceptingApplications, true)
@@ -71,6 +72,7 @@ function createGrant(): Grant | null {
 		new ethereum.EventParam('workspaceId', ethereum.Value.fromI32( 0x02 )),
 		// the IPFS hash contains mock data for the workspace
 		new ethereum.EventParam('metadataHash', ethereum.Value.fromString(CREATE_JSON)),
+		new ethereum.EventParam('time', ethereum.Value.fromI32( 123 )),
 	]
 
 	const event = new GrantCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)

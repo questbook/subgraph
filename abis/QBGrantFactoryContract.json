@@ -19,6 +19,12 @@
 				"internalType": "string",
 				"name": "metadataHash",
 				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
 			}
 		],
 		"name": "GrantCreated",

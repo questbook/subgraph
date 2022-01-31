@@ -39,16 +39,12 @@ export class ApplicationSubmitted__Params {
     return this._event.parameters[3].value.toString();
   }
 
-  get state(): i32 {
-    return this._event.parameters[4].value.toI32();
-  }
-
-  get milestones(): Array<i32> {
-    return this._event.parameters[5].value.toI32Array();
+  get milestoneCount(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
   }
 
   get time(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
+    return this._event.parameters[5].value.toBigInt();
   }
 }
 
@@ -81,8 +77,12 @@ export class ApplicationUpdated__Params {
     return this._event.parameters[3].value.toI32();
   }
 
-  get time(): BigInt {
+  get milestoneCount(): BigInt {
     return this._event.parameters[4].value.toBigInt();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
   }
 }
 
@@ -289,8 +289,8 @@ export class SubmitApplicationCall__Inputs {
     return this._call.inputValues[2].value.toString();
   }
 
-  get _milestones(): Array<i32> {
-    return this._call.inputValues[3].value.toI32Array();
+  get _milestoneCount(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
   }
 }
 
@@ -325,6 +325,10 @@ export class UpdateApplicationMetadataCall__Inputs {
 
   get _metadataHash(): string {
     return this._call.inputValues[1].value.toString();
+  }
+
+  get _milestoneCount(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
   }
 }
 
@@ -367,6 +371,18 @@ export class UpdateApplicationMilestoneCall__Inputs {
 
   get _metadataHash(): string {
     return this._call.inputValues[3].value.toString();
+  }
+
+  get _disbursalType(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
+  }
+
+  get _disbursalAsset(): Address {
+    return this._call.inputValues[5].value.toAddress();
+  }
+
+  get _disbursalAmount(): BigInt {
+    return this._call.inputValues[6].value.toBigInt();
   }
 }
 

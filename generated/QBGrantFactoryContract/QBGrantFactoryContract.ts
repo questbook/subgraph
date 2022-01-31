@@ -34,6 +34,10 @@ export class GrantCreated__Params {
   get metadataHash(): string {
     return this._event.parameters[2].value.toString();
   }
+
+  get time(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
 }
 
 export class QBGrantFactoryContract extends ethereum.SmartContract {
