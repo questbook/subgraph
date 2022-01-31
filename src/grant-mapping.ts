@@ -1,6 +1,6 @@
-import { BigDecimal, BigInt, log } from "@graphprotocol/graph-ts"
+import { log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
-import { ApplicationMilestone, Grant } from "../generated/schema"
+import { ApplicationMilestone, FundsDeposit, Grant } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
 import { grantFromGrantCreateIPFS } from "./utils/grant-from-grant-create-ipfs"
@@ -50,8 +50,17 @@ export function handleFundsDepositFailed(event: FundsDepositFailed): void {
 }
 
 export function handleFundsDeposited(event: FundsDeposited): void {
+  const transactionId = event.transaction.index.toHex()
   const grantId = event.transaction.to!.toHex()
   const amount = event.params.amount
+
+  const fundEntity = new FundsDeposit(transactionId)
+  fundEntity.createdAtS = event.params.time.toI32()
+  fundEntity.from = event.transaction.from
+  fundEntity.grant = grantId
+  fundEntity.amount = amount
+
+  fundEntity.save()
 
   const entity = Grant.load(grantId)
   if(entity) {
