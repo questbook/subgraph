@@ -1,4 +1,4 @@
-import { Address, BigDecimal, ethereum } from "@graphprotocol/graph-ts"
+import { Address, BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
 import { ApplicationMember, ApplicationMilestone, GrantApplication, GrantFieldAnswer } from "../generated/schema"
@@ -39,7 +39,7 @@ export function runTests(): void {
 			assert.assertNotNull(milestone)
 			assertStringNotEmpty(milestone!.title, 'milestone.value')
 			assert.stringEquals(milestone!.state, 'submitted')
-			assert.assertTrue(milestone!.amount.gt(BigDecimal.fromString('0')))
+			assert.assertTrue(milestone!.amount.gt(BigInt.fromString('0')))
 		}
 	})
 
@@ -145,7 +145,7 @@ export function runTests(): void {
 
 		const gUpdate = ApplicationMilestone.load(milestoneId)
 		assert.i32Equals(gUpdate!.updatedAtS, 127)
-		assert.assertTrue(gUpdate!.amountPaid.ge( BigDecimal.fromString('100') ))
+		assert.assertTrue(gUpdate!.amountPaid.ge( BigInt.fromString('100') ))
 	})
 }
 

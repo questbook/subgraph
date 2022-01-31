@@ -46,7 +46,7 @@ type GrantFieldAnswer @entity {
 type Reward @entity {
   id: ID!
 	asset: Bytes!
-	committed: BigDecimal!
+	committed: BigInt!
 }
 
 type Grant @entity {
@@ -69,7 +69,7 @@ type Grant @entity {
   "in seconds since epoch"
   updatedAtS: Int
 
-  funding: BigDecimal!
+  funding: BigInt!
 }
 
 type WorkspaceMember @entity {
@@ -106,9 +106,9 @@ type ApplicationMilestone @entity {
   title: String!
 
   "amount expected by applicant"
-  amount: BigDecimal!
+  amount: BigInt!
   "amount paid by DAO"
-  amountPaid: BigDecimal!
+  amountPaid: BigInt!
 
   "in seconds since epoch"
   updatedAtS: Int
@@ -137,4 +137,16 @@ type GrantApplication @entity {
   updatedAtS: Int!
 
   milestones: [ApplicationMilestone!]!
+}
+
+type FundsDeposit @entity {
+  id: ID!
+
+  grant: Grant!
+  amount: BigInt!
+
+  from: Bytes!
+
+  "in seconds since epoch"
+  createdAtS: Int!
 }

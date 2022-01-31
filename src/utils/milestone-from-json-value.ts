@@ -1,4 +1,4 @@
-import { BigDecimal, JSONValue, JSONValueKind } from "@graphprotocol/graph-ts"
+import { BigDecimal, BigInt, JSONValue, JSONValueKind } from "@graphprotocol/graph-ts"
 import { ApplicationMilestone } from "../../generated/schema"
 import { setEntityValueSafe, Result } from "./json"
 
@@ -14,7 +14,7 @@ export function milestoneFromJSONValue(json: JSONValue, applicationId: string, i
 	result = setEntityValueSafe(milestone, 'amount', objResult, JSONValueKind.NUMBER)
 	if(result.error) return result
 
-	milestone.amountPaid = BigDecimal.fromString('0')
+	milestone.amountPaid = BigInt.fromI32(0)
 
 	return { value: milestone, error: null }
 }

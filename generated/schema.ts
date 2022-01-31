@@ -198,7 +198,7 @@ export class Reward extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("asset", Value.fromBytes(Bytes.empty()));
-    this.set("committed", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("committed", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -236,13 +236,13 @@ export class Reward extends Entity {
     this.set("asset", Value.fromBytes(value));
   }
 
-  get committed(): BigDecimal {
+  get committed(): BigInt {
     let value = this.get("committed");
-    return value!.toBigDecimal();
+    return value!.toBigInt();
   }
 
-  set committed(value: BigDecimal) {
-    this.set("committed", Value.fromBigDecimal(value));
+  set committed(value: BigInt) {
+    this.set("committed", Value.fromBigInt(value));
   }
 }
 
@@ -258,7 +258,7 @@ export class Grant extends Entity {
     this.set("reward", Value.fromString(""));
     this.set("fields", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
-    this.set("funding", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("funding", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -411,13 +411,13 @@ export class Grant extends Entity {
     this.set("updatedAtS", Value.fromI32(value));
   }
 
-  get funding(): BigDecimal {
+  get funding(): BigInt {
     let value = this.get("funding");
-    return value!.toBigDecimal();
+    return value!.toBigInt();
   }
 
-  set funding(value: BigDecimal) {
-    this.set("funding", Value.fromBigDecimal(value));
+  set funding(value: BigInt) {
+    this.set("funding", Value.fromBigInt(value));
   }
 }
 
@@ -641,8 +641,8 @@ export class ApplicationMilestone extends Entity {
 
     this.set("state", Value.fromString(""));
     this.set("title", Value.fromString(""));
-    this.set("amount", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("amountPaid", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("amount", Value.fromBigInt(BigInt.zero()));
+    this.set("amountPaid", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -691,22 +691,22 @@ export class ApplicationMilestone extends Entity {
     this.set("title", Value.fromString(value));
   }
 
-  get amount(): BigDecimal {
+  get amount(): BigInt {
     let value = this.get("amount");
-    return value!.toBigDecimal();
+    return value!.toBigInt();
   }
 
-  set amount(value: BigDecimal) {
-    this.set("amount", Value.fromBigDecimal(value));
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
   }
 
-  get amountPaid(): BigDecimal {
+  get amountPaid(): BigInt {
     let value = this.get("amountPaid");
-    return value!.toBigDecimal();
+    return value!.toBigInt();
   }
 
-  set amountPaid(value: BigDecimal) {
-    this.set("amountPaid", Value.fromBigDecimal(value));
+  set amountPaid(value: BigInt) {
+    this.set("amountPaid", Value.fromBigInt(value));
   }
 
   get updatedAtS(): i32 {
@@ -903,5 +903,78 @@ export class GrantApplication extends Entity {
 
   set milestones(value: Array<string>) {
     this.set("milestones", Value.fromStringArray(value));
+  }
+}
+
+export class FundsDeposit extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("grant", Value.fromString(""));
+    this.set("amount", Value.fromBigInt(BigInt.zero()));
+    this.set("from", Value.fromBytes(Bytes.empty()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save FundsDeposit entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save FundsDeposit entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("FundsDeposit", id.toString(), this);
+    }
+  }
+
+  static load(id: string): FundsDeposit | null {
+    return changetype<FundsDeposit | null>(store.get("FundsDeposit", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get grant(): string {
+    let value = this.get("grant");
+    return value!.toString();
+  }
+
+  set grant(value: string) {
+    this.set("grant", Value.fromString(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value!.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get from(): Bytes {
+    let value = this.get("from");
+    return value!.toBytes();
+  }
+
+  set from(value: Bytes) {
+    this.set("from", Value.fromBytes(value));
+  }
+
+  get createdAtS(): i32 {
+    let value = this.get("createdAtS");
+    return value!.toI32();
+  }
+
+  set createdAtS(value: i32) {
+    this.set("createdAtS", Value.fromI32(value));
   }
 }

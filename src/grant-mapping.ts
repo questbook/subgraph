@@ -1,4 +1,4 @@
-import { BigDecimal, log } from "@graphprotocol/graph-ts"
+import { BigDecimal, BigInt, log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
 import { ApplicationMilestone, Grant } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
@@ -32,7 +32,7 @@ export function handleDisburseReward(event: DisburseReward): void {
 
   const entity = ApplicationMilestone.load(milestoneId)
   if(entity) {
-    entity.amountPaid = entity.amountPaid.plus( new BigDecimal(amountPaid) )
+    entity.amountPaid = entity.amountPaid.plus( amountPaid )
     entity.updatedAtS = event.params.time.toI32()
 
     entity.save()
@@ -56,7 +56,7 @@ export function handleFundsDeposited(event: FundsDeposited): void {
   const entity = Grant.load(grantId)
   if(entity) {
     entity.updatedAtS = event.params.time.toI32()
-    entity.funding = entity.funding.plus( new BigDecimal(amount) )
+    entity.funding = entity.funding.plus( amount )
 
     entity.save()
   } else {

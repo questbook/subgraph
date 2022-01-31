@@ -1,4 +1,4 @@
-import { BigDecimal, Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, TypedMap, Value } from "@graphprotocol/graph-ts";
+import { Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, TypedMap, Value } from "@graphprotocol/graph-ts";
 
 class SavableEntity extends Entity {
 	save(): void {
@@ -39,7 +39,7 @@ export function setEntityValueSafe<T extends Entity>(entity: T, key: string, jso
 			entity.set(key, Value.fromBoolean(value.toBool()))
 			break
 		case JSONValueKind.NUMBER:
-			entity.set(key, Value.fromBigDecimal( BigDecimal.fromString(value.toF64().toString()) ))
+			entity.set(key, Value.fromBigInt(value.toBigInt()))
 			break
 		case JSONValueKind.STRING:
 			entity.set(key, Value.fromString(value.toString()))
