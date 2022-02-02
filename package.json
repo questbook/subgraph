@@ -5,10 +5,10 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "test": "graph test",
-    "deploy": "graph deploy --node https://the-graph.questbook.app/ --ipfs https://ipfs.infura.io:5001 subgraph-grants-contract",
-    "create-local": "graph create --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 subgraph-grants-contract",
-    "remove-local": "graph remove --node http://localhost:8020/ subgraph-grants-contract",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 subgraph-grants-contract"
+    "deploy": "graph deploy --node https://the-graph.questbook.app/ --ipfs https://ipfs.infura.io:5001 qb-subgraph",
+    "create-local": "graph create --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 qb-subgraph",
+    "remove-local": "graph remove --node http://localhost:8020/ qb-subgraph",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.25.2",
