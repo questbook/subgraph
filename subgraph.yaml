@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0x1cd20759258d7C2AB9404a6Ae077c2c9d54769C2"
       abi: QBWorkspaceRegistryContract
-      startBlock: 10070280
+      startBlock: 10098100
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -37,7 +37,7 @@ dataSources:
     source:
       address: "0x3d32db70A134d18EaC95e5bF7e96d62c13D28e61"
       abi: QBApplicationsContract
-      startBlock: 10086136
+      startBlock: 10098109
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -63,7 +63,7 @@ dataSources:
     source:
       address: "0x47D645676E5cf0aDBcf4d46154038b8546Ea6812"
       abi: QBGrantFactoryContract
-      startBlock: 10086128
+      startBlock: 10098105
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -77,6 +77,46 @@ dataSources:
         - event: GrantCreated(address,uint96,string,uint256)
           handler: handleGrantCreated
       file: ./src/grant-mapping.ts
+  - kind: ethereum
+    name: GrantTransfersDAI
+    network: rinkeby
+    source:
+      address: "0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735"
+      abi: ERC20
+      startBlock: 10098142
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/transfer-mapping.ts
+  - kind: ethereum
+    name: GrantTransfersWETH
+    network: rinkeby
+    source:
+      address: "0xc778417e063141139fce010982780140aa0cd5ab"
+      abi: ERC20
+      startBlock: 10098142
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/transfer-mapping.ts
 templates:
   - kind: ethereum/contract
     name: QBGrantsContract
