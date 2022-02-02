@@ -6,7 +6,7 @@ dataSources:
     name: QBWorkspaceRegistryContract
     network: rinkeby
     source:
-      address: "0x0a955bb91741321d913A7CcB2E1581C25771A3c6"
+      address: "0x1cd20759258d7C2AB9404a6Ae077c2c9d54769C2"
       abi: QBWorkspaceRegistryContract
       startBlock: 10070280
     mapping:
@@ -35,7 +35,7 @@ dataSources:
     name: QBApplicationsContract
     network: rinkeby
     source:
-      address: "0x741EeB03c9D70c1038eF933731A564EB26CE154d"
+      address: "0x3d32db70A134d18EaC95e5bF7e96d62c13D28e61"
       abi: QBApplicationsContract
       startBlock: 10086136
     mapping:
@@ -61,7 +61,7 @@ dataSources:
     name: QBGrantFactoryContract
     network: rinkeby
     source:
-      address: "0xA156d3Bb28aA9240421fee6D11C9A9755B5C9aC5"
+      address: "0x47D645676E5cf0aDBcf4d46154038b8546Ea6812"
       abi: QBGrantFactoryContract
       startBlock: 10086128
     mapping:

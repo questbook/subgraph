@@ -44,6 +44,49 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
   static bind(address: Address): QBGrantFactoryContract {
     return new QBGrantFactoryContract("QBGrantFactoryContract", address);
   }
+
+  createGrant(
+    _workspaceId: BigInt,
+    _metadataHash: string,
+    _workspaceRegAddr: Address,
+    _applicationRegAddr: Address
+  ): Address {
+    let result = super.call(
+      "createGrant",
+      "createGrant(uint96,string,address,address):(address)",
+      [
+        ethereum.Value.fromUnsignedBigInt(_workspaceId),
+        ethereum.Value.fromString(_metadataHash),
+        ethereum.Value.fromAddress(_workspaceRegAddr),
+        ethereum.Value.fromAddress(_applicationRegAddr)
+      ]
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_createGrant(
+    _workspaceId: BigInt,
+    _metadataHash: string,
+    _workspaceRegAddr: Address,
+    _applicationRegAddr: Address
+  ): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "createGrant",
+      "createGrant(uint96,string,address,address):(address)",
+      [
+        ethereum.Value.fromUnsignedBigInt(_workspaceId),
+        ethereum.Value.fromString(_metadataHash),
+        ethereum.Value.fromAddress(_workspaceRegAddr),
+        ethereum.Value.fromAddress(_applicationRegAddr)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
 }
 
 export class CreateGrantCall extends ethereum.Call {
@@ -85,5 +128,9 @@ export class CreateGrantCall__Outputs {
 
   constructor(call: CreateGrantCall) {
     this._call = call;
+  }
+
+  get value0(): Address {
+    return this._call.outputValues[0].value.toAddress();
   }
 }

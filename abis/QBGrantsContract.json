@@ -206,6 +206,19 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "applicationReg",
+		"outputs": [
+			{
+				"internalType": "contract IApplicationRegistry",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -287,6 +300,32 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "metadataHash",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "numApplicants",
+		"outputs": [
+			{
+				"internalType": "uint48",
+				"name": "",
+				"type": "uint48"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "string",
@@ -310,6 +349,32 @@
 		"name": "updateGrantAccessibility",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "workspaceId",
+		"outputs": [
+			{
+				"internalType": "uint96",
+				"name": "",
+				"type": "uint96"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "workspaceReg",
+		"outputs": [
+			{
+				"internalType": "contract IWorkspaceRegistry",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	}
 ]

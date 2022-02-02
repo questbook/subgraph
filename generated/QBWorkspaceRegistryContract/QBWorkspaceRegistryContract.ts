@@ -126,6 +126,26 @@ export class WorkspaceUpdated__Params {
   }
 }
 
+export class QBWorkspaceRegistryContract__workspacesResult {
+  value0: BigInt;
+  value1: Address;
+  value2: string;
+
+  constructor(value0: BigInt, value1: Address, value2: string) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromAddress(this.value1));
+    map.set("value2", ethereum.Value.fromString(this.value2));
+    return map;
+  }
+}
+
 export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
   static bind(address: Address): QBWorkspaceRegistryContract {
     return new QBWorkspaceRegistryContract(
@@ -166,6 +186,38 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
+  workspaceAdmins(param0: BigInt, param1: Address): boolean {
+    let result = super.call(
+      "workspaceAdmins",
+      "workspaceAdmins(uint96,address):(bool)",
+      [
+        ethereum.Value.fromUnsignedBigInt(param0),
+        ethereum.Value.fromAddress(param1)
+      ]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_workspaceAdmins(
+    param0: BigInt,
+    param1: Address
+  ): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "workspaceAdmins",
+      "workspaceAdmins(uint96,address):(bool)",
+      [
+        ethereum.Value.fromUnsignedBigInt(param0),
+        ethereum.Value.fromAddress(param1)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
   workspaceCount(): BigInt {
     let result = super.call("workspaceCount", "workspaceCount():(uint96)", []);
 
@@ -183,6 +235,41 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  workspaces(param0: BigInt): QBWorkspaceRegistryContract__workspacesResult {
+    let result = super.call(
+      "workspaces",
+      "workspaces(uint96):(uint96,address,string)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+
+    return new QBWorkspaceRegistryContract__workspacesResult(
+      result[0].toBigInt(),
+      result[1].toAddress(),
+      result[2].toString()
+    );
+  }
+
+  try_workspaces(
+    param0: BigInt
+  ): ethereum.CallResult<QBWorkspaceRegistryContract__workspacesResult> {
+    let result = super.tryCall(
+      "workspaces",
+      "workspaces(uint96):(uint96,address,string)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new QBWorkspaceRegistryContract__workspacesResult(
+        value[0].toBigInt(),
+        value[1].toAddress(),
+        value[2].toString()
+      )
+    );
   }
 }
 

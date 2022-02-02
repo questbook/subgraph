@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { FundsDeposit, Grant } from "../generated/schema"

@@ -187,6 +187,85 @@ export class QBGrantsContract extends ethereum.SmartContract {
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
+
+  applicationReg(): Address {
+    let result = super.call("applicationReg", "applicationReg():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_applicationReg(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "applicationReg",
+      "applicationReg():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  metadataHash(): string {
+    let result = super.call("metadataHash", "metadataHash():(string)", []);
+
+    return result[0].toString();
+  }
+
+  try_metadataHash(): ethereum.CallResult<string> {
+    let result = super.tryCall("metadataHash", "metadataHash():(string)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
+  numApplicants(): BigInt {
+    let result = super.call("numApplicants", "numApplicants():(uint48)", []);
+
+    return result[0].toBigInt();
+  }
+
+  try_numApplicants(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("numApplicants", "numApplicants():(uint48)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  workspaceId(): BigInt {
+    let result = super.call("workspaceId", "workspaceId():(uint96)", []);
+
+    return result[0].toBigInt();
+  }
+
+  try_workspaceId(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("workspaceId", "workspaceId():(uint96)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  workspaceReg(): Address {
+    let result = super.call("workspaceReg", "workspaceReg():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_workspaceReg(): ethereum.CallResult<Address> {
+    let result = super.tryCall("workspaceReg", "workspaceReg():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
 }
 
 export class ConstructorCall extends ethereum.Call {

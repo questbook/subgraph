@@ -120,6 +120,49 @@ export class MilestoneUpdated__Params {
   }
 }
 
+export class QBApplicationsContract__applicationsResult {
+  value0: BigInt;
+  value1: BigInt;
+  value2: Address;
+  value3: Address;
+  value4: BigInt;
+  value5: string;
+  value6: i32;
+
+  constructor(
+    value0: BigInt,
+    value1: BigInt,
+    value2: Address,
+    value3: Address,
+    value4: BigInt,
+    value5: string,
+    value6: i32
+  ) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+    this.value3 = value3;
+    this.value4 = value4;
+    this.value5 = value5;
+    this.value6 = value6;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    map.set("value2", ethereum.Value.fromAddress(this.value2));
+    map.set("value3", ethereum.Value.fromAddress(this.value3));
+    map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
+    map.set("value5", ethereum.Value.fromString(this.value5));
+    map.set(
+      "value6",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value6))
+    );
+    return map;
+  }
+}
+
 export class QBApplicationsContract extends ethereum.SmartContract {
   static bind(address: Address): QBApplicationsContract {
     return new QBApplicationsContract("QBApplicationsContract", address);
@@ -148,6 +191,81 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  applicationMilestones(param0: BigInt, param1: BigInt): i32 {
+    let result = super.call(
+      "applicationMilestones",
+      "applicationMilestones(uint96,uint48):(uint8)",
+      [
+        ethereum.Value.fromUnsignedBigInt(param0),
+        ethereum.Value.fromUnsignedBigInt(param1)
+      ]
+    );
+
+    return result[0].toI32();
+  }
+
+  try_applicationMilestones(
+    param0: BigInt,
+    param1: BigInt
+  ): ethereum.CallResult<i32> {
+    let result = super.tryCall(
+      "applicationMilestones",
+      "applicationMilestones(uint96,uint48):(uint8)",
+      [
+        ethereum.Value.fromUnsignedBigInt(param0),
+        ethereum.Value.fromUnsignedBigInt(param1)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toI32());
+  }
+
+  applications(param0: BigInt): QBApplicationsContract__applicationsResult {
+    let result = super.call(
+      "applications",
+      "applications(uint96):(uint96,uint96,address,address,uint48,string,uint8)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+
+    return new QBApplicationsContract__applicationsResult(
+      result[0].toBigInt(),
+      result[1].toBigInt(),
+      result[2].toAddress(),
+      result[3].toAddress(),
+      result[4].toBigInt(),
+      result[5].toString(),
+      result[6].toI32()
+    );
+  }
+
+  try_applications(
+    param0: BigInt
+  ): ethereum.CallResult<QBApplicationsContract__applicationsResult> {
+    let result = super.tryCall(
+      "applications",
+      "applications(uint96):(uint96,uint96,address,address,uint48,string,uint8)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new QBApplicationsContract__applicationsResult(
+        value[0].toBigInt(),
+        value[1].toBigInt(),
+        value[2].toAddress(),
+        value[3].toAddress(),
+        value[4].toBigInt(),
+        value[5].toString(),
+        value[6].toI32()
+      )
+    );
+  }
+
   getApplicationOwner(_applicationId: BigInt): Address {
     let result = super.call(
       "getApplicationOwner",
@@ -166,6 +284,36 @@ export class QBApplicationsContract extends ethereum.SmartContract {
       "getApplicationOwner(uint96):(address)",
       [ethereum.Value.fromUnsignedBigInt(_applicationId)]
     );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  owner(): Address {
+    let result = super.call("owner", "owner():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_owner(): ethereum.CallResult<Address> {
+    let result = super.tryCall("owner", "owner():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  workspaceReg(): Address {
+    let result = super.call("workspaceReg", "workspaceReg():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_workspaceReg(): ethereum.CallResult<Address> {
+    let result = super.tryCall("workspaceReg", "workspaceReg():(address)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -196,6 +344,94 @@ export class ConstructorCall__Outputs {
   _call: ConstructorCall;
 
   constructor(call: ConstructorCall) {
+    this._call = call;
+  }
+}
+
+export class ApproveMilestoneCall extends ethereum.Call {
+  get inputs(): ApproveMilestoneCall__Inputs {
+    return new ApproveMilestoneCall__Inputs(this);
+  }
+
+  get outputs(): ApproveMilestoneCall__Outputs {
+    return new ApproveMilestoneCall__Outputs(this);
+  }
+}
+
+export class ApproveMilestoneCall__Inputs {
+  _call: ApproveMilestoneCall;
+
+  constructor(call: ApproveMilestoneCall) {
+    this._call = call;
+  }
+
+  get _id(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _milestoneId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _metadataHash(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+
+  get _disbursalType(): i32 {
+    return this._call.inputValues[3].value.toI32();
+  }
+
+  get _disbursalAsset(): Address {
+    return this._call.inputValues[4].value.toAddress();
+  }
+
+  get _disbursalAmount(): BigInt {
+    return this._call.inputValues[5].value.toBigInt();
+  }
+}
+
+export class ApproveMilestoneCall__Outputs {
+  _call: ApproveMilestoneCall;
+
+  constructor(call: ApproveMilestoneCall) {
+    this._call = call;
+  }
+}
+
+export class RequestMilestoneApprovalCall extends ethereum.Call {
+  get inputs(): RequestMilestoneApprovalCall__Inputs {
+    return new RequestMilestoneApprovalCall__Inputs(this);
+  }
+
+  get outputs(): RequestMilestoneApprovalCall__Outputs {
+    return new RequestMilestoneApprovalCall__Outputs(this);
+  }
+}
+
+export class RequestMilestoneApprovalCall__Inputs {
+  _call: RequestMilestoneApprovalCall;
+
+  constructor(call: RequestMilestoneApprovalCall) {
+    this._call = call;
+  }
+
+  get _id(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _milestoneId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _metadataHash(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+}
+
+export class RequestMilestoneApprovalCall__Outputs {
+  _call: RequestMilestoneApprovalCall;
+
+  constructor(call: RequestMilestoneApprovalCall) {
     this._call = call;
   }
 }
@@ -340,60 +576,6 @@ export class UpdateApplicationMetadataCall__Outputs {
   }
 }
 
-export class UpdateApplicationMilestoneCall extends ethereum.Call {
-  get inputs(): UpdateApplicationMilestoneCall__Inputs {
-    return new UpdateApplicationMilestoneCall__Inputs(this);
-  }
-
-  get outputs(): UpdateApplicationMilestoneCall__Outputs {
-    return new UpdateApplicationMilestoneCall__Outputs(this);
-  }
-}
-
-export class UpdateApplicationMilestoneCall__Inputs {
-  _call: UpdateApplicationMilestoneCall;
-
-  constructor(call: UpdateApplicationMilestoneCall) {
-    this._call = call;
-  }
-
-  get _id(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _milestoneId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get _state(): i32 {
-    return this._call.inputValues[2].value.toI32();
-  }
-
-  get _metadataHash(): string {
-    return this._call.inputValues[3].value.toString();
-  }
-
-  get _disbursalType(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
-  }
-
-  get _disbursalAsset(): Address {
-    return this._call.inputValues[5].value.toAddress();
-  }
-
-  get _disbursalAmount(): BigInt {
-    return this._call.inputValues[6].value.toBigInt();
-  }
-}
-
-export class UpdateApplicationMilestoneCall__Outputs {
-  _call: UpdateApplicationMilestoneCall;
-
-  constructor(call: UpdateApplicationMilestoneCall) {
-    this._call = call;
-  }
-}
-
 export class UpdateApplicationStateCall extends ethereum.Call {
   get inputs(): UpdateApplicationStateCall__Inputs {
     return new UpdateApplicationStateCall__Inputs(this);
@@ -417,10 +599,6 @@ export class UpdateApplicationStateCall__Inputs {
 
   get _state(): i32 {
     return this._call.inputValues[1].value.toI32();
-  }
-
-  get _metadataHash(): string {
-    return this._call.inputValues[2].value.toString();
   }
 }
 
