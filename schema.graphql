@@ -188,6 +188,8 @@ type FundsDisburse @entity {
   milestone: ApplicationMilestone!
   "How much of the funds were allocated"
   amount: BigInt!
+  "Address of who released the funds"
+  sender: Bytes!
   "The address to which funds were sent"
   to: Bytes!
   "in seconds since epoch"

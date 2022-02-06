@@ -987,6 +987,7 @@ export class FundsDisburse extends Entity {
     this.set("application", Value.fromString(""));
     this.set("milestone", Value.fromString(""));
     this.set("amount", Value.fromBigInt(BigInt.zero()));
+    this.set("sender", Value.fromBytes(Bytes.empty()));
     this.set("to", Value.fromBytes(Bytes.empty()));
   }
 
@@ -1041,6 +1042,15 @@ export class FundsDisburse extends Entity {
 
   set amount(value: BigInt) {
     this.set("amount", Value.fromBigInt(value));
+  }
+
+  get sender(): Bytes {
+    let value = this.get("sender");
+    return value!.toBytes();
+  }
+
+  set sender(value: Bytes) {
+    this.set("sender", Value.fromBytes(value));
   }
 
   get to(): Bytes {
