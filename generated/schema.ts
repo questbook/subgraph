@@ -256,6 +256,7 @@ export class Grant extends Entity {
     this.set("summary", Value.fromString(""));
     this.set("details", Value.fromString(""));
     this.set("reward", Value.fromString(""));
+    this.set("workspace", Value.fromString(""));
     this.set("fields", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
     this.set("funding", Value.fromBigInt(BigInt.zero()));
@@ -332,21 +333,13 @@ export class Grant extends Entity {
     this.set("reward", Value.fromString(value));
   }
 
-  get workspace(): string | null {
+  get workspace(): string {
     let value = this.get("workspace");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
+    return value!.toString();
   }
 
-  set workspace(value: string | null) {
-    if (!value) {
-      this.unset("workspace");
-    } else {
-      this.set("workspace", Value.fromString(<string>value));
-    }
+  set workspace(value: string) {
+    this.set("workspace", Value.fromString(value));
   }
 
   get deadline(): string | null {

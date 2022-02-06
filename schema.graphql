@@ -73,7 +73,7 @@ type Grant @entity {
   "Proposed reward for the grant"
   reward: Reward!
   "Workspace which created the grant"
-  workspace: Workspace
+  workspace: Workspace!
   "ISO formatted date string"
   deadline: String
   "Expected fields from the applicants of the grant"
