@@ -1,6 +1,6 @@
 import { log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
-import { ApplicationMilestone, FundsDeposit, FundsDisburse, Grant } from "../generated/schema"
+import { ApplicationMilestone, FundsDisburse, Grant, GrantApplication } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantDeposit } from "./utils/apply-grant-deposit"
 import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
@@ -43,10 +43,19 @@ export function handleDisburseReward(event: DisburseReward): void {
 
   const entity = ApplicationMilestone.load(milestoneId)
   if(entity) {
-    entity.amountPaid = entity.amountPaid.plus( amountPaid )
+    entity.amountPaid = entity.amountPaid.plus(amountPaid)
     entity.updatedAtS = event.params.time.toI32()
 
     entity.save()
+    // find grant and reduce the amount of the funding
+    const application = GrantApplication.load(applicationId)
+    if(application) {
+      const grantEntity = Grant.load(application.grant)
+      if(grantEntity) {
+        grantEntity.funding = grantEntity.funding.minus(amountPaid)
+        grantEntity.save()
+      }
+    }
   } else {
     log.warning(`recv milestone updated for unknown application: ID="${milestoneId}"`, [])
   }
