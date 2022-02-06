@@ -24,12 +24,13 @@ enum ApplicationState {
 }
 
 enum NotificationType {
-  application_review_requested,
+  application_submitted,
   application_resubmitted,
   application_rejected,
   application_accepted,
   milestone_requested,
   milestone_accepted,
+  milestone_rejected,
   funds_disbursed
 }
 
@@ -166,6 +167,8 @@ type GrantApplication @entity {
   updatedAtS: Int!
   "Milestones of the application"
   milestones: [ApplicationMilestone!]!
+  "Feedback from the grant manager"
+  feedback: String
 }
 
 type FundsDeposit @entity {
@@ -207,9 +210,9 @@ type Notification @entity {
   "The ID of the entity being affected"
   entityId: String!
   "Who all should recv the notification"
-  recipientIds: [String!]!
+  recipientIds: [Bytes!]!
   "Who caused the notification to be sent"
-  actorId: String
+  actorId: Bytes
   "Descending order of cursor"
   cursor: String!
 }

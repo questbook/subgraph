@@ -904,6 +904,23 @@ export class GrantApplication extends Entity {
   set milestones(value: Array<string>) {
     this.set("milestones", Value.fromStringArray(value));
   }
+
+  get feedback(): string | null {
+    let value = this.get("feedback");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set feedback(value: string | null) {
+    if (!value) {
+      this.unset("feedback");
+    } else {
+      this.set("feedback", Value.fromString(<string>value));
+    }
+  }
 }
 
 export class FundsDeposit extends Entity {
@@ -1081,7 +1098,7 @@ export class Notification extends Entity {
     this.set("content", Value.fromString(""));
     this.set("type", Value.fromString(""));
     this.set("entityId", Value.fromString(""));
-    this.set("recipientIds", Value.fromStringArray(new Array(0)));
+    this.set("recipientIds", Value.fromBytesArray(new Array(0)));
     this.set("cursor", Value.fromString(""));
   }
 
@@ -1147,29 +1164,29 @@ export class Notification extends Entity {
     this.set("entityId", Value.fromString(value));
   }
 
-  get recipientIds(): Array<string> {
+  get recipientIds(): Array<Bytes> {
     let value = this.get("recipientIds");
-    return value!.toStringArray();
+    return value!.toBytesArray();
   }
 
-  set recipientIds(value: Array<string>) {
-    this.set("recipientIds", Value.fromStringArray(value));
+  set recipientIds(value: Array<Bytes>) {
+    this.set("recipientIds", Value.fromBytesArray(value));
   }
 
-  get actorId(): string | null {
+  get actorId(): Bytes | null {
     let value = this.get("actorId");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
-      return value.toString();
+      return value.toBytes();
     }
   }
 
-  set actorId(value: string | null) {
+  set actorId(value: Bytes | null) {
     if (!value) {
       this.unset("actorId");
     } else {
-      this.set("actorId", Value.fromString(<string>value));
+      this.set("actorId", Value.fromBytes(<Bytes>value));
     }
   }
 

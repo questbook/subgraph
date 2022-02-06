@@ -17,7 +17,11 @@ export function applyApplicationUpdateFromJSON(entity: GrantApplication, obj: Ty
 	let result = setEntityValueSafe(entity, 'details', obj, JSONValueKind.STRING)
 	if(result.error && expectAllPresent) return result
 
-	setEntityArrayValueSafe(entity, 'milestones', obj, JSONValueKind.OBJECT, milestoneFromJSONValue)
+	result = setEntityValueSafe(entity, 'feedback', obj, JSONValueKind.STRING)
+	if(result.error && expectAllPresent) return result
+
+	result = setEntityArrayValueSafe(entity, 'milestones', obj, JSONValueKind.OBJECT, milestoneFromJSONValue)
+	if(result.error && expectAllPresent) return result
 
 	return { value: entity, error: null }
 }
