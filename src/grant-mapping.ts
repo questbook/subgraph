@@ -5,6 +5,7 @@ import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFaile
 import { applyGrantDeposit } from "./utils/apply-grant-deposit"
 import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
 import { grantFromGrantCreateIPFS } from "./utils/grant-from-grant-create-ipfs"
+import { addFundsDisburseNotification } from "./utils/notifications"
 
 export function handleGrantCreated(event: GrantCreated): void {
   const workspaceId = event.params.workspaceId
@@ -56,6 +57,8 @@ export function handleDisburseReward(event: DisburseReward): void {
         grantEntity.save()
       }
     }
+
+    addFundsDisburseNotification(disburseEntity)
   } else {
     log.warning(`recv milestone updated for unknown application: ID="${milestoneId}"`, [])
   }

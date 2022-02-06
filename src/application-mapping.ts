@@ -4,6 +4,7 @@ import { ApplicationMilestone, GrantApplication } from '../generated/schema'
 import { applicationFromApplicationCreateIpfs } from './utils/application-from-application-create-ipfs'
 import { applyApplicationUpdateIpfs } from './utils/apply-application-update-ipfs'
 import { applyMilestoneUpdateIpfs } from './utils/apply-milestone-update-ipfs'
+import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from './utils/notifications'
 
 export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	const applicationId = event.params.applicationId.toHex()
@@ -24,6 +25,8 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 		entity.state = "submitted"
 
 		entity.save()
+
+		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.transaction.from)
 	} else {
 		log.warning(`error in mapping entity: "${entityResult.error!}"`, [])
 	}
@@ -66,6 +69,8 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		}
 
 		entity.save()
+
+		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.transaction.from)
 	} else {
 		log.warning(`recv update for unknown application: ID="${applicationId}"`, [])
 	}
@@ -100,6 +105,8 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 		}
 
 		entity.save()
+
+		addMilestoneUpdateNotification(entity, applicationId, event.transaction.hash.toHex(), event.transaction.from)
 	} else {
 		log.warning(`recv milestone updated for unknown application: ID="${milestoneId}"`, [])
 	}
