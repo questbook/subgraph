@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts"
+import { Address, BigDecimal, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
 import { ApplicationMember, ApplicationMilestone, FundsDisburse, GrantApplication, GrantFieldAnswer } from "../generated/schema"
@@ -138,7 +138,7 @@ export function runTests(): void {
 			new ethereum.EventParam('amount', ethereum.Value.fromI32( 100 )),
 			new ethereum.EventParam('time', ethereum.Value.fromI32( 127 )),
 		]
-		ev.transaction.index = BigInt.fromI32(123456)
+		ev.transaction.hash = Bytes.fromHexString("0xA13191E360e3847006dB660bae1c6d1b2e17eC2B")
 
 		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseReward(event)		
@@ -147,7 +147,7 @@ export function runTests(): void {
 		assert.i32Equals(gUpdate!.updatedAtS, 127)
 		assert.assertTrue(gUpdate!.amountPaid.ge( BigInt.fromString('100') ))
 
-		const disburseEntity = FundsDisburse.load(ev.transaction.index.toHex())
+		const disburseEntity = FundsDisburse.load(ev.transaction.hash.toHex())
 		assert.assertNotNull(disburseEntity)
 		assert.i32Equals(disburseEntity!.createdAtS, 127)
 	})

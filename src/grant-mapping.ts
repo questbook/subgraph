@@ -31,7 +31,7 @@ export function handleDisburseReward(event: DisburseReward): void {
   const milestoneId = `${applicationId}.${milestoneIndex}.milestone`
   const amountPaid = event.params.amount
 
-  const disburseEntity = new FundsDisburse(event.transaction.index.toHex())
+  const disburseEntity = new FundsDisburse(event.transaction.hash.toHex())
   disburseEntity.createdAtS = event.params.time.toI32()
   disburseEntity.amount = amountPaid
   disburseEntity.to = event.transaction.to!

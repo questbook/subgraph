@@ -36,7 +36,7 @@ export function runTests(): void {
 		assert.i32Equals(gUpdate!.updatedAtS, 124)
 		assert.assertTrue(gUpdate!.funding.ge( BigInt.fromString('100') ))
 
-		const fundEntity = FundsDeposit.load(ev.transaction.index.toHex())
+		const fundEntity = FundsDeposit.load(ev.transaction.hash.toHex())
 
 		assert.assertNotNull(fundEntity)
 		assert.i32Equals(fundEntity!.createdAtS, 124)
