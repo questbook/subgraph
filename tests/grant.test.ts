@@ -1,4 +1,4 @@
-import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
+import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { FundsDeposit, Grant } from "../generated/schema"
@@ -27,7 +27,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(124)),
 		]
 		ev.transaction.to = MOCK_GRANT_ID
-		ev.transaction.index = BigInt.fromString('1234')
+		ev.transaction.hash = Bytes.fromHexString("0xC13081F360e3847006dB660bae1c6d1b2e17eC2B")
 
 		const event = new FundsDeposited(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleFundsDeposited(event)

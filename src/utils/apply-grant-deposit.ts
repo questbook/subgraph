@@ -1,8 +1,8 @@
-import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts"
+import { BigInt, ethereum, log } from "@graphprotocol/graph-ts"
 import { FundsDeposit, Grant } from "../../generated/schema"
 
 export function applyGrantDeposit(event: ethereum.Event, grantId: string, amount: BigInt, eventTime: i32): void {
-	const transactionId = event.transaction.index.toHex()
+	const transactionId = event.transaction.hash.toHex()
 
 	const entity = Grant.load(grantId)
 	if (entity) {
