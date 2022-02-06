@@ -23,10 +23,21 @@ enum ApplicationState {
   rejected
 }
 
+enum NotificationType {
+  application_review_requested,
+  application_resubmitted,
+  application_rejected,
+  application_accepted,
+  milestone_requested,
+  milestone_accepted,
+  funds_disbursed
+}
+
 type Social @entity {
   id: ID!
-
+  "Name of the network. Eg. twitter, discord"
   name: String!
+  "Handle or URL"
   value: String!
 }
 
@@ -51,52 +62,67 @@ type Reward @entity {
 
 type Grant @entity {
   id: ID!
+  "Address of who created the grant"
   creatorId: Bytes!
 	title: String!
+  "Short description of the grant"
   summary: String!
+  "Expectations & other details of the grant"
   details: String!
+  "Proposed reward for the grant"
   reward: Reward!
+  "Workspace which created the grant"
   workspace: Workspace
   "ISO formatted date string"
   deadline: String
+  "Expected fields from the applicants of the grant"
   fields: [GrantField!]!
+  "Whether the grant is currently accepting applications or not"
   acceptingApplications: Boolean!
 
   metadataHash: String!
-  
   "in seconds since epoch"
   createdAtS: Int!
   "in seconds since epoch"
   updatedAtS: Int
-
+  "Funding currently present in the grant"
   funding: BigInt!
 }
 
 type WorkspaceMember @entity {
-  "globally unique ID of the member"
+  "Globally unique ID of the member"
   id: ID!
   "the ID of the member itself"
   actorId: Bytes!
   email: String
+  "What permissions the member has on the workspace"
   accessLevel: WorkspaceMemberAccessLevel!
 }
-
+"Schema for a Workspace or DAO"
 type Workspace @entity {
   id: ID!
+  "Address of the owner of the workspace"
   ownerId: Bytes!
+  "Title of the workspace"
   title: String!
+  "General info about the workspace"
   about: String!
+  "Hash to fetch the logo"
   logoIpfsHash: String!
+  "Cover image for the workspace"
   coverImageIpfsHash: String!
+  "List of supported networks of the workspace"
   supportedNetworks: [Bytes!]!
   "in seconds since epoch"
   createdAtS: Int!
   "in seconds since epoch"
   updatedAtS: Int!
-
-  metadataHash: String!
+  "Members of the workspace"
   members: [WorkspaceMember!]!
+  "List of social media handles of the workspace"
   socials: [Social!]!
+  "Hash of the IPFS file from which the details about the workspace were pulled"
+  metadataHash: String!
 }
 
 "the milestone of a grant application"
@@ -104,12 +130,10 @@ type ApplicationMilestone @entity {
   id: ID!
   state: MilestoneState!
   title: String!
-
   "amount expected by applicant"
   amount: BigInt!
   "amount paid by DAO"
   amountPaid: BigInt!
-
   "in seconds since epoch"
   updatedAtS: Int
   "text that was sent with the milestone update"
@@ -118,47 +142,72 @@ type ApplicationMilestone @entity {
 
 type ApplicationMember @entity {
   id: ID!
+  "Details of the member"
   details: String!
 }
 
 type GrantApplication @entity {
   id: ID!
-
+  "The grant for which the application is for"
   grant: Grant!
+  "Address of the applicant"
   applicantId: Bytes!
+  "Current state of the application"
   state: ApplicationState!
-  details: String!
-  fields: [GrantFieldAnswer!]!
-  members: [ApplicationMember!]!
 
+  details: String!
+  "Answers to the fields requested in the grant"
+  fields: [GrantFieldAnswer!]!
+  "Description of the members of the grant"
+  members: [ApplicationMember!]!
   "in seconds since epoch"
   createdAtS: Int!
   "in seconds since epoch"
   updatedAtS: Int!
-
+  "Milestones of the application"
   milestones: [ApplicationMilestone!]!
 }
 
 type FundsDeposit @entity {
   id: ID!
-
+  "Which grant were the funds deposited to"
   grant: Grant!
+  "Amount of funds deposited"
   amount: BigInt!
-
+  "Which address were the funds from"
   from: Bytes!
-
   "in seconds since epoch"
   createdAtS: Int!
 }
 
 type FundsDisburse @entity {
   id: ID!
-
+  "Application for which the funds were released"
   application: GrantApplication!
+  "Milestone for which the funds were released"
   milestone: ApplicationMilestone!
+  "How much of the funds were allocated"
   amount: BigInt!
-
+  "The address to which funds were sent"
   to: Bytes!
   "in seconds since epoch"
   createdAtS: Int!
+}
+
+type Notification @entity {
+  id: ID!
+  "title of the notification"
+  title: String!
+  "rich content of the notification"
+  content: String!
+
+  type: NotificationType!
+  "The ID of the entity being affected"
+  entityId: String!
+  "Who all should recv the notification"
+  recipientIds: [String!]!
+  "Who caused the notification to be sent"
+  actorId: String
+  "Descending order of cursor"
+  cursor: String!
 }

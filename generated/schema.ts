@@ -503,9 +503,9 @@ export class Workspace extends Entity {
     this.set("logoIpfsHash", Value.fromString(""));
     this.set("coverImageIpfsHash", Value.fromString(""));
     this.set("supportedNetworks", Value.fromBytesArray(new Array(0)));
-    this.set("metadataHash", Value.fromString(""));
     this.set("members", Value.fromStringArray(new Array(0)));
     this.set("socials", Value.fromStringArray(new Array(0)));
+    this.set("metadataHash", Value.fromString(""));
   }
 
   save(): void {
@@ -606,15 +606,6 @@ export class Workspace extends Entity {
     this.set("updatedAtS", Value.fromI32(value));
   }
 
-  get metadataHash(): string {
-    let value = this.get("metadataHash");
-    return value!.toString();
-  }
-
-  set metadataHash(value: string) {
-    this.set("metadataHash", Value.fromString(value));
-  }
-
   get members(): Array<string> {
     let value = this.get("members");
     return value!.toStringArray();
@@ -631,6 +622,15 @@ export class Workspace extends Entity {
 
   set socials(value: Array<string>) {
     this.set("socials", Value.fromStringArray(value));
+  }
+
+  get metadataHash(): string {
+    let value = this.get("metadataHash");
+    return value!.toString();
+  }
+
+  set metadataHash(value: string) {
+    this.set("metadataHash", Value.fromString(value));
   }
 }
 
@@ -1059,5 +1059,116 @@ export class FundsDisburse extends Entity {
 
   set createdAtS(value: i32) {
     this.set("createdAtS", Value.fromI32(value));
+  }
+}
+
+export class Notification extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("title", Value.fromString(""));
+    this.set("content", Value.fromString(""));
+    this.set("type", Value.fromString(""));
+    this.set("entityId", Value.fromString(""));
+    this.set("recipientIds", Value.fromStringArray(new Array(0)));
+    this.set("cursor", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Notification entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Notification entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Notification", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Notification | null {
+    return changetype<Notification | null>(store.get("Notification", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get title(): string {
+    let value = this.get("title");
+    return value!.toString();
+  }
+
+  set title(value: string) {
+    this.set("title", Value.fromString(value));
+  }
+
+  get content(): string {
+    let value = this.get("content");
+    return value!.toString();
+  }
+
+  set content(value: string) {
+    this.set("content", Value.fromString(value));
+  }
+
+  get type(): string {
+    let value = this.get("type");
+    return value!.toString();
+  }
+
+  set type(value: string) {
+    this.set("type", Value.fromString(value));
+  }
+
+  get entityId(): string {
+    let value = this.get("entityId");
+    return value!.toString();
+  }
+
+  set entityId(value: string) {
+    this.set("entityId", Value.fromString(value));
+  }
+
+  get recipientIds(): Array<string> {
+    let value = this.get("recipientIds");
+    return value!.toStringArray();
+  }
+
+  set recipientIds(value: Array<string>) {
+    this.set("recipientIds", Value.fromStringArray(value));
+  }
+
+  get actorId(): string | null {
+    let value = this.get("actorId");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set actorId(value: string | null) {
+    if (!value) {
+      this.unset("actorId");
+    } else {
+      this.set("actorId", Value.fromString(<string>value));
+    }
+  }
+
+  get cursor(): string {
+    let value = this.get("cursor");
+    return value!.toString();
+  }
+
+  set cursor(value: string) {
+    this.set("cursor", Value.fromString(value));
   }
 }
