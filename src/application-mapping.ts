@@ -26,7 +26,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 
 		entity.save()
 
-		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.transaction.from)
+		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
 	} else {
 		log.warning(`error in mapping entity: "${entityResult.error!}"`, [])
 	}

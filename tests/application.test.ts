@@ -1,11 +1,11 @@
-import { Address, BigDecimal, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
+import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
-import { ApplicationMember, ApplicationMilestone, FundsDisburse, GrantApplication, GrantFieldAnswer } from "../generated/schema"
+import { ApplicationMember, ApplicationMilestone, FundsDisburse, GrantApplication, GrantFieldAnswer, Notification } from "../generated/schema"
 import { DisburseReward } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleApplicationSubmitted, handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
 import { handleDisburseReward } from "../src/grant-mapping"
-import { assertArrayNotEmpty, assertStringNotEmpty } from './utils' 
+import { assertArrayNotEmpty, assertStringNotEmpty, createGrant } from './utils' 
 
 export function runTests(): void {
 
@@ -41,6 +41,12 @@ export function runTests(): void {
 			assert.stringEquals(milestone!.state, 'submitted')
 			assert.assertTrue(milestone!.amount.gt(BigInt.fromString('0')))
 		}
+
+		// check notification
+		const n = Notification.load(`n.${MOCK_APPLICATION_EVENT_ID.toHex()}`)
+		assert.assertNotNull(n)
+		assert.stringEquals(n!.type, "application_submitted")
+		assert.stringEquals(n!.actorId!.toHex(), g!.applicantId.toHex())
 	})
 
 	test('should update an application', () => {
@@ -134,11 +140,12 @@ export function runTests(): void {
 			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32( 0x00 )),
 			new ethereum.EventParam('asset', ethereum.Value.fromAddress( Address.fromString("0xC23081F360e3847006dB660bae1c6d1b2e17eC2B") )),
 			// the IPFS hash contains mock data for the workspace
-			new ethereum.EventParam('sender', ethereum.Value.fromString(APPROVE_MILESTONE_JSON)),
+			new ethereum.EventParam('sender', ethereum.Value.fromAddress( Address.fromString("0xC33081F360e3847006dB660bae1c6d1b2e17eC2B") )),
 			new ethereum.EventParam('amount', ethereum.Value.fromI32( 100 )),
 			new ethereum.EventParam('time', ethereum.Value.fromI32( 127 )),
 		]
-		ev.transaction.hash = Bytes.fromHexString("0xA13191E360e3847006dB660bae1c6d1b2e17eC2B")
+
+		ev.transaction.hash = Bytes.fromByteArray(Bytes.fromHexString("0xA13191E360e3847006dB660bae1c6d1b2e17eC2B"))
 
 		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseReward(event)		
@@ -150,21 +157,28 @@ export function runTests(): void {
 		const disburseEntity = FundsDisburse.load(ev.transaction.hash.toHex())
 		assert.assertNotNull(disburseEntity)
 		assert.i32Equals(disburseEntity!.createdAtS, 127)
+
+		// check notification
+		const n = Notification.load(`n.${ev.transaction.hash.toHex()}`)
+		assert.assertNotNull(n)
+		assert.stringEquals(n!.type, "funds_disbursed")
 	})
 }
 
 function createApplication(): GrantApplication | null {
+	const g = createGrant()
 	const ev = newMockEvent()
 
 	ev.parameters = [
 		new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
-		new ethereum.EventParam('grant', ethereum.Value.fromAddress( Address.fromString("0xB23081F360e3847006dB660bae1c6d1b2e17eC2B") )),
+		new ethereum.EventParam('grant', ethereum.Value.fromAddress( Address.fromString(g!.id) )),
 		new ethereum.EventParam('owner', ethereum.Value.fromAddress( Address.fromString("0xB25191F360e3847006dB660bae1c6d1b2e17eC2B") )),
 		// the IPFS hash contains mock data for the workspace
 		new ethereum.EventParam('metadataHash', ethereum.Value.fromString(CREATE_JSON)),
 		new ethereum.EventParam('milestoneCount', ethereum.Value.fromI32( 5 )),
 		new ethereum.EventParam('time', ethereum.Value.fromI32( 123 )),
 	]
+	ev.transaction.hash = MOCK_APPLICATION_EVENT_ID
 	const event = new ApplicationSubmitted(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 	handleApplicationSubmitted(event)
 
@@ -175,6 +189,7 @@ function createApplication(): GrantApplication | null {
 }
 
 const MOCK_APPLICATION_ID = ethereum.Value.fromI32( 0x0123 )
+const MOCK_APPLICATION_EVENT_ID = Bytes.fromByteArray(Bytes.fromHexString("0xB17081F360e3847006dB660bae1c6d1b2e17eC2A"))
 const CREATE_JSON = 'json:{"grantId":"af391751-cfa5-5afd-a1f4-0a798e9d0a54","applicantId":"41448a2a-b7e7-5471-9758-1da90cd7745f","details":"Ijni orodoru didub sohfova nodik na gagtukit lasmodwu noov ba cu levun. Zubso toz pahibrus sehfutri ocawu amjemwef ura cu kalmarkec fokof sikwu keotaur aguneb dipasmuw erfavin od eztas. Orakor jinooda pa died al lufa bim japebzi tej ebdujpo lapustif bec azo wigjoftih. Jugeh num gu ze hatikbeb ahnuva co depmo ec coktil nulobin tajib isiwo.","fields":[{"id":"0","value":"Siphelot lipuv kit sefe suldo raboj et esokju edehuj gej ifrif zab rimus mitfe rulafus."},{"id":"1","value":"Caoti fig beh bowbus agi esebu wokwino vaw didlaaro zeelbi wat vaowgid levav."},{"id":"2","value":"Ezaeru nuwupe hajnot mobre fus zovufvu givhara libvoum vazidi we eti sivnesama nugu luteiru vekaje sutep cevdi."},{"id":"3","value":"Ifoci uw zu murap agago kaz tilagigo juvtos ti az kol mo akkumuz."}],"members":[{"details":"Hijowi las jiwwi ninihu usfembo def nu pitkol ga hadgeeb ruro potdu icacot. Agealo amna overi ekusuf jum lusban gekeftiz cieti ohwih gauh hag wu takluc. Nah etagupkas muva powahza re wuje zabanjed to zectilze evwadu ta nengi. Wor zojit zeghul evbimij zaazzuh cupdori maih gubekzo hemotwam ve zic tigodco viseuz macajbu coc gomicla. Anga tig rewaza ovu popjum aho sieg pejsuwag hotipub afe mulire zifkizi fevahul loh voba."},{"details":"Jate osi gejuvof utana wugbu wugep ic uno taldo mijalo zegajzi opwi pec ce bo. Odues tok vip pidjabim pogsepho zid wulgitum ju vez nusaol ermuc cafa noasebi ra ot. Jon kiwcub jecioha igu ehaem kojimek fujvuh wav jur eweci now gotiw bib godumol sa vepor. Lod faoc guwafoj sazicige akakanur dizoij ve vejur bok sovaw se efku lan mew rotuum. Ebiwimah we mosudja gusbomu leludupiv seariwa na fobrecof owa wi nowpacik nimog cavotu oci daji."},{"details":"Ruwal cufab wisfojbac jahto mijein kotav deduwap jetuvti gag voge emmut ebocufam. Sives ag ivfoh bu jetieve ma zicniduce jilez ka jivvihka at puj bezul ece tikocaf. Rututre possepud now zih tulugvok de wovviabu wove jowcodub vap kok vuf dem."}],"milestones":[{"title":"Bigeh avbutkut be da fegpi ta dem jifacehi zaduwe kojut ale upajusad hiwo.","amount":7},{"title":"Mojobasa retlamzo baab tij giwob heabe lorsikonu huh koket zamfat cojigo ac gizje ho nivgunlec.","amount":27},{"title":"Eli foham ajezuji mim me zo iju ibiibi inpo denujlu rivvo za rur nutziwjup.","amount":25},{"title":"Te zuzpad ked jakunuede jacewot pib soak so comta tucog fa uvacibase pumju cez.","amount":67},{"title":"Cawpoge wobzak mo tap kikolwi feuvav si hajvamki cepus len koig esi meh.","amount":60}]}'
 const UPDATE_JSON = 'json:{"details":"some test string lmao"}'
 const UPDATE_MILESTONE_JSON = 'json:{"text":"hello there"}'

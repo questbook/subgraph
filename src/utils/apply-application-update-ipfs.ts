@@ -18,7 +18,6 @@ export function applyApplicationUpdateFromJSON(entity: GrantApplication, obj: Ty
 	if(result.error && expectAllPresent) return result
 
 	result = setEntityValueSafe(entity, 'feedback', obj, JSONValueKind.STRING)
-	if(result.error && expectAllPresent) return result
 
 	result = setEntityArrayValueSafe(entity, 'milestones', obj, JSONValueKind.OBJECT, milestoneFromJSONValue)
 	if(result.error && expectAllPresent) return result
