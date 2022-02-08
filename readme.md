@@ -9,14 +9,15 @@ See [here](https://thegraph.com/en/) if you don't know what the graph is.
 1. Clone the repo
 2. Run `yarn`
 3. Run a graph node locally, see [here](https://github.com/graphprotocol/graph-node/tree/master/docker) on how to do that. Simplest method would be to run a local graph node on Docker.
-4. Run `yarn deploy-local`
+4. We use mustache to template the subgraph yaml, in order to reduce repeating ourselves when deploying to dfferent networks. To prepare the subgraph yaml for deployment on a network, run `yarn prepare-{network}`.
+	- Eg. to prepare for deployment on Rinkeby -- run `yarn prepare-rinkeby`
+4. Finally to deploy on your local graph node, run `yarn deploy-local`
 
 ## Running Tests
 
 1. Apart from cloning the repository & installing the dependies via yarn, you'll need to install postgres on your system. Refer [here](https://www.postgresql.org/download/).
 2. Postgres is required by the "matchstick" library (testing lib for the graph) to enable building mock databases to run tests against
 3. Once postgres is installed -- run `yarn test`
-
 
 ## Prerequisites for Contributing
 

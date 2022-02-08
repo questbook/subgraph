@@ -6,6 +6,7 @@
     "build": "graph build",
     "test": "graph test",
     "deploy": "graph deploy --node https://the-graph.questbook.app/ --ipfs https://ipfs.infura.io:5001 qb-subgraph",
+    "prepare-rinkeby": "mustache config/rinkeby.json template.subgraph.yaml > subgraph.yaml",
     "create-local": "graph create --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 qb-subgraph",
     "remove-local": "graph remove --node http://localhost:8020/ qb-subgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph"
@@ -15,6 +16,7 @@
     "@graphprotocol/graph-ts": "0.24.1"
   },
   "devDependencies": {
-    "matchstick-as": "^0.2.3"
+    "matchstick-as": "^0.2.3",
+    "mustache": "^4.2.0"
   }
 }

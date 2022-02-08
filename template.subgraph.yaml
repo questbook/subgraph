@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: QBWorkspaceRegistryContract
-    network: "rinkeby"
+    network: "{{network}}"
     source:
-      address: "0xdf22B24ec9F71358Bf5dF62BbAD661fa893F26b1"
+      address: "{{workspace.address}}"
       abi: QBWorkspaceRegistryContract
-      startBlock: 10133587
+      startBlock: {{workspace.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -33,11 +33,11 @@ dataSources:
       file: ./src/workspace-mapping.ts
   - kind: ethereum
     name: QBApplicationsContract
-    network: "rinkeby"
+    network: "{{network}}"
     source:
-      address: "0x4F48e004444275530BeAc9cd160FEF0969242aB3"
+      address: "{{applications.address}}"
       abi: QBApplicationsContract
-      startBlock: 10133589
+      startBlock: {{applications.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -59,11 +59,11 @@ dataSources:
       file: ./src/application-mapping.ts
   - kind: ethereum/contract
     name: QBGrantFactoryContract
-    network: "rinkeby"
+    network: "{{network}}"
     source:
-      address: "0xdDaC7756A9bD65aD13Bc4F2dC9F5F3a85f2EB4e8"
+      address: "{{grantFactory.address}}"
       abi: QBGrantFactoryContract
-      startBlock: 10133591
+      startBlock: {{grantFactory.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -79,9 +79,9 @@ dataSources:
       file: ./src/grant-mapping.ts
   - kind: ethereum
     name: GrantTransfersDAI
-    network: "rinkeby"
+    network: "{{network}}"
     source:
-      address: "0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735"
+      address: "{{dai.address}}"
       abi: ERC20
       startBlock: 10098142
     mapping:
@@ -99,9 +99,9 @@ dataSources:
       file: ./src/transfer-mapping.ts
   - kind: ethereum
     name: GrantTransfersWETH
-    network: "rinkeby"
+    network: "{{network}}"
     source:
-      address: "0xc778417e063141139fce010982780140aa0cd5ab"
+      address: "{{weth.address}}"
       abi: ERC20
       startBlock: 10098142
     mapping:
@@ -120,7 +120,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: QBGrantsContract
-    network: "rinkeby"
+    network: "{{network}}"
     source:
       abi: QBGrantsContract
     mapping:
