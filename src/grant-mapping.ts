@@ -1,11 +1,11 @@
 import { log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
-import { ApplicationMilestone, FundsDisburse, Grant, GrantApplication } from "../generated/schema"
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantDeposit } from "./utils/apply-grant-deposit"
 import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
 import { grantFromGrantCreateIPFS } from "./utils/grant-from-grant-create-ipfs"
-import { addFundsDisburseNotification } from "./utils/notifications"
+import { addFundsTransferNotification } from "./utils/notifications"
 
 export function handleGrantCreated(event: GrantCreated): void {
   const workspaceId = event.params.workspaceId
@@ -32,13 +32,14 @@ export function handleDisburseReward(event: DisburseReward): void {
   const milestoneId = `${applicationId}.${milestoneIndex}.milestone`
   const amountPaid = event.params.amount
 
-  const disburseEntity = new FundsDisburse(event.transaction.hash.toHex())
+  const disburseEntity = new FundsTransfer(event.transaction.hash.toHex())
   disburseEntity.createdAtS = event.params.time.toI32()
   disburseEntity.amount = amountPaid
   disburseEntity.sender = event.params.sender
   disburseEntity.to = event.transaction.to!
   disburseEntity.application = applicationId
   disburseEntity.milestone = milestoneId
+  disburseEntity.type = "funds_disbursed"
 
   disburseEntity.save()
 
@@ -47,7 +48,6 @@ export function handleDisburseReward(event: DisburseReward): void {
     entity.amountPaid = entity.amountPaid.plus(amountPaid)
     entity.updatedAtS = event.params.time.toI32()
 
-    entity.save()
     // find grant and reduce the amount of the funding
     const application = GrantApplication.load(applicationId)
     if(application) {
@@ -56,9 +56,13 @@ export function handleDisburseReward(event: DisburseReward): void {
         grantEntity.funding = grantEntity.funding.minus(amountPaid)
         grantEntity.save()
       }
+
+      disburseEntity.grant = application.grant
     }
 
-    addFundsDisburseNotification(disburseEntity)
+    entity.save()
+
+    addFundsTransferNotification(disburseEntity)
   } else {
     log.warning(`recv milestone updated for unknown application: ID="${milestoneId}"`, [])
   }

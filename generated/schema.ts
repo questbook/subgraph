@@ -916,31 +916,33 @@ export class GrantApplication extends Entity {
   }
 }
 
-export class FundsDeposit extends Entity {
+export class FundsTransfer extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
 
     this.set("grant", Value.fromString(""));
     this.set("amount", Value.fromBigInt(BigInt.zero()));
-    this.set("from", Value.fromBytes(Bytes.empty()));
+    this.set("sender", Value.fromBytes(Bytes.empty()));
+    this.set("to", Value.fromBytes(Bytes.empty()));
+    this.set("type", Value.fromString(""));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save FundsDeposit entity without an ID");
+    assert(id != null, "Cannot save FundsTransfer entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save FundsDeposit entity with non-string ID. " +
+        "Cannot save FundsTransfer entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("FundsDeposit", id.toString(), this);
+      store.set("FundsTransfer", id.toString(), this);
     }
   }
 
-  static load(id: string): FundsDeposit | null {
-    return changetype<FundsDeposit | null>(store.get("FundsDeposit", id));
+  static load(id: string): FundsTransfer | null {
+    return changetype<FundsTransfer | null>(store.get("FundsTransfer", id));
   }
 
   get id(): string {
@@ -950,6 +952,40 @@ export class FundsDeposit extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get application(): string | null {
+    let value = this.get("application");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set application(value: string | null) {
+    if (!value) {
+      this.unset("application");
+    } else {
+      this.set("application", Value.fromString(<string>value));
+    }
+  }
+
+  get milestone(): string | null {
+    let value = this.get("milestone");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set milestone(value: string | null) {
+    if (!value) {
+      this.unset("milestone");
+    } else {
+      this.set("milestone", Value.fromString(<string>value));
+    }
   }
 
   get grant(): string {
@@ -959,90 +995,6 @@ export class FundsDeposit extends Entity {
 
   set grant(value: string) {
     this.set("grant", Value.fromString(value));
-  }
-
-  get amount(): BigInt {
-    let value = this.get("amount");
-    return value!.toBigInt();
-  }
-
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
-  }
-
-  get from(): Bytes {
-    let value = this.get("from");
-    return value!.toBytes();
-  }
-
-  set from(value: Bytes) {
-    this.set("from", Value.fromBytes(value));
-  }
-
-  get createdAtS(): i32 {
-    let value = this.get("createdAtS");
-    return value!.toI32();
-  }
-
-  set createdAtS(value: i32) {
-    this.set("createdAtS", Value.fromI32(value));
-  }
-}
-
-export class FundsDisburse extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-
-    this.set("application", Value.fromString(""));
-    this.set("milestone", Value.fromString(""));
-    this.set("amount", Value.fromBigInt(BigInt.zero()));
-    this.set("sender", Value.fromBytes(Bytes.empty()));
-    this.set("to", Value.fromBytes(Bytes.empty()));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save FundsDisburse entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        "Cannot save FundsDisburse entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
-      );
-      store.set("FundsDisburse", id.toString(), this);
-    }
-  }
-
-  static load(id: string): FundsDisburse | null {
-    return changetype<FundsDisburse | null>(store.get("FundsDisburse", id));
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get application(): string {
-    let value = this.get("application");
-    return value!.toString();
-  }
-
-  set application(value: string) {
-    this.set("application", Value.fromString(value));
-  }
-
-  get milestone(): string {
-    let value = this.get("milestone");
-    return value!.toString();
-  }
-
-  set milestone(value: string) {
-    this.set("milestone", Value.fromString(value));
   }
 
   get amount(): BigInt {
@@ -1079,6 +1031,15 @@ export class FundsDisburse extends Entity {
 
   set createdAtS(value: i32) {
     this.set("createdAtS", Value.fromI32(value));
+  }
+
+  get type(): string {
+    let value = this.get("type");
+    return value!.toString();
+  }
+
+  set type(value: string) {
+    this.set("type", Value.fromString(value));
   }
 }
 

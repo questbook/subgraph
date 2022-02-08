@@ -1,31 +1,47 @@
 import { Address, log } from "@graphprotocol/graph-ts";
-import { ApplicationMilestone, FundsDisburse, Grant, GrantApplication, Notification, Workspace } from "../../generated/schema";
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Notification, Workspace } from "../../generated/schema";
 
-export function addFundsDisburseNotification(fundsDisburse: FundsDisburse): void {
-	const app = GrantApplication.load(fundsDisburse.application)
-	if(app) {
-		const grant = Grant.load(app.grant)
-		if(grant) {
-			const workspace = Workspace.load(grant.workspace)
-			if(workspace) {
-				const notif = new Notification(`n.${fundsDisburse.id}`)
+export function addFundsTransferNotification(transfer: FundsTransfer): void {
+	const grant = Grant.load(transfer.grant)
+	if(grant) {
+		const workspace = Workspace.load(grant.workspace)
+		if(workspace) {
+			const notif = new Notification(`n.${transfer.id}`)
+			if(transfer.type === "funds_disburse") {
 				notif.title = `Funds Released!`
-				notif.content = `'${workspace.title}' just released ${fundsDisburse.amount.toString()} to your wallet for your application to '${grant.title}'`
-				notif.type = "funds_disbursed"
-				notif.entityId = fundsDisburse.id
+				notif.content = `'${workspace.title}' just released ${transfer.amount.toString()} to your wallet for your application to '${grant.title}'`
+				
+				const app = GrantApplication.load(transfer.application!)
+				if(!app) {
+					log.warning(`application absent for funds disburse, ID=${transfer.id}`, [])
+					return
+				}
+
 				notif.recipientIds = [app.applicantId]
-				notif.actorId = fundsDisburse.sender
-				notif.cursor = fundsDisburse.createdAtS.toString(16)
-		
-				notif.save()
-			} else {
-				log.warning(`failed to add funds disburse notif due to workspace missing, ID=${fundsDisburse.id}`, [])
+				notif.entityId = app.id
+			} else if(transfer.type === "funds_deposited") {
+				notif.title = `Funds Deposited!`
+				notif.content = ``
+
+				notif.recipientIds = [grant.creatorId]
+				notif.entityId = grant.id
+			} else if(transfer.type === "funds_withdrawn") {
+				notif.title = `Funds Withdrawn!`
+				notif.content = ``
+
+				notif.recipientIds = [grant.creatorId]
+				notif.entityId = grant.id
 			}
+			
+			notif.actorId = transfer.sender
+			notif.cursor = transfer.createdAtS.toString(16)
+			notif.type = transfer.type
+			notif.save()
 		} else {
-			log.warning(`failed to add funds disburse notif due to grant missing, ID=${fundsDisburse.id}`, [])
+			log.warning(`failed to add funds disburse notif due to workspace missing, ID=${transfer.id}`, [])
 		}
 	} else {
-		log.warning(`application absent for funds disburse, ID=${fundsDisburse.id}`, [])
+		log.warning(`failed to add funds disburse notif due to grant missing, ID=${transfer.id}`, [])
 	}
 }
 

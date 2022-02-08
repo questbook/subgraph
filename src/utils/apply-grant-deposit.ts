@@ -1,16 +1,19 @@
 import { BigInt, ethereum, log } from "@graphprotocol/graph-ts"
-import { FundsDeposit, Grant } from "../../generated/schema"
+import { FundsTransfer, Grant } from "../../generated/schema"
+import { addFundsTransferNotification } from "./notifications"
 
 export function applyGrantDeposit(event: ethereum.Event, grantId: string, amount: BigInt, eventTime: i32): void {
 	const transactionId = event.transaction.hash.toHex()
 
 	const entity = Grant.load(grantId)
 	if (entity) {
-		const fundEntity = new FundsDeposit(transactionId)
+		const fundEntity = new FundsTransfer(transactionId)
 		fundEntity.createdAtS = eventTime
-		fundEntity.from = event.transaction.from
+		fundEntity.sender = event.transaction.from
+		fundEntity.to = event.transaction.to!
 		fundEntity.grant = grantId
 		fundEntity.amount = amount
+		fundEntity.type = "funds_deposited"
 
 		fundEntity.save()
 
@@ -18,6 +21,8 @@ export function applyGrantDeposit(event: ethereum.Event, grantId: string, amount
 		entity.funding = entity.funding.plus(amount)
 
 		entity.save()
+
+		addFundsTransferNotification(fundEntity)
 
 		log.info(`added funding to grant ID=${grantId}, amount=${amount.toString()}`, [])
 	} else {

@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
-import { ApplicationMember, ApplicationMilestone, FundsDisburse, GrantApplication, GrantFieldAnswer, Notification } from "../generated/schema"
+import { ApplicationMember, ApplicationMilestone, FundsTransfer, GrantApplication, GrantFieldAnswer, Notification } from "../generated/schema"
 import { DisburseReward } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleApplicationSubmitted, handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
 import { handleDisburseReward } from "../src/grant-mapping"
@@ -154,7 +154,7 @@ export function runTests(): void {
 		assert.i32Equals(gUpdate!.updatedAtS, 127)
 		assert.assertTrue(gUpdate!.amountPaid.ge( BigInt.fromString('100') ))
 
-		const disburseEntity = FundsDisburse.load(ev.transaction.hash.toHex())
+		const disburseEntity = FundsTransfer.load(ev.transaction.hash.toHex())
 		assert.assertNotNull(disburseEntity)
 		assert.i32Equals(disburseEntity!.createdAtS, 127)
 

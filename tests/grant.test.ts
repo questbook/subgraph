@@ -1,6 +1,6 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
-import { FundsDeposit, Grant } from "../generated/schema"
+import { FundsTransfer, Grant, Notification } from "../generated/schema"
 import { FundsDeposited, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleFundsDeposited, handleGrantUpdated } from '../src/grant-mapping'
 import { createGrant } from "./utils"
@@ -36,12 +36,19 @@ export function runTests(): void {
 		assert.i32Equals(gUpdate!.updatedAtS, 124)
 		assert.assertTrue(gUpdate!.funding.ge( BigInt.fromString('100') ))
 
-		const fundEntity = FundsDeposit.load(ev.transaction.hash.toHex())
+		const fundEntity = FundsTransfer.load(ev.transaction.hash.toHex())
 
 		assert.assertNotNull(fundEntity)
 		assert.i32Equals(fundEntity!.createdAtS, 124)
-		assert.bytesEquals(fundEntity!.from, ev.transaction.from)
+		assert.bytesEquals(fundEntity!.sender, ev.transaction.from)
 		assert.bigIntEquals(fundEntity!.amount, BigInt.fromI32(100))
+		assert.stringEquals(fundEntity!.type, "funds_deposited")
+		
+		const notificationEntity = Notification.load(`n.${fundEntity!.id}`)
+
+		assert.assertNotNull(notificationEntity)
+		assert.stringEquals(notificationEntity!.type, "funds_deposited")
+		assert.stringEquals(notificationEntity!.entityId, g!.id)
 	})
 
 	test('should update a grant', () => {

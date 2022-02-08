@@ -31,7 +31,15 @@ enum NotificationType {
   milestone_requested,
   milestone_accepted,
   milestone_rejected,
-  funds_disbursed
+  funds_disbursed,
+  funds_deposited,
+  funds_withdrawn
+}
+
+enum FundsTransferType {
+  funds_disbursed,
+  funds_deposited,
+  funds_withdrawn
 }
 
 type Social @entity {
@@ -171,24 +179,14 @@ type GrantApplication @entity {
   feedback: String
 }
 
-type FundsDeposit @entity {
-  id: ID!
-  "Which grant were the funds deposited to"
-  grant: Grant!
-  "Amount of funds deposited"
-  amount: BigInt!
-  "Which address were the funds from"
-  from: Bytes!
-  "in seconds since epoch"
-  createdAtS: Int!
-}
-
-type FundsDisburse @entity {
+type FundsTransfer @entity {
   id: ID!
   "Application for which the funds were released"
-  application: GrantApplication!
+  application: GrantApplication
   "Milestone for which the funds were released"
-  milestone: ApplicationMilestone!
+  milestone: ApplicationMilestone
+  "Which grant were the funds transferred to/from"
+  grant: Grant!
   "How much of the funds were allocated"
   amount: BigInt!
   "Address of who released the funds"
@@ -197,6 +195,8 @@ type FundsDisburse @entity {
   to: Bytes!
   "in seconds since epoch"
   createdAtS: Int!
+  "What the type of funds transfer is"
+  type: FundsTransferType!
 }
 
 type Notification @entity {
