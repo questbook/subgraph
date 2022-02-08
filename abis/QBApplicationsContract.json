@@ -1,10 +1,5 @@
 [
 	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -128,6 +123,51 @@
 		"type": "event"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "Paused",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "Unpaused",
+		"type": "event"
+	},
+	{
 		"inputs": [],
 		"name": "applicationCount",
 		"outputs": [
@@ -217,7 +257,7 @@
 		"inputs": [
 			{
 				"internalType": "uint96",
-				"name": "_id",
+				"name": "_applicationId",
 				"type": "uint96"
 			},
 			{
@@ -226,8 +266,13 @@
 				"type": "uint48"
 			},
 			{
+				"internalType": "uint96",
+				"name": "_workspaceId",
+				"type": "uint96"
+			},
+			{
 				"internalType": "string",
-				"name": "_metadataHash",
+				"name": "_reasonMetadataHash",
 				"type": "string"
 			},
 			{
@@ -236,7 +281,7 @@
 				"type": "uint8"
 			},
 			{
-				"internalType": "address",
+				"internalType": "contract IERC20",
 				"name": "_disbursalAsset",
 				"type": "address"
 			},
@@ -284,10 +329,37 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "pause",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "paused",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "uint96",
-				"name": "_id",
+				"name": "_applicationId",
 				"type": "uint96"
 			},
 			{
@@ -297,7 +369,7 @@
 			},
 			{
 				"internalType": "string",
-				"name": "_metadataHash",
+				"name": "_reasonMetadataHash",
 				"type": "string"
 			}
 		],
@@ -309,21 +381,8 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_newOwner",
-				"type": "address"
-			}
-		],
-		"name": "setContractOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_workspaceRegAddr",
+				"internalType": "contract IWorkspaceRegistry",
+				"name": "_workspaceReg",
 				"type": "address"
 			}
 		],
@@ -363,8 +422,28 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "unpause",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint96",
-				"name": "_id",
+				"name": "_applicationId",
 				"type": "uint96"
 			},
 			{
@@ -387,13 +466,23 @@
 		"inputs": [
 			{
 				"internalType": "uint96",
-				"name": "_id",
+				"name": "_applicationId",
+				"type": "uint96"
+			},
+			{
+				"internalType": "uint96",
+				"name": "_workspaceId",
 				"type": "uint96"
 			},
 			{
 				"internalType": "enum ApplicationRegistry.ApplicationState",
 				"name": "_state",
 				"type": "uint8"
+			},
+			{
+				"internalType": "string",
+				"name": "_reasonMetadataHash",
+				"type": "string"
 			}
 		],
 		"name": "updateApplicationState",

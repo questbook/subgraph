@@ -12,13 +12,13 @@
 				"type": "string"
 			},
 			{
-				"internalType": "address",
-				"name": "_workspaceRegAddr",
+				"internalType": "contract IWorkspaceRegistry",
+				"name": "_workspaceReg",
 				"type": "address"
 			},
 			{
-				"internalType": "address",
-				"name": "_applicationRegAddr",
+				"internalType": "contract IApplicationRegistry",
+				"name": "_applicationReg",
 				"type": "address"
 			}
 		],
@@ -165,6 +165,37 @@
 		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "asset",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			}
+		],
+		"name": "FundsWithdrawn",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
 				"indexed": true,
 				"internalType": "uint96",
 				"name": "workspaceId",
@@ -221,8 +252,8 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_asset",
+				"internalType": "contract IERC20",
+				"name": "_erc20Interface",
 				"type": "address"
 			},
 			{
@@ -233,7 +264,7 @@
 		],
 		"name": "depositFunds",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -249,19 +280,24 @@
 				"type": "uint96"
 			},
 			{
-				"internalType": "address",
-				"name": "_asset",
+				"internalType": "contract IERC20",
+				"name": "_erc20Interface",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
 				"name": "_amount",
 				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_sender",
+				"type": "address"
 			}
 		],
 		"name": "disburseReward",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -277,19 +313,24 @@
 				"type": "uint96"
 			},
 			{
-				"internalType": "address",
-				"name": "_asset",
+				"internalType": "contract IERC20",
+				"name": "_erc20Interface",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
 				"name": "_amount",
 				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_sender",
+				"type": "address"
 			}
 		],
 		"name": "disburseRewardP2P",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -317,9 +358,9 @@
 		"name": "numApplicants",
 		"outputs": [
 			{
-				"internalType": "uint48",
+				"internalType": "uint96",
 				"name": "",
-				"type": "uint48"
+				"type": "uint96"
 			}
 		],
 		"stateMutability": "view",
@@ -347,6 +388,29 @@
 			}
 		],
 		"name": "updateGrantAccessibility",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "contract IERC20",
+				"name": "_erc20Interface",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_recipient",
+				"type": "address"
+			}
+		],
+		"name": "withdrawFunds",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
