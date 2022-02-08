@@ -40,6 +40,64 @@ export class GrantCreated__Params {
   }
 }
 
+export class OwnershipTransferred extends ethereum.Event {
+  get params(): OwnershipTransferred__Params {
+    return new OwnershipTransferred__Params(this);
+  }
+}
+
+export class OwnershipTransferred__Params {
+  _event: OwnershipTransferred;
+
+  constructor(event: OwnershipTransferred) {
+    this._event = event;
+  }
+
+  get previousOwner(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newOwner(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class Paused extends ethereum.Event {
+  get params(): Paused__Params {
+    return new Paused__Params(this);
+  }
+}
+
+export class Paused__Params {
+  _event: Paused;
+
+  constructor(event: Paused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class Unpaused extends ethereum.Event {
+  get params(): Unpaused__Params {
+    return new Unpaused__Params(this);
+  }
+}
+
+export class Unpaused__Params {
+  _event: Unpaused;
+
+  constructor(event: Unpaused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class QBGrantFactoryContract extends ethereum.SmartContract {
   static bind(address: Address): QBGrantFactoryContract {
     return new QBGrantFactoryContract("QBGrantFactoryContract", address);
@@ -48,8 +106,8 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
   createGrant(
     _workspaceId: BigInt,
     _metadataHash: string,
-    _workspaceRegAddr: Address,
-    _applicationRegAddr: Address
+    _workspaceReg: Address,
+    _applicationReg: Address
   ): Address {
     let result = super.call(
       "createGrant",
@@ -57,8 +115,8 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
       [
         ethereum.Value.fromUnsignedBigInt(_workspaceId),
         ethereum.Value.fromString(_metadataHash),
-        ethereum.Value.fromAddress(_workspaceRegAddr),
-        ethereum.Value.fromAddress(_applicationRegAddr)
+        ethereum.Value.fromAddress(_workspaceReg),
+        ethereum.Value.fromAddress(_applicationReg)
       ]
     );
 
@@ -68,8 +126,8 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
   try_createGrant(
     _workspaceId: BigInt,
     _metadataHash: string,
-    _workspaceRegAddr: Address,
-    _applicationRegAddr: Address
+    _workspaceReg: Address,
+    _applicationReg: Address
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       "createGrant",
@@ -77,8 +135,8 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
       [
         ethereum.Value.fromUnsignedBigInt(_workspaceId),
         ethereum.Value.fromString(_metadataHash),
-        ethereum.Value.fromAddress(_workspaceRegAddr),
-        ethereum.Value.fromAddress(_applicationRegAddr)
+        ethereum.Value.fromAddress(_workspaceReg),
+        ethereum.Value.fromAddress(_applicationReg)
       ]
     );
     if (result.reverted) {
@@ -86,6 +144,36 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  owner(): Address {
+    let result = super.call("owner", "owner():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_owner(): ethereum.CallResult<Address> {
+    let result = super.tryCall("owner", "owner():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  paused(): boolean {
+    let result = super.call("paused", "paused():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_paused(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("paused", "paused():(bool)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 }
 
@@ -114,11 +202,11 @@ export class CreateGrantCall__Inputs {
     return this._call.inputValues[1].value.toString();
   }
 
-  get _workspaceRegAddr(): Address {
+  get _workspaceReg(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
 
-  get _applicationRegAddr(): Address {
+  get _applicationReg(): Address {
     return this._call.inputValues[3].value.toAddress();
   }
 }
@@ -132,5 +220,113 @@ export class CreateGrantCall__Outputs {
 
   get value0(): Address {
     return this._call.outputValues[0].value.toAddress();
+  }
+}
+
+export class PauseCall extends ethereum.Call {
+  get inputs(): PauseCall__Inputs {
+    return new PauseCall__Inputs(this);
+  }
+
+  get outputs(): PauseCall__Outputs {
+    return new PauseCall__Outputs(this);
+  }
+}
+
+export class PauseCall__Inputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
+export class PauseCall__Outputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
+export class RenounceOwnershipCall extends ethereum.Call {
+  get inputs(): RenounceOwnershipCall__Inputs {
+    return new RenounceOwnershipCall__Inputs(this);
+  }
+
+  get outputs(): RenounceOwnershipCall__Outputs {
+    return new RenounceOwnershipCall__Outputs(this);
+  }
+}
+
+export class RenounceOwnershipCall__Inputs {
+  _call: RenounceOwnershipCall;
+
+  constructor(call: RenounceOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class RenounceOwnershipCall__Outputs {
+  _call: RenounceOwnershipCall;
+
+  constructor(call: RenounceOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class TransferOwnershipCall extends ethereum.Call {
+  get inputs(): TransferOwnershipCall__Inputs {
+    return new TransferOwnershipCall__Inputs(this);
+  }
+
+  get outputs(): TransferOwnershipCall__Outputs {
+    return new TransferOwnershipCall__Outputs(this);
+  }
+}
+
+export class TransferOwnershipCall__Inputs {
+  _call: TransferOwnershipCall;
+
+  constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+
+  get newOwner(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class TransferOwnershipCall__Outputs {
+  _call: TransferOwnershipCall;
+
+  constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall extends ethereum.Call {
+  get inputs(): UnpauseCall__Inputs {
+    return new UnpauseCall__Inputs(this);
+  }
+
+  get outputs(): UnpauseCall__Outputs {
+    return new UnpauseCall__Outputs(this);
+  }
+}
+
+export class UnpauseCall__Inputs {
+  _call: UnpauseCall;
+
+  constructor(call: UnpauseCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall__Outputs {
+  _call: UnpauseCall;
+
+  constructor(call: UnpauseCall) {
+    this._call = call;
   }
 }

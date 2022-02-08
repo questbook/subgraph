@@ -1,8 +1,8 @@
 import { log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from "../generated/schema"
-import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
-import { applyGrantDeposit } from "./utils/apply-grant-deposit"
+import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
+import { applyGrantFundUpdate } from "./utils/apply-grant-deposit"
 import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
 import { grantFromGrantCreateIPFS } from "./utils/grant-from-grant-create-ipfs"
 import { addFundsTransferNotification } from "./utils/notifications"
@@ -77,7 +77,11 @@ export function handleFundsDepositFailed(event: FundsDepositFailed): void {
 }
 
 export function handleFundsDeposited(event: FundsDeposited): void {
-  applyGrantDeposit(event, event.transaction.to!.toHex(), event.params.amount, event.params.time.toI32())
+  applyGrantFundUpdate(event, true, event.transaction.to!.toHex(), event.params.amount, event.transaction.to!, event.params.time.toI32())
+}
+
+export function handleFundsWithdrawn(event: FundsWithdrawn): void {
+  applyGrantFundUpdate(event, false, event.transaction.from.toHex(), event.params.amount, event.params.recipient, event.params.time.toI32())
 }
 
 export function handleGrantUpdated(event: GrantUpdated): void {

@@ -1,8 +1,8 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { FundsTransfer, Grant, Notification } from "../generated/schema"
-import { FundsDeposited, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
-import { handleFundsDeposited, handleGrantUpdated } from '../src/grant-mapping'
+import { FundsDeposited, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
+import { handleFundsDeposited, handleFundsWithdrawn, handleGrantUpdated } from '../src/grant-mapping'
 import { createGrant } from "./utils"
 
 export function runTests(): void {
@@ -43,11 +43,49 @@ export function runTests(): void {
 		assert.bytesEquals(fundEntity!.sender, ev.transaction.from)
 		assert.bigIntEquals(fundEntity!.amount, BigInt.fromI32(100))
 		assert.stringEquals(fundEntity!.type, "funds_deposited")
-		
+
 		const notificationEntity = Notification.load(`n.${fundEntity!.id}`)
 
 		assert.assertNotNull(notificationEntity)
 		assert.stringEquals(notificationEntity!.type, "funds_deposited")
+		assert.stringEquals(notificationEntity!.entityId, g!.id)
+	})
+
+	test('should withdraw funds from a grant', () => {
+		const g = createGrant()
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress( Address.fromString("0xB23081F360e3847006dB660bae1c6d1b2e17eC2B") )),
+			new ethereum.EventParam('amount', ethereum.Value.fromI32( 100 )),
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress( Address.fromString("0xC35081F360e3847006dB660bae1c6d1b2e17eC2B") )),
+			// the IPFS hash contains mock data for the workspace
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
+		]
+		ev.transaction.from = MOCK_GRANT_ID
+		ev.transaction.hash = Bytes.fromByteArray( Bytes.fromHexString("0xC13081F360e3847006dB660bae1c6d1b2e17eC2C") )
+
+		const event = new FundsWithdrawn(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleFundsWithdrawn(event)
+
+		const gUpdate = Grant.load(g!.id)
+		assert.i32Equals(gUpdate!.updatedAtS, 125)
+		// funding should have reduced by X points
+		assert.bigIntEquals(g!.funding.minus(gUpdate!.funding), BigInt.fromString('100'))
+
+		const fundEntity = FundsTransfer.load(ev.transaction.hash.toHex())
+
+		assert.assertNotNull(fundEntity)
+		assert.i32Equals(fundEntity!.createdAtS, 125)
+		assert.bytesEquals(fundEntity!.sender, ev.transaction.from)
+		assert.bigIntEquals(fundEntity!.amount, BigInt.fromI32(100))
+		assert.stringEquals(fundEntity!.type, "funds_withdrawn")
+		
+		const notificationEntity = Notification.load(`n.${fundEntity!.id}`)
+
+		assert.assertNotNull(notificationEntity)
+		assert.stringEquals(notificationEntity!.type, "funds_withdrawn")
 		assert.stringEquals(notificationEntity!.entityId, g!.id)
 	})
 

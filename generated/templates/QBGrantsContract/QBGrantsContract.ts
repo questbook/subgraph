@@ -138,6 +138,36 @@ export class FundsDeposited__Params {
   }
 }
 
+export class FundsWithdrawn extends ethereum.Event {
+  get params(): FundsWithdrawn__Params {
+    return new FundsWithdrawn__Params(this);
+  }
+}
+
+export class FundsWithdrawn__Params {
+  _event: FundsWithdrawn;
+
+  constructor(event: FundsWithdrawn) {
+    this._event = event;
+  }
+
+  get asset(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get recipient(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+}
+
 export class GrantUpdated extends ethereum.Event {
   get params(): GrantUpdated__Params {
     return new GrantUpdated__Params(this);
@@ -223,13 +253,13 @@ export class QBGrantsContract extends ethereum.SmartContract {
   }
 
   numApplicants(): BigInt {
-    let result = super.call("numApplicants", "numApplicants():(uint48)", []);
+    let result = super.call("numApplicants", "numApplicants():(uint96)", []);
 
     return result[0].toBigInt();
   }
 
   try_numApplicants(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("numApplicants", "numApplicants():(uint48)", []);
+    let result = super.tryCall("numApplicants", "numApplicants():(uint96)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -293,11 +323,11 @@ export class ConstructorCall__Inputs {
     return this._call.inputValues[1].value.toString();
   }
 
-  get _workspaceRegAddr(): Address {
+  get _workspaceReg(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
 
-  get _applicationRegAddr(): Address {
+  get _applicationReg(): Address {
     return this._call.inputValues[3].value.toAddress();
   }
 }
@@ -327,7 +357,7 @@ export class DepositFundsCall__Inputs {
     this._call = call;
   }
 
-  get _asset(): Address {
+  get _erc20Interface(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
@@ -369,12 +399,16 @@ export class DisburseRewardCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
-  get _asset(): Address {
+  get _erc20Interface(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
 
   get _amount(): BigInt {
     return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get _sender(): Address {
+    return this._call.inputValues[4].value.toAddress();
   }
 }
 
@@ -411,12 +445,16 @@ export class DisburseRewardP2PCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
-  get _asset(): Address {
+  get _erc20Interface(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
 
   get _amount(): BigInt {
     return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get _sender(): Address {
+    return this._call.inputValues[4].value.toAddress();
   }
 }
 
@@ -510,6 +548,44 @@ export class UpdateGrantAccessibilityCall__Outputs {
   _call: UpdateGrantAccessibilityCall;
 
   constructor(call: UpdateGrantAccessibilityCall) {
+    this._call = call;
+  }
+}
+
+export class WithdrawFundsCall extends ethereum.Call {
+  get inputs(): WithdrawFundsCall__Inputs {
+    return new WithdrawFundsCall__Inputs(this);
+  }
+
+  get outputs(): WithdrawFundsCall__Outputs {
+    return new WithdrawFundsCall__Outputs(this);
+  }
+}
+
+export class WithdrawFundsCall__Inputs {
+  _call: WithdrawFundsCall;
+
+  constructor(call: WithdrawFundsCall) {
+    this._call = call;
+  }
+
+  get _erc20Interface(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _amount(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _recipient(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+}
+
+export class WithdrawFundsCall__Outputs {
+  _call: WithdrawFundsCall;
+
+  constructor(call: WithdrawFundsCall) {
     this._call = call;
   }
 }

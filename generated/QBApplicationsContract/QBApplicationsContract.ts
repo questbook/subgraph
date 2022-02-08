@@ -120,6 +120,64 @@ export class MilestoneUpdated__Params {
   }
 }
 
+export class OwnershipTransferred extends ethereum.Event {
+  get params(): OwnershipTransferred__Params {
+    return new OwnershipTransferred__Params(this);
+  }
+}
+
+export class OwnershipTransferred__Params {
+  _event: OwnershipTransferred;
+
+  constructor(event: OwnershipTransferred) {
+    this._event = event;
+  }
+
+  get previousOwner(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newOwner(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class Paused extends ethereum.Event {
+  get params(): Paused__Params {
+    return new Paused__Params(this);
+  }
+}
+
+export class Paused__Params {
+  _event: Paused;
+
+  constructor(event: Paused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class Unpaused extends ethereum.Event {
+  get params(): Unpaused__Params {
+    return new Unpaused__Params(this);
+  }
+}
+
+export class Unpaused__Params {
+  _event: Unpaused;
+
+  constructor(event: Unpaused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class QBApplicationsContract__applicationsResult {
   value0: BigInt;
   value1: BigInt;
@@ -306,6 +364,21 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  paused(): boolean {
+    let result = super.call("paused", "paused():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_paused(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("paused", "paused():(bool)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
   workspaceReg(): Address {
     let result = super.call("workspaceReg", "workspaceReg():(address)", []);
 
@@ -319,32 +392,6 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-}
-
-export class ConstructorCall extends ethereum.Call {
-  get inputs(): ConstructorCall__Inputs {
-    return new ConstructorCall__Inputs(this);
-  }
-
-  get outputs(): ConstructorCall__Outputs {
-    return new ConstructorCall__Outputs(this);
-  }
-}
-
-export class ConstructorCall__Inputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-}
-
-export class ConstructorCall__Outputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
-    this._call = call;
   }
 }
 
@@ -365,7 +412,7 @@ export class ApproveMilestoneCall__Inputs {
     this._call = call;
   }
 
-  get _id(): BigInt {
+  get _applicationId(): BigInt {
     return this._call.inputValues[0].value.toBigInt();
   }
 
@@ -373,20 +420,24 @@ export class ApproveMilestoneCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
-  get _metadataHash(): string {
-    return this._call.inputValues[2].value.toString();
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get _reasonMetadataHash(): string {
+    return this._call.inputValues[3].value.toString();
   }
 
   get _disbursalType(): i32 {
-    return this._call.inputValues[3].value.toI32();
+    return this._call.inputValues[4].value.toI32();
   }
 
   get _disbursalAsset(): Address {
-    return this._call.inputValues[4].value.toAddress();
+    return this._call.inputValues[5].value.toAddress();
   }
 
   get _disbursalAmount(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[6].value.toBigInt();
   }
 }
 
@@ -394,6 +445,58 @@ export class ApproveMilestoneCall__Outputs {
   _call: ApproveMilestoneCall;
 
   constructor(call: ApproveMilestoneCall) {
+    this._call = call;
+  }
+}
+
+export class PauseCall extends ethereum.Call {
+  get inputs(): PauseCall__Inputs {
+    return new PauseCall__Inputs(this);
+  }
+
+  get outputs(): PauseCall__Outputs {
+    return new PauseCall__Outputs(this);
+  }
+}
+
+export class PauseCall__Inputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
+export class PauseCall__Outputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
+export class RenounceOwnershipCall extends ethereum.Call {
+  get inputs(): RenounceOwnershipCall__Inputs {
+    return new RenounceOwnershipCall__Inputs(this);
+  }
+
+  get outputs(): RenounceOwnershipCall__Outputs {
+    return new RenounceOwnershipCall__Outputs(this);
+  }
+}
+
+export class RenounceOwnershipCall__Inputs {
+  _call: RenounceOwnershipCall;
+
+  constructor(call: RenounceOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class RenounceOwnershipCall__Outputs {
+  _call: RenounceOwnershipCall;
+
+  constructor(call: RenounceOwnershipCall) {
     this._call = call;
   }
 }
@@ -415,7 +518,7 @@ export class RequestMilestoneApprovalCall__Inputs {
     this._call = call;
   }
 
-  get _id(): BigInt {
+  get _applicationId(): BigInt {
     return this._call.inputValues[0].value.toBigInt();
   }
 
@@ -423,7 +526,7 @@ export class RequestMilestoneApprovalCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
-  get _metadataHash(): string {
+  get _reasonMetadataHash(): string {
     return this._call.inputValues[2].value.toString();
   }
 }
@@ -432,36 +535,6 @@ export class RequestMilestoneApprovalCall__Outputs {
   _call: RequestMilestoneApprovalCall;
 
   constructor(call: RequestMilestoneApprovalCall) {
-    this._call = call;
-  }
-}
-
-export class SetContractOwnerCall extends ethereum.Call {
-  get inputs(): SetContractOwnerCall__Inputs {
-    return new SetContractOwnerCall__Inputs(this);
-  }
-
-  get outputs(): SetContractOwnerCall__Outputs {
-    return new SetContractOwnerCall__Outputs(this);
-  }
-}
-
-export class SetContractOwnerCall__Inputs {
-  _call: SetContractOwnerCall;
-
-  constructor(call: SetContractOwnerCall) {
-    this._call = call;
-  }
-
-  get _newOwner(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-}
-
-export class SetContractOwnerCall__Outputs {
-  _call: SetContractOwnerCall;
-
-  constructor(call: SetContractOwnerCall) {
     this._call = call;
   }
 }
@@ -483,7 +556,7 @@ export class SetWorkspaceRegCall__Inputs {
     this._call = call;
   }
 
-  get _workspaceRegAddr(): Address {
+  get _workspaceReg(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 }
@@ -538,6 +611,62 @@ export class SubmitApplicationCall__Outputs {
   }
 }
 
+export class TransferOwnershipCall extends ethereum.Call {
+  get inputs(): TransferOwnershipCall__Inputs {
+    return new TransferOwnershipCall__Inputs(this);
+  }
+
+  get outputs(): TransferOwnershipCall__Outputs {
+    return new TransferOwnershipCall__Outputs(this);
+  }
+}
+
+export class TransferOwnershipCall__Inputs {
+  _call: TransferOwnershipCall;
+
+  constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+
+  get newOwner(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class TransferOwnershipCall__Outputs {
+  _call: TransferOwnershipCall;
+
+  constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall extends ethereum.Call {
+  get inputs(): UnpauseCall__Inputs {
+    return new UnpauseCall__Inputs(this);
+  }
+
+  get outputs(): UnpauseCall__Outputs {
+    return new UnpauseCall__Outputs(this);
+  }
+}
+
+export class UnpauseCall__Inputs {
+  _call: UnpauseCall;
+
+  constructor(call: UnpauseCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall__Outputs {
+  _call: UnpauseCall;
+
+  constructor(call: UnpauseCall) {
+    this._call = call;
+  }
+}
+
 export class UpdateApplicationMetadataCall extends ethereum.Call {
   get inputs(): UpdateApplicationMetadataCall__Inputs {
     return new UpdateApplicationMetadataCall__Inputs(this);
@@ -555,7 +684,7 @@ export class UpdateApplicationMetadataCall__Inputs {
     this._call = call;
   }
 
-  get _id(): BigInt {
+  get _applicationId(): BigInt {
     return this._call.inputValues[0].value.toBigInt();
   }
 
@@ -593,12 +722,20 @@ export class UpdateApplicationStateCall__Inputs {
     this._call = call;
   }
 
-  get _id(): BigInt {
+  get _applicationId(): BigInt {
     return this._call.inputValues[0].value.toBigInt();
   }
 
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
   get _state(): i32 {
-    return this._call.inputValues[1].value.toI32();
+    return this._call.inputValues[2].value.toI32();
+  }
+
+  get _reasonMetadataHash(): string {
+    return this._call.inputValues[3].value.toString();
   }
 }
 

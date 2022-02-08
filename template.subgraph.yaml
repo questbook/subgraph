@@ -149,3 +149,5 @@ templates:
           handler: handleFundsDeposited
         - event: GrantUpdated(indexed uint96,string,bool,uint256)
           handler: handleGrantUpdated
+        - event: FundsWithdrawn(address,uint256,address,uint256)
+          handler: handleFundsWithdrawn
