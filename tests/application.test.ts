@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
-import { ApplicationMember, ApplicationMilestone, FundsTransfer, GrantApplication, GrantFieldAnswer, Notification } from "../generated/schema"
+import { ApplicationMember, ApplicationMilestone, FundsTransfer, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, Notification } from "../generated/schema"
 import { DisburseReward } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleApplicationSubmitted, handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
 import { handleDisburseReward } from "../src/grant-mapping"
@@ -45,6 +45,13 @@ export function runTests(): void {
 		assert.assertNotNull(n)
 		assert.stringEquals(n!.type, "application_submitted")
 		assert.stringEquals(n!.actorId!.toHex(), g!.applicantId.toHex())
+		
+		// check revision was generated
+		const rev = GrantApplicationRevision.load(`${g!.id}.${g!.updatedAtS}.revision`)
+		assert.assertNotNull(rev)
+		assert.i32Equals(rev!.createdAtS, g!.updatedAtS)
+		assert.i32Equals(rev!.fields.length, g!.fields.length)
+		assert.i32Equals(rev!.milestones.length, g!.milestones.length)
 	})
 
 	test('should update an application', () => {
@@ -69,12 +76,20 @@ export function runTests(): void {
 		const gUpdate = GrantApplication.load(g!.id)
 		assert.i32Equals(gUpdate!.updatedAtS, 125)
 		assert.stringEquals(gUpdate!.state, 'resubmit')
-
+		// check project details were updated
 		const projectDetailsFieldUpdate = GrantFieldAnswer.load(`${g!.id}.projectDetails.field`)!
 		assert.assertTrue(projectDetailsField.value != projectDetailsFieldUpdate.value)
-		//assert.assertTrue(gUpdate!.details != g!.details)
 		// did not update milestones, should remain the same
 		assert.stringEquals(gUpdate!.milestones[0], g!.milestones[0])
+		// check new revision was generated
+		const rev0 = GrantApplicationRevision.load(`${g!.id}.${g!.updatedAtS}.revision`)
+		const rev1 = GrantApplicationRevision.load(`${g!.id}.${gUpdate!.updatedAtS}.revision`)
+		
+		assert.assertNotNull(rev0)
+		assert.assertNotNull(rev1)
+
+		assert.assertTrue(rev0!.createdAtS != rev1!.createdAtS)
+		assert.assertTrue(rev0!.state != rev1!.state)
 	})
 
 	test('should update a milestone with requesing payment', () => {

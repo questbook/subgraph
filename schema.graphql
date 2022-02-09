@@ -181,7 +181,26 @@ type GrantApplication @entity {
   updatedAtS: Int!
   "Milestones of the application"
   milestones: [ApplicationMilestone!]!
-  "Feedback from the grant manager"
+  "Feedback from the grant manager/applicant"
+  feedback: String
+}
+
+"A revision after an update"
+type GrantApplicationRevision @entity {
+  id: ID!
+
+  application: GrantApplication!
+  "Who caused the update to create the revision"
+  actorId: Bytes!
+  "The state that was set in the revision"
+  state: ApplicationState!
+  "Answers to the fields requested in the grant"
+  fields: [GrantFieldAnswer!]!
+  "Milestones of the application"
+  milestones: [ApplicationMilestone!]!
+  "in seconds since epoch, when was this revision created"
+  createdAtS: Int!
+  "Feedback from the grant manager/applicant"
   feedback: String
 }
 

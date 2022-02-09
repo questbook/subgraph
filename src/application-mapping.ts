@@ -1,6 +1,7 @@
 import { log } from '@graphprotocol/graph-ts'
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
 import { ApplicationMilestone, GrantApplication } from '../generated/schema'
+import { addApplicationRevision } from './utils/add-application-revision'
 import { applicationFromApplicationCreateIpfs } from './utils/application-from-application-create-ipfs'
 import { applyApplicationUpdateIpfs } from './utils/apply-application-update-ipfs'
 import { applyMilestoneUpdateIpfs } from './utils/apply-milestone-update-ipfs'
@@ -26,6 +27,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 
 		entity.save()
 
+		addApplicationRevision(entity, event.transaction.from)
 		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
 	} else {
 		log.warning(`error in mapping entity: "${entityResult.error!}"`, [])
@@ -70,6 +72,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 
 		entity.save()
 
+		addApplicationRevision(entity, event.transaction.from)
 		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.transaction.from)
 	} else {
 		log.warning(`recv update for unknown application: ID="${applicationId}"`, [])

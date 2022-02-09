@@ -913,6 +913,121 @@ export class GrantApplication extends Entity {
   }
 }
 
+export class GrantApplicationRevision extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("application", Value.fromString(""));
+    this.set("actorId", Value.fromBytes(Bytes.empty()));
+    this.set("state", Value.fromString(""));
+    this.set("fields", Value.fromStringArray(new Array(0)));
+    this.set("milestones", Value.fromStringArray(new Array(0)));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save GrantApplicationRevision entity without an ID"
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save GrantApplicationRevision entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("GrantApplicationRevision", id.toString(), this);
+    }
+  }
+
+  static load(id: string): GrantApplicationRevision | null {
+    return changetype<GrantApplicationRevision | null>(
+      store.get("GrantApplicationRevision", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get application(): string {
+    let value = this.get("application");
+    return value!.toString();
+  }
+
+  set application(value: string) {
+    this.set("application", Value.fromString(value));
+  }
+
+  get actorId(): Bytes {
+    let value = this.get("actorId");
+    return value!.toBytes();
+  }
+
+  set actorId(value: Bytes) {
+    this.set("actorId", Value.fromBytes(value));
+  }
+
+  get state(): string {
+    let value = this.get("state");
+    return value!.toString();
+  }
+
+  set state(value: string) {
+    this.set("state", Value.fromString(value));
+  }
+
+  get fields(): Array<string> {
+    let value = this.get("fields");
+    return value!.toStringArray();
+  }
+
+  set fields(value: Array<string>) {
+    this.set("fields", Value.fromStringArray(value));
+  }
+
+  get milestones(): Array<string> {
+    let value = this.get("milestones");
+    return value!.toStringArray();
+  }
+
+  set milestones(value: Array<string>) {
+    this.set("milestones", Value.fromStringArray(value));
+  }
+
+  get createdAtS(): i32 {
+    let value = this.get("createdAtS");
+    return value!.toI32();
+  }
+
+  set createdAtS(value: i32) {
+    this.set("createdAtS", Value.fromI32(value));
+  }
+
+  get feedback(): string | null {
+    let value = this.get("feedback");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set feedback(value: string | null) {
+    if (!value) {
+      this.unset("feedback");
+    } else {
+      this.set("feedback", Value.fromString(<string>value));
+    }
+  }
+}
+
 export class FundsTransfer extends Entity {
   constructor(id: string) {
     super();
