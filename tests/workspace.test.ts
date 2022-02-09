@@ -9,13 +9,13 @@ export function runTests(): void {
 
 	test('should create a workspace', () => {
 		const w = createWorkspace()
-
+		
 		assert.assertNotNull(w)
 		assert.i32Equals(w!.createdAtS, 123)
 		assert.assertTrue(w!.title.length > 0)
 		assert.assertTrue(w!.about.length > 0)
 		assert.assertTrue(w!.logoIpfsHash.length > 0)
-		assert.assertTrue(w!.coverImageIpfsHash.length > 0)
+		assert.assertTrue(w!.coverImageIpfsHash!.length > 0)
 		assert.assertTrue(w!.supportedNetworks.length > 0)
 		assert.i32Equals(w!.members.length, 1)
 		assert.assertNotNull(w!.socials[0])

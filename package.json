@@ -5,9 +5,10 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "test": "graph test",
-    "deploy": "graph deploy --node https://the-graph.questbook.app/ --ipfs https://ipfs.infura.io:5001 qb-subgraph",
+    "create-subgraph": "graph create --node http://the-graph.questbook.app:8020/ qb-subgraph",
+    "deploy": "graph deploy --node http://the-graph.questbook.app:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph",
     "prepare-rinkeby": "mustache config/rinkeby.json template.subgraph.yaml > subgraph.yaml",
-    "create-local": "graph create --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 qb-subgraph",
+    "create-subgraph-local": "graph create --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 qb-subgraph",
     "remove-local": "graph remove --node http://localhost:8020/ qb-subgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph"
   },

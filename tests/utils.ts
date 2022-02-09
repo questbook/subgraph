@@ -1,11 +1,10 @@
-import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
+import { Address, ethereum } from "@graphprotocol/graph-ts"
 import { newMockEvent } from "matchstick-as"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
 import { WorkspaceCreated } from "../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract"
 import { Grant, Workspace } from "../generated/schema"
 import { handleGrantCreated } from "../src/grant-mapping"
 import { handleWorkspaceCreated } from "../src/workspace-mapping"
-
 
 export function assertArrayNotEmpty<T>(array: T[]): void {
 	if(!array.length) {
@@ -40,7 +39,7 @@ export function createWorkspace(): Workspace | null {
 }
 
 export const MOCK_WORKSPACE_ID = ethereum.Value.fromI32( 0x01 )
-const CREATE_JSON_WORKSPACE = 'json:{"title":"Zavfulfe bevisor sucannob ig utena rarirwe hil se ob ju wompon zirupmon medat minjasmo.","about":"Bi neszubfo seadeuba cigobav we fisubifo tefizu gohimih zismuz esobu jal saci jujroub jakoega. Ezadtuc se fuezre ineceg miebarip kujij vezcoj iku gu ohdahle hagafak uw bi eso ofavela jociram jevewouvi. Dol riw sa fabez non jutfa pughapo fa cofkom pesjakic doolmuw ana hajikisok sa carwa hobaltub peltarja fo. Doneseca ninzewzod govca nub nuv vamu eh pihfo mi ze riasu guk oro vebjab uhala akicedguc. Mufoc potof ninesuovo wucu ehadem sapdihroc man tenubulif nuna cuduna ucefajrul muneim zapcu afa fadab. Caz olo noruj eneuw odekimfu be volwijo lu fepoppow cit ruilu nu ezlisev ozgev oke. Wusodo jok gu hoj ogtib ze neranva hoguimo ne vamzit cego vakofnod.","logoIpfsHash":"815983c5-3ce7-50a5-b1bf-6c591af3be49","coverImageIpfsHash":"66b434bc-0767-5224-8068-f2f0f9ad438f","creatorId":"4bcc93e3-a4be-5b3b-80a7-eb506d88c37c","supportedNetworks":["0xAB0A0B"],"socials":[{"name":"twitter","value":"http://dedo.sn/rinceet"},{"name":"discord","value":"http://higbikzed.it/fipvi"}],"createdAt":"2022-01-28T17:52:35.747Z"}'
+const CREATE_JSON_WORKSPACE = 'json:{"title":"Zavfulfe bevisor sucannob ig utena rarirwe hil se ob ju wompon zirupmon medat minjasmo.","about":"Bi neszubfo seadeuba cigobav we fisubifo tefizu gohimih zismuz esobu jal saci jujroub jakoega. Ezadtuc se fuezre ineceg miebarip kujij vezcoj iku gu ohdahle hagafak uw bi eso ofavela jociram jevewouvi. Dol riw sa fabez non jutfa pughapo fa cofkom pesjakic doolmuw ana hajikisok sa carwa hobaltub peltarja fo. Doneseca ninzewzod govca nub nuv vamu eh pihfo mi ze riasu guk oro vebjab uhala akicedguc. Mufoc potof ninesuovo wucu ehadem sapdihroc man tenubulif nuna cuduna ucefajrul muneim zapcu afa fadab. Caz olo noruj eneuw odekimfu be volwijo lu fepoppow cit ruilu nu ezlisev ozgev oke. Wusodo jok gu hoj ogtib ze neranva hoguimo ne vamzit cego vakofnod.","logoIpfsHash":"815983c5-3ce7-50a5-b1bf-6c591af3be49","coverImageIpfsHash":"66b434bc-0767-5224-8068-f2f0f9ad438f","creatorId":"4bcc93e3-a4be-5b3b-80a7-eb506d88c37c","supportedNetworks":["1", "4"],"socials":[{"name":"twitter","value":"http://dedo.sn/rinceet"},{"name":"discord","value":"http://higbikzed.it/fipvi"}],"createdAt":"2022-01-28T17:52:35.747Z"}'
 
 export function createGrant(): Grant | null {
 	const w = createWorkspace()

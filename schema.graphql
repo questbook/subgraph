@@ -42,6 +42,13 @@ enum FundsTransferType {
   funds_withdrawn
 }
 
+enum SupportedNetwork {
+  chain_1,
+  chain_4,
+  chain_137,
+  chain_80001
+}
+
 type Social @entity {
   id: ID!
   "Name of the network. Eg. twitter, discord"
@@ -107,6 +114,7 @@ type WorkspaceMember @entity {
   "What permissions the member has on the workspace"
   accessLevel: WorkspaceMemberAccessLevel!
 }
+
 "Schema for a Workspace or DAO"
 type Workspace @entity {
   id: ID!
@@ -119,9 +127,9 @@ type Workspace @entity {
   "Hash to fetch the logo"
   logoIpfsHash: String!
   "Cover image for the workspace"
-  coverImageIpfsHash: String!
+  coverImageIpfsHash: String
   "List of supported networks of the workspace"
-  supportedNetworks: [Bytes!]!
+  supportedNetworks: [SupportedNetwork!]!
   "in seconds since epoch"
   createdAtS: Int!
   "in seconds since epoch"

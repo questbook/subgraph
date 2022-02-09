@@ -494,8 +494,7 @@ export class Workspace extends Entity {
     this.set("title", Value.fromString(""));
     this.set("about", Value.fromString(""));
     this.set("logoIpfsHash", Value.fromString(""));
-    this.set("coverImageIpfsHash", Value.fromString(""));
-    this.set("supportedNetworks", Value.fromBytesArray(new Array(0)));
+    this.set("supportedNetworks", Value.fromStringArray(new Array(0)));
     this.set("members", Value.fromStringArray(new Array(0)));
     this.set("socials", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
@@ -563,22 +562,30 @@ export class Workspace extends Entity {
     this.set("logoIpfsHash", Value.fromString(value));
   }
 
-  get coverImageIpfsHash(): string {
+  get coverImageIpfsHash(): string | null {
     let value = this.get("coverImageIpfsHash");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set coverImageIpfsHash(value: string) {
-    this.set("coverImageIpfsHash", Value.fromString(value));
+  set coverImageIpfsHash(value: string | null) {
+    if (!value) {
+      this.unset("coverImageIpfsHash");
+    } else {
+      this.set("coverImageIpfsHash", Value.fromString(<string>value));
+    }
   }
 
-  get supportedNetworks(): Array<Bytes> {
+  get supportedNetworks(): Array<string> {
     let value = this.get("supportedNetworks");
-    return value!.toBytesArray();
+    return value!.toStringArray();
   }
 
-  set supportedNetworks(value: Array<Bytes>) {
-    this.set("supportedNetworks", Value.fromBytesArray(value));
+  set supportedNetworks(value: Array<string>) {
+    this.set("supportedNetworks", Value.fromStringArray(value));
   }
 
   get createdAtS(): i32 {
