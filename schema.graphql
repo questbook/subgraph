@@ -171,8 +171,6 @@ type GrantApplication @entity {
   applicantId: Bytes!
   "Current state of the application"
   state: ApplicationState!
-
-  details: String!
   "Answers to the fields requested in the grant"
   fields: [GrantFieldAnswer!]!
   "Description of the members of the grant"

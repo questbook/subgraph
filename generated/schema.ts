@@ -790,7 +790,6 @@ export class GrantApplication extends Entity {
     this.set("grant", Value.fromString(""));
     this.set("applicantId", Value.fromBytes(Bytes.empty()));
     this.set("state", Value.fromString(""));
-    this.set("details", Value.fromString(""));
     this.set("fields", Value.fromStringArray(new Array(0)));
     this.set("members", Value.fromStringArray(new Array(0)));
     this.set("milestones", Value.fromStringArray(new Array(0)));
@@ -849,15 +848,6 @@ export class GrantApplication extends Entity {
 
   set state(value: string) {
     this.set("state", Value.fromString(value));
-  }
-
-  get details(): string {
-    let value = this.get("details");
-    return value!.toString();
-  }
-
-  set details(value: string) {
-    this.set("details", Value.fromString(value));
   }
 
   get fields(): Array<string> {
