@@ -20,7 +20,8 @@ enum ApplicationState {
   submitted,
   resubmit,
   approved,
-  rejected
+  rejected,
+  completed
 }
 
 enum NotificationType {
@@ -67,7 +68,7 @@ type GrantField @entity {
 type GrantFieldAnswer @entity {
   id: ID!
   field: GrantField!
-  value: String!
+  value: [String!]!
 }
 
 type Reward @entity {
@@ -157,12 +158,6 @@ type ApplicationMilestone @entity {
   text: String
 }
 
-type ApplicationMember @entity {
-  id: ID!
-  "Details of the member"
-  details: String!
-}
-
 type GrantApplication @entity {
   id: ID!
   "The grant for which the application is for"
@@ -173,8 +168,6 @@ type GrantApplication @entity {
   state: ApplicationState!
   "Answers to the fields requested in the grant"
   fields: [GrantFieldAnswer!]!
-  "Description of the members of the grant"
-  members: [ApplicationMember!]!
   "in seconds since epoch"
   createdAtS: Int!
   "in seconds since epoch"

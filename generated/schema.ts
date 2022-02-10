@@ -142,7 +142,7 @@ export class GrantFieldAnswer extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("field", Value.fromString(""));
-    this.set("value", Value.fromString(""));
+    this.set("value", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
@@ -182,13 +182,13 @@ export class GrantFieldAnswer extends Entity {
     this.set("field", Value.fromString(value));
   }
 
-  get value(): string {
+  get value(): Array<string> {
     let value = this.get("value");
-    return value!.toString();
+    return value!.toStringArray();
   }
 
-  set value(value: string) {
-    this.set("value", Value.fromString(value));
+  set value(value: Array<string>) {
+    this.set("value", Value.fromStringArray(value));
   }
 }
 
@@ -736,52 +736,6 @@ export class ApplicationMilestone extends Entity {
   }
 }
 
-export class ApplicationMember extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-
-    this.set("details", Value.fromString(""));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save ApplicationMember entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        "Cannot save ApplicationMember entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
-      );
-      store.set("ApplicationMember", id.toString(), this);
-    }
-  }
-
-  static load(id: string): ApplicationMember | null {
-    return changetype<ApplicationMember | null>(
-      store.get("ApplicationMember", id)
-    );
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get details(): string {
-    let value = this.get("details");
-    return value!.toString();
-  }
-
-  set details(value: string) {
-    this.set("details", Value.fromString(value));
-  }
-}
-
 export class GrantApplication extends Entity {
   constructor(id: string) {
     super();
@@ -791,7 +745,6 @@ export class GrantApplication extends Entity {
     this.set("applicantId", Value.fromBytes(Bytes.empty()));
     this.set("state", Value.fromString(""));
     this.set("fields", Value.fromStringArray(new Array(0)));
-    this.set("members", Value.fromStringArray(new Array(0)));
     this.set("milestones", Value.fromStringArray(new Array(0)));
   }
 
@@ -857,15 +810,6 @@ export class GrantApplication extends Entity {
 
   set fields(value: Array<string>) {
     this.set("fields", Value.fromStringArray(value));
-  }
-
-  get members(): Array<string> {
-    let value = this.get("members");
-    return value!.toStringArray();
-  }
-
-  set members(value: Array<string>) {
-    this.set("members", Value.fromStringArray(value));
   }
 
   get createdAtS(): i32 {

@@ -1,7 +1,7 @@
-import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts"
+import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
-import { ApplicationMember, ApplicationMilestone, FundsTransfer, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, Notification } from "../generated/schema"
+import { ApplicationMilestone, FundsTransfer, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, Notification } from "../generated/schema"
 import { DisburseReward } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleApplicationSubmitted, handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
 import { handleDisburseReward } from "../src/grant-mapping"
@@ -15,18 +15,12 @@ export function runTests(): void {
 		assert.assertTrue(g!.applicantId.length > 0)
 		assert.stringEquals(g!.state, 'submitted')
 		assertArrayNotEmpty(g!.fields)
-		assertArrayNotEmpty(g!.members)
 
 		for(let i = 0;i < g!.fields.length;i++) {
 			const field = GrantFieldAnswer.load(g!.fields[i])
 			assert.assertNotNull(field)
-			assertStringNotEmpty(field!.value, 'field.value')
-		}
-
-		for(let i = 0;i < g!.members.length;i++) {
-			const member = ApplicationMember.load(g!.members[i])
-			assert.assertNotNull(member)
-			assertStringNotEmpty(member!.details, 'member.details')
+			assertArrayNotEmpty(field!.value)
+			assertStringNotEmpty(field!.value[0], 'field.value')
 		}
 
 		assert.i32Equals(g!.createdAtS, 123)

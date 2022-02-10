@@ -55,6 +55,9 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 			case 3:
 				entity.state = 'rejected'
 			break
+			case 4:
+				entity.state = 'completed'
+			break
 		}
 
 		if(metaHash) {

@@ -1,7 +1,7 @@
-import { JSONValue, JSONValueKind } from "@graphprotocol/graph-ts";
-import { ApplicationMember, GrantApplication, GrantFieldAnswer } from "../../generated/schema";
-import { applyApplicationUpdateFromJSON } from "./apply-application-update-ipfs";
-import { getJSONObjectFromIPFS, getJSONValueSafe, Result, setEntityArrayValueSafe, setEntityValueSafe } from "./json";
+import { JSONValueKind } from "@graphprotocol/graph-ts";
+import { GrantApplication } from "../../generated/schema";
+import { applyApplicationUpdateFromJSON, parseGrantFieldAnswer } from "./apply-application-update-ipfs";
+import { getJSONObjectFromIPFS, getJSONValueSafe, Result } from "./json";
 
 export function applicationFromApplicationCreateIpfs(id: string, hash: string): Result<GrantApplication> {
 	const jsonObjResult = getJSONObjectFromIPFS(hash)
@@ -24,35 +24,16 @@ export function applicationFromApplicationCreateIpfs(id: string, hash: string): 
 	const fields: string[] = []
 
 	for(let i = 0; i < fieldsList.length;i++) {
-		const entry = fieldsList[i]
-		
-		const field = new GrantFieldAnswer(`${id}.${entry.key.toString()}.field`)
-		field.field = entry.key
-
-		if(entry.value.kind !== JSONValueKind.STRING) {
-			return { value: null, error: 'expected field value to be string' }
+		const result = parseGrantFieldAnswer(id, fieldsList[i])
+		if(result.error) {
+			return { value: null, error: result.error }
 		}
-		
-		field.value = entry.value.toString()
 
-		field.save()
-
-		fields.push(field.id)
+		result.value!.save()
+		fields.push(result.value!.id)
 	}
 
 	entity.fields = fields
 
-	setEntityArrayValueSafe(entity, 'members', obj, JSONValueKind.OBJECT, memberFromJSONValue)
-
 	return { value: entity, error: null }
-}
-
-function memberFromJSONValue(json: JSONValue, applicationId: string, index: i32): Result<ApplicationMember> {
-	const objResult = json.toObject()
-	
-	const member = new ApplicationMember(`${applicationId}.${index}.member`)
-	const result = setEntityValueSafe(member, 'details', objResult, JSONValueKind.STRING)
-	if(result.error) return result
-
-	return { value: member, error: null }
 }
