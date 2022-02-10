@@ -1,4 +1,6 @@
-import { Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, TypedMap, Value } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, TypedMap, Value } from "@graphprotocol/graph-ts";
+
+const NUMBER_SET = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
 class SavableEntity extends Entity {
 	save(): void {
@@ -29,8 +31,17 @@ export function getJSONValueSafe(key: string, json: TypedMap<string, JSONValue>,
 
 /** sets the key in the provided entity from the given JSON. Type checks before setting the value */
 export function setEntityValueSafe<T extends Entity>(entity: T, key: string, json: TypedMap<string, JSONValue>, kind: JSONValueKind): Result<T> {
-	const valueResult = getJSONValueSafe(key, json, kind)
-	if(valueResult.error) return { value: null, error: valueResult.error }
+	let valueResult = getJSONValueSafe(key, json, kind)
+	if(valueResult.error) {
+		// number can be a string as well, to accommodate bigints
+		// so we check if the string parsing works
+		if(kind === JSONValueKind.NUMBER) {
+			valueResult = getJSONValueSafe(key, json, JSONValueKind.STRING)
+		}
+		if(valueResult.error) {
+			return { value: null, error: valueResult.error }
+		}
+	}
 
 	const value = valueResult.value!
 
@@ -39,7 +50,16 @@ export function setEntityValueSafe<T extends Entity>(entity: T, key: string, jso
 			entity.set(key, Value.fromBoolean(value.toBool()))
 			break
 		case JSONValueKind.NUMBER:
-			entity.set(key, Value.fromBigInt(value.toBigInt()))
+			// get number as string
+			let decimalString = changetype<string>(value.data as u32)
+			// ensure it is a valid number
+			for(let i = 0;i < decimalString.length;i++) {
+				const char = decimalString.charAt(i)
+				if(!NUMBER_SET.includes(char)) {
+					return { value: null, error: `unexpected character '${char}' in integer '${key}'` }
+				}
+			}
+			entity.set(key, Value.fromBigInt(BigInt.fromString(decimalString)))
 			break
 		case JSONValueKind.STRING:
 			entity.set(key, Value.fromString(value.toString()))
