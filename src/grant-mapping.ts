@@ -21,6 +21,7 @@ export function handleGrantCreated(event: GrantCreated): void {
       entity.workspace = workspaceId
       entity.acceptingApplications = true
       entity.createdAtS = event.params.time.toI32()
+      entity.numberOfApplications = 0
 
       entity.save()
     } else {

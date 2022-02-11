@@ -104,6 +104,8 @@ type Grant @entity {
   updatedAtS: Int
   "Funding currently present in the grant"
   funding: BigInt!
+  "Number of applications in the grant"
+  numberOfApplications: Int!
 }
 
 type WorkspaceMember @entity {

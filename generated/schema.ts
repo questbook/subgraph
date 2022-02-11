@@ -412,6 +412,15 @@ export class Grant extends Entity {
   set funding(value: BigInt) {
     this.set("funding", Value.fromBigInt(value));
   }
+
+  get numberOfApplications(): i32 {
+    let value = this.get("numberOfApplications");
+    return value!.toI32();
+  }
+
+  set numberOfApplications(value: i32) {
+    this.set("numberOfApplications", Value.fromI32(value));
+  }
 }
 
 export class WorkspaceMember extends Entity {

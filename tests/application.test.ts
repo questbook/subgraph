@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
-import { ApplicationMilestone, FundsTransfer, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, Notification } from "../generated/schema"
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, Notification } from "../generated/schema"
 import { DisburseReward } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleApplicationSubmitted, handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
 import { handleDisburseReward } from "../src/grant-mapping"
@@ -46,6 +46,12 @@ export function runTests(): void {
 		assert.i32Equals(rev!.createdAtS, g!.updatedAtS)
 		assert.i32Equals(rev!.fields.length, g!.fields.length)
 		assert.i32Equals(rev!.milestones.length, g!.milestones.length)
+
+		// check grant application count increased
+		const grant = Grant.load(g!.grant)
+		
+		assert.assertNotNull(grant)
+		assert.assertTrue(grant!.numberOfApplications > 0)
 	})
 
 	test('should update an application', () => {

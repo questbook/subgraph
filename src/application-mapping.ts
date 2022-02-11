@@ -1,6 +1,6 @@
 import { log } from '@graphprotocol/graph-ts'
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationMilestone, GrantApplication } from '../generated/schema'
+import { ApplicationMilestone, Grant, GrantApplication } from '../generated/schema'
 import { addApplicationRevision } from './utils/add-application-revision'
 import { applicationFromApplicationCreateIpfs } from './utils/application-from-application-create-ipfs'
 import { applyApplicationUpdateIpfs } from './utils/apply-application-update-ipfs'
@@ -10,27 +10,37 @@ import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from
 export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	const applicationId = event.params.applicationId.toHex()
 	const milestoneCount = event.params.milestoneCount.toI32()
+	const grantId = event.params.grant.toHex()
 
-	const entityResult = applicationFromApplicationCreateIpfs(applicationId, event.params.metadataHash)
-	if(entityResult.value) {
-		const entity = entityResult.value!
-		if(entity.milestones.length !== milestoneCount) {
-			log.warning(`[${event.transaction.hash}] metadata has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
-			return
+	const grant = Grant.load(grantId)
+	if(grant) {
+		const entityResult = applicationFromApplicationCreateIpfs(applicationId, event.params.metadataHash)
+		if(entityResult.value) {
+			const entity = entityResult.value!
+			if(entity.milestones.length !== milestoneCount) {
+				log.warning(`[${event.transaction.hash}] metadata has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
+				return
+			}
+	
+			entity.createdAtS = event.params.time.toI32()
+			entity.updatedAtS = entity.createdAtS
+			entity.applicantId = event.params.owner
+			entity.grant = grantId
+			entity.state = "submitted"
+
+			grant.numberOfApplications += 1
+	
+			entity.save()
+
+			grant.save()
+	
+			addApplicationRevision(entity, event.transaction.from)
+			addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
+		} else {
+			log.warning(`[${event.transaction.hash}] error in mapping entity: "${entityResult.error!}"`, [])
 		}
-
-		entity.createdAtS = event.params.time.toI32()
-		entity.updatedAtS = entity.createdAtS
-		entity.applicantId = event.params.owner
-		entity.grant = event.params.grant.toHex()
-		entity.state = "submitted"
-
-		entity.save()
-
-		addApplicationRevision(entity, event.transaction.from)
-		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
 	} else {
-		log.warning(`[${event.transaction.hash}] error in mapping entity: "${entityResult.error!}"`, [])
+		log.warning(`[${event.transaction.hash}] grant (${grantId}) not found for application submit (${applicationId})`, [])
 	}
 }
 
