@@ -15,7 +15,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	if(entityResult.value) {
 		const entity = entityResult.value!
 		if(entity.milestones.length !== milestoneCount) {
-			log.warning(`metadata has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
+			log.warning(`[${event.transaction.hash}] metadata has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
 			return
 		}
 
@@ -30,7 +30,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 		addApplicationRevision(entity, event.transaction.from)
 		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
 	} else {
-		log.warning(`error in mapping entity: "${entityResult.error!}"`, [])
+		log.warning(`[${event.transaction.hash}] error in mapping entity: "${entityResult.error!}"`, [])
 	}
 }
 
@@ -63,12 +63,12 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		if(metaHash) {
 			const updateResult = applyApplicationUpdateIpfs(entity, event.params.metadataHash)
 			if(updateResult.error) {
-				log.warning(`invalid metadata update for application: ID="${applicationId}", error=${updateResult.error!}`, [])
+				log.warning(`[${event.transaction.hash}] invalid metadata update for application: ID="${applicationId}", error=${updateResult.error!}`, [])
 				return
 			}
 	
 			if(entity.milestones.length !== milestoneCount && milestoneCount > 0) {
-				log.warning(`metadata update has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
+				log.warning(`[${event.transaction.hash}] metadata update has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
 				return
 			}
 		}
@@ -78,7 +78,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		addApplicationRevision(entity, event.transaction.from)
 		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.transaction.from)
 	} else {
-		log.warning(`recv update for unknown application: ID="${applicationId}"`, [])
+		log.warning(`[${event.transaction.hash}] recv update for unknown application: ID="${applicationId}"`, [])
 	}
 }
 
@@ -105,7 +105,7 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 		if(event.params._metadataHash.length) {
 			const result = applyMilestoneUpdateIpfs(entity, event.params._metadataHash)
 			if(result.error) {
-				log.warning(`failed to update milestone from IPFS, ID="${milestoneId}" error=${result.error!}`, [])
+				log.warning(`[${event.transaction.hash}] failed to update milestone from IPFS, ID="${milestoneId}" error=${result.error!}`, [])
 				return
 			}
 		}
@@ -114,6 +114,6 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 
 		addMilestoneUpdateNotification(entity, applicationId, event.transaction.hash.toHex(), event.transaction.from)
 	} else {
-		log.warning(`recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+		log.warning(`[${event.transaction.hash}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
 	}
 }

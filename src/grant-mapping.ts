@@ -1,6 +1,6 @@
 import { log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from "../generated/schema"
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantFundUpdate } from "./utils/apply-grant-deposit"
 import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
@@ -8,21 +8,26 @@ import { grantFromGrantCreateIPFS } from "./utils/grant-from-grant-create-ipfs"
 import { addFundsTransferNotification } from "./utils/notifications"
 
 export function handleGrantCreated(event: GrantCreated): void {
-  const workspaceId = event.params.workspaceId
+  const workspaceId = event.params.workspaceId.toHex()
   const grantAddress = event.params.grantAddress
-  
-  const grantId = grantAddress.toHex()
-  const entityResult = grantFromGrantCreateIPFS(grantId, event.params.metadataHash)
-  if(entityResult.value) {
-    const entity = entityResult.value!
-    entity.creatorId = event.transaction.from
-    entity.workspace = workspaceId.toHex()
-    entity.acceptingApplications = true
-    entity.createdAtS = event.params.time.toI32()
 
-    entity.save()
+  const workspace = Workspace.load(workspaceId)
+  if(workspace) {
+    const grantId = grantAddress.toHex()
+    const entityResult = grantFromGrantCreateIPFS(grantId, event.params.metadataHash)
+    if(entityResult.value) {
+      const entity = entityResult.value!
+      entity.creatorId = event.transaction.from
+      entity.workspace = workspaceId
+      entity.acceptingApplications = true
+      entity.createdAtS = event.params.time.toI32()
+
+      entity.save()
+    } else {
+      log.warning(`[${event.transaction.hash}] error in mapping grant: "${entityResult.error!}"`, [])
+    }
   } else {
-    log.warning(`error in mapping entity: "${entityResult.error!}"`, [])
+    log.warning(`[${event.transaction.hash}] error in mapping grant: "workspace (${workspaceId}) not found"`, [])
   }
 }
 
@@ -64,7 +69,7 @@ export function handleDisburseReward(event: DisburseReward): void {
 
     addFundsTransferNotification(disburseEntity)
   } else {
-    log.warning(`recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+    log.warning(`[${event.transaction.hash}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
   }
 }
 
@@ -97,13 +102,13 @@ export function handleGrantUpdated(event: GrantUpdated): void {
     if(hash.length) {
       const result = applyGrantUpdateIpfs(entity, hash)
       if(result.error) {
-        log.warning(`error in updating grant metadata, error: ${result.error!}`, [])
+        log.warning(`[${event.transaction.hash}] error in updating grant metadata, error: ${result.error!}`, [])
         return
       }
     }
 
     entity.save()
   } else {
-    log.warning(`recv grant update for unknown grant, ID="${grantId}"`, [])
+    log.warning(`[${event.transaction.hash}] recv grant update for unknown grant, ID="${grantId}"`, [])
   }
 }

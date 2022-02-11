@@ -27,7 +27,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 
     entity.save()
   } else {
-    log.warning(`error in mapping workspace create: "${entityResult.error!}"`, [])
+    log.warning(`[${event.transaction.hash}] error in mapping workspace create: "${entityResult.error!}"`, [])
   }
 }
 
