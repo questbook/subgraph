@@ -1,13 +1,16 @@
-import { JSONValue, JSONValueKind } from "@graphprotocol/graph-ts"
+import { JSONValue, JSONValueKind, TypedMapEntry } from "@graphprotocol/graph-ts"
 import { GrantField } from "../../generated/schema"
 import { getJSONValueSafe, setEntityValueSafe, Result } from "./json"
 
-export function fieldFromJSONValue(json: JSONValue, grantId: string, _: i32): Result<GrantField> {
-	const fieldObj = json.toObject()
-	const fieldIdResult = getJSONValueSafe('id', fieldObj, JSONValueKind.STRING)
-	if(fieldIdResult.error) return { value: null, error: fieldIdResult.error }
+export function fieldFromJSONValue(grantId: string, entry: TypedMapEntry<string, JSONValue>): Result<GrantField> {
+	if(entry.value.kind !== JSONValueKind.OBJECT) {
+		return { value: null, error: `Expected grant field '${entry.key}' to be an object` }
+	}
 
-	const field = new GrantField(`${grantId}.${fieldIdResult.value!.toString()}`)
+	const fieldId = entry.key
+	const fieldObj = entry.value.toObject()
+
+	const field = new GrantField(`${grantId}.${fieldId.toString()}`)
 
 	let result = setEntityValueSafe(field, 'title', fieldObj, JSONValueKind.STRING)
 	if(result.error) return result
