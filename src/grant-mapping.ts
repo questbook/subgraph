@@ -7,6 +7,7 @@ import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
 import { isPlausibleIPFSHash } from "./utils/generics"
 import { grantFromGrantCreateIPFS } from "./utils/grant-from-grant-create-ipfs"
 import { addFundsTransferNotification } from "./utils/notifications"
+import { QBGrantsContract } from "../generated/templates"
 
 export function handleGrantCreated(event: GrantCreated): void {
   const workspaceId = event.params.workspaceId.toHex()
@@ -25,6 +26,8 @@ export function handleGrantCreated(event: GrantCreated): void {
       entity.numberOfApplications = 0
 
       entity.save()
+
+      QBGrantsContract.create(grantAddress)
     } else {
       log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant: "${entityResult.error!}"`, [])
     }
