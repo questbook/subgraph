@@ -19,7 +19,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 		if(entityResult.value) {
 			const entity = entityResult.value!
 			if(entity.milestones.length !== milestoneCount) {
-				log.warning(`[${event.transaction.hash}] metadata has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
+				log.warning(`[${event.transaction.hash.toHex()}] metadata has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
 				return
 			}
 	
@@ -38,10 +38,10 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 			addApplicationRevision(entity, event.transaction.from)
 			addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
 		} else {
-			log.warning(`[${event.transaction.hash}] error in mapping entity: "${entityResult.error!}"`, [])
+			log.warning(`[${event.transaction.hash.toHex()}] error in mapping entity: "${entityResult.error!}"`, [])
 		}
 	} else {
-		log.warning(`[${event.transaction.hash}] grant (${grantId}) not found for application submit (${applicationId})`, [])
+		log.warning(`[${event.transaction.hash.toHex()}] grant (${grantId}) not found for application submit (${applicationId})`, [])
 	}
 }
 
@@ -74,12 +74,12 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		if(isPlausibleIPFSHash(metaHash)) {
 			const updateResult = applyApplicationUpdateIpfs(entity, event.params.metadataHash)
 			if(updateResult.error) {
-				log.warning(`[${event.transaction.hash}] invalid metadata update for application: ID="${applicationId}", error=${updateResult.error!}`, [])
+				log.warning(`[${event.transaction.hash.toHex()}] invalid metadata update for application: ID="${applicationId}", error=${updateResult.error!}`, [])
 				return
 			}
 	
 			if(entity.milestones.length !== milestoneCount && milestoneCount > 0) {
-				log.warning(`[${event.transaction.hash}] metadata update has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
+				log.warning(`[${event.transaction.hash.toHex()}] metadata update has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
 				return
 			}
 		}
@@ -89,7 +89,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		addApplicationRevision(entity, event.transaction.from)
 		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.transaction.from)
 	} else {
-		log.warning(`[${event.transaction.hash}] recv update for unknown application: ID="${applicationId}"`, [])
+		log.warning(`[${event.transaction.hash.toHex()}] recv update for unknown application: ID="${applicationId}"`, [])
 	}
 }
 
@@ -116,7 +116,7 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 		if(isPlausibleIPFSHash(event.params._metadataHash)) {
 			const result = applyMilestoneUpdateIpfs(entity, event.params._metadataHash)
 			if(result.error) {
-				log.warning(`[${event.transaction.hash}] failed to update milestone from IPFS, ID="${milestoneId}" error=${result.error!}`, [])
+				log.warning(`[${event.transaction.hash.toHex()}] failed to update milestone from IPFS, ID="${milestoneId}" error=${result.error!}`, [])
 				return
 			}
 		}
@@ -125,6 +125,6 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 
 		addMilestoneUpdateNotification(entity, applicationId, event.transaction.hash.toHex(), event.transaction.from)
 	} else {
-		log.warning(`[${event.transaction.hash}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+		log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
 	}
 }

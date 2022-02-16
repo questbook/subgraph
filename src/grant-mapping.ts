@@ -26,10 +26,10 @@ export function handleGrantCreated(event: GrantCreated): void {
 
       entity.save()
     } else {
-      log.warning(`[${event.transaction.hash}] error in mapping grant: "${entityResult.error!}"`, [])
+      log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant: "${entityResult.error!}"`, [])
     }
   } else {
-    log.warning(`[${event.transaction.hash}] error in mapping grant: "workspace (${workspaceId}) not found"`, [])
+    log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant: "workspace (${workspaceId}) not found"`, [])
   }
 }
 
@@ -71,7 +71,7 @@ export function handleDisburseReward(event: DisburseReward): void {
 
     addFundsTransferNotification(disburseEntity)
   } else {
-    log.warning(`[${event.transaction.hash}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+    log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
   }
 }
 
@@ -112,13 +112,13 @@ export function handleGrantUpdated(event: GrantUpdated): void {
     if(isPlausibleIPFSHash(hash)) {
       const result = applyGrantUpdateIpfs(entity, hash)
       if(result.error) {
-        log.warning(`[${event.transaction.hash}] error in updating grant metadata, error: ${result.error!}`, [])
+        log.warning(`[${event.transaction.hash.toHex()}] error in updating grant metadata, error: ${result.error!}`, [])
         return
       }
     }
 
     entity.save()
   } else {
-    log.warning(`[${event.transaction.hash}] recv grant update for unknown grant, ID="${grantId}"`, [])
+    log.warning(`[${event.transaction.hash.toHex()}] recv grant update for unknown grant, ID="${grantId}"`, [])
   }
 }
