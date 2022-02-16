@@ -1,7 +1,7 @@
 import { log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from "../generated/schema"
-import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
+import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantFundUpdate } from "./utils/apply-grant-deposit"
 import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
 import { isPlausibleIPFSHash } from "./utils/generics"
@@ -84,14 +84,6 @@ export function handleDisburseRewardFailed(event: DisburseRewardFailed): void {
 
 export function handleFundsDepositFailed(event: FundsDepositFailed): void {
   
-}
-
-export function handleFundsDeposited(event: FundsDeposited): void {
-  const grantId = event.transaction.to!.toHex()
-  const success = applyGrantFundUpdate(event, true, grantId, event.params.amount, event.transaction.to!, event.params.time.toI32())
-  if(!success) {
-    log.error(`funds deposit for grant, but grant not found, ID=${grantId}`, [])
-  }
 }
 
 export function handleFundsWithdrawn(event: FundsWithdrawn): void {

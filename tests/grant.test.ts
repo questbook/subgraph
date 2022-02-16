@@ -2,9 +2,11 @@ import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
 import { FundsTransfer, Grant, Notification } from "../generated/schema"
-import { FundsDeposited, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
-import { handleFundsDeposited, handleFundsWithdrawn, handleGrantCreated, handleGrantUpdated } from '../src/grant-mapping'
+import { FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
+import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdated } from '../src/grant-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, MOCK_GRANT_ID, MOCK_WORKSPACE_ID } from "./utils"
+import { handleTransfer } from '../src/transfer-mapping' 
+import { Transfer } from "../generated/GrantTransfersDAI/ERC20"
 
 export function runTests(): void {
 
@@ -44,25 +46,23 @@ export function runTests(): void {
 		const ev = newMockEvent()
 
 		ev.parameters = [
-			new ethereum.EventParam('asset', ethereum.Value.fromAddress( Address.fromString("0xB23081F360e3847006dB660bae1c6d1b2e17eC2B") )),
-			new ethereum.EventParam('amount', ethereum.Value.fromI32( 100 )),
-			// the IPFS hash contains mock data for the workspace
-			new ethereum.EventParam('time', ethereum.Value.fromI32(124)),
+			new ethereum.EventParam('from', ethereum.Value.fromAddress( Address.fromString("0xB23081F360e3847006dB660bae1c6d1b2e17eC2B") )),
+			new ethereum.EventParam('to', ethereum.Value.fromAddress( MOCK_GRANT_ID )),
+			new ethereum.EventParam('value', ethereum.Value.fromI32( 100 )),
 		]
-		ev.transaction.to = MOCK_GRANT_ID
 		ev.transaction.hash = Bytes.fromByteArray( Bytes.fromHexString("0xC13081F360e3847006dB660bae1c6d1b2e17eC2B") )
 
-		const event = new FundsDeposited(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleFundsDeposited(event)
+		const event = new Transfer(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleTransfer(event)
 
 		const gUpdate = Grant.load(g!.id)
-		assert.i32Equals(gUpdate!.updatedAtS, 124)
+		assert.i32Equals(gUpdate!.updatedAtS, event.block.timestamp.toI32())
 		assert.assertTrue(gUpdate!.funding.ge( BigInt.fromString('100') ))
 
 		const fundEntity = FundsTransfer.load(ev.transaction.hash.toHex())
 
 		assert.assertNotNull(fundEntity)
-		assert.i32Equals(fundEntity!.createdAtS, 124)
+		assert.i32Equals(fundEntity!.createdAtS, event.block.timestamp.toI32())
 		assert.bytesEquals(fundEntity!.sender, ev.transaction.from)
 		assert.bigIntEquals(fundEntity!.amount, BigInt.fromI32(100))
 		assert.stringEquals(fundEntity!.type, "funds_deposited")
@@ -82,11 +82,11 @@ export function runTests(): void {
 		ev.parameters = [
 			new ethereum.EventParam('asset', ethereum.Value.fromAddress( Address.fromString("0xB23081F360e3847006dB660bae1c6d1b2e17eC2B") )),
 			new ethereum.EventParam('amount', ethereum.Value.fromI32( 100 )),
-			new ethereum.EventParam('asset', ethereum.Value.fromAddress( Address.fromString("0xC35081F360e3847006dB660bae1c6d1b2e17eC2B") )),
+			new ethereum.EventParam('recipient', ethereum.Value.fromAddress( Address.fromString("0xC35081F360e3847006dB660bae1c6d1b2e17eC2B") )),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
 		]
-		ev.transaction.from = MOCK_GRANT_ID
+		ev.transaction.to = MOCK_GRANT_ID
 		ev.transaction.hash = Bytes.fromByteArray( Bytes.fromHexString("0xC13081F360e3847006dB660bae1c6d1b2e17eC2C") )
 
 		const event = new FundsWithdrawn(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
