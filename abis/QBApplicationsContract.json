@@ -248,6 +248,11 @@
 				"internalType": "enum ApplicationRegistry.ApplicationState",
 				"name": "state",
 				"type": "uint8"
+			},
+			{
+				"internalType": "bool",
+				"name": "milestonesDone",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -274,24 +279,32 @@
 				"internalType": "string",
 				"name": "_reasonMetadataHash",
 				"type": "string"
-			},
-			{
-				"internalType": "enum ApplicationRegistry.DisbursalType",
-				"name": "_disbursalType",
-				"type": "uint8"
-			},
-			{
-				"internalType": "contract IERC20",
-				"name": "_disbursalAsset",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_disbursalAmount",
-				"type": "uint256"
 			}
 		],
 		"name": "approveMilestone",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint96",
+				"name": "_applicationId",
+				"type": "uint96"
+			},
+			{
+				"internalType": "uint96",
+				"name": "_workspaceId",
+				"type": "uint96"
+			},
+			{
+				"internalType": "string",
+				"name": "_reasonMetadataHash",
+				"type": "string"
+			}
+		],
+		"name": "completeApplication",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

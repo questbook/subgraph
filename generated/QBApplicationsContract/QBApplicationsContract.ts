@@ -186,6 +186,7 @@ export class QBApplicationsContract__applicationsResult {
   value4: BigInt;
   value5: string;
   value6: i32;
+  value7: boolean;
 
   constructor(
     value0: BigInt,
@@ -194,7 +195,8 @@ export class QBApplicationsContract__applicationsResult {
     value3: Address,
     value4: BigInt,
     value5: string,
-    value6: i32
+    value6: i32,
+    value7: boolean
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -203,6 +205,7 @@ export class QBApplicationsContract__applicationsResult {
     this.value4 = value4;
     this.value5 = value5;
     this.value6 = value6;
+    this.value7 = value7;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -217,6 +220,7 @@ export class QBApplicationsContract__applicationsResult {
       "value6",
       ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value6))
     );
+    map.set("value7", ethereum.Value.fromBoolean(this.value7));
     return map;
   }
 }
@@ -284,7 +288,7 @@ export class QBApplicationsContract extends ethereum.SmartContract {
   applications(param0: BigInt): QBApplicationsContract__applicationsResult {
     let result = super.call(
       "applications",
-      "applications(uint96):(uint96,uint96,address,address,uint48,string,uint8)",
+      "applications(uint96):(uint96,uint96,address,address,uint48,string,uint8,bool)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
@@ -295,7 +299,8 @@ export class QBApplicationsContract extends ethereum.SmartContract {
       result[3].toAddress(),
       result[4].toBigInt(),
       result[5].toString(),
-      result[6].toI32()
+      result[6].toI32(),
+      result[7].toBoolean()
     );
   }
 
@@ -304,7 +309,7 @@ export class QBApplicationsContract extends ethereum.SmartContract {
   ): ethereum.CallResult<QBApplicationsContract__applicationsResult> {
     let result = super.tryCall(
       "applications",
-      "applications(uint96):(uint96,uint96,address,address,uint48,string,uint8)",
+      "applications(uint96):(uint96,uint96,address,address,uint48,string,uint8,bool)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
     if (result.reverted) {
@@ -319,7 +324,8 @@ export class QBApplicationsContract extends ethereum.SmartContract {
         value[3].toAddress(),
         value[4].toBigInt(),
         value[5].toString(),
-        value[6].toI32()
+        value[6].toI32(),
+        value[7].toBoolean()
       )
     );
   }
@@ -427,24 +433,50 @@ export class ApproveMilestoneCall__Inputs {
   get _reasonMetadataHash(): string {
     return this._call.inputValues[3].value.toString();
   }
-
-  get _disbursalType(): i32 {
-    return this._call.inputValues[4].value.toI32();
-  }
-
-  get _disbursalAsset(): Address {
-    return this._call.inputValues[5].value.toAddress();
-  }
-
-  get _disbursalAmount(): BigInt {
-    return this._call.inputValues[6].value.toBigInt();
-  }
 }
 
 export class ApproveMilestoneCall__Outputs {
   _call: ApproveMilestoneCall;
 
   constructor(call: ApproveMilestoneCall) {
+    this._call = call;
+  }
+}
+
+export class CompleteApplicationCall extends ethereum.Call {
+  get inputs(): CompleteApplicationCall__Inputs {
+    return new CompleteApplicationCall__Inputs(this);
+  }
+
+  get outputs(): CompleteApplicationCall__Outputs {
+    return new CompleteApplicationCall__Outputs(this);
+  }
+}
+
+export class CompleteApplicationCall__Inputs {
+  _call: CompleteApplicationCall;
+
+  constructor(call: CompleteApplicationCall) {
+    this._call = call;
+  }
+
+  get _applicationId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _reasonMetadataHash(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+}
+
+export class CompleteApplicationCall__Outputs {
+  _call: CompleteApplicationCall;
+
+  constructor(call: CompleteApplicationCall) {
     this._call = call;
   }
 }

@@ -131,7 +131,6 @@ templates:
       entities:
         - DisburseReward
         - GrantUpdated
-        - FundsDeposited
         - FundsDepositFailed
         - DisburseReward
         - DisburseRewardFailed
@@ -145,8 +144,6 @@ templates:
           handler: handleDisburseRewardFailed
         - event: FundsDepositFailed(address,uint256,uint256)
           handler: handleFundsDepositFailed
-        - event: FundsDeposited(address,uint256,uint256)
-          handler: handleFundsDeposited
         - event: GrantUpdated(indexed uint96,string,bool,uint256)
           handler: handleGrantUpdated
         - event: FundsWithdrawn(address,uint256,address,uint256)

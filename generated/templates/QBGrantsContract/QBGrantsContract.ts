@@ -112,32 +112,6 @@ export class FundsDepositFailed__Params {
   }
 }
 
-export class FundsDeposited extends ethereum.Event {
-  get params(): FundsDeposited__Params {
-    return new FundsDeposited__Params(this);
-  }
-}
-
-export class FundsDeposited__Params {
-  _event: FundsDeposited;
-
-  constructor(event: FundsDeposited) {
-    this._event = event;
-  }
-
-  get asset(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get amount(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get time(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-}
-
 export class FundsWithdrawn extends ethereum.Event {
   get params(): FundsWithdrawn__Params {
     return new FundsWithdrawn__Params(this);
@@ -340,40 +314,6 @@ export class ConstructorCall__Outputs {
   }
 }
 
-export class DepositFundsCall extends ethereum.Call {
-  get inputs(): DepositFundsCall__Inputs {
-    return new DepositFundsCall__Inputs(this);
-  }
-
-  get outputs(): DepositFundsCall__Outputs {
-    return new DepositFundsCall__Outputs(this);
-  }
-}
-
-export class DepositFundsCall__Inputs {
-  _call: DepositFundsCall;
-
-  constructor(call: DepositFundsCall) {
-    this._call = call;
-  }
-
-  get _erc20Interface(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _amount(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-}
-
-export class DepositFundsCall__Outputs {
-  _call: DepositFundsCall;
-
-  constructor(call: DepositFundsCall) {
-    this._call = call;
-  }
-}
-
 export class DisburseRewardCall extends ethereum.Call {
   get inputs(): DisburseRewardCall__Inputs {
     return new DisburseRewardCall__Inputs(this);
@@ -405,10 +345,6 @@ export class DisburseRewardCall__Inputs {
 
   get _amount(): BigInt {
     return this._call.inputValues[3].value.toBigInt();
-  }
-
-  get _sender(): Address {
-    return this._call.inputValues[4].value.toAddress();
   }
 }
 
@@ -451,10 +387,6 @@ export class DisburseRewardP2PCall__Inputs {
 
   get _amount(): BigInt {
     return this._call.inputValues[3].value.toBigInt();
-  }
-
-  get _sender(): Address {
-    return this._call.inputValues[4].value.toAddress();
   }
 }
 
