@@ -4,7 +4,7 @@ import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactory
 import { FundsTransfer, Grant, Notification } from "../generated/schema"
 import { FundsDeposited, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleFundsDeposited, handleFundsWithdrawn, handleGrantCreated, handleGrantUpdated } from '../src/grant-mapping'
-import { assertArrayNotEmpty, createGrant, MOCK_GRANT_ID, MOCK_WORKSPACE_ID } from "./utils"
+import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, MOCK_GRANT_ID, MOCK_WORKSPACE_ID } from "./utils"
 
 export function runTests(): void {
 
@@ -134,12 +134,16 @@ export function runTests(): void {
 		assert.booleanEquals(gUpdate!.acceptingApplications, false)
 		assert.stringEquals(gUpdate!.workspace, BigInt.fromI32(0x03).toHex())
 
+		assertStringNotEmpty(gUpdate!.title)
+		assertStringNotEmpty(gUpdate!.summary)
+
+		assert.assertTrue(gUpdate!.summary != g!.summary)
+		assert.assertTrue(gUpdate!.title != g!.title)
 		assert.assertTrue(gUpdate!.details != g!.details)
 		assert.assertTrue(gUpdate!.fields[0] != g!.fields[0])
-		
 	})
 }
 
-const UPDATE_JSON = 'json:{"details":"Lol lol bo gofijvoh ozonupel jiwohagu ahaejbi inegicla afinig sogbegga rasuet gesvakwa eme tulnikid kob kuwepi. Atomo seg izoro wepodab il pihem kugsodbe cu fin baditbe kodlad lebbil. Upi wesma kevila can kog mace hubrala pewfe ha mepaj kubzige fi gesze nisrop ralnep wi alirajze pajcodte. Tucatre deumduz hawras tikfu ced walloje ra ca repotcaz kibub zucdute ezlon figuec tiffuj tamhava vij muvilsi. Lahhur mozmig tukse uhenewret caraub hah megizvos eb dabinu vi nanav sa mo masowbiz. As lavotu kuanawac ujocoh keranhig commarup pi ed turoodi jesganen za ciwivi jagiheke ran kanazuc eruwoku pulhikmu. Suib idpit kuako bajo nijre ib ecu ubbe ed momijep cabgi ga ubzof geno biz kancaka fazfeaca.","fields":{"applicantName2":{"title":"Uhpu ru mopuh vahkag ju kusihod lug cu cafle ravibara juebufa ap ta.","inputType":"long-form"},"applicantEmail":{"title":"Heojba binli zepah maposunur pa mateveib dofeh rutafudug cuwil ol ina jafrak.","inputType":"long-form"},"projectName":{"title":"Pawiv zarmep ilautebe uza gemele aluzamo agvici di sop itoam nudiwli liiracid kar okuidu nenejni dag uw mijceuf.","inputType":"long-form"},"projectDetails":{"title":"Tekaiz konam lararu kaovuota jib logruewu fevu owe zi tuzze guw ficaler.","inputType":"short-form"},"fundingBreakdown":{"title":"Nuni jaslaf jenunis nusrej doc ize rirma azraphe tovovugu ze ku sogijvem mop suctewno.","inputType":"short-form"}},"createdAt":"2022-01-29T15:16:07.459Z"}'
+const UPDATE_JSON = 'json:{"title":"testing 123","summary":"abcd","details":"Lol lol bo gofijvoh ozonupel jiwohagu ahaejbi inegicla afinig sogbegga rasuet gesvakwa eme tulnikid kob kuwepi. Atomo seg izoro wepodab il pihem kugsodbe cu fin baditbe kodlad lebbil. Upi wesma kevila can kog mace hubrala pewfe ha mepaj kubzige fi gesze nisrop ralnep wi alirajze pajcodte. Tucatre deumduz hawras tikfu ced walloje ra ca repotcaz kibub zucdute ezlon figuec tiffuj tamhava vij muvilsi. Lahhur mozmig tukse uhenewret caraub hah megizvos eb dabinu vi nanav sa mo masowbiz. As lavotu kuanawac ujocoh keranhig commarup pi ed turoodi jesganen za ciwivi jagiheke ran kanazuc eruwoku pulhikmu. Suib idpit kuako bajo nijre ib ecu ubbe ed momijep cabgi ga ubzof geno biz kancaka fazfeaca.","fields":{"applicantName2":{"title":"Uhpu ru mopuh vahkag ju kusihod lug cu cafle ravibara juebufa ap ta.","inputType":"long-form"},"applicantEmail":{"title":"Heojba binli zepah maposunur pa mateveib dofeh rutafudug cuwil ol ina jafrak.","inputType":"long-form"},"projectName":{"title":"Pawiv zarmep ilautebe uza gemele aluzamo agvici di sop itoam nudiwli liiracid kar okuidu nenejni dag uw mijceuf.","inputType":"long-form"},"projectDetails":{"title":"Tekaiz konam lararu kaovuota jib logruewu fevu owe zi tuzze guw ficaler.","inputType":"short-form"},"fundingBreakdown":{"title":"Nuni jaslaf jenunis nusrej doc ize rirma azraphe tovovugu ze ku sogijvem mop suctewno.","inputType":"short-form"}},"createdAt":"2022-01-29T15:16:07.459Z"}'
 
 runTests()

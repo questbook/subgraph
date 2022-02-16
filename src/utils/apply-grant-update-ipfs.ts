@@ -1,7 +1,7 @@
 import { JSONValue, JSONValueKind, TypedMap } from "@graphprotocol/graph-ts";
-import { Grant } from "../../generated/schema";
+import { Grant, Reward } from "../../generated/schema";
 import { fieldFromJSONValue } from "./field-from-json-value";
-import { getJSONObjectFromIPFS, getJSONValueSafe, Result, setEntityValueSafe } from "./json";
+import { byteArrayFromHexStringSafe, getJSONObjectFromIPFS, getJSONValueSafe, Result, setEntityValueSafe } from "./json";
 
 export function applyGrantUpdateIpfs(entity: Grant, hash: string): Result<Grant> {
 	const jsonObjResult = getJSONObjectFromIPFS(hash)
@@ -16,6 +16,25 @@ export function applyGrantUpdateIpfs(entity: Grant, hash: string): Result<Grant>
 export function applyGrantUpdateFromJSON(entity: Grant, obj: TypedMap<string, JSONValue>, expectAllPresent: boolean): Result<Grant> {
 	let result = setEntityValueSafe(entity, 'details', obj, JSONValueKind.STRING)
 	if(result.error && expectAllPresent) return result
+
+	result = setEntityValueSafe(entity, 'title', obj, JSONValueKind.STRING)
+	if(result.error && expectAllPresent) return result
+
+	result = setEntityValueSafe(entity, 'summary', obj, JSONValueKind.STRING)
+	if(result.error && expectAllPresent) return result
+
+	const rewardObj = obj.get('reward')
+	if(rewardObj) {
+		const reward = rewardFromJSONValue(rewardObj, entity.id)
+		if(reward.error) {
+			return { value: null, error: reward.error }
+		}
+		reward.value!.save()
+
+		entity.reward = reward.value!.id
+	} else if(expectAllPresent) {
+		return { value: null, error: "Reward not present" }
+	}
 
 	const fieldsObjResult = getJSONValueSafe('fields', obj, JSONValueKind.OBJECT)
 	if(fieldsObjResult.error && expectAllPresent) return { value: null, error: fieldsObjResult.error }
@@ -45,3 +64,23 @@ export function applyGrantUpdateFromJSON(entity: Grant, obj: TypedMap<string, JS
 	return { value: entity, error: null }
 }
 
+function rewardFromJSONValue(json: JSONValue, grantId: string): Result<Reward> {
+	if(json.kind !== JSONValueKind.OBJECT) {
+		return { value: null, error: 'Expected object for "reward"' }
+	}
+	const obj = json.toObject()
+    // construct reward from event data
+    const reward = new Reward(`${grantId}.reward`)
+	let result = setEntityValueSafe(reward, 'committed', obj, JSONValueKind.NUMBER)
+	if(result.error) return result
+
+	const assetResult = getJSONValueSafe('asset', obj, JSONValueKind.STRING)
+	if(assetResult.error) return { value: null, error: assetResult.error }
+
+	const hexResult = byteArrayFromHexStringSafe(assetResult.value!.toString())
+	if(hexResult.error) return { value: null, error: hexResult.error }
+	
+	reward.asset = hexResult.value!
+
+	return { value: reward, error: null }
+}
