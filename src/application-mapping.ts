@@ -5,6 +5,7 @@ import { addApplicationRevision } from './utils/add-application-revision'
 import { applicationFromApplicationCreateIpfs } from './utils/application-from-application-create-ipfs'
 import { applyApplicationUpdateIpfs } from './utils/apply-application-update-ipfs'
 import { applyMilestoneUpdateIpfs } from './utils/apply-milestone-update-ipfs'
+import { isPlausibleIPFSHash } from './utils/generics'
 import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from './utils/notifications'
 
 export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
@@ -69,8 +70,8 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 				entity.state = 'completed'
 			break
 		}
-
-		if(metaHash) {
+		// some valid IPFS hash
+		if(isPlausibleIPFSHash(metaHash)) {
 			const updateResult = applyApplicationUpdateIpfs(entity, event.params.metadataHash)
 			if(updateResult.error) {
 				log.warning(`[${event.transaction.hash}] invalid metadata update for application: ID="${applicationId}", error=${updateResult.error!}`, [])
@@ -112,7 +113,7 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 			break
 		}
 
-		if(event.params._metadataHash.length) {
+		if(isPlausibleIPFSHash(event.params._metadataHash)) {
 			const result = applyMilestoneUpdateIpfs(entity, event.params._metadataHash)
 			if(result.error) {
 				log.warning(`[${event.transaction.hash}] failed to update milestone from IPFS, ID="${milestoneId}" error=${result.error!}`, [])

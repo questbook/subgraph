@@ -4,6 +4,7 @@ import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace
 import { DisburseReward, DisburseRewardFailed, FundsDeposited, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantFundUpdate } from "./utils/apply-grant-deposit"
 import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
+import { isPlausibleIPFSHash } from "./utils/generics"
 import { grantFromGrantCreateIPFS } from "./utils/grant-from-grant-create-ipfs"
 import { addFundsTransferNotification } from "./utils/notifications"
 
@@ -100,7 +101,7 @@ export function handleGrantUpdated(event: GrantUpdated): void {
     entity.acceptingApplications = event.params.active
 
     const hash = event.params.metadataHash
-    if(hash.length) {
+    if(isPlausibleIPFSHash(hash)) {
       const result = applyGrantUpdateIpfs(entity, hash)
       if(result.error) {
         log.warning(`[${event.transaction.hash}] error in updating grant metadata, error: ${result.error!}`, [])
