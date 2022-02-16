@@ -2,7 +2,7 @@ import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts"
 import { FundsTransfer, Grant } from "../../generated/schema"
 import { addFundsTransferNotification } from "./notifications"
 
-export function applyGrantFundUpdate(event: ethereum.Event, isDeposit: boolean, grantId: string, amount: BigInt, recipient: Address, eventTime: i32): void {
+export function applyGrantFundUpdate(event: ethereum.Event, isDeposit: boolean, grantId: string, amount: BigInt, recipient: Address, eventTime: i32): boolean {
 	const transactionId = event.transaction.hash.toHex()
 
 	const entity = Grant.load(grantId)
@@ -31,7 +31,10 @@ export function applyGrantFundUpdate(event: ethereum.Event, isDeposit: boolean, 
 		addFundsTransferNotification(fundEntity)
 
 		log.info(`added funding to grant ID=${grantId}, amount=${amount.toString()}`, [])
+		return true
 	} else {
 		log.debug(`recv funds ${isDeposit ? "deposit" : "withdraw"} for unknown grant, ID="${grantId}"`, [])
 	}
+
+	return false
 }

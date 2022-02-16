@@ -84,11 +84,19 @@ export function handleFundsDepositFailed(event: FundsDepositFailed): void {
 }
 
 export function handleFundsDeposited(event: FundsDeposited): void {
-  applyGrantFundUpdate(event, true, event.transaction.to!.toHex(), event.params.amount, event.transaction.to!, event.params.time.toI32())
+  const grantId = event.transaction.to!.toHex()
+  const success = applyGrantFundUpdate(event, true, grantId, event.params.amount, event.transaction.to!, event.params.time.toI32())
+  if(!success) {
+    log.error(`funds deposit for grant, but grant not found, ID=${grantId}`, [])
+  }
 }
 
 export function handleFundsWithdrawn(event: FundsWithdrawn): void {
-  applyGrantFundUpdate(event, false, event.transaction.from.toHex(), event.params.amount, event.params.recipient, event.params.time.toI32())
+  const grantId = event.transaction.from.toHex()
+  const success = applyGrantFundUpdate(event, false, grantId, event.params.amount, event.params.recipient, event.params.time.toI32())
+  if(!success) {
+    log.error(`funds withdraw for grant, but grant not found, ID=${grantId}`, [])
+  }
 }
 
 export function handleGrantUpdated(event: GrantUpdated): void {
