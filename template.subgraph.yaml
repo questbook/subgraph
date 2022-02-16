@@ -4,7 +4,7 @@ schema:
 dataSources:
   - kind: ethereum
     name: QBWorkspaceRegistryContract
-    network: "{{network}}"
+    network: {{network}}
     source:
       address: "{{workspace.address}}"
       abi: QBWorkspaceRegistryContract
@@ -33,7 +33,7 @@ dataSources:
       file: ./src/workspace-mapping.ts
   - kind: ethereum
     name: QBApplicationsContract
-    network: "{{network}}"
+    network: {{network}}
     source:
       address: "{{applications.address}}"
       abi: QBApplicationsContract
@@ -59,7 +59,7 @@ dataSources:
       file: ./src/application-mapping.ts
   - kind: ethereum/contract
     name: QBGrantFactoryContract
-    network: "{{network}}"
+    network: {{network}}
     source:
       address: "{{grantFactory.address}}"
       abi: QBGrantFactoryContract
@@ -79,7 +79,7 @@ dataSources:
       file: ./src/grant-mapping.ts
   - kind: ethereum
     name: GrantTransfersDAI
-    network: "{{network}}"
+    network: {{network}}
     source:
       address: "{{dai.address}}"
       abi: ERC20
@@ -99,7 +99,7 @@ dataSources:
       file: ./src/transfer-mapping.ts
   - kind: ethereum
     name: GrantTransfersWETH
-    network: "{{network}}"
+    network: {{network}}
     source:
       address: "{{weth.address}}"
       abi: ERC20
@@ -118,9 +118,9 @@ dataSources:
           handler: handleTransfer
       file: ./src/transfer-mapping.ts
 templates:
-  - kind: ethereum/contract
+  - kind: ethereum
     name: QBGrantsContract
-    network: "{{network}}"
+    network: {{network}}
     source:
       abi: QBGrantsContract
     mapping:
