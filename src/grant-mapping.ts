@@ -95,7 +95,7 @@ export function handleFundsDeposited(event: FundsDeposited): void {
 }
 
 export function handleFundsWithdrawn(event: FundsWithdrawn): void {
-  const grantId = event.transaction.from.toHex()
+  const grantId = event.transaction.to!.toHex()
   const success = applyGrantFundUpdate(event, false, grantId, event.params.amount, event.params.recipient, event.params.time.toI32())
   if(!success) {
     log.error(`funds withdraw for grant, but grant not found, ID=${grantId}`, [])
