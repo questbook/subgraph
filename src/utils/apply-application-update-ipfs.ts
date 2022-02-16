@@ -19,21 +19,25 @@ export function applyApplicationUpdateFromJSON(entity: GrantApplication, obj: Ty
 	let result = setEntityValueSafe(entity, 'feedback', obj, JSONValueKind.STRING)
 
 	const fieldsObjResult = getJSONValueSafe('fields', obj, JSONValueKind.OBJECT)
-	// only project details can be updated
-	// so if it is present, update the field
-	if(fieldsObjResult.value) {
-		const entryList = fieldsObjResult.value!.toObject().entries
-		for(let i = 0;i < entryList.length;i++) {
-			if(entryList[i].key === PROJECT_DETAILS_KEY) {
-				const result = parseGrantFieldAnswer(entity.id, entryList[i])
-				if(result.error) {
-					return { value: null, error: result.error }
-				}
+	if(fieldsObjResult.error && expectAllPresent) return { value: null, error: fieldsObjResult.error }
 
-				result.value!.save()
-				break
+	if(fieldsObjResult.value) {	
+		const fieldsObj = fieldsObjResult.value!.toObject()
+		const fieldsList = fieldsObj.entries
+
+		const fields: string[] = []
+
+		for(let i = 0; i < fieldsList.length;i++) {
+			const result = parseGrantFieldAnswer(entity.id, fieldsList[i])
+			if(result.error) {
+				return { value: null, error: result.error }
 			}
+
+			result.value!.save()
+			fields.push(result.value!.id)
 		}
+
+		entity.fields = fields
 	}
 
 	result = setEntityArrayValueSafe(entity, 'milestones', obj, JSONValueKind.OBJECT, milestoneFromJSONValue)

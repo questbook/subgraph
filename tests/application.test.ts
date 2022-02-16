@@ -76,7 +76,9 @@ export function runTests(): void {
 		const gUpdate = GrantApplication.load(g!.id)
 		assert.i32Equals(gUpdate!.updatedAtS, 125)
 		assert.stringEquals(gUpdate!.state, 'resubmit')
-		// check project details were updated
+		// check fields were updated
+		assert.i32Equals(gUpdate!.fields.length, 1)
+		// project details were updated, check vlaue changed
 		const projectDetailsFieldUpdate = GrantFieldAnswer.load(`${g!.id}.projectDetails.field`)!
 		assert.assertTrue(projectDetailsField.value != projectDetailsFieldUpdate.value)
 		// did not update milestones, should remain the same
