@@ -84,6 +84,15 @@ export function addApplicationUpdateNotification(application: GrantApplication, 
 			notif.type = "application_rejected"
 
 			notif.recipientIds = [application.applicantId]
+		} else if(application.state === 'completed') {
+			notif.title = "Application Completed"
+			notif.content = `Your application to '${grant.title}' was marked completed. Congratulations!`
+			notif.type = "application_completed"
+
+			notif.recipientIds = [application.applicantId]
+		} else {
+			log.warning(`invalid state for notification on '${application.id}' (${application.state})`, [])
+			return
 		}
 
 		notif.entityId = application.id

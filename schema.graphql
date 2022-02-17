@@ -34,7 +34,8 @@ enum NotificationType {
   milestone_rejected,
   funds_disbursed,
   funds_deposited,
-  funds_withdrawn
+  funds_withdrawn,
+  application_completed
 }
 
 enum FundsTransferType {
