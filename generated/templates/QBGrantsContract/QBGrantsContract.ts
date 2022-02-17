@@ -43,8 +43,12 @@ export class DisburseReward__Params {
     return this._event.parameters[4].value.toBigInt();
   }
 
+  get isP2P(): boolean {
+    return this._event.parameters[5].value.toBoolean();
+  }
+
   get time(): BigInt {
-    return this._event.parameters[5].value.toBigInt();
+    return this._event.parameters[6].value.toBigInt();
   }
 }
 

@@ -138,7 +138,7 @@ templates:
         - name: QBGrantsContract
           file: ./abis/QBGrantsContract.json
       eventHandlers:
-        - event: DisburseReward(indexed uint96,uint96,address,address,uint256,uint256)
+        - event: DisburseReward(indexed uint96,uint96,address,address,uint256,bool,uint256)
           handler: handleDisburseReward
         - event: DisburseRewardFailed(indexed uint96,uint96,address,address,uint256,uint256)
           handler: handleDisburseRewardFailed
