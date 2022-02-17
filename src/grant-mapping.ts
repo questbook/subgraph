@@ -59,15 +59,18 @@ export function handleDisburseReward(event: DisburseReward): void {
     entity.updatedAtS = event.params.time.toI32()
 
     // find grant and reduce the amount of the funding
-    const application = GrantApplication.load(applicationId)
-    if(application) {
-      const grantEntity = Grant.load(application.grant)
-      if(grantEntity) {
-        grantEntity.funding = grantEntity.funding.minus(amountPaid)
-        grantEntity.save()
-      }
+    // only if not a P2P exchange
+    if(!event.params.isP2P) {
+      const application = GrantApplication.load(applicationId)
+      if(application) {
+        const grantEntity = Grant.load(application.grant)
+        if(grantEntity) {
+          grantEntity.funding = grantEntity.funding.minus(amountPaid)
+          grantEntity.save()
+        }
 
-      disburseEntity.grant = application.grant
+        disburseEntity.grant = application.grant
+      }
     }
 
     entity.save()
