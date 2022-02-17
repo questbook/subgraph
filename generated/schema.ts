@@ -430,6 +430,7 @@ export class WorkspaceMember extends Entity {
 
     this.set("actorId", Value.fromBytes(Bytes.empty()));
     this.set("accessLevel", Value.fromString(""));
+    this.set("workspace", Value.fromString(""));
   }
 
   save(): void {
@@ -492,6 +493,15 @@ export class WorkspaceMember extends Entity {
   set accessLevel(value: string) {
     this.set("accessLevel", Value.fromString(value));
   }
+
+  get workspace(): string {
+    let value = this.get("workspace");
+    return value!.toString();
+  }
+
+  set workspace(value: string) {
+    this.set("workspace", Value.fromString(value));
+  }
 }
 
 export class Workspace extends Entity {
@@ -504,7 +514,6 @@ export class Workspace extends Entity {
     this.set("about", Value.fromString(""));
     this.set("logoIpfsHash", Value.fromString(""));
     this.set("supportedNetworks", Value.fromStringArray(new Array(0)));
-    this.set("members", Value.fromStringArray(new Array(0)));
     this.set("socials", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
   }

@@ -1,4 +1,4 @@
-import { log } from "@graphprotocol/graph-ts"
+import { Entity, log, store } from "@graphprotocol/graph-ts"
 import {
   WorkspaceAdminsAdded,
   WorkspaceAdminsRemoved,
@@ -21,6 +21,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
     const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
     member.actorId = event.params.owner
     member.accessLevel = 'owner'
+    member.workspace = entity.id
     member.save()
 
     entity.members = [member.id]
@@ -64,6 +65,7 @@ export function handleWorkspaceAdminsAdded(event: WorkspaceAdminsAdded): void {
       member.actorId = memberId
       member.email = event.params.emails[i]
       member.accessLevel = 'admin'
+      member.workspace = entityId
       member.save()
       
       members.push(member.id)
@@ -94,6 +96,8 @@ export function handleWorkspaceAdminsRemoved(event: WorkspaceAdminsRemoved): voi
     let i = 0
     while(i < members.length) {
       if(membersToRemoveSet.has(members[i])) {
+        const memberId = members[i]
+        store.remove('WorkspaceMember', memberId)
         members.splice(i, 1)
         continue
       }

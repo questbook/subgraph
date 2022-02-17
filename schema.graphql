@@ -117,6 +117,8 @@ type WorkspaceMember @entity {
   email: String
   "What permissions the member has on the workspace"
   accessLevel: WorkspaceMemberAccessLevel!
+
+  workspace: Workspace!
 }
 
 "Schema for a Workspace or DAO"
@@ -139,7 +141,7 @@ type Workspace @entity {
   "in seconds since epoch"
   updatedAtS: Int!
   "Members of the workspace"
-  members: [WorkspaceMember!]!
+  members: [WorkspaceMember!]! @derivedFrom(field: "workspace")
   "List of social media handles of the workspace"
   socials: [Social!]!
   "Hash of the IPFS file from which the details about the workspace were pulled"
