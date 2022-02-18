@@ -17,8 +17,11 @@ export function runTests(): void {
 		assert.assertTrue(w!.logoIpfsHash.length > 0)
 		assert.assertTrue(w!.coverImageIpfsHash!.length > 0)
 		assert.assertTrue(w!.supportedNetworks.length > 0)
-		assert.i32Equals(w!.members.length, 1)
 		assert.assertNotNull(w!.socials[0])
+
+		const m = WorkspaceMember.load(`${w!.id}.${w!.ownerId.toHex()}`)
+		assert.assertNotNull(m)
+		assert.stringEquals(m!.workspace, w!.id)
 		
 		const s = Social.load(w!.socials[0])
 		assert.assertNotNull(s)
@@ -71,13 +74,15 @@ export function runTests(): void {
 
 		assert.assertNotNull(wUpdate)
 		assert.i32Equals(wUpdate!.updatedAtS, 125)
-		assert.i32Equals(wUpdate!.members.length, 1 + addresses.length)
 
-		const memberAddedId = `${wUpdate!.id}.${addresses[0].toHex()}`
-		const member = WorkspaceMember.load(memberAddedId)
-
-		assert.assertNotNull(member)
-		assert.stringEquals(member!.accessLevel, 'admin')
+		for(let i = 0;i < addresses.length;i++) {
+			const memberAddedId = `${wUpdate!.id}.${addresses[i].toHex()}`
+			const member = WorkspaceMember.load(memberAddedId)
+	
+			assert.assertNotNull(member)
+			assert.stringEquals(member!.accessLevel, 'admin')
+			assert.stringEquals(member!.workspace, wUpdate!.id)
+		}
 	})
 
 	test('should remove admins to a workspace', () => {
@@ -105,10 +110,13 @@ export function runTests(): void {
 
 		assert.assertNotNull(wUpdate)
 		assert.i32Equals(wUpdate!.updatedAtS, 126)
-		assert.i32Equals(wUpdate!.members.length, 1)
 
-		// only owner should remain
-		assert.stringEquals(wUpdate!.members[0], `${wUpdate!.id}.${wUpdate!.ownerId.toHex()}`)
+		for(let i = 0;i < addresses.length;i++) {
+			const memberAddedId = `${wUpdate!.id}.${addresses[i].toHex()}`
+			const member = WorkspaceMember.load(memberAddedId)
+	
+			assert.assertNull(member)
+		}
 	})
 }
 

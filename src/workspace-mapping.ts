@@ -24,8 +24,6 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
     member.workspace = entity.id
     member.save()
 
-    entity.members = [member.id]
-
     entity.save()
   } else {
     log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace create: "${entityResult.error!}"`, [])
@@ -56,7 +54,6 @@ export function handleWorkspaceAdminsAdded(event: WorkspaceAdminsAdded): void {
   let entity = Workspace.load(entityId)
   if(entity) {
     entity.updatedAtS = event.params.time.toI32()
-    const members = entity.members
     // add the admins
     for(let i = 0;i < event.params.admins.length;i++) {
       const memberId = event.params.admins[i]
@@ -67,11 +64,7 @@ export function handleWorkspaceAdminsAdded(event: WorkspaceAdminsAdded): void {
       member.accessLevel = 'admin'
       member.workspace = entityId
       member.save()
-      
-      members.push(member.id)
     }
-
-    entity.members = members
     entity.save()
   } else {
     log.warning(`recv workspace admins add without workspace existing, ID = ${entityId}`, [])
@@ -84,27 +77,10 @@ export function handleWorkspaceAdminsRemoved(event: WorkspaceAdminsRemoved): voi
   let entity = Workspace.load(entityId)
   if(entity) {
     entity.updatedAtS = event.params.time.toI32()
-    // create a set of members to remove for fast check & removal from entity.members
-    const membersToRemoveSet = new Set<string>()
     for(let i = 0;i < event.params.admins.length;i++) {
       const id = `${entityId}.${event.params.admins[i].toHex()}`
-      membersToRemoveSet.add(id)
+      store.remove('WorkspaceMember', id)
     }
-
-    const members = entity.members
-    // filter out removed members
-    let i = 0
-    while(i < members.length) {
-      if(membersToRemoveSet.has(members[i])) {
-        const memberId = members[i]
-        store.remove('WorkspaceMember', memberId)
-        members.splice(i, 1)
-        continue
-      }
-      i += 1
-    }
-
-    entity.members = members
     entity.save()
   } else {
     log.warning(`recv workspace admins remove without workspace existing, ID = ${entityId}`, [])
