@@ -1,5 +1,10 @@
 import { BigInt, Bytes, Entity, ipfs, json, JSONValue, JSONValueKind, TypedMap, Value } from "@graphprotocol/graph-ts";
 
+/// maximum length of a string in the graph DB
+// each item can be at most 8192 bytes due to the maximum size of an index in postgres
+// anything larger, causes the graph to crash
+export const MAX_STR_LENGTH = 6500
+
 const NUMBER_SET = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
 class SavableEntity extends Entity {
@@ -8,6 +13,9 @@ class SavableEntity extends Entity {
 	}
 }
 
+export class JSONOptions {
+	maxLength: number = 0;
+}
 /** Generic result structure to catch successful & errorred results */
 export class Result<T> {
 	value: T | null = null;
@@ -62,12 +70,36 @@ export function setEntityValueSafe<T extends Entity>(entity: T, key: string, jso
 			entity.set(key, Value.fromBigInt(BigInt.fromString(decimalString)))
 			break
 		case JSONValueKind.STRING:
-			entity.set(key, Value.fromString(value.toString()))
+			const str = value.toString()
+			entity.set(key, Value.fromString(str))
 			break
 		default:
 			return { value: null, error: `Internal map error` }
 	}
 	
+	return { value: entity, error: null }
+}
+
+export function setEntityStringSafe<T extends Entity>(entity: T, key: string, json: TypedMap<string, JSONValue>, opts: JSONOptions): Result<T> {
+	let valueResult = getJSONValueSafe(key, json, JSONValueKind.STRING)
+	if(valueResult.error) {
+		return { value: null, error: valueResult.error }
+	}
+
+	let str = valueResult.value!.toString()
+
+	if(opts) {
+		if(opts.maxLength && str.length > opts.maxLength) {
+			return { value: null, error: `Maximum length for '${key}' is ${opts.maxLength} but was ${str.length}` }
+		}
+	}
+
+	if(str.length > MAX_STR_LENGTH) {
+		str = `cropped:${str.slice(0, MAX_STR_LENGTH)}`
+	}
+
+	entity.set(key, Value.fromString(str))
+
 	return { value: entity, error: null }
 }
 
@@ -140,6 +172,10 @@ export function byteArrayFromHexStringSafe(str: string): Result<Bytes> {
 		return { value: null, error: 'String must be multiple of 2' }
 	}
 
-	const network = Bytes.fromHexString(str)
-	return { value: Bytes.fromByteArray(network), error: null }
+	const item = Bytes.fromHexString(str)
+	if(item.length > 128) {
+		return { value: null, error: 'Hex can be at most 128 characters' }
+	}
+	
+	return { value: Bytes.fromByteArray(item), error: null }
 }

@@ -1,6 +1,6 @@
 import { JSONValue, JSONValueKind } from "@graphprotocol/graph-ts"
 import { Social } from "../../generated/schema"
-import { setEntityValueSafe, Result } from "./json"
+import { Result, setEntityStringSafe } from "./json"
 
 export function socialFromJSONValue(jsonValue: JSONValue, parentId: string, _: i32): Result<Social> {
 	if(jsonValue.kind !== JSONValueKind.OBJECT) {
@@ -11,10 +11,10 @@ export function socialFromJSONValue(jsonValue: JSONValue, parentId: string, _: i
 	
 	const social = new Social('')
 
-	let result = setEntityValueSafe(social, 'name', jsonObj, JSONValueKind.STRING)
+	let result = setEntityStringSafe(social, 'name', jsonObj, { maxLength: 64 })
 	if(result.error) return result
 
-	result = setEntityValueSafe(social, 'value', jsonObj, JSONValueKind.STRING)
+	result = setEntityStringSafe(social, 'value', jsonObj, { maxLength: 255 })
 	if(result.error) return result
 
 	social.id = `${parentId}.${social.name.toLowerCase()}`

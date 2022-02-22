@@ -1,6 +1,6 @@
 import { BigDecimal, BigInt, JSONValue, JSONValueKind } from "@graphprotocol/graph-ts"
 import { ApplicationMilestone } from "../../generated/schema"
-import { setEntityValueSafe, Result } from "./json"
+import { setEntityValueSafe, Result, setEntityStringSafe } from "./json"
 
 export function milestoneFromJSONValue(json: JSONValue, applicationId: string, index: i32): Result<ApplicationMilestone> {
 	const objResult = json.toObject()
@@ -8,7 +8,7 @@ export function milestoneFromJSONValue(json: JSONValue, applicationId: string, i
 	const milestone = new ApplicationMilestone(`${applicationId}.${index}.milestone`)
 	milestone.state = 'submitted'
 
-	let result = setEntityValueSafe(milestone, 'title', objResult, JSONValueKind.STRING)
+	let result = setEntityStringSafe(milestone, 'title', objResult, { maxLength: 255 })
 	if(result.error) return result
 
 	result = setEntityValueSafe(milestone, 'amount', objResult, JSONValueKind.NUMBER)

@@ -1,7 +1,7 @@
 import { JSONValue, JSONValueKind, TypedMap } from "@graphprotocol/graph-ts";
 import { Grant, Reward } from "../../generated/schema";
 import { fieldFromJSONValue } from "./field-from-json-value";
-import { byteArrayFromHexStringSafe, getJSONObjectFromIPFS, getJSONValueSafe, Result, setEntityValueSafe } from "./json";
+import { byteArrayFromHexStringSafe, getJSONObjectFromIPFS, getJSONValueSafe, Result, setEntityStringSafe, setEntityValueSafe } from "./json";
 
 export function applyGrantUpdateIpfs(entity: Grant, hash: string): Result<Grant> {
 	const jsonObjResult = getJSONObjectFromIPFS(hash)
@@ -14,13 +14,13 @@ export function applyGrantUpdateIpfs(entity: Grant, hash: string): Result<Grant>
 }
 
 export function applyGrantUpdateFromJSON(entity: Grant, obj: TypedMap<string, JSONValue>, expectAllPresent: boolean): Result<Grant> {
-	let result = setEntityValueSafe(entity, 'details', obj, JSONValueKind.STRING)
+	let result = setEntityStringSafe(entity, 'details', obj, { maxLength: 0 })
 	if(result.error && expectAllPresent) return result
 
-	result = setEntityValueSafe(entity, 'title', obj, JSONValueKind.STRING)
+	result = setEntityStringSafe(entity, 'title', obj, { maxLength: 255 })
 	if(result.error && expectAllPresent) return result
 
-	result = setEntityValueSafe(entity, 'summary', obj, JSONValueKind.STRING)
+	result = setEntityStringSafe(entity, 'summary', obj, { maxLength: 1024 })
 	if(result.error && expectAllPresent) return result
 
 	const rewardObj = obj.get('reward')
@@ -59,7 +59,7 @@ export function applyGrantUpdateFromJSON(entity: Grant, obj: TypedMap<string, JS
 	}
 
 	// optional field, don't care if not present
-	result = setEntityValueSafe(entity, 'deadline', obj, JSONValueKind.STRING)
+	result = setEntityStringSafe(entity, 'deadline', obj, { maxLength: 80 })
 
 	return { value: entity, error: null }
 }

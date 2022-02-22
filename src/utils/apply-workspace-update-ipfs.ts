@@ -1,6 +1,6 @@
 import { JSONValue, JSONValueKind, TypedMap } from "@graphprotocol/graph-ts"
 import { Workspace } from "../../generated/schema"
-import { setEntityValueSafe, Result, getJSONObjectFromIPFS, setEntityArrayValueSafe } from "./json"
+import { setEntityValueSafe, Result, getJSONObjectFromIPFS, setEntityArrayValueSafe, setEntityStringSafe } from "./json"
 import { socialFromJSONValue } from "./social-from-json-value"
 
 export function applyWorkspaceUpdateIpfs(entity: Workspace, hash: string): Result<Workspace> {
@@ -16,16 +16,16 @@ export function applyWorkspaceUpdateIpfs(entity: Workspace, hash: string): Resul
 
 
 export function applyWorkspaceUpdateFromJSON(entity: Workspace, obj: TypedMap<string, JSONValue>, expectAllPresent: boolean): Result<Workspace> {
-	let result = setEntityValueSafe(entity, 'title', obj, JSONValueKind.STRING)
+	let result = setEntityStringSafe(entity, 'title', obj, { maxLength: 128 })
 	if(result.error && expectAllPresent) return result
 
-	setEntityValueSafe(entity, 'about', obj, JSONValueKind.STRING)
+	result = setEntityStringSafe(entity, 'about', obj, { maxLength: 4096 })
 	if(result.error && expectAllPresent) return result
 
-	setEntityValueSafe(entity, 'logoIpfsHash', obj, JSONValueKind.STRING)
+	result = setEntityStringSafe(entity, 'logoIpfsHash', obj, { maxLength: 96 })
 	if(result.error && expectAllPresent) return result
 
-	setEntityValueSafe(entity, 'coverImageIpfsHash', obj, JSONValueKind.STRING)
+	result = setEntityStringSafe(entity, 'coverImageIpfsHash', obj, { maxLength: 96 })
 
 	result = setEntityArrayValueSafe(entity, 'socials', obj, JSONValueKind.OBJECT, socialFromJSONValue)
 	if(result.error && expectAllPresent) {
