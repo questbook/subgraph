@@ -83,7 +83,7 @@ dataSources:
     source:
       address: "{{dai.address}}"
       abi: ERC20
-      startBlock: 10098142
+      startBlock: {{dai.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -103,7 +103,7 @@ dataSources:
     source:
       address: "{{weth.address}}"
       abi: ERC20
-      startBlock: 10098142
+      startBlock: {{weth.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
