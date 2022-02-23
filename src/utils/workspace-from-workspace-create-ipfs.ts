@@ -45,7 +45,11 @@ export function workspaceFromWorkspaceCreateIPFS(id: string, hash: string): Resu
 			enumValue = 'chain_137'
 		} else if(str.localeCompare('80001') === 0) {
 			enumValue = 'chain_80001'
-		} else {
+		} else if(str.localeCompare('1666700000') === 0) {
+			enumValue = 'chain_1666700000'
+		} else if(str.localeCompare('1666600000') === 0) {
+			enumValue = 'chain_1666600000'
+		}else {
 			return { value: null, error: `invalid chain '${str}'` }
 		}
 
