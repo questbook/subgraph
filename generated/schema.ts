@@ -857,8 +857,8 @@ export class GrantApplication extends Entity {
     this.set("milestones", Value.fromStringArray(value));
   }
 
-  get feedback(): string | null {
-    let value = this.get("feedback");
+  get feedbackDao(): string | null {
+    let value = this.get("feedbackDao");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -866,11 +866,28 @@ export class GrantApplication extends Entity {
     }
   }
 
-  set feedback(value: string | null) {
+  set feedbackDao(value: string | null) {
     if (!value) {
-      this.unset("feedback");
+      this.unset("feedbackDao");
     } else {
-      this.set("feedback", Value.fromString(<string>value));
+      this.set("feedbackDao", Value.fromString(<string>value));
+    }
+  }
+
+  get feedbackDev(): string | null {
+    let value = this.get("feedbackDev");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set feedbackDev(value: string | null) {
+    if (!value) {
+      this.unset("feedbackDev");
+    } else {
+      this.set("feedbackDev", Value.fromString(<string>value));
     }
   }
 }
@@ -972,8 +989,8 @@ export class GrantApplicationRevision extends Entity {
     this.set("createdAtS", Value.fromI32(value));
   }
 
-  get feedback(): string | null {
-    let value = this.get("feedback");
+  get feedbackDao(): string | null {
+    let value = this.get("feedbackDao");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -981,11 +998,28 @@ export class GrantApplicationRevision extends Entity {
     }
   }
 
-  set feedback(value: string | null) {
+  set feedbackDao(value: string | null) {
     if (!value) {
-      this.unset("feedback");
+      this.unset("feedbackDao");
     } else {
-      this.set("feedback", Value.fromString(<string>value));
+      this.set("feedbackDao", Value.fromString(<string>value));
+    }
+  }
+
+  get feedbackDev(): string | null {
+    let value = this.get("feedbackDev");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set feedbackDev(value: string | null) {
+    if (!value) {
+      this.unset("feedbackDev");
+    } else {
+      this.set("feedbackDev", Value.fromString(<string>value));
     }
   }
 }

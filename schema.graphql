@@ -179,8 +179,10 @@ type GrantApplication @entity {
   updatedAtS: Int!
   "Milestones of the application"
   milestones: [ApplicationMilestone!]!
-  "Feedback from the grant manager/applicant"
-  feedback: String
+  "Feedback from the grant DAO manager/applicant"
+  feedbackDao: String
+  "Feedback from the developer"
+  feedbackDev: String
 }
 
 "A revision after an update"
@@ -198,8 +200,10 @@ type GrantApplicationRevision @entity {
   milestones: [ApplicationMilestone!]!
   "in seconds since epoch, when was this revision created"
   createdAtS: Int!
-  "Feedback from the grant manager/applicant"
-  feedback: String
+  "Feedback from the grant DAO manager/applicant"
+  feedbackDao: String
+  "Feedback from the developer"
+  feedbackDev: String
 }
 
 type FundsTransfer @entity {

@@ -48,9 +48,9 @@ export function addFundsTransferNotification(transfer: FundsTransfer): void {
 export function addApplicationUpdateNotification(application: GrantApplication, eventId: string, actorId: Address): void {
 	const grant = Grant.load(application.grant)
 	if(grant) {
-		let feedback = application.feedback
-		if(!feedback) {
-			feedback = 'no feedback'
+		let feedbackDao = application.feedbackDao
+		if(!feedbackDao) {
+			feedbackDao = 'no feedback'
 		}
 
 		const notif = new Notification(`n.${eventId}`)
@@ -68,7 +68,7 @@ export function addApplicationUpdateNotification(application: GrantApplication, 
 				return 
 			}
 
-			notif.content = `${workspace.title} has requested you make changes & resubmit your application to the grant '${grant.title}'\n\n--\n\n${feedback!}`
+			notif.content = `${workspace.title} has requested you make changes & resubmit your application to the grant '${grant.title}'\n\n--\n\n${feedbackDao!}`
 			notif.type = "application_resubmitted"
 
 			notif.recipientIds = [application.applicantId]
@@ -80,7 +80,7 @@ export function addApplicationUpdateNotification(application: GrantApplication, 
 			notif.recipientIds = [application.applicantId]
 		} else if(application.state === 'rejected') {
 			notif.title = "Application Rejected"
-			notif.content = `We regret to inform you that your application to '${grant.title}' was rejected.\n\n--\n\n${feedback!}`
+			notif.content = `We regret to inform you that your application to '${grant.title}' was rejected.\n\n--\n\n${feedbackDao!}`
 			notif.type = "application_rejected"
 
 			notif.recipientIds = [application.applicantId]

@@ -1,5 +1,5 @@
 import { GrantApplication } from "../../generated/schema";
-import { applyApplicationUpdateFromJSON } from "./apply-application-update-ipfs";
+import { applyApplicationUpdateFromJSON, FeedbackType } from "./apply-application-update-ipfs";
 import { getJSONObjectFromIPFS, Result } from "./json";
 
 export function applicationFromApplicationCreateIpfs(id: string, hash: string): Result<GrantApplication> {
@@ -11,7 +11,7 @@ export function applicationFromApplicationCreateIpfs(id: string, hash: string): 
 	const obj = jsonObjResult.value!
 	
 	const entity = new GrantApplication(id)
-	let result = applyApplicationUpdateFromJSON(entity, obj, true)
+	let result = applyApplicationUpdateFromJSON(entity, obj, true, FeedbackType.none)
 	if(result.error) return result
 
 	return { value: entity, error: null }

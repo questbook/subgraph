@@ -1,20 +1,44 @@
-import { JSONValue, JSONValueKind, TypedMap, TypedMapEntry } from "@graphprotocol/graph-ts";
+import { JSONValue, JSONValueKind, log, TypedMap, TypedMapEntry } from "@graphprotocol/graph-ts";
 import { GrantApplication, GrantFieldAnswer } from "../../generated/schema";
 import { getJSONObjectFromIPFS, getJSONValueSafe, MAX_STR_LENGTH, Result, setEntityArrayValueSafe, setEntityStringSafe, setEntityValueSafe } from "./json";
 import { milestoneFromJSONValue } from "./milestone-from-json-value";
 
-export function applyApplicationUpdateIpfs(entity: GrantApplication, hash: string): Result<GrantApplication> {
+export enum FeedbackType {
+	none = 0,
+	dao = 1,
+	dev = 2
+}
+
+export function applyApplicationUpdateIpfs(entity: GrantApplication, hash: string, feedbackType: FeedbackType): Result<GrantApplication> {
 	const jsonObjResult = getJSONObjectFromIPFS(hash)
 	if(!jsonObjResult.value) {
 		return { value: null, error: jsonObjResult.error! }
 	}
 
 	const obj = jsonObjResult.value!
-	return applyApplicationUpdateFromJSON(entity, obj, false)
+	return applyApplicationUpdateFromJSON(entity, obj, false, feedbackType)
 }
 
-export function applyApplicationUpdateFromJSON(entity: GrantApplication, obj: TypedMap<string, JSONValue>, expectAllPresent: boolean): Result<GrantApplication> {
-	let result = setEntityStringSafe(entity, 'feedback', obj, { maxLength: 2048 })
+export function applyApplicationUpdateFromJSON(
+	entity: GrantApplication, 
+	obj: TypedMap<string, JSONValue>, 
+	expectAllPresent: boolean,
+	feedbackType: FeedbackType,
+): Result<GrantApplication> {
+	if(feedbackType !== FeedbackType.none) {
+		const result = getJSONValueSafe('feedback', obj, JSONValueKind.STRING)
+
+		if(result.value) {
+			const feedback = result.value!.toString()
+			if(feedback.length > 2048) {
+				return { value: null, error: 'Max feedback length is 2048 characters' }
+			}
+	
+			if(feedbackType === FeedbackType.dao) entity.feedbackDao = feedback
+			else entity.feedbackDev = feedback
+		}
+
+	}
 
 	const fieldsObjResult = getJSONValueSafe('fields', obj, JSONValueKind.OBJECT)
 	if(fieldsObjResult.error && expectAllPresent) return { value: null, error: fieldsObjResult.error }
@@ -38,7 +62,7 @@ export function applyApplicationUpdateFromJSON(entity: GrantApplication, obj: Ty
 		entity.fields = fields
 	}
 
-	result = setEntityArrayValueSafe(entity, 'milestones', obj, JSONValueKind.OBJECT, milestoneFromJSONValue)
+	let result = setEntityArrayValueSafe(entity, 'milestones', obj, JSONValueKind.OBJECT, milestoneFromJSONValue)
 	if(result.error && expectAllPresent) return result
 
 	return { value: entity, error: null }

@@ -3,7 +3,7 @@ import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../g
 import { ApplicationMilestone, Grant, GrantApplication } from '../generated/schema'
 import { addApplicationRevision } from './utils/add-application-revision'
 import { applicationFromApplicationCreateIpfs } from './utils/application-from-application-create-ipfs'
-import { applyApplicationUpdateIpfs } from './utils/apply-application-update-ipfs'
+import { applyApplicationUpdateIpfs, FeedbackType } from './utils/apply-application-update-ipfs'
 import { applyMilestoneUpdateIpfs } from './utils/apply-milestone-update-ipfs'
 import { isPlausibleIPFSHash } from './utils/generics'
 import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from './utils/notifications'
@@ -72,7 +72,9 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		}
 		// some valid IPFS hash
 		if(isPlausibleIPFSHash(metaHash)) {
-			const updateResult = applyApplicationUpdateIpfs(entity, event.params.metadataHash)
+			// when state moves to resubmit or reject -- that's when DAO adds feedback
+			const feedbackType = entity.state === 'resubmit' || entity.state === 'rejected' ? FeedbackType.dao : FeedbackType.dev
+			const updateResult = applyApplicationUpdateIpfs(entity, event.params.metadataHash, feedbackType)
 			if(updateResult.error) {
 				log.warning(`[${event.transaction.hash.toHex()}] invalid metadata update for application: ID="${applicationId}", error=${updateResult.error!}`, [])
 				return

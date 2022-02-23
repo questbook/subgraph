@@ -12,8 +12,11 @@ export function assertArrayNotEmpty<T>(array: T[]): void {
 	}
 }
 
-export function assertStringNotEmpty(str: string, key: string = ''): void {
-	if(!str.length) {
+export function assertStringNotEmpty(str: string | null, key: string = ''): void {
+	if(!str) {
+		throw new Error(`expected string '${key}' to not be null`)
+	}
+	if(!str!.length) {
 		throw new Error(`expected string '${key}' to not be empty`)
 	}
 }
