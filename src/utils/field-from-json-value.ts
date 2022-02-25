@@ -17,7 +17,7 @@ export function fieldFromJSONValue(grantId: string, entry: TypedMapEntry<string,
 
 	if(fieldObj.get('enum')) {
 		const enumsResult = getJSONValueSafe('enum', fieldObj, JSONValueKind.ARRAY)
-		if(!enumsResult.error) return { value: null, error: enumsResult.error }
+		if(enumsResult.error) return { value: null, error: enumsResult.error }
 
 		const enumsArray = enumsResult.value!.toArray()
 		field.possibleValues = []
@@ -31,6 +31,8 @@ export function fieldFromJSONValue(grantId: string, entry: TypedMapEntry<string,
 	}
 
 	const inputTypeResult = getJSONValueSafe('inputType', fieldObj, JSONValueKind.STRING)
+	if(inputTypeResult.error) return { value: null, error: inputTypeResult.error }
+
 	const inputTypeValue = inputTypeResult.value!.toString()
 	if(inputTypeValue === 'long-form') {
 		field.inputType = 'long_form'
