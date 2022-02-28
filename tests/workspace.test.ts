@@ -3,7 +3,7 @@ import { test, newMockEvent, assert } from 'matchstick-as/assembly/index'
 import { WorkspaceAdminsAdded, WorkspaceAdminsRemoved, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Social, Workspace, WorkspaceMember } from '../generated/schema'
 import { handleWorkspaceAdminsAdded, handleWorkspaceAdminsRemoved, handleWorkspaceUpdated } from '../src/workspace-mapping'
-import { createWorkspace, MOCK_WORKSPACE_ID } from './utils'
+import { assertArrayNotEmpty, assertStringNotEmpty, createWorkspace, MOCK_WORKSPACE_ID } from './utils'
 
 export function runTests(): void {
 
@@ -12,12 +12,12 @@ export function runTests(): void {
 		
 		assert.assertNotNull(w)
 		assert.i32Equals(w!.createdAtS, 123)
-		assert.assertTrue(w!.title.length > 0)
-		assert.assertTrue(w!.about.length > 0)
-		assert.assertTrue(w!.logoIpfsHash.length > 0)
-		assert.assertTrue(w!.coverImageIpfsHash!.length > 0)
-		assert.assertTrue(w!.supportedNetworks.length > 0)
-		assert.assertNotNull(w!.socials[0])
+		assertStringNotEmpty(w!.title, 'w.title')
+		assertStringNotEmpty(w!.about, 'w.about')
+		assertStringNotEmpty(w!.logoIpfsHash, 'w.logoIpfsHash')
+		assertStringNotEmpty(w!.coverImageIpfsHash, 'w.coverImageIpfsHash')
+		assertArrayNotEmpty(w!.supportedNetworks)
+		assertArrayNotEmpty(w!.socials)
 
 		const m = WorkspaceMember.load(`${w!.id}.${w!.ownerId.toHex()}`)
 		assert.assertNotNull(m)

@@ -3,7 +3,7 @@ import { ApplicationMilestone, GrantApplication, GrantApplicationRevision, Grant
 
 export function addApplicationRevision(app: GrantApplication, actorId: Address): void {
 	const version = app.updatedAtS
-	const rev = new GrantApplicationRevision(`${app.id}.${version}.revision`)
+	const rev = new GrantApplicationRevision(`${app.id}.${version}`)
 	rev.application = app.id
 	rev.actorId = actorId
 	rev.state = app.state

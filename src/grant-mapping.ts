@@ -1,45 +1,63 @@
-import { log } from "@graphprotocol/graph-ts"
+import { BigInt, log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from "../generated/schema"
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Reward, Workspace } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantFundUpdate } from "./utils/apply-grant-deposit"
-import { applyGrantUpdateIpfs } from "./utils/apply-grant-update-ipfs"
-import { isPlausibleIPFSHash } from "./utils/generics"
-import { grantFromGrantCreateIPFS } from "./utils/grant-from-grant-create-ipfs"
+import { isPlausibleIPFSHash, mapGrantFieldMap } from "./utils/generics"
 import { addFundsTransferNotification } from "./utils/notifications"
 import { QBGrantsContract } from "../generated/templates"
+import { validatedJsonFromIpfs } from "./json-schema/json"
+import { validateGrantCreateRequest, GrantCreateRequest, validateGrantUpdateRequest, GrantUpdateRequest } from "./json-schema"
 
 export function handleGrantCreated(event: GrantCreated): void {
   const workspaceId = event.params.workspaceId.toHex()
   const grantAddress = event.params.grantAddress
 
   const workspace = Workspace.load(workspaceId)
-  if(workspace) {
-    const grantId = grantAddress.toHex()
-    const entityResult = grantFromGrantCreateIPFS(grantId, event.params.metadataHash)
-    if(entityResult.value) {
-      const entity = entityResult.value!
-      entity.creatorId = event.transaction.from
-      entity.workspace = workspaceId
-      entity.acceptingApplications = true
-      entity.createdAtS = event.params.time.toI32()
-      entity.numberOfApplications = 0
-
-      entity.save()
-
-      QBGrantsContract.create(grantAddress)
-    } else {
-      log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant: "${entityResult.error!}"`, [])
-    }
-  } else {
+  if(!workspace) {
     log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant: "workspace (${workspaceId}) not found"`, [])
+    return
   }
+
+  const entityResult = validatedJsonFromIpfs<GrantCreateRequest>(event.params.metadataHash, validateGrantCreateRequest)
+  if(entityResult.error) {
+    log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant: "${entityResult.error!}"`, [])
+    return
+  }
+
+  const json = entityResult.value!
+  const entity = new Grant(grantAddress.toHex())
+  entity.creatorId = event.transaction.from
+  entity.title = json.title
+  entity.summary = json.summary
+  entity.details = json.details
+  
+  const reward = new Reward(entity.id)
+  reward.asset = json.reward.asset
+  reward.committed = json.reward.committed
+  reward.save()
+
+  entity.reward = reward.id
+  entity.workspace = workspaceId
+  entity.deadline = json.deadline
+
+  entity.fields = mapGrantFieldMap(entity.id, json.fields)
+
+  entity.metadataHash = event.params.metadataHash
+  entity.acceptingApplications = true
+  entity.createdAtS = event.params.time.toI32()
+  entity.funding = new BigInt(0)
+  entity.numberOfApplications = 0
+
+  entity.save()
+
+  QBGrantsContract.create(grantAddress)
 }
 
 export function handleDisburseReward(event: DisburseReward): void {
   const applicationId = event.params.applicationId.toHex()
   const milestoneIndex = event.params.milestoneId.toI32()
-  const milestoneId = `${applicationId}.${milestoneIndex}.milestone`
+  const milestoneId = `${applicationId}.${milestoneIndex}`
   const amountPaid = event.params.amount
 
   const disburseEntity = new FundsTransfer(event.transaction.hash.toHex())
@@ -54,31 +72,31 @@ export function handleDisburseReward(event: DisburseReward): void {
   disburseEntity.save()
 
   const entity = ApplicationMilestone.load(milestoneId)
-  if(entity) {
-    entity.amountPaid = entity.amountPaid.plus(amountPaid)
-    entity.updatedAtS = event.params.time.toI32()
-
-    // find grant and reduce the amount of the funding
-    // only if not a P2P exchange
-    if(!event.params.isP2P) {
-      const application = GrantApplication.load(applicationId)
-      if(application) {
-        const grantEntity = Grant.load(application.grant)
-        if(grantEntity) {
-          grantEntity.funding = grantEntity.funding.minus(amountPaid)
-          grantEntity.save()
-        }
-
-        disburseEntity.grant = application.grant
-      }
-    }
-
-    entity.save()
-
-    addFundsTransferNotification(disburseEntity)
-  } else {
+  if(!entity) {
     log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+    return
   }
+
+  entity.amountPaid = entity.amountPaid.plus(amountPaid)
+  entity.updatedAtS = event.params.time.toI32()
+  // find grant and reduce the amount of the funding
+  // only if not a P2P exchange
+  if(!event.params.isP2P) {
+    const application = GrantApplication.load(applicationId)
+    if(application) {
+      const grantEntity = Grant.load(application.grant)
+      if(grantEntity) {
+        grantEntity.funding = grantEntity.funding.minus(amountPaid)
+        grantEntity.save()
+      }
+
+      disburseEntity.grant = application.grant
+    }
+  }
+
+  entity.save()
+
+  addFundsTransferNotification(disburseEntity)
 }
 
 export function handleDisburseRewardFailed(event: DisburseRewardFailed): void {
@@ -101,22 +119,40 @@ export function handleGrantUpdated(event: GrantUpdated): void {
   const grantId = event.transaction.to!.toHex()
 
   const entity = Grant.load(grantId)
-  if(entity) {
-    entity.updatedAtS = event.params.time.toI32()
-    entity.workspace = event.params.workspaceId.toHex()
-    entity.acceptingApplications = event.params.active
+  if(!entity) {
+    log.warning(`[${event.transaction.hash.toHex()}] recv grant update for unknown grant, ID="${grantId}"`, [])
+    return
+  }
 
-    const hash = event.params.metadataHash
-    if(isPlausibleIPFSHash(hash)) {
-      const result = applyGrantUpdateIpfs(entity, hash)
-      if(result.error) {
-        log.warning(`[${event.transaction.hash.toHex()}] error in updating grant metadata, error: ${result.error!}`, [])
-        return
-      }
+  entity.updatedAtS = event.params.time.toI32()
+  entity.workspace = event.params.workspaceId.toHex()
+  entity.acceptingApplications = event.params.active
+
+  const hash = event.params.metadataHash
+  if(isPlausibleIPFSHash(hash)) {
+    const jsonResult = validatedJsonFromIpfs<GrantUpdateRequest>(hash, validateGrantUpdateRequest)
+    if(jsonResult.error) {
+      log.warning(`[${event.transaction.hash.toHex()}] error in updating grant metadata, error: ${jsonResult.error!}`, [])
+      return
     }
 
-    entity.save()
-  } else {
-    log.warning(`[${event.transaction.hash.toHex()}] recv grant update for unknown grant, ID="${grantId}"`, [])
+    const json = jsonResult.value!
+    if(json.title) entity.title = json.title!
+    if(json.summary) entity.summary = json.summary!
+    if(json.details) entity.details = json.details!
+    if(json.deadline) entity.deadline = json.deadline!
+    if(json.reward) {
+      const reward = new Reward(entity.id)
+      reward.asset = json.reward!.asset
+      reward.committed = json.reward!.committed
+      reward.save()
+
+      entity.reward = reward.id
+    }
+    if(json.fields) {
+      entity.fields = mapGrantFieldMap(entity.id, json.fields!)
+    }
   }
+
+  entity.save()
 }

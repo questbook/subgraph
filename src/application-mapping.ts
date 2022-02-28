@@ -1,11 +1,10 @@
 import { log } from '@graphprotocol/graph-ts'
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
 import { ApplicationMilestone, Grant, GrantApplication } from '../generated/schema'
+import { validatedJsonFromIpfs } from './json-schema/json'
+import { ApplicationMilestoneUpdate, GrantApplicationRequest, GrantApplicationUpdate, validateApplicationMilestoneUpdate, validateGrantApplicationRequest, validateGrantApplicationUpdate } from './json-schema'
 import { addApplicationRevision } from './utils/add-application-revision'
-import { applicationFromApplicationCreateIpfs } from './utils/application-from-application-create-ipfs'
-import { applyApplicationUpdateIpfs, FeedbackType } from './utils/apply-application-update-ipfs'
-import { applyMilestoneUpdateIpfs } from './utils/apply-milestone-update-ipfs'
-import { isPlausibleIPFSHash } from './utils/generics'
+import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapGrantFieldAnswers, mapMilestones } from './utils/generics'
 import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from './utils/notifications'
 
 export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
@@ -14,35 +13,40 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	const grantId = event.params.grant.toHex()
 
 	const grant = Grant.load(grantId)
-	if(grant) {
-		const entityResult = applicationFromApplicationCreateIpfs(applicationId, event.params.metadataHash)
-		if(entityResult.value) {
-			const entity = entityResult.value!
-			if(entity.milestones.length !== milestoneCount) {
-				log.warning(`[${event.transaction.hash.toHex()}] metadata has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
-				return
-			}
-	
-			entity.createdAtS = event.params.time.toI32()
-			entity.updatedAtS = entity.createdAtS
-			entity.applicantId = event.params.owner
-			entity.grant = grantId
-			entity.state = "submitted"
-
-			grant.numberOfApplications += 1
-	
-			entity.save()
-
-			grant.save()
-	
-			addApplicationRevision(entity, event.transaction.from)
-			addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
-		} else {
-			log.warning(`[${event.transaction.hash.toHex()}] error in mapping entity: "${entityResult.error!}"`, [])
-		}
-	} else {
+	if(!grant) {
 		log.warning(`[${event.transaction.hash.toHex()}] grant (${grantId}) not found for application submit (${applicationId})`, [])
+		return 
 	}
+
+	const jsonResult = validatedJsonFromIpfs<GrantApplicationRequest>(event.params.metadataHash, validateGrantApplicationRequest)
+	if(jsonResult.error) {
+	  log.warning(`[${event.transaction.hash.toHex()}] error in mapping application: "${jsonResult.error!}"`, [])
+	  return
+	}
+	
+	const json = jsonResult.value!
+	if(json.milestones.length !== milestoneCount) {
+		log.warning(`[${event.transaction.hash.toHex()}] metadata has ${json.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
+		return
+	}
+
+	const entity = new GrantApplication(applicationId)
+	entity.grant = grantId
+	entity.applicantId = event.params.owner
+	entity.state = 'submitted'
+	entity.fields = mapGrantFieldAnswers(applicationId, grantId, json.fields)
+	entity.createdAtS = event.params.time.toI32()
+	entity.updatedAtS = entity.createdAtS
+	entity.milestones = mapMilestones(applicationId, json.milestones)
+
+	entity.save()
+
+	grant.numberOfApplications += 1
+
+	grant.save()
+	
+	addApplicationRevision(entity, event.transaction.from)
+	addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
 }
 
 export function handleApplicationUpdated(event: ApplicationUpdated): void {
@@ -50,83 +54,88 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	const metaHash = event.params.metadataHash
 	const milestoneCount = event.params.milestoneCount.toI32()
 
-	const entity = GrantApplication.load(applicationId)
-	if(entity) {
-		entity.updatedAtS = event.params.time.toI32()
-		switch(event.params.state) {
-			case 0:
-				entity.state = 'submitted'
-			break
-			case 1:
-				entity.state = 'resubmit'
-			break
-			case 2:
-				entity.state = 'approved'
-			break
-			case 3:
-				entity.state = 'rejected'
-			break
-			case 4:
-				entity.state = 'completed'
-			break
-		}
-		// some valid IPFS hash
-		if(isPlausibleIPFSHash(metaHash)) {
-			// when state moves to resubmit or reject -- that's when DAO adds feedback
-			const feedbackType = entity.state === 'resubmit' || entity.state === 'rejected' ? FeedbackType.dao : FeedbackType.dev
-			const updateResult = applyApplicationUpdateIpfs(entity, event.params.metadataHash, feedbackType)
-			if(updateResult.error) {
-				log.warning(`[${event.transaction.hash.toHex()}] invalid metadata update for application: ID="${applicationId}", error=${updateResult.error!}`, [])
-				return
-			}
-	
-			if(entity.milestones.length !== milestoneCount && milestoneCount > 0) {
-				log.warning(`[${event.transaction.hash.toHex()}] metadata update has ${entity.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
-				return
-			}
-		}
-
-		entity.save()
-
-		addApplicationRevision(entity, event.transaction.from)
-		addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.transaction.from)
-	} else {
-		log.warning(`[${event.transaction.hash.toHex()}] recv update for unknown application: ID="${applicationId}"`, [])
+	const strStateResult = contractApplicationStateToString(event.params.state)
+	if(strStateResult.error) {
+		log.warning(`[${event.transaction.hash.toHex()}] error in mapping app state: "${strStateResult.error!}"`, [])
+		return
 	}
+
+	const entity = GrantApplication.load(applicationId)
+	if(!entity) {
+		log.warning(`[${event.transaction.hash.toHex()}] recv update for unknown application: ID="${applicationId}"`, [])
+		return
+	}
+
+	entity.updatedAtS = event.params.time.toI32()
+	entity.state = strStateResult.value!
+	// some valid IPFS hash
+	if(isPlausibleIPFSHash(metaHash)) {
+		const jsonResult = validatedJsonFromIpfs<GrantApplicationUpdate>(event.params.metadataHash, validateGrantApplicationUpdate)
+		if(jsonResult.error) {
+			log.warning(`[${event.transaction.hash.toHex()}] error in mapping application update: "${jsonResult.error!}"`, [])
+			return
+		}
+
+		const json = jsonResult.value!
+		if(json.milestones && (json.milestones!.length !== milestoneCount) && milestoneCount > 0) {
+			log.warning(`[${event.transaction.hash.toHex()}] metadata update has ${json.milestones!.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
+			return
+		}
+		
+		if(json.fields) {
+			entity.fields = mapGrantFieldAnswers(entity.id, entity.grant, json.fields!)
+		}
+		if(json.milestones) {
+			entity.milestones = mapMilestones(entity.id, json.milestones!)
+		}
+		if(json.feedback) {
+			// when state moves to resubmit or reject -- that's when DAO adds feedback
+			if(entity.state === 'resubmit' || entity.state === 'rejected') {
+				entity.feedbackDao = json.feedback!
+			} else if(entity.state === 'submitted') { // when dev moves app to submitted
+				entity.feedbackDev = json.feedback!
+			}
+		}
+	}
+
+	entity.save()
+
+	addApplicationRevision(entity, event.transaction.from)
+	addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.transaction.from)
 }
 
 export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 	const applicationId = event.params._id.toHex()
-	const milestoneId = `${applicationId}.${event.params._milestoneId.toI32()}.milestone`
+	const milestoneId = `${applicationId}.${event.params._milestoneId.toI32()}`
+
+	const strStateResult = contractMilestoneStateToString(event.params._state)
+	if(strStateResult.error) {
+		log.warning(`[${event.transaction.hash.toHex()}] error in mapping milestone state: "${strStateResult.error!}"`, [])
+		return
+	}
 
 	const entity = ApplicationMilestone.load(milestoneId)
-	if(entity) {
-		entity.updatedAtS = event.params.time.toI32()
-		const stateNum = event.params._state
-		switch(stateNum) {
-			case 0:
-				entity.state = "submitted"
-			break
-			case 1:
-				entity.state = "requested"
-			break
-			case 2:
-				entity.state = "approved"
-			break
-		}
-
-		if(isPlausibleIPFSHash(event.params._metadataHash)) {
-			const result = applyMilestoneUpdateIpfs(entity, event.params._metadataHash)
-			if(result.error) {
-				log.warning(`[${event.transaction.hash.toHex()}] failed to update milestone from IPFS, ID="${milestoneId}" error=${result.error!}`, [])
-				return
-			}
-		}
-
-		entity.save()
-
-		addMilestoneUpdateNotification(entity, applicationId, event.transaction.hash.toHex(), event.transaction.from)
-	} else {
+	if(!entity) {
 		log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+		return
 	}
+
+	entity.updatedAtS = event.params.time.toI32()
+	entity.state = strStateResult.value!
+
+	if(isPlausibleIPFSHash(event.params._metadataHash)) {
+		const jsonResult = validatedJsonFromIpfs<ApplicationMilestoneUpdate>(event.params._metadataHash, validateApplicationMilestoneUpdate)
+		if(jsonResult.error) {
+			log.warning(`[${event.transaction.hash.toHex()}] failed to update milestone from IPFS, ID="${milestoneId}" error=${jsonResult.error!}`, [])
+			return
+		}
+
+		const json = jsonResult.value!
+
+		entity.text = json.text
+	}
+
+	entity.save()
+
+	addMilestoneUpdateNotification(entity, applicationId, event.transaction.hash.toHex(), event.transaction.from)
 }
