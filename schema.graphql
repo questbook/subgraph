@@ -163,8 +163,10 @@ type ApplicationMilestone @entity {
   amountPaid: BigInt!
   "in seconds since epoch"
   updatedAtS: Int
-  "text that was sent with the milestone update"
-  text: String
+  "Feedback from the grant DAO manager/applicant"
+  feedbackDao: String
+  "Feedback from the developer"
+  feedbackDev: String
 }
 
 type GrantApplication @entity {

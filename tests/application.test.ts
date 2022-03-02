@@ -116,8 +116,8 @@ export function runTests(): void {
 
 		const gUpdate = ApplicationMilestone.load(milestoneId)
 		assert.i32Equals(gUpdate!.updatedAtS, 125)
-		assert.assertNotNull(gUpdate!.text)
-		assert.stringEquals(gUpdate!.text!, 'hello there')
+		assert.assertNotNull(gUpdate!.feedbackDev)
+		assert.stringEquals(gUpdate!.feedbackDev!, 'hello there')
 		assert.stringEquals(gUpdate!.state, 'requested')
 	})
 
@@ -142,8 +142,8 @@ export function runTests(): void {
 
 		const gUpdate = ApplicationMilestone.load(milestoneId)
 		assert.i32Equals(gUpdate!.updatedAtS, 126)
-		assert.assertNotNull(gUpdate!.text)
-		assert.stringEquals(gUpdate!.text!, 'testing')
+		assert.assertNotNull(gUpdate!.feedbackDao)
+		assert.stringEquals(gUpdate!.feedbackDao!, 'testing')
 		assert.stringEquals(gUpdate!.state, 'approved')
 	})
 

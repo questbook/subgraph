@@ -745,8 +745,8 @@ export class ApplicationMilestone extends Entity {
     this.set("updatedAtS", Value.fromI32(value));
   }
 
-  get text(): string | null {
-    let value = this.get("text");
+  get feedbackDao(): string | null {
+    let value = this.get("feedbackDao");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -754,11 +754,28 @@ export class ApplicationMilestone extends Entity {
     }
   }
 
-  set text(value: string | null) {
+  set feedbackDao(value: string | null) {
     if (!value) {
-      this.unset("text");
+      this.unset("feedbackDao");
     } else {
-      this.set("text", Value.fromString(<string>value));
+      this.set("feedbackDao", Value.fromString(<string>value));
+    }
+  }
+
+  get feedbackDev(): string | null {
+    let value = this.get("feedbackDev");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set feedbackDev(value: string | null) {
+    if (!value) {
+      this.unset("feedbackDev");
+    } else {
+      this.set("feedbackDev", Value.fromString(<string>value));
     }
   }
 }

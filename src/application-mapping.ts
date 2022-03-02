@@ -131,8 +131,12 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 		}
 
 		const json = jsonResult.value!
-
-		entity.text = json.text
+		if(entity.state === "requested") {
+			entity.feedbackDev = json.text
+		} else if(entity.state === "approved" || entity.state === 'submitted') {
+			entity.feedbackDao = json.text
+		}
+		
 	}
 
 	entity.save()

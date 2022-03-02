@@ -113,8 +113,8 @@ export function addMilestoneUpdateNotification(milestone: ApplicationMilestone, 
 			if(workspace) {
 				const notif = new Notification(`n.${eventId}`)
 				if(milestone.state === "submitted") {
-					notif.title = "Milestone Rejected"
-					let text = milestone.text
+					notif.title = "Milestone Request Rejected"
+					let text = milestone.feedbackDao
 					if(!text) {
 						text = 'no feedback'
 					}
