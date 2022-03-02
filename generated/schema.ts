@@ -421,6 +421,15 @@ export class Grant extends Entity {
   set numberOfApplications(value: i32) {
     this.set("numberOfApplications", Value.fromI32(value));
   }
+
+  get applications(): Array<string> {
+    let value = this.get("applications");
+    return value!.toStringArray();
+  }
+
+  set applications(value: Array<string>) {
+    this.set("applications", Value.fromStringArray(value));
+  }
 }
 
 export class WorkspaceMember extends Entity {

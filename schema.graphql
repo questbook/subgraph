@@ -109,6 +109,8 @@ type Grant @entity {
   funding: BigInt!
   "Number of applications in the grant"
   numberOfApplications: Int!
+  "List of applications for the grant"
+  applications: [GrantApplication!]! @derivedFrom(field: "grant")
 }
 
 type WorkspaceMember @entity {
