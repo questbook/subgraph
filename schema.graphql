@@ -1,7 +1,8 @@
 enum GrantFieldInputType {
   short_form
   long_form
-  numeric
+  numeric,
+  array
 }
 
 enum WorkspaceMemberAccessLevel {
