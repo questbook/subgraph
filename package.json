@@ -8,10 +8,10 @@
     "test": "graph test",
     "prepare-rinkeby": "mustache config/rinkeby.json template.subgraph.yaml > subgraph.yaml",
     "create-subgraph-rinkeby": "graph create --node http://the-graph.questbook.app:8020/ qb-subgraph",
-    "deploy-rinkeby": "yarn prepare-rinkeby && graph deploy --node http://the-graph.questbook.app:8020/ --ipfs https://ipfs.infura.io:5001 qb-subgraph",
+    "deploy-rinkeby": "yarn prepare-rinkeby && graph deploy --node http://the-graph.questbook.app:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph",
     "prepare-harmonytest": "mustache config/harmonytest.json template.subgraph.yaml > subgraph.yaml",
     "create-subgraph-harmonytest": "graph create --node http://the-graph.questbook.app:8020/ qb-subgraph-harmonytest",
-    "deploy-harmonytest": "yarn prepare-harmonytest && graph deploy --node http://the-graph.questbook.app:8020/ --ipfs https://ipfs.infura.io:5001 qb-subgraph-harmonytest",
+    "deploy-harmonytest": "yarn prepare-harmonytest && graph deploy --node http://the-graph.questbook.app:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph-harmonytest",
     "remove-local": "graph remove --node http://localhost:8020/ qb-subgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph",
     "create-subgraph-local": "graph create --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 qb-subgraph"
