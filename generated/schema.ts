@@ -134,6 +134,88 @@ export class GrantField extends Entity {
       this.set("possibleValues", Value.fromStringArray(<Array<string>>value));
     }
   }
+
+  get isPii(): boolean {
+    let value = this.get("isPii");
+    return value!.toBoolean();
+  }
+
+  set isPii(value: boolean) {
+    this.set("isPii", Value.fromBoolean(value));
+  }
+}
+
+export class GrantFieldAnswerItem extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("answer", Value.fromString(""));
+    this.set("value", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save GrantFieldAnswerItem entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save GrantFieldAnswerItem entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("GrantFieldAnswerItem", id.toString(), this);
+    }
+  }
+
+  static load(id: string): GrantFieldAnswerItem | null {
+    return changetype<GrantFieldAnswerItem | null>(
+      store.get("GrantFieldAnswerItem", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get answer(): string {
+    let value = this.get("answer");
+    return value!.toString();
+  }
+
+  set answer(value: string) {
+    this.set("answer", Value.fromString(value));
+  }
+
+  get value(): string {
+    let value = this.get("value");
+    return value!.toString();
+  }
+
+  set value(value: string) {
+    this.set("value", Value.fromString(value));
+  }
+
+  get walletId(): Bytes | null {
+    let value = this.get("walletId");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set walletId(value: Bytes | null) {
+    if (!value) {
+      this.unset("walletId");
+    } else {
+      this.set("walletId", Value.fromBytes(<Bytes>value));
+    }
+  }
 }
 
 export class GrantFieldAnswer extends Entity {
@@ -142,7 +224,6 @@ export class GrantFieldAnswer extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("field", Value.fromString(""));
-    this.set("value", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
@@ -182,13 +263,13 @@ export class GrantFieldAnswer extends Entity {
     this.set("field", Value.fromString(value));
   }
 
-  get value(): Array<string> {
-    let value = this.get("value");
+  get values(): Array<string> {
+    let value = this.get("values");
     return value!.toStringArray();
   }
 
-  set value(value: Array<string>) {
-    this.set("value", Value.fromStringArray(value));
+  set values(value: Array<string>) {
+    this.set("values", Value.fromStringArray(value));
   }
 }
 
@@ -501,6 +582,23 @@ export class WorkspaceMember extends Entity {
 
   set accessLevel(value: string) {
     this.set("accessLevel", Value.fromString(value));
+  }
+
+  get publicKey(): string | null {
+    let value = this.get("publicKey");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set publicKey(value: string | null) {
+    if (!value) {
+      this.unset("publicKey");
+    } else {
+      this.set("publicKey", Value.fromString(<string>value));
+    }
   }
 
   get workspace(): string {

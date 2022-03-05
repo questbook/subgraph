@@ -1,7 +1,7 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, Social } from "../../generated/schema";
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, Social } from "../../generated/schema";
 import { Result } from "../json-schema/json";
-import { GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, SocialItem } from "../json-schema";
+import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, SocialItem } from "../json-schema";
 
 export function isPlausibleIPFSHash(str: string): boolean {
 	return str.length > 2
@@ -120,9 +120,16 @@ export function mapWorkspaceSocials(workspaceId: string, socialsList: SocialItem
 	return items
 }
 
-function mapGrantFieldAnswer(applicationId: string, grantId: string, title: string, answers: string[]): string {
+function mapGrantFieldAnswer(applicationId: string, grantId: string, title: string, answers: GrantApplicationFieldAnswerItem[]): string {
 	const answer = new GrantFieldAnswer(`${applicationId}.${title}`)
-	answer.value = answers
+	for(let i = 0;i < answers.length;i++) {
+		const ansValue = new GrantFieldAnswerItem(`${answer.id}.${i}`)
+		ansValue.answer = answer.id
+		ansValue.value = answers[i].value
+		ansValue.walletId = answers[i].address
+
+		ansValue.save()
+	}
 	answer.field = `${grantId}.${title}`
 	
 	answer.save()
@@ -135,6 +142,7 @@ function mapGrantField(grantId: string, title: string, json: GrantFieldJSON): st
 	field.title = title
 	field.possibleValues = json.enum
 	field.inputType = json.inputType.replace('-', '_')
+	field.isPii = !!json.pii && json.pii!.isTrue
 	field.save()
 
 	return field.id

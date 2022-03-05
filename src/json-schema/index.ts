@@ -2,7 +2,7 @@
 // Auto generated file using graph-json-validator. Do not modify manually.
 
 import { TypedMap, BigInt, BigDecimal, Bytes, JSONValue } from '@graphprotocol/graph-ts'
-import { Result, toSet, validateObject, validateNumber, validateInteger, validateArray, validateBoolean, validateString, validateTypedMap, validateBytesFromStringResult, validateStringResultInteger, validateStringResultNumber } from './json'
+import { Boolean, Result, toSet, validateObject, validateNumber, validateInteger, validateArray, validateBoolean, validateString, validateTypedMap, validateBytesFromStringResult, validateStringResultInteger, validateStringResultNumber } from './json'
 
 const SupportedNetworkEnumSet = toSet(['1', '4', '137', '80001', '1666700000', '1666600000'])
 const GrantField_inputTypeEnumSet = toSet(['short-form', 'long-form', 'numeric', 'array'])
@@ -24,6 +24,7 @@ export class GrantField {
 	title: string = ''
 	inputType: string = ''
 	enum: string[] | null = null
+	pii: Boolean | null = null
 }
 
 export class GrantProposedMilestone {
@@ -31,13 +32,18 @@ export class GrantProposedMilestone {
 	amount: BigInt = new BigInt(0)
 }
 
+export class GrantApplicationFieldAnswerItem {
+	value: string = ''
+	address: Bytes | null = null
+}
+
 export class GrantApplicationFieldAnswers {
-	applicantName: string[] = []
-	applicantEmail: string[] = []
-	projectName: string[] = []
-	projectDetails: string[] = []
-	fundingBreakdown: string[] = []
-	additionalProperties: TypedMap<string, string[]> = new TypedMap()
+	applicantName: GrantApplicationFieldAnswerItem[] = []
+	applicantEmail: GrantApplicationFieldAnswerItem[] = []
+	projectName: GrantApplicationFieldAnswerItem[] = []
+	projectDetails: GrantApplicationFieldAnswerItem[] = []
+	fundingBreakdown: GrantApplicationFieldAnswerItem[] = []
+	additionalProperties: TypedMap<string, GrantApplicationFieldAnswerItem[]> = new TypedMap()
 }
 
 export class GrantApplicationRequest {
@@ -66,6 +72,16 @@ export class WorkspaceCreateRequest {
 	creatorId: string = ''
 	supportedNetworks: string[] = []
 	socials: SocialItem[] = []
+	publicKeys: PublicKeyMap[] | null = null
+}
+
+export class PublicKeyMap {
+	publicKey: string | null = null
+	address: Bytes | null = null
+}
+
+export class WorkspacePublicKeysUpdateRequest {
+	publicKeys: PublicKeyMap[] | null = null
 }
 
 export class WorkspaceUpdateRequest {
@@ -124,7 +140,7 @@ export function validateError(json: JSONValue): Result<Error> {
 	const statusCodeJson = obj.get('statusCode')
 	if (!statusCodeJson) return { value: null, error: "Expected 'statusCode' to be present in Error" }
 	if (statusCodeJson) {
-		const statusCodeResult = validateInteger(statusCodeJson, BigInt.fromString('200'), BigInt.fromString('505'))
+		const statusCodeResult = validateInteger(statusCodeJson, null, BigInt.fromString('505'))
 		if (statusCodeResult.error) {
 			return { value: null, error: ["Error in mapping 'statusCode': ", statusCodeResult.error!].join('') }
 		}
@@ -169,7 +185,7 @@ export function validateError_data(json: JSONValue): Result<Error_data> {
 	return { value, error: null }
 }
 
-export function validateAsset(json: JSONValue): Result<Bytes> {
+export function validateAddress(json: JSONValue): Result<Bytes> {
 	return validateBytesFromStringResult(validateString(json, 16, 256, null))
 }
 
@@ -214,6 +230,14 @@ export function validateGrantField(json: JSONValue): Result<GrantField> {
 		}
 		value.enum = enumResult.value!
 	}
+	const piiJson = obj.get('pii')
+	if (piiJson) {
+		const piiResult = validateBoolean(piiJson)
+		if (piiResult.error) {
+			return { value: null, error: ["Error in mapping 'pii': ", piiResult.error!].join('') }
+		}
+		value.pii = piiResult.value!
+	}
 	return { value, error: null }
 }
 
@@ -253,20 +277,39 @@ export function validateGrantProposedMilestone(json: JSONValue): Result<GrantPro
 	return { value, error: null }
 }
 
-export function validateGrantApplicationFieldAnswer(json: JSONValue): Result<string[]> {
+export function validateGrantApplicationFieldAnswer(json: JSONValue): Result<GrantApplicationFieldAnswerItem[]> {
 	return validateArray(json, -1, 100, validateGrantApplicationFieldAnswerItem)
 }
 
-export function validateGrantApplicationFieldAnswerItem(json: JSONValue): Result<string> {
-	return validateString(json, -1, 7000, null)
+export function validateRequiredGrantApplicationFieldAnswer(json: JSONValue): Result<GrantApplicationFieldAnswerItem[]> {
+	return validateArray(json, -1, 100, validateGrantApplicationFieldAnswerItem)
 }
 
-export function validateRequiredGrantApplicationFieldAnswer(json: JSONValue): Result<string[]> {
-	return validateArray(json, 1, 100, validateRequiredGrantApplicationFieldAnswerItem)
-}
-
-export function validateRequiredGrantApplicationFieldAnswerItem(json: JSONValue): Result<string> {
-	return validateString(json, -1, 7000, null)
+export function validateGrantApplicationFieldAnswerItem(json: JSONValue): Result<GrantApplicationFieldAnswerItem> {
+	const value = new GrantApplicationFieldAnswerItem()
+	const objResult = validateObject(json)
+	if (objResult.error) {
+		return { value: null, error: objResult.error }
+	}
+	const obj = objResult.value!
+	const valueJson = obj.get('value')
+	if (!valueJson) return { value: null, error: "Expected 'value' to be present in GrantApplicationFieldAnswerItem" }
+	if (valueJson) {
+		const valueResult = validateString(valueJson, -1, 7000, null)
+		if (valueResult.error) {
+			return { value: null, error: ["Error in mapping 'value': ", valueResult.error!].join('') }
+		}
+		value.value = valueResult.value!
+	}
+	const addressJson = obj.get('address')
+	if (addressJson) {
+		const addressResult = validateAddress(addressJson)
+		if (addressResult.error) {
+			return { value: null, error: ["Error in mapping 'address': ", addressResult.error!].join('') }
+		}
+		value.address = addressResult.value!
+	}
+	return { value, error: null }
 }
 
 export function validateGrantApplicationFieldAnswers(json: JSONValue): Result<GrantApplicationFieldAnswers> {
@@ -405,7 +448,7 @@ export function validateGrantApplicationUpdate(json: JSONValue): Result<GrantApp
 	}
 	const feedbackJson = obj.get('feedback')
 	if (feedbackJson) {
-		const feedbackResult = validateString(feedbackJson, 1, 2048, null)
+		const feedbackResult = validateString(feedbackJson, 1, 4096, null)
 		if (feedbackResult.error) {
 			return { value: null, error: ["Error in mapping 'feedback': ", feedbackResult.error!].join('') }
 		}
@@ -515,15 +558,79 @@ export function validateWorkspaceCreateRequest(json: JSONValue): Result<Workspac
 		}
 		value.socials = socialsResult.value!
 	}
+	const publicKeysJson = obj.get('publicKeys')
+	if (publicKeysJson) {
+		const publicKeysResult = validateWorkspaceCreateRequest_publicKeys(publicKeysJson)
+		if (publicKeysResult.error) {
+			return { value: null, error: ["Error in mapping 'publicKeys': ", publicKeysResult.error!].join('') }
+		}
+		value.publicKeys = publicKeysResult.value!
+	}
 	return { value, error: null }
 }
 
 export function validateWorkspaceCreateRequest_supportedNetworks(json: JSONValue): Result<string[]> {
-	return validateArray(json, -1, 100, validateSupportedNetwork)
+	return validateArray(json, -1, 25, validateSupportedNetwork)
 }
 
 export function validateWorkspaceCreateRequest_socials(json: JSONValue): Result<SocialItem[]> {
 	return validateArray(json, -1, 10, validateSocialItem)
+}
+
+export function validateWorkspaceCreateRequest_publicKeys(json: JSONValue): Result<PublicKeyMap[]> {
+	return validateArray(json, -1, -1, validatePublicKeyMap)
+}
+
+export function validatePublicKey(json: JSONValue): Result<string> {
+	return validateString(json, -1, 255, null)
+}
+
+export function validatePublicKeyMap(json: JSONValue): Result<PublicKeyMap> {
+	const value = new PublicKeyMap()
+	const objResult = validateObject(json)
+	if (objResult.error) {
+		return { value: null, error: objResult.error }
+	}
+	const obj = objResult.value!
+	const publicKeyJson = obj.get('publicKey')
+	if (publicKeyJson) {
+		const publicKeyResult = validatePublicKey(publicKeyJson)
+		if (publicKeyResult.error) {
+			return { value: null, error: ["Error in mapping 'publicKey': ", publicKeyResult.error!].join('') }
+		}
+		value.publicKey = publicKeyResult.value!
+	}
+	const addressJson = obj.get('address')
+	if (addressJson) {
+		const addressResult = validateAddress(addressJson)
+		if (addressResult.error) {
+			return { value: null, error: ["Error in mapping 'address': ", addressResult.error!].join('') }
+		}
+		value.address = addressResult.value!
+	}
+	return { value, error: null }
+}
+
+export function validateWorkspacePublicKeysUpdateRequest(json: JSONValue): Result<WorkspacePublicKeysUpdateRequest> {
+	const value = new WorkspacePublicKeysUpdateRequest()
+	const objResult = validateObject(json)
+	if (objResult.error) {
+		return { value: null, error: objResult.error }
+	}
+	const obj = objResult.value!
+	const publicKeysJson = obj.get('publicKeys')
+	if (publicKeysJson) {
+		const publicKeysResult = validateWorkspacePublicKeysUpdateRequest_publicKeys(publicKeysJson)
+		if (publicKeysResult.error) {
+			return { value: null, error: ["Error in mapping 'publicKeys': ", publicKeysResult.error!].join('') }
+		}
+		value.publicKeys = publicKeysResult.value!
+	}
+	return { value, error: null }
+}
+
+export function validateWorkspacePublicKeysUpdateRequest_publicKeys(json: JSONValue): Result<PublicKeyMap[]> {
+	return validateArray(json, -1, -1, validatePublicKeyMap)
 }
 
 export function validateWorkspaceUpdateRequest(json: JSONValue): Result<WorkspaceUpdateRequest> {
@@ -679,7 +786,7 @@ export function validateGrantReward(json: JSONValue): Result<GrantReward> {
 	const assetJson = obj.get('asset')
 	if (!assetJson) return { value: null, error: "Expected 'asset' to be present in GrantReward" }
 	if (assetJson) {
-		const assetResult = validateAsset(assetJson)
+		const assetResult = validateAddress(assetJson)
 		if (assetResult.error) {
 			return { value: null, error: ["Error in mapping 'asset': ", assetResult.error!].join('') }
 		}

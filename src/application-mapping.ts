@@ -1,4 +1,4 @@
-import { log } from '@graphprotocol/graph-ts'
+import { log, store } from '@graphprotocol/graph-ts'
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
 import { ApplicationMilestone, Grant, GrantApplication } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'

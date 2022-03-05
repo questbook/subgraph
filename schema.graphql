@@ -67,12 +67,20 @@ type GrantField @entity {
   title: String!
   inputType: GrantFieldInputType!
   possibleValues: [String!]
+  isPii: Boolean!
+}
+
+type GrantFieldAnswerItem @entity {
+  id: ID!
+  answer: GrantFieldAnswer!
+  value: String!
+  walletId: Bytes
 }
 
 type GrantFieldAnswer @entity {
   id: ID!
   field: GrantField!
-  value: [String!]!
+  values: [GrantFieldAnswerItem!]! @derivedFrom(field: "answer")
 }
 
 type Reward @entity {
@@ -122,6 +130,8 @@ type WorkspaceMember @entity {
   email: String
   "What permissions the member has on the workspace"
   accessLevel: WorkspaceMemberAccessLevel!
+  "Public key of the workspace member"
+  publicKey: String
 
   workspace: Workspace!
 }
