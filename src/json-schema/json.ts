@@ -6,6 +6,7 @@ export class Result<T> {
 	error: string | null = null;
 }
 
+/** Boolean wrapper, to help make nullable booleans */
 export class Boolean {
 	isTrue: boolean = false
 }

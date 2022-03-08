@@ -61,7 +61,7 @@
 
 "@questbook/graph-json-validator@git+https://github.com/questbook/graph-json-validator":
   version "0.0.1"
-  resolved "git+https://github.com/questbook/graph-json-validator#27304dfdbb8c3f9fb8aa887d55f78eede16d1e98"
+  resolved "git+https://github.com/questbook/graph-json-validator#e0e6e2c1c81231a78cc791b72205e3e5aecced54"
   dependencies:
     axios "^0.26.0"
     js-yaml "^4.1.0"

@@ -119,6 +119,7 @@ export class GrantCreateRequest {
 	creatorId: string = ''
 	workspaceId: string = ''
 	fields: GrantFieldMap = new GrantFieldMap()
+	grantManagers: Bytes[] | null = null
 }
 
 export class GrantUpdateRequest {
@@ -128,6 +129,7 @@ export class GrantUpdateRequest {
 	deadline: string | null = null
 	reward: GrantReward | null = null
 	fields: GrantFieldMap | null = null
+	grantManagers: Bytes[] | null = null
 }
 
 export function validateError(json: JSONValue): Result<Error> {
@@ -873,7 +875,19 @@ export function validateGrantCreateRequest(json: JSONValue): Result<GrantCreateR
 		}
 		value.fields = fieldsResult.value!
 	}
+	const grantManagersJson = obj.get('grantManagers')
+	if (grantManagersJson) {
+		const grantManagersResult = validateGrantCreateRequest_grantManagers(grantManagersJson)
+		if (grantManagersResult.error) {
+			return { value: null, error: ["Error in mapping 'grantManagers': ", grantManagersResult.error!].join('') }
+		}
+		value.grantManagers = grantManagersResult.value!
+	}
 	return { value, error: null }
+}
+
+export function validateGrantCreateRequest_grantManagers(json: JSONValue): Result<Bytes[]> {
+	return validateArray(json, -1, -1, validateAddress)
 }
 
 export function validateGrantUpdateRequest(json: JSONValue): Result<GrantUpdateRequest> {
@@ -931,7 +945,19 @@ export function validateGrantUpdateRequest(json: JSONValue): Result<GrantUpdateR
 		}
 		value.fields = fieldsResult.value!
 	}
+	const grantManagersJson = obj.get('grantManagers')
+	if (grantManagersJson) {
+		const grantManagersResult = validateGrantUpdateRequest_grantManagers(grantManagersJson)
+		if (grantManagersResult.error) {
+			return { value: null, error: ["Error in mapping 'grantManagers': ", grantManagersResult.error!].join('') }
+		}
+		value.grantManagers = grantManagersResult.value!
+	}
 	return { value, error: null }
+}
+
+export function validateGrantUpdateRequest_grantManagers(json: JSONValue): Result<Bytes[]> {
+	return validateArray(json, -1, -1, validateAddress)
 }
 
 export function validateOwnerID(json: JSONValue): Result<string> {
