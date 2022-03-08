@@ -1,5 +1,5 @@
-import { BigInt } from "@graphprotocol/graph-ts";
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, Social } from "../../generated/schema";
+import { BigInt, Bytes, store } from "@graphprotocol/graph-ts";
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Social } from "../../generated/schema";
 import { Result } from "../json-schema/json";
 import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, SocialItem } from "../json-schema";
 
@@ -118,6 +118,28 @@ export function mapWorkspaceSocials(workspaceId: string, socialsList: SocialItem
 		items.push(social.id)
 	}
 	return items
+}
+
+export function mapGrantManagers(managerWalletIds: Bytes[] | null, grantId: string, workspaceId: string): string[] {
+	const items: string[] = []
+	if(managerWalletIds) {
+		for(let i = 0;i < managerWalletIds.length;i++) {
+			const walletId = managerWalletIds[i].toHex()
+			const manager = new GrantManager(`${grantId}.${walletId}`)
+			manager.grant = grantId
+			manager.member = `${workspaceId}.${walletId}`
+			
+			manager.save()
+			items.push(manager.id)
+		}
+	}
+	return items
+}
+
+export function removeEntityCollection(entityName: string, ids: string[]): void {
+	for(let i = 0;i < ids.length;i++) {
+		store.remove(entityName, ids[i])
+	}
 }
 
 function mapGrantFieldAnswer(applicationId: string, grantId: string, title: string, answers: GrantApplicationFieldAnswerItem[]): string {

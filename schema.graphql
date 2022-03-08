@@ -120,6 +120,17 @@ type Grant @entity {
   numberOfApplications: Int!
   "List of applications for the grant"
   applications: [GrantApplication!]! @derivedFrom(field: "grant")
+  "People who will manage the grant. They can see the PII submitted in an application"
+  managers: [GrantManager!]! @derivedFrom(field: "grant")
+}
+
+type GrantManager @entity {
+  "Globally unique ID of the member"
+  id: ID!
+  "Grant for which this entity is the manager"
+  grant: Grant!
+  "Workspace member"
+  member: WorkspaceMember
 }
 
 type WorkspaceMember @entity {

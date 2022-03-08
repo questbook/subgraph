@@ -1,10 +1,10 @@
-import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
+import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
-import { FundsTransfer, Grant, Notification } from "../generated/schema"
+import { FundsTransfer, Grant, GrantManager, Notification, WorkspaceMember } from "../generated/schema"
 import { FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdated } from '../src/grant-mapping'
-import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, MOCK_GRANT_ID, MOCK_WORKSPACE_ID } from "./utils"
+import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from "./utils"
 import { handleTransfer } from '../src/transfer-mapping' 
 import { Transfer } from "../generated/GrantTransfersDAI/ERC20"
 
@@ -18,6 +18,13 @@ export function runTests(): void {
 		assert.booleanEquals(g!.acceptingApplications, true)
 		
 		assertArrayNotEmpty(g!.fields)
+
+		const memId = `${g!.id}.${WORKSPACE_CREATOR_ID}`
+		const mem = GrantManager.load(memId)
+		assert.assertNotNull(mem)
+		assert.assertNotNull(mem!.member)
+
+		assert.assertNotNull(WorkspaceMember.load(mem!.member!))
 	})
 
 	test('should fail to create a grant due to invalid reward', () => {

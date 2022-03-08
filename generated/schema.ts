@@ -511,6 +511,76 @@ export class Grant extends Entity {
   set applications(value: Array<string>) {
     this.set("applications", Value.fromStringArray(value));
   }
+
+  get managers(): Array<string> {
+    let value = this.get("managers");
+    return value!.toStringArray();
+  }
+
+  set managers(value: Array<string>) {
+    this.set("managers", Value.fromStringArray(value));
+  }
+}
+
+export class GrantManager extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("grant", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save GrantManager entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save GrantManager entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("GrantManager", id.toString(), this);
+    }
+  }
+
+  static load(id: string): GrantManager | null {
+    return changetype<GrantManager | null>(store.get("GrantManager", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get grant(): string {
+    let value = this.get("grant");
+    return value!.toString();
+  }
+
+  set grant(value: string) {
+    this.set("grant", Value.fromString(value));
+  }
+
+  get member(): string | null {
+    let value = this.get("member");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set member(value: string | null) {
+    if (!value) {
+      this.unset("member");
+    } else {
+      this.set("member", Value.fromString(<string>value));
+    }
+  }
 }
 
 export class WorkspaceMember extends Entity {

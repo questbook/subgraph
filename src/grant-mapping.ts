@@ -3,7 +3,7 @@ import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactory
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Reward, Workspace } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantFundUpdate } from "./utils/apply-grant-deposit"
-import { isPlausibleIPFSHash, mapGrantFieldMap } from "./utils/generics"
+import { isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, removeEntityCollection } from "./utils/generics"
 import { addFundsTransferNotification } from "./utils/notifications"
 import { QBGrantsContract } from "../generated/templates"
 import { validatedJsonFromIpfs } from "./json-schema/json"
@@ -48,6 +48,7 @@ export function handleGrantCreated(event: GrantCreated): void {
   entity.createdAtS = event.params.time.toI32()
   entity.funding = new BigInt(0)
   entity.numberOfApplications = 0
+  mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
 
   entity.save()
 
@@ -151,6 +152,10 @@ export function handleGrantUpdated(event: GrantUpdated): void {
     }
     if(json.fields) {
       entity.fields = mapGrantFieldMap(entity.id, json.fields!)
+    }
+    if(json.grantManagers) {
+      removeEntityCollection('GrantManager', entity.managers)
+      mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
     }
   }
 
