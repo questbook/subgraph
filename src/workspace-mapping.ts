@@ -36,6 +36,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
   member.actorId = event.params.owner
   member.accessLevel = 'owner'
   member.workspace = entity.id
+  member.publicKey = json.creatorPublicKey
   member.save()
 
   entity.save()

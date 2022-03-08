@@ -70,18 +70,14 @@ export class WorkspaceCreateRequest {
 	logoIpfsHash: string = ''
 	coverImageIpfsHash: string | null = null
 	creatorId: string = ''
+	creatorPublicKey: string | null = null
 	supportedNetworks: string[] = []
 	socials: SocialItem[] = []
-	publicKeys: PublicKeyMap[] | null = null
-}
-
-export class PublicKeyMap {
-	publicKey: string | null = null
-	address: Bytes | null = null
 }
 
 export class WorkspacePublicKeysUpdateRequest {
-	publicKeys: PublicKeyMap[] | null = null
+	walletId: Bytes | null = null
+	publicKey: string = ''
 }
 
 export class WorkspaceUpdateRequest {
@@ -542,6 +538,14 @@ export function validateWorkspaceCreateRequest(json: JSONValue): Result<Workspac
 		}
 		value.creatorId = creatorIdResult.value!
 	}
+	const creatorPublicKeyJson = obj.get('creatorPublicKey')
+	if (creatorPublicKeyJson) {
+		const creatorPublicKeyResult = validatePublicKey(creatorPublicKeyJson)
+		if (creatorPublicKeyResult.error) {
+			return { value: null, error: ["Error in mapping 'creatorPublicKey': ", creatorPublicKeyResult.error!].join('') }
+		}
+		value.creatorPublicKey = creatorPublicKeyResult.value!
+	}
 	const supportedNetworksJson = obj.get('supportedNetworks')
 	if (!supportedNetworksJson) return { value: null, error: "Expected 'supportedNetworks' to be present in WorkspaceCreateRequest" }
 	if (supportedNetworksJson) {
@@ -560,14 +564,6 @@ export function validateWorkspaceCreateRequest(json: JSONValue): Result<Workspac
 		}
 		value.socials = socialsResult.value!
 	}
-	const publicKeysJson = obj.get('publicKeys')
-	if (publicKeysJson) {
-		const publicKeysResult = validateWorkspaceCreateRequest_publicKeys(publicKeysJson)
-		if (publicKeysResult.error) {
-			return { value: null, error: ["Error in mapping 'publicKeys': ", publicKeysResult.error!].join('') }
-		}
-		value.publicKeys = publicKeysResult.value!
-	}
 	return { value, error: null }
 }
 
@@ -579,38 +575,8 @@ export function validateWorkspaceCreateRequest_socials(json: JSONValue): Result<
 	return validateArray(json, -1, 10, validateSocialItem)
 }
 
-export function validateWorkspaceCreateRequest_publicKeys(json: JSONValue): Result<PublicKeyMap[]> {
-	return validateArray(json, -1, -1, validatePublicKeyMap)
-}
-
 export function validatePublicKey(json: JSONValue): Result<string> {
 	return validateString(json, -1, 255, null)
-}
-
-export function validatePublicKeyMap(json: JSONValue): Result<PublicKeyMap> {
-	const value = new PublicKeyMap()
-	const objResult = validateObject(json)
-	if (objResult.error) {
-		return { value: null, error: objResult.error }
-	}
-	const obj = objResult.value!
-	const publicKeyJson = obj.get('publicKey')
-	if (publicKeyJson) {
-		const publicKeyResult = validatePublicKey(publicKeyJson)
-		if (publicKeyResult.error) {
-			return { value: null, error: ["Error in mapping 'publicKey': ", publicKeyResult.error!].join('') }
-		}
-		value.publicKey = publicKeyResult.value!
-	}
-	const addressJson = obj.get('address')
-	if (addressJson) {
-		const addressResult = validateAddress(addressJson)
-		if (addressResult.error) {
-			return { value: null, error: ["Error in mapping 'address': ", addressResult.error!].join('') }
-		}
-		value.address = addressResult.value!
-	}
-	return { value, error: null }
 }
 
 export function validateWorkspacePublicKeysUpdateRequest(json: JSONValue): Result<WorkspacePublicKeysUpdateRequest> {
@@ -620,19 +586,24 @@ export function validateWorkspacePublicKeysUpdateRequest(json: JSONValue): Resul
 		return { value: null, error: objResult.error }
 	}
 	const obj = objResult.value!
-	const publicKeysJson = obj.get('publicKeys')
-	if (publicKeysJson) {
-		const publicKeysResult = validateWorkspacePublicKeysUpdateRequest_publicKeys(publicKeysJson)
-		if (publicKeysResult.error) {
-			return { value: null, error: ["Error in mapping 'publicKeys': ", publicKeysResult.error!].join('') }
+	const walletIdJson = obj.get('walletId')
+	if (walletIdJson) {
+		const walletIdResult = validateAddress(walletIdJson)
+		if (walletIdResult.error) {
+			return { value: null, error: ["Error in mapping 'walletId': ", walletIdResult.error!].join('') }
 		}
-		value.publicKeys = publicKeysResult.value!
+		value.walletId = walletIdResult.value!
+	}
+	const publicKeyJson = obj.get('publicKey')
+	if (!publicKeyJson) return { value: null, error: "Expected 'publicKey' to be present in WorkspacePublicKeysUpdateRequest" }
+	if (publicKeyJson) {
+		const publicKeyResult = validatePublicKey(publicKeyJson)
+		if (publicKeyResult.error) {
+			return { value: null, error: ["Error in mapping 'publicKey': ", publicKeyResult.error!].join('') }
+		}
+		value.publicKey = publicKeyResult.value!
 	}
 	return { value, error: null }
-}
-
-export function validateWorkspacePublicKeysUpdateRequest_publicKeys(json: JSONValue): Result<PublicKeyMap[]> {
-	return validateArray(json, -1, -1, validatePublicKeyMap)
 }
 
 export function validateWorkspaceUpdateRequest(json: JSONValue): Result<WorkspaceUpdateRequest> {
