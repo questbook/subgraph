@@ -948,6 +948,67 @@ export class ApplicationMilestone extends Entity {
   }
 }
 
+export class PIIAnswer extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("data", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save PIIAnswer entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save PIIAnswer entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("PIIAnswer", id.toString(), this);
+    }
+  }
+
+  static load(id: string): PIIAnswer | null {
+    return changetype<PIIAnswer | null>(store.get("PIIAnswer", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get manager(): string | null {
+    let value = this.get("manager");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set manager(value: string | null) {
+    if (!value) {
+      this.unset("manager");
+    } else {
+      this.set("manager", Value.fromString(<string>value));
+    }
+  }
+
+  get data(): string {
+    let value = this.get("data");
+    return value!.toString();
+  }
+
+  set data(value: string) {
+    this.set("data", Value.fromString(value));
+  }
+}
+
 export class GrantApplication extends Entity {
   constructor(id: string) {
     super();
@@ -957,6 +1018,7 @@ export class GrantApplication extends Entity {
     this.set("applicantId", Value.fromBytes(Bytes.empty()));
     this.set("state", Value.fromString(""));
     this.set("fields", Value.fromStringArray(new Array(0)));
+    this.set("pii", Value.fromStringArray(new Array(0)));
     this.set("milestones", Value.fromStringArray(new Array(0)));
   }
 
@@ -1022,6 +1084,15 @@ export class GrantApplication extends Entity {
 
   set fields(value: Array<string>) {
     this.set("fields", Value.fromStringArray(value));
+  }
+
+  get pii(): Array<string> {
+    let value = this.get("pii");
+    return value!.toStringArray();
+  }
+
+  set pii(value: Array<string>) {
+    this.set("pii", Value.fromStringArray(value));
   }
 
   get createdAtS(): i32 {

@@ -4,7 +4,7 @@ import { ApplicationMilestone, Grant, GrantApplication } from '../generated/sche
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { ApplicationMilestoneUpdate, GrantApplicationRequest, GrantApplicationUpdate, validateApplicationMilestoneUpdate, validateGrantApplicationRequest, validateGrantApplicationUpdate } from './json-schema'
 import { addApplicationRevision } from './utils/add-application-revision'
-import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapGrantFieldAnswers, mapMilestones } from './utils/generics'
+import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
 import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from './utils/notifications'
 
 export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
@@ -38,6 +38,12 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	entity.createdAtS = event.params.time.toI32()
 	entity.updatedAtS = entity.createdAtS
 	entity.milestones = mapMilestones(applicationId, json.milestones)
+
+	if(json.pii) {
+		entity.pii = mapGrantPII(applicationId, grantId, json.pii!)
+	} else {
+		entity.pii = []
+	}
 
 	entity.save()
 
@@ -84,6 +90,10 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		
 		if(json.fields) {
 			entity.fields = mapGrantFieldAnswers(entity.id, entity.grant, json.fields!)
+		}
+		if(json.pii) {
+			removeEntityCollection('PIIAnswer', entity.pii)
+			entity.pii = mapGrantPII(entity.id, entity.grant, json.pii!)
 		}
 		if(json.milestones) {
 			entity.milestones = mapMilestones(entity.id, json.milestones!)

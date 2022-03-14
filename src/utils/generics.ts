@@ -1,7 +1,7 @@
 import { BigInt, Bytes, store } from "@graphprotocol/graph-ts";
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Social } from "../../generated/schema";
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, PIIAnswer, Social } from "../../generated/schema";
 import { Result } from "../json-schema/json";
-import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, SocialItem } from "../json-schema";
+import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, PIIAnswers, SocialItem } from "../json-schema";
 
 export function isPlausibleIPFSHash(str: string): boolean {
 	return str.length > 2
@@ -25,18 +25,29 @@ export function mapGrantFieldMap(grantId: string, map: GrantFieldMap): string[] 
 
 export function mapGrantFieldAnswers(applicationId: string, grantId: string, map: GrantApplicationFieldAnswers): string[] {
 	const fields: string[] = []
-	fields.push(mapGrantFieldAnswer(applicationId, grantId, 'applicantName', map.applicantName))
-	fields.push(mapGrantFieldAnswer(applicationId, grantId, 'applicantEmail', map.applicantEmail))
-	fields.push(mapGrantFieldAnswer(applicationId, grantId, 'projectName', map.projectName))
-	fields.push(mapGrantFieldAnswer(applicationId, grantId, 'projectDetails', map.projectDetails))
-	fields.push(mapGrantFieldAnswer(applicationId, grantId, 'fundingBreakdown', map.fundingBreakdown))
-
 	const additionalEntries = map.additionalProperties.entries
 	for(let i = 0;i < additionalEntries.length;i++) {
 		fields.push(mapGrantFieldAnswer(applicationId, grantId, additionalEntries[i].key, additionalEntries[i].value))
 	}
 
 	return fields
+}
+
+export function mapGrantPII(applicationId: string, grantId: string, map: PIIAnswers): string[] {
+	const items: string[] = []
+
+	const entryList = map.additionalProperties.entries
+	for(let i = 0;i < entryList.length;i++) {
+		const entry = entryList[i]
+		const item = new PIIAnswer(`${applicationId}.${entry.key}`)
+		item.manager = `${grantId}.${entry.key}`
+		item.data = entry.value
+		item.save()
+
+		items.push(item.id)
+	}
+
+	return items
 }
 
 export function mapMilestones(applicationId: string, milestoneList: GrantProposedMilestone[]): string[] {
@@ -148,7 +159,6 @@ function mapGrantFieldAnswer(applicationId: string, grantId: string, title: stri
 		const ansValue = new GrantFieldAnswerItem(`${answer.id}.${i}`)
 		ansValue.answer = answer.id
 		ansValue.value = answers[i].value
-		ansValue.walletId = answers[i].address
 
 		ansValue.save()
 	}

@@ -191,6 +191,14 @@ type ApplicationMilestone @entity {
   feedbackDev: String
 }
 
+type PIIAnswer @entity {
+  id: ID!
+  "Grant manager who can access this encrypted info"
+  manager: GrantManager
+  "The encrypted data"
+  data: String!
+}
+
 type GrantApplication @entity {
   id: ID!
   "The grant for which the application is for"
@@ -201,6 +209,8 @@ type GrantApplication @entity {
   state: ApplicationState!
   "Answers to the fields requested in the grant"
   fields: [GrantFieldAnswer!]!
+  "PII Data"
+  pii: [PIIAnswer!]!
   "in seconds since epoch"
   createdAtS: Int!
   "in seconds since epoch"
