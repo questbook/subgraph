@@ -1,0 +1,23 @@
+{
+	"network": "polygon",
+	"workspace": {
+		"address": "0xafEEbeB8B2E2d9f649d292228514a70677e83117",
+		"startBlock": 25931024
+	},
+	"applications": {
+		"address": "0x89497A254e886C229C370822b5fc2153B53A07Eb",
+		"startBlock": 25931027
+	},
+	"grantFactory": {
+		"address": "0x921304fa17382FC009e2DDf286857a1b1ae5Db63",
+		"startBlock": 25931031
+	},
+	"dai": {
+		"address": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+		"startBlock": 25931031
+	},
+	"weth": {
+		"address": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+		"startBlock": 25931031
+	}
+}
