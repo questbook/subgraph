@@ -3,7 +3,7 @@ import { test, newMockEvent, assert } from 'matchstick-as/assembly/index'
 import { WorkspaceAdminsAdded, WorkspaceAdminsRemoved, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Social, Workspace, WorkspaceMember } from '../generated/schema'
 import { handleWorkspaceAdminsAdded, handleWorkspaceAdminsRemoved, handleWorkspaceUpdated } from '../src/workspace-mapping'
-import { assertArrayNotEmpty, assertStringNotEmpty, createWorkspace, MOCK_WORKSPACE_ID } from './utils'
+import { assertArrayNotEmpty, assertStringNotEmpty, createWorkspace, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 
 export function runTests(): void {
 
@@ -57,6 +57,29 @@ export function runTests(): void {
 		
 		const sUpdate = Social.load(wUpdate!.socials[0])
 		assert.assertTrue(s!.value != sUpdate!.value)
+	})
+
+	test('should update public key', () => {
+		const w = createWorkspace()!
+
+		const ev = newMockEvent()
+		ev.parameters = [
+			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
+			new ethereum.EventParam('owner', ethereum.Value.fromBytes( Address.fromByteArray(Address.fromI32(2)) )),
+			// contains mock data for update event
+			new ethereum.EventParam('metadataHash', ethereum.Value.fromString('json:{"publicKey":"-1i2jrc12rc13rc"}')),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(124))
+		]
+		
+		ev.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
+
+		const event = new WorkspaceUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleWorkspaceUpdated(event)
+		
+		const wUpdate = WorkspaceMember.load(`${w.id}.${ev.transaction.from.toHex()}`)
+
+		assert.assertNotNull(wUpdate)
+		assert.stringEquals(wUpdate!.publicKey!, '-1i2jrc12rc13rc')
 	})
 
 	test('should add admins to a workspace', () => {
