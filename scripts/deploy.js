@@ -1,0 +1,78 @@
+const { spawn: _spawn } = require('child_process')
+const { promises: fs } = require('fs')
+
+async function spawn(command, args, options) {
+	return new Promise((resolve, reject) => {
+		_spawn(
+			command,
+			args,
+			{ stdio: 'inherit', ...options }
+		)
+		.on('close', code => {
+			if (code === 0) resolve()
+			else reject(new Error(`command ${command} exited with code: ${code}`))
+		})
+	})
+}
+
+const getNetworks = async() => {
+	const files = await fs.readdir('./config')
+	const networks = []
+	for(const file of files) {
+		const [name, ext] = file.split('.')
+		if(ext === 'json') {
+			networks.push(name)
+		}
+	}
+	return networks
+}
+
+const create = async (network) => {
+	await spawn('yarn', ['prepare'], {
+		env: {
+			...process.env,
+			NETWORK: network
+		}
+	})
+	await spawn('yarn', ['create-subgraph'], {
+		env: {
+			...process.env,
+			NETWORK: network
+		}
+	})
+	console.log(`created subgraph for "${network}"`)
+}
+
+const deploy = async (network, version) => {
+	console.log(`deploying to "${network}"...`)
+	await spawn('yarn', ['deploy', '-l', version], {
+		env: {
+			...process.env,
+			NETWORK: network
+		}
+	})
+	console.log(`deployed to "${network}"`)
+}
+
+(async() => {
+	const allNetworks = await getNetworks()
+
+	const network = process.env.NETWORK
+	const version = '0.0.1'
+	const networks = []
+	if(network) {
+		if(!allNetworks.includes(network)) {
+			throw new Error(`network must be one of ${allNetworks}`)
+		}
+		networks.push(network)
+	} else {
+		networks.push(...allNetworks)
+		console.log(`deploying to all networks...`)
+	}
+
+	for(const network of networks) {
+		await create(network)
+		await deploy(network, version)
+	}
+	
+})()
