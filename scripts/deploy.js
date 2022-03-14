@@ -1,5 +1,6 @@
 const { spawn: _spawn } = require('child_process')
 const { promises: fs } = require('fs')
+const { version } = require('../package.json')
 
 async function spawn(command, args, options) {
 	return new Promise((resolve, reject) => {
@@ -58,7 +59,6 @@ const deploy = async (network, version) => {
 	const allNetworks = await getNetworks()
 
 	const network = process.env.NETWORK
-	const version = '0.0.1'
 	const networks = []
 	if(network) {
 		if(!allNetworks.includes(network)) {
