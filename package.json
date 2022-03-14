@@ -7,15 +7,16 @@
     "codegen:validators": "graph-json-validator --file https://raw.githubusercontent.com/questbook/service-validator/main/openapi.yaml --schemaPath components.schemas --outDirectory src/json-schema",
     "build": "graph build",
     "test": "graph test",
-    "prepare-rinkeby": "mustache config/rinkeby.json template.subgraph.yaml > subgraph.yaml",
-    "create-subgraph-rinkeby": "graph create --node http://the-graph.questbook.app:8020/ qb-subgraph",
-    "deploy-rinkeby": "yarn prepare-rinkeby && graph deploy --node http://the-graph.questbook.app:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph",
-    "prepare-harmonytest": "mustache config/harmonytest.json template.subgraph.yaml > subgraph.yaml",
-    "create-subgraph-harmonytest": "graph create --node http://the-graph.questbook.app:8020/ qb-subgraph-harmonytest",
-    "deploy-harmonytest": "yarn prepare-harmonytest && graph deploy --node http://the-graph.questbook.app:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph-harmonytest",
-    "remove-local": "graph remove --node http://localhost:8020/ qb-subgraph",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph",
-    "create-subgraph-local": "graph create --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 qb-subgraph"
+    
+    "prepare": "mustache config/$NETWORK.json template.subgraph.yaml > subgraph.yaml",
+    "create-subgraph": "graph create --node http://the-graph.questbook.app:8020/ qb-subgraph-$NETWORK",
+    "deploy": "yarn prepare && graph deploy --node http://the-graph.questbook.app:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph-$NETWORK",
+    
+    "remove-local": "graph remove --node http://localhost:8020/ qb-subgraph-$NETWORK",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph-$NETWORK",
+    "create-subgraph-local": "graph create --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 qb-subgraph-$NETWORK",
+
+    "deploy:all": "node scripts/deploy"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.25.2",
