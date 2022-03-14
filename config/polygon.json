@@ -12,12 +12,14 @@
 		"address": "0x921304fa17382FC009e2DDf286857a1b1ae5Db63",
 		"startBlock": 25931031
 	},
-	"dai": {
-		"address": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
-		"startBlock": 25931031
-	},
-	"weth": {
-		"address": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
-		"startBlock": 25931031
-	}
+	"erc20s": [
+		{
+			"name": "WETH",
+			"address": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"
+		},
+		{
+			"name": "DAI",
+			"address": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"
+		}
+	]
 }

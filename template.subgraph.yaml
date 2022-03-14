@@ -77,13 +77,14 @@ dataSources:
         - event: GrantCreated(address,uint96,string,uint256)
           handler: handleGrantCreated
       file: ./src/grant-mapping.ts
+  {{#erc20s}}
   - kind: ethereum
-    name: GrantTransfersDAI
+    name: GrantTransfers{{name}}
     network: {{network}}
     source:
-      address: "{{dai.address}}"
+      address: "{{address}}"
       abi: ERC20
-      startBlock: {{dai.startBlock}}
+      startBlock: {{grantFactory.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -97,26 +98,7 @@ dataSources:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
       file: ./src/transfer-mapping.ts
-  - kind: ethereum
-    name: GrantTransfersWETH
-    network: {{network}}
-    source:
-      address: "{{weth.address}}"
-      abi: ERC20
-      startBlock: {{weth.startBlock}}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - Transfer
-      abis:
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-      file: ./src/transfer-mapping.ts
+  {{/erc20s}}
 templates:
   - kind: ethereum
     name: QBGrantsContract
