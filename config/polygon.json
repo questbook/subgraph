@@ -5,17 +5,17 @@
 		"startBlock": 25931024
 	},
 	"applications": {
-		"address": "0x89497A254e886C229C370822b5fc2153B53A07Eb",
-		"startBlock": 25931027
-	},
-	"grantFactory": {
 		"address": "0x921304fa17382FC009e2DDf286857a1b1ae5Db63",
 		"startBlock": 25931031
+	},
+	"grantFactory": {
+		"address": "0x89497A254e886C229C370822b5fc2153B53A07Eb",
+		"startBlock": 25931027
 	},
 	"erc20s": [
 		{
 			"name": "WETH",
-			"address": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"
+			"address": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
 		},
 		{
 			"name": "DAI",
