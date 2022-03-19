@@ -20,6 +20,10 @@
 		{
 			"name": "DAI",
 			"address": "0xc27255d7805fc79e4616d5cd50d6f4464aea75a3"
+		},
+		{
+			"name": "USDC",
+			"address": "0x169dbcd3c04f8c33e4e17bc65500842f3d7918dd"
 		}
 	]
 }
