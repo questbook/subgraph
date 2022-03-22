@@ -153,7 +153,7 @@ export function handleGrantUpdated(event: GrantUpdated): void {
     if(json.fields) {
       entity.fields = mapGrantFieldMap(entity.id, json.fields!)
     }
-    if(json.grantManagers) {
+    if(json.grantManagers && json.grantManagers!.length) {
       removeEntityCollection('GrantManager', entity.managers)
       mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
     }
