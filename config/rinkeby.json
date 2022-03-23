@@ -11,19 +11,5 @@
 	"grantFactory": {
 		"address": "0x0E6B77F32c273aDae050Ab9d511Fc30Bb385DaAc",
 		"startBlock": 10184449
-	},
-	"erc20s": [
-		{
-			"name": "WETH",
-			"address": "0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735"
-		},
-		{
-			"name": "DAI",
-			"address": "0xc778417e063141139fce010982780140aa0cd5ab"
-		},
-		{
-			"name": "USDC",
-			"address": "0xeb8f08a975Ab53E34D8a0330E0D34de942C95926"
-		}
-	]
+	}
 }

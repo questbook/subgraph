@@ -1,11 +1,11 @@
-import { BigInt, log } from "@graphprotocol/graph-ts"
+import { Address, BigInt, log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Reward, Workspace } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantFundUpdate } from "./utils/apply-grant-deposit"
 import { isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, removeEntityCollection } from "./utils/generics"
 import { addFundsTransferNotification } from "./utils/notifications"
-import { QBGrantsContract } from "../generated/templates"
+import { GrantTransfersERC20, QBGrantsContract } from "../generated/templates"
 import { validatedJsonFromIpfs } from "./json-schema/json"
 import { validateGrantCreateRequest, GrantCreateRequest, validateGrantUpdateRequest, GrantUpdateRequest } from "./json-schema"
 
@@ -147,6 +147,14 @@ export function handleGrantUpdated(event: GrantUpdated): void {
       reward.asset = json.reward!.asset
       reward.committed = json.reward!.committed
       reward.save()
+
+      const hexAssetAddr = reward.asset.toHex()
+
+      GrantTransfersERC20.create(
+        Address.fromString(hexAssetAddr)
+      )
+
+      log.info(`listening to ERC20 "${hexAssetAddr}"`, [])
 
       entity.reward = reward.id
     }
