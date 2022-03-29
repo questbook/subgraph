@@ -6,7 +6,7 @@ import { FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsCon
 import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdated } from '../src/grant-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from "./utils"
 import { handleTransfer } from '../src/transfer-mapping' 
-import { Transfer } from "../generated/GrantTransfersDAI/ERC20"
+import { Transfer } from "../generated/templates/GrantTransfersERC20/ERC20"
 
 export function runTests(): void {
 
