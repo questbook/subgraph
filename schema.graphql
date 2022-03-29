@@ -121,7 +121,7 @@ type Grant @entity {
   "List of applications for the grant"
   applications: [GrantApplication!]! @derivedFrom(field: "grant")
   "People who will manage the grant. They can see the PII submitted in an application"
-  managers: [GrantManager!]! @derivedFrom(field: "grant")
+  managers: [GrantManager!]!
 }
 
 type GrantManager @entity {

@@ -1,11 +1,11 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts"
+import { BigInt, log } from "@graphprotocol/graph-ts"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Reward, Workspace } from "../generated/schema"
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantFundUpdate } from "./utils/apply-grant-deposit"
 import { isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from "./utils/generics"
 import { addFundsTransferNotification } from "./utils/notifications"
-import { GrantTransfersERC20, QBGrantsContract } from "../generated/templates"
+import { QBGrantsContract } from "../generated/templates"
 import { validatedJsonFromIpfs } from "./json-schema/json"
 import { validateGrantCreateRequest, GrantCreateRequest, validateGrantUpdateRequest, GrantUpdateRequest } from "./json-schema"
 
@@ -45,7 +45,7 @@ export function handleGrantCreated(event: GrantCreated): void {
   entity.createdAtS = event.params.time.toI32()
   entity.funding = new BigInt(0)
   entity.numberOfApplications = 0
-  mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
+  entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
 
   entity.save()
 
@@ -147,7 +147,7 @@ export function handleGrantUpdated(event: GrantUpdated): void {
     }
     if(json.grantManagers && json.grantManagers!.length) {
       removeEntityCollection('GrantManager', entity.managers)
-      mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
+      entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
     }
   }
 

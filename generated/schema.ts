@@ -341,6 +341,7 @@ export class Grant extends Entity {
     this.set("fields", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
     this.set("funding", Value.fromBigInt(BigInt.zero()));
+    this.set("managers", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
