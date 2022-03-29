@@ -1,7 +1,8 @@
-import { BigInt, Bytes, store } from "@graphprotocol/graph-ts";
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, PIIAnswer, Social } from "../../generated/schema";
+import { Address, BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, PIIAnswer, Reward, Social } from "../../generated/schema";
 import { Result } from "../json-schema/json";
-import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, PIIAnswers, SocialItem } from "../json-schema";
+import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, PIIAnswers, SocialItem } from "../json-schema";
+import { GrantTransfersERC20 } from "../../generated/templates";
 
 export function isPlausibleIPFSHash(str: string): boolean {
 	return str.length > 2
@@ -178,4 +179,20 @@ function mapGrantField(grantId: string, title: string, json: GrantFieldJSON): st
 	field.save()
 
 	return field.id
+}
+
+export function mapGrantRewardAndListen(id: string, rewardJson: GrantReward): Reward {
+	const reward = new Reward(id)
+	reward.asset = rewardJson.asset
+	reward.committed = rewardJson.committed
+	reward.save()
+
+	const hexAssetAddr = reward.asset.toHex()
+
+	GrantTransfersERC20.create(
+	  Address.fromString(hexAssetAddr)
+	)
+
+	log.info(`listening to ERC20 "${hexAssetAddr}"`, [])
+	return reward
 }

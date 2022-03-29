@@ -3,7 +3,7 @@ import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactory
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Reward, Workspace } from "../generated/schema"
 import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { applyGrantFundUpdate } from "./utils/apply-grant-deposit"
-import { isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, removeEntityCollection } from "./utils/generics"
+import { isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from "./utils/generics"
 import { addFundsTransferNotification } from "./utils/notifications"
 import { GrantTransfersERC20, QBGrantsContract } from "../generated/templates"
 import { validatedJsonFromIpfs } from "./json-schema/json"
@@ -32,10 +32,7 @@ export function handleGrantCreated(event: GrantCreated): void {
   entity.summary = json.summary
   entity.details = json.details
   
-  const reward = new Reward(entity.id)
-  reward.asset = json.reward.asset
-  reward.committed = json.reward.committed
-  reward.save()
+  const reward = mapGrantRewardAndListen(entity.id, json.reward)
 
   entity.reward = reward.id
   entity.workspace = workspaceId
@@ -143,20 +140,7 @@ export function handleGrantUpdated(event: GrantUpdated): void {
     if(json.details) entity.details = json.details!
     if(json.deadline) entity.deadline = json.deadline!
     if(json.reward) {
-      const reward = new Reward(entity.id)
-      reward.asset = json.reward!.asset
-      reward.committed = json.reward!.committed
-      reward.save()
-
-      const hexAssetAddr = reward.asset.toHex()
-
-      GrantTransfersERC20.create(
-        Address.fromString(hexAssetAddr)
-      )
-
-      log.info(`listening to ERC20 "${hexAssetAddr}"`, [])
-
-      entity.reward = reward.id
+      entity.reward = mapGrantRewardAndListen(entity.id, json.reward!).id
     }
     if(json.fields) {
       entity.fields = mapGrantFieldMap(entity.id, json.fields!)
