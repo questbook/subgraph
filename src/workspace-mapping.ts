@@ -1,8 +1,8 @@
 import { log, store } from "@graphprotocol/graph-ts"
 import {
-  WorkspaceAdminsAdded,
-  WorkspaceAdminsRemoved,
-  WorkspaceCreated, WorkspaceUpdated,
+  WorkspaceMembersUpdated,
+  WorkspaceCreated,
+  WorkspaceUpdated,
 } from "../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract"
 import { Workspace, WorkspaceMember } from "../generated/schema"
 import { validatedJsonFromIpfs } from "./json-schema/json"
@@ -37,6 +37,8 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
   member.accessLevel = 'owner'
   member.workspace = entity.id
   member.publicKey = json.creatorPublicKey
+  member.addedAt = entity.createdAtS
+  member.updatedAt = entity.updatedAtS
   member.save()
 
   entity.save()
@@ -79,42 +81,44 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
   entity.save()
 }
 
-export function handleWorkspaceAdminsAdded(event: WorkspaceAdminsAdded): void {
+export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): void {
   const entityId = event.params.id.toHex()
   
   const entity = Workspace.load(entityId)
   if(!entity) {
-    log.warning(`recv workspace admins add without workspace existing, ID = ${entityId}`, [])
+    log.warning(`recv workspace members update without workspace existing, ID = ${entityId}`, [])
     return
   }
   
   entity.updatedAtS = event.params.time.toI32()
   // add the admins
-  for(let i = 0;i < event.params.admins.length;i++) {
-    const memberId = event.params.admins[i]
-    const id = `${entityId}.${memberId.toHex()}`
-    const member = new WorkspaceMember(id)
-    member.actorId = memberId
-    member.email = event.params.emails[i]
-    member.accessLevel = 'admin'
-    member.workspace = entityId
-    member.save()
-  }
-  entity.save()
-}
+  for(let i = 0;i < event.params.members.length;i++) {
+    const memberId = event.params.members[i]
+    const role = event.params.roles[i]
+    const enabled = event.params.enabled[i]
 
-export function handleWorkspaceAdminsRemoved(event: WorkspaceAdminsRemoved): void {
-  const entityId = event.params.id.toHex()
-  
-  let entity = Workspace.load(entityId)
-  if(entity) {
-    entity.updatedAtS = event.params.time.toI32()
-    for(let i = 0;i < event.params.admins.length;i++) {
-      const id = `${entityId}.${event.params.admins[i].toHex()}`
+    const id = `${entityId}.${memberId.toHex()}`
+    
+    if(enabled) {
+      let member = WorkspaceMember.load(id)
+      if(!member) {
+        member = new WorkspaceMember(id)
+        member.addedAt = entity.updatedAtS
+      }
+
+      member.actorId = memberId
+      member.email = event.params.emails[i]
+      member.updatedAt = entity.updatedAtS
+      if(role === 0) { // become an admin
+        member.accessLevel = 'admin'
+      } else if(role === 1) { // become a reviewer
+        member.accessLevel = 'reviewer'
+      }
+      member.workspace = entityId
+      member.save()
+    } else {
       store.remove('WorkspaceMember', id)
     }
-    entity.save()
-  } else {
-    log.warning(`recv workspace admins remove without workspace existing, ID = ${entityId}`, [])
   }
+  entity.save()
 }

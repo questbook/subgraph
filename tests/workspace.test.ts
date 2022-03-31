@@ -1,8 +1,8 @@
 import { Address, ethereum } from '@graphprotocol/graph-ts'
 import { test, newMockEvent, assert } from 'matchstick-as/assembly/index'
-import { WorkspaceAdminsAdded, WorkspaceAdminsRemoved, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
+import { WorkspaceMembersUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Social, Workspace, WorkspaceMember } from '../generated/schema'
-import { handleWorkspaceAdminsAdded, handleWorkspaceAdminsRemoved, handleWorkspaceUpdated } from '../src/workspace-mapping'
+import { handleWorkspaceMembersUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createWorkspace, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 
 export function runTests(): void {
@@ -105,29 +105,31 @@ export function runTests(): void {
 			assert.assertNotNull(member)
 			assert.stringEquals(member!.accessLevel, 'admin')
 			assert.stringEquals(member!.workspace, wUpdate!.id)
+			assert.i32Equals(member!.addedAt, 125)
 		}
 	})
 
 	test('should remove admins to a workspace', () => {
-		const addresses = [
-			Address.fromString("0xE16081F360e3847006dB660bae1c6d1b2e17eC2D"),
-		]
-
-		const emails = [
-			'abcd@abcd.com',
-		]
+		const addresses = [Address.fromString("0xE16081F360e3847006dB660bae1c6d1b2e17eC2D")]
+		const emails = ['abcd@abcd.com']
+		const roles: i32[] = [0]
+		const enabled: boolean[] = [false]
 
 		let wUpdate = workspaceWithAdditionalMembers(addresses, emails)
 
 		const ev = newMockEvent()
+
 		ev.parameters = [
 			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
-			new ethereum.EventParam('admins', ethereum.Value.fromAddressArray(addresses)),
+			new ethereum.EventParam('members', ethereum.Value.fromAddressArray(addresses)),
+			new ethereum.EventParam('roles', ethereum.Value.fromI32Array(roles)),
+			new ethereum.EventParam('enabled', ethereum.Value.fromBooleanArray(enabled)),
+			new ethereum.EventParam('emails', ethereum.Value.fromStringArray(emails)),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(126))
 		]
 
-		const event = new WorkspaceAdminsRemoved(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleWorkspaceAdminsRemoved(event)
+		const event = new WorkspaceMembersUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleWorkspaceMembersUpdated(event)
 
 		wUpdate = Workspace.load(wUpdate!.id)
 
@@ -137,7 +139,6 @@ export function runTests(): void {
 		for(let i = 0;i < addresses.length;i++) {
 			const memberAddedId = `${wUpdate!.id}.${addresses[i].toHex()}`
 			const member = WorkspaceMember.load(memberAddedId)
-	
 			assert.assertNull(member)
 		}
 	})
@@ -146,16 +147,28 @@ export function runTests(): void {
 function workspaceWithAdditionalMembers(addresses: Address[], emails: string[]): Workspace | null {
 	const w = createWorkspace()!
 
+	const roles: i32[] = []
+	for(let i = 0;i < addresses.length;i++) {
+		roles.push(0)
+	}
+
+	const enabled: boolean[] = []
+	for(let i = 0;i < addresses.length;i++) {
+		enabled.push(true)
+	}
+
 	const ev = newMockEvent()
 	ev.parameters = [
 		new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
-		new ethereum.EventParam('admins', ethereum.Value.fromAddressArray(addresses)),
+		new ethereum.EventParam('members', ethereum.Value.fromAddressArray(addresses)),
+		new ethereum.EventParam('roles', ethereum.Value.fromI32Array(roles)),
+		new ethereum.EventParam('enabled', ethereum.Value.fromBooleanArray(enabled)),
 		new ethereum.EventParam('emails', ethereum.Value.fromStringArray(emails)),
 		new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 	]
 
-	const event = new WorkspaceAdminsAdded(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-	handleWorkspaceAdminsAdded(event)
+	const event = new WorkspaceMembersUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+	handleWorkspaceMembersUpdated(event)
 
 	return Workspace.load(w.id)
 }
