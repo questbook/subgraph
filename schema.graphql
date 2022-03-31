@@ -1,14 +1,15 @@
 enum GrantFieldInputType {
-  short_form
-  long_form
+  short_form,
+  long_form,
   numeric,
   array
 }
 
 enum WorkspaceMemberAccessLevel {
-  owner
-  admin
-  member
+  owner,
+  admin,
+  member,
+  reviewer
 }
 
 enum MilestoneState { 
