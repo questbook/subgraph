@@ -14,8 +14,7 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - WorkspaceAdminsAdded
-        - WorkspaceAdminsRemoved
+        - WorkspaceMembersUpdated
         - WorkspaceCreated
         - WorkspaceUpdated
       abis:
@@ -26,10 +25,8 @@ dataSources:
           handler: handleWorkspaceCreated
         - event: WorkspaceUpdated(indexed uint96,indexed address,string,uint256)
           handler: handleWorkspaceUpdated
-        - event: WorkspaceAdminsAdded(indexed uint96,address[],string[],uint256)
-          handler: handleWorkspaceAdminsAdded
-        - event: WorkspaceAdminsRemoved(indexed uint96,address[],uint256)
-          handler: handleWorkspaceAdminsRemoved
+        - event: WorkspaceMembersUpdated(indexed uint96,address[],uint8[],bool[],string[],uint256)
+          handler: handleWorkspaceMembersUpdated
       file: ./src/workspace-mapping.ts
   - kind: ethereum
     name: QBApplicationsContract

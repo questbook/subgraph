@@ -672,6 +672,24 @@ export class WorkspaceMember extends Entity {
     }
   }
 
+  get addedAt(): i32 {
+    let value = this.get("addedAt");
+    return value!.toI32();
+  }
+
+  set addedAt(value: i32) {
+    this.set("addedAt", Value.fromI32(value));
+  }
+
+  get updatedAt(): i32 {
+    let value = this.get("updatedAt");
+    return value!.toI32();
+  }
+
+  set updatedAt(value: i32) {
+    this.set("updatedAt", Value.fromI32(value));
+  }
+
   get workspace(): string {
     let value = this.get("workspace");
     return value!.toString();

@@ -144,7 +144,10 @@ type WorkspaceMember @entity {
   accessLevel: WorkspaceMemberAccessLevel!
   "Public key of the workspace member"
   publicKey: String
-
+  "When the member was added"
+  addedAt: Int!
+  "Last update on member"
+  updatedAt: Int!
   workspace: Workspace!
 }
 
