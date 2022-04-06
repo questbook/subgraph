@@ -10,6 +10,28 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
+export class AdminChanged extends ethereum.Event {
+  get params(): AdminChanged__Params {
+    return new AdminChanged__Params(this);
+  }
+}
+
+export class AdminChanged__Params {
+  _event: AdminChanged;
+
+  constructor(event: AdminChanged) {
+    this._event = event;
+  }
+
+  get previousAdmin(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newAdmin(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
 export class ApplicationSubmitted extends ethereum.Event {
   get params(): ApplicationSubmitted__Params {
     return new ApplicationSubmitted__Params(this);
@@ -86,6 +108,24 @@ export class ApplicationUpdated__Params {
   }
 }
 
+export class BeaconUpgraded extends ethereum.Event {
+  get params(): BeaconUpgraded__Params {
+    return new BeaconUpgraded__Params(this);
+  }
+}
+
+export class BeaconUpgraded__Params {
+  _event: BeaconUpgraded;
+
+  constructor(event: BeaconUpgraded) {
+    this._event = event;
+  }
+
+  get beacon(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class MilestoneUpdated extends ethereum.Event {
   get params(): MilestoneUpdated__Params {
     return new MilestoneUpdated__Params(this);
@@ -142,38 +182,20 @@ export class OwnershipTransferred__Params {
   }
 }
 
-export class Paused extends ethereum.Event {
-  get params(): Paused__Params {
-    return new Paused__Params(this);
+export class Upgraded extends ethereum.Event {
+  get params(): Upgraded__Params {
+    return new Upgraded__Params(this);
   }
 }
 
-export class Paused__Params {
-  _event: Paused;
+export class Upgraded__Params {
+  _event: Upgraded;
 
-  constructor(event: Paused) {
+  constructor(event: Upgraded) {
     this._event = event;
   }
 
-  get account(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-}
-
-export class Unpaused extends ethereum.Event {
-  get params(): Unpaused__Params {
-    return new Unpaused__Params(this);
-  }
-}
-
-export class Unpaused__Params {
-  _event: Unpaused;
-
-  constructor(event: Unpaused) {
-    this._event = event;
-  }
-
-  get account(): Address {
+  get implementation(): Address {
     return this._event.parameters[0].value.toAddress();
   }
 }
@@ -184,9 +206,9 @@ export class QBApplicationsContract__applicationsResult {
   value2: Address;
   value3: Address;
   value4: BigInt;
-  value5: string;
-  value6: i32;
-  value7: boolean;
+  value5: BigInt;
+  value6: string;
+  value7: i32;
 
   constructor(
     value0: BigInt,
@@ -194,9 +216,9 @@ export class QBApplicationsContract__applicationsResult {
     value2: Address,
     value3: Address,
     value4: BigInt,
-    value5: string,
-    value6: i32,
-    value7: boolean
+    value5: BigInt,
+    value6: string,
+    value7: i32
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -215,12 +237,12 @@ export class QBApplicationsContract__applicationsResult {
     map.set("value2", ethereum.Value.fromAddress(this.value2));
     map.set("value3", ethereum.Value.fromAddress(this.value3));
     map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
-    map.set("value5", ethereum.Value.fromString(this.value5));
+    map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
+    map.set("value6", ethereum.Value.fromString(this.value6));
     map.set(
-      "value6",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value6))
+      "value7",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value7))
     );
-    map.set("value7", ethereum.Value.fromBoolean(this.value7));
     return map;
   }
 }
@@ -288,7 +310,7 @@ export class QBApplicationsContract extends ethereum.SmartContract {
   applications(param0: BigInt): QBApplicationsContract__applicationsResult {
     let result = super.call(
       "applications",
-      "applications(uint96):(uint96,uint96,address,address,uint48,string,uint8,bool)",
+      "applications(uint96):(uint96,uint96,address,address,uint48,uint48,string,uint8)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
@@ -298,9 +320,9 @@ export class QBApplicationsContract extends ethereum.SmartContract {
       result[2].toAddress(),
       result[3].toAddress(),
       result[4].toBigInt(),
-      result[5].toString(),
-      result[6].toI32(),
-      result[7].toBoolean()
+      result[5].toBigInt(),
+      result[6].toString(),
+      result[7].toI32()
     );
   }
 
@@ -309,7 +331,7 @@ export class QBApplicationsContract extends ethereum.SmartContract {
   ): ethereum.CallResult<QBApplicationsContract__applicationsResult> {
     let result = super.tryCall(
       "applications",
-      "applications(uint96):(uint96,uint96,address,address,uint48,string,uint8,bool)",
+      "applications(uint96):(uint96,uint96,address,address,uint48,uint48,string,uint8)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
     if (result.reverted) {
@@ -323,9 +345,9 @@ export class QBApplicationsContract extends ethereum.SmartContract {
         value[2].toAddress(),
         value[3].toAddress(),
         value[4].toBigInt(),
-        value[5].toString(),
-        value[6].toI32(),
-        value[7].toBoolean()
+        value[5].toBigInt(),
+        value[6].toString(),
+        value[7].toI32()
       )
     );
   }
@@ -370,19 +392,23 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  paused(): boolean {
-    let result = super.call("paused", "paused():(bool)", []);
+  proxiableUUID(): Bytes {
+    let result = super.call("proxiableUUID", "proxiableUUID():(bytes32)", []);
 
-    return result[0].toBoolean();
+    return result[0].toBytes();
   }
 
-  try_paused(): ethereum.CallResult<boolean> {
-    let result = super.tryCall("paused", "paused():(bool)", []);
+  try_proxiableUUID(): ethereum.CallResult<Bytes> {
+    let result = super.tryCall(
+      "proxiableUUID",
+      "proxiableUUID():(bytes32)",
+      []
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
   workspaceReg(): Address {
@@ -481,28 +507,28 @@ export class CompleteApplicationCall__Outputs {
   }
 }
 
-export class PauseCall extends ethereum.Call {
-  get inputs(): PauseCall__Inputs {
-    return new PauseCall__Inputs(this);
+export class InitializeCall extends ethereum.Call {
+  get inputs(): InitializeCall__Inputs {
+    return new InitializeCall__Inputs(this);
   }
 
-  get outputs(): PauseCall__Outputs {
-    return new PauseCall__Outputs(this);
+  get outputs(): InitializeCall__Outputs {
+    return new InitializeCall__Outputs(this);
   }
 }
 
-export class PauseCall__Inputs {
-  _call: PauseCall;
+export class InitializeCall__Inputs {
+  _call: InitializeCall;
 
-  constructor(call: PauseCall) {
+  constructor(call: InitializeCall) {
     this._call = call;
   }
 }
 
-export class PauseCall__Outputs {
-  _call: PauseCall;
+export class InitializeCall__Outputs {
+  _call: InitializeCall;
 
-  constructor(call: PauseCall) {
+  constructor(call: InitializeCall) {
     this._call = call;
   }
 }
@@ -673,32 +699,6 @@ export class TransferOwnershipCall__Outputs {
   }
 }
 
-export class UnpauseCall extends ethereum.Call {
-  get inputs(): UnpauseCall__Inputs {
-    return new UnpauseCall__Inputs(this);
-  }
-
-  get outputs(): UnpauseCall__Outputs {
-    return new UnpauseCall__Outputs(this);
-  }
-}
-
-export class UnpauseCall__Inputs {
-  _call: UnpauseCall;
-
-  constructor(call: UnpauseCall) {
-    this._call = call;
-  }
-}
-
-export class UnpauseCall__Outputs {
-  _call: UnpauseCall;
-
-  constructor(call: UnpauseCall) {
-    this._call = call;
-  }
-}
-
 export class UpdateApplicationMetadataCall extends ethereum.Call {
   get inputs(): UpdateApplicationMetadataCall__Inputs {
     return new UpdateApplicationMetadataCall__Inputs(this);
@@ -775,6 +775,70 @@ export class UpdateApplicationStateCall__Outputs {
   _call: UpdateApplicationStateCall;
 
   constructor(call: UpdateApplicationStateCall) {
+    this._call = call;
+  }
+}
+
+export class UpgradeToCall extends ethereum.Call {
+  get inputs(): UpgradeToCall__Inputs {
+    return new UpgradeToCall__Inputs(this);
+  }
+
+  get outputs(): UpgradeToCall__Outputs {
+    return new UpgradeToCall__Outputs(this);
+  }
+}
+
+export class UpgradeToCall__Inputs {
+  _call: UpgradeToCall;
+
+  constructor(call: UpgradeToCall) {
+    this._call = call;
+  }
+
+  get newImplementation(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class UpgradeToCall__Outputs {
+  _call: UpgradeToCall;
+
+  constructor(call: UpgradeToCall) {
+    this._call = call;
+  }
+}
+
+export class UpgradeToAndCallCall extends ethereum.Call {
+  get inputs(): UpgradeToAndCallCall__Inputs {
+    return new UpgradeToAndCallCall__Inputs(this);
+  }
+
+  get outputs(): UpgradeToAndCallCall__Outputs {
+    return new UpgradeToAndCallCall__Outputs(this);
+  }
+}
+
+export class UpgradeToAndCallCall__Inputs {
+  _call: UpgradeToAndCallCall;
+
+  constructor(call: UpgradeToAndCallCall) {
+    this._call = call;
+  }
+
+  get newImplementation(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get data(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
+}
+
+export class UpgradeToAndCallCall__Outputs {
+  _call: UpgradeToAndCallCall;
+
+  constructor(call: UpgradeToAndCallCall) {
     this._call = call;
   }
 }
