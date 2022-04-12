@@ -58,13 +58,14 @@ const deploy = async (network, version) => {
 (async() => {
 	const allNetworks = await getNetworks()
 
-	const network = process.env.NETWORK
+	const networkSubset = process.env.NETWORK?.split(',') || []
 	const networks = []
-	if(network) {
-		if(!allNetworks.includes(network)) {
+	if(networkSubset.length) {
+		if(networkSubset.find(network => !allNetworks.includes(network))) {
 			throw new Error(`network must be one of ${allNetworks}`)
 		}
-		networks.push(network)
+		networks.push(...networkSubset)
+		console.log(`deploying to ${networkSubset}`)
 	} else {
 		networks.push(...allNetworks)
 		console.log(`deploying to all networks...`)
