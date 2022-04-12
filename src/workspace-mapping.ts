@@ -37,6 +37,8 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
   member.accessLevel = 'owner'
   member.workspace = entity.id
   member.publicKey = json.creatorPublicKey
+  member.addedAt = entity.createdAtS
+  member.updatedAt = entity.updatedAtS
   member.save()
 
   entity.save()
@@ -70,6 +72,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
     const mem = WorkspaceMember.load(`${entityId}.${memberId}`)
     if(mem) {
       mem.publicKey = json.publicKey
+      mem.updatedAt = entity.updatedAtS
       mem.save()
     } else {
       log.warning(`[${event.transaction.hash.toHex()}] recv publicKey update but member not found`, [])
@@ -98,6 +101,8 @@ export function handleWorkspaceAdminsAdded(event: WorkspaceAdminsAdded): void {
     member.email = event.params.emails[i]
     member.accessLevel = 'admin'
     member.workspace = entityId
+    member.addedAt = entity.updatedAtS
+    member.updatedAt = entity.updatedAtS
     member.save()
   }
   entity.save()
