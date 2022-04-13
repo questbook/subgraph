@@ -1,15 +1,15 @@
 {
 	"network": "rinkeby",
 	"workspace": {
-		"address": "0xeDb10f503E128e9167a31c612aDeF4E098Da717e",
-		"startBlock": 10420881
+		"address": "0xC5bA1DD677a89f7675015cd96124702D5a2D3A40",
+		"startBlock": 10456251
 	},
 	"applications": {
-		"address": "0x2dB223158288B2299480aF577eDF30D5a533F137",
-		"startBlock": 10420881
+		"address": "0x503C808e680D94ccf685282C7F327d28Ff711071",
+		"startBlock": 10456251
 	},
 	"grantFactory": {
-		"address": "0x6D0f81BDA11995f25921aAd5B43359630E65Ca96",
-		"startBlock": 10420881
+		"address": "0x05F8236AaB77C956c757546b8752Fa2f15d34Aa6",
+		"startBlock": 10456251
 	}
 }
