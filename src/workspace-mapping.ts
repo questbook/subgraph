@@ -91,6 +91,7 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
   }
   
   entity.updatedAtS = event.params.time.toI32()
+  const removals: string[] = []
   // add the admins
   for(let i = 0;i < event.params.members.length;i++) {
     const memberId = event.params.members[i]
@@ -116,9 +117,19 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
       }
       member.workspace = entityId
       member.save()
+
+      // if this member was to be removed
+      // cancel that
+      const removeIdx = removals.indexOf(id)
+      removals.splice(removeIdx, 1)
     } else {
-      store.remove('WorkspaceMember', id)
+      removals.push(id)
     }
   }
+
+  for(let i = 0;i < removals.length;i++) {
+    store.remove('WorkspaceMember', removals[i])
+  }
+
   entity.save()
 }
