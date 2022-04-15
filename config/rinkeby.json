@@ -11,5 +11,9 @@
 	"grantFactory": {
 		"address": "0xF76C1d6ED36d48aCF13d8c99c1ba497fb0073bdB",
 		"startBlock": 10456251
+	},
+	"reviews": {
+		"address": "0x54F1f6aAe77D2E3feA4c40A7d99E4aDcEFa00c79",
+		"startBlock": 10456251
 	}
 }

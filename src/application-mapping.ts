@@ -38,6 +38,8 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	entity.createdAtS = event.params.time.toI32()
 	entity.updatedAtS = entity.createdAtS
 	entity.milestones = mapMilestones(applicationId, json.milestones)
+	entity.reviewers = []
+
 
 	if(json.pii) {
 		entity.pii = mapGrantPII(applicationId, grantId, json.pii!)
