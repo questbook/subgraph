@@ -5,11 +5,11 @@
 		"startBlock": 10456251
 	},
 	"applications": {
-		"address": "0x503C808e680D94ccf685282C7F327d28Ff711071",
+		"address": "0xa77f115310a5761D048790231B0BdB29FD857Ce2",
 		"startBlock": 10456251
 	},
 	"grantFactory": {
-		"address": "0x05F8236AaB77C956c757546b8752Fa2f15d34Aa6",
+		"address": "0xF76C1d6ED36d48aCF13d8c99c1ba497fb0073bdB",
 		"startBlock": 10456251
 	}
 }
