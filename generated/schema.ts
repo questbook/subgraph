@@ -423,6 +423,41 @@ export class Rubric extends Entity {
   set items(value: Array<string>) {
     this.set("items", Value.fromStringArray(value));
   }
+
+  get createdAtS(): i32 {
+    let value = this.get("createdAtS");
+    return value!.toI32();
+  }
+
+  set createdAtS(value: i32) {
+    this.set("createdAtS", Value.fromI32(value));
+  }
+
+  get updatedAtS(): i32 {
+    let value = this.get("updatedAtS");
+    return value!.toI32();
+  }
+
+  set updatedAtS(value: i32) {
+    this.set("updatedAtS", Value.fromI32(value));
+  }
+
+  get addedBy(): string | null {
+    let value = this.get("addedBy");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set addedBy(value: string | null) {
+    if (!value) {
+      this.unset("addedBy");
+    } else {
+      this.set("addedBy", Value.fromString(<string>value));
+    }
+  }
 }
 
 export class Review extends Entity {
@@ -494,6 +529,15 @@ export class Review extends Entity {
     } else {
       this.set("reviewer", Value.fromString(<string>value));
     }
+  }
+
+  get createdAtS(): i32 {
+    let value = this.get("createdAtS");
+    return value!.toI32();
+  }
+
+  set createdAtS(value: i32) {
+    this.set("createdAtS", Value.fromI32(value));
   }
 
   get data(): Array<string> {

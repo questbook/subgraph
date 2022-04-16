@@ -99,6 +99,12 @@ type RubricItem @entity {
 type Rubric @entity {
   id: ID!
   items: [RubricItem!]!
+  "Unix timestamp of when the rubric was created"
+  createdAtS: Int!
+  "Unix timestamp of when the rubric was updated"
+  updatedAtS: Int!
+  "Who added this rubric"
+  addedBy: WorkspaceMember
 }
 
 type Review @entity {
@@ -109,6 +115,8 @@ type Review @entity {
   reviewerId: String!
   "Workspace member that reviewed the app"
   reviewer: WorkspaceMember
+  "created at S"
+  createdAtS: Int!
   "The encrypted data of the review"
   data: [PIIAnswer!]!
 }

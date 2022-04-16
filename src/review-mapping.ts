@@ -24,6 +24,7 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	review.reviewerId = memberId
 	review.reviewer = memberId
 	review.application = event.params._applicationId.toHex()
+	review.createdAtS = event.params.time.toI32()
 
 	const items: string[] = []
 
@@ -77,6 +78,7 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 
 export function handleRubricsSet(event: RubricsSet): void {
 	const grantId = event.params._grantAddress.toHex()
+	const workspaceId = event.params._workspaceId.toHex()
 
 	const jsonResult = validatedJsonFromIpfs<RubricSetRequest>(event.params._metadataHash, validateRubricSetRequest)
 	if(jsonResult.error) {
@@ -92,7 +94,14 @@ export function handleRubricsSet(event: RubricsSet): void {
 		return
 	}
 	
-	const rubric = new Rubric(grantId)
+	let rubric = Rubric.load(grantId)
+	if(!rubric) {
+		rubric = new Rubric(grantId)
+		rubric.createdAtS = event.params.time.toI32()
+	}
+	rubric.updatedAtS = event.params.time.toI32()
+	rubric.addedBy = `${workspaceId}.${event.transaction.from.toHex()}`
+	
 	const items: string[] = []
 
 	const rubricItems = json.rubric.additionalProperties
@@ -113,6 +122,7 @@ export function handleRubricsSet(event: RubricsSet): void {
 		items.push(item.id)
 	}
 
+	rubric.items = items
 	rubric.save()
 
 	grant.updatedAtS = event.params.time.toI32()
