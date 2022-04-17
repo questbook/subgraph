@@ -1,0 +1,15 @@
+{
+	"network": "optimism-mainnet",
+	"workspace": {
+		"address": "0x2dB223158288B2299480aF577eDF30D5a533F137",
+		"startBlock": 5931669
+	},
+	"applications": {
+		"address": "0xF4Db8BdDF1029764e4E09e7cE34149371a9A7027",
+		"startBlock": 5931781
+	},
+	"grantFactory": {
+		"address": "0xf08bCcf3C9DE7Daf25BCe13C87D0dd69754E0a33",
+		"startBlock": 5931718
+	}
+}
