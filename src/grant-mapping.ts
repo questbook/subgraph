@@ -58,6 +58,12 @@ export function handleDisburseReward(event: DisburseReward): void {
   const milestoneId = `${applicationId}.${milestoneIndex}`
   const amountPaid = event.params.amount
 
+  const application = GrantApplication.load(applicationId)
+  if(!application) {
+    log.warning(`[${event.transaction.hash.toHex()}] recv disburse reward for unknown application: ID="${applicationId}"`, [])
+    return
+  }
+
   const disburseEntity = new FundsTransfer(event.transaction.hash.toHex())
   disburseEntity.createdAtS = event.params.time.toI32()
   disburseEntity.amount = amountPaid
@@ -66,6 +72,7 @@ export function handleDisburseReward(event: DisburseReward): void {
   disburseEntity.application = applicationId
   disburseEntity.milestone = milestoneId
   disburseEntity.type = "funds_disbursed"
+  disburseEntity.grant = application.grant
 
   disburseEntity.save()
 
@@ -80,15 +87,10 @@ export function handleDisburseReward(event: DisburseReward): void {
   // find grant and reduce the amount of the funding
   // only if not a P2P exchange
   if(!event.params.isP2P) {
-    const application = GrantApplication.load(applicationId)
-    if(application) {
-      const grantEntity = Grant.load(application.grant)
-      if(grantEntity) {
-        grantEntity.funding = grantEntity.funding.minus(amountPaid)
-        grantEntity.save()
-      }
-
-      disburseEntity.grant = application.grant
+    const grantEntity = Grant.load(application.grant)
+    if(grantEntity) {
+      grantEntity.funding = grantEntity.funding.minus(amountPaid)
+      grantEntity.save()
     }
   }
 
