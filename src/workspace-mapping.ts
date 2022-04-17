@@ -72,6 +72,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
     const mem = WorkspaceMember.load(`${entityId}.${memberId}`)
     if(mem) {
       mem.publicKey = json.publicKey
+      mem.updatedAt = entity.updatedAtS
       mem.save()
     } else {
       log.warning(`[${event.transaction.hash.toHex()}] recv publicKey update but member not found`, [])
