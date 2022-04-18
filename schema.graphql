@@ -49,6 +49,7 @@ enum FundsTransferType {
 enum SupportedNetwork {
   chain_1,
   chain_4,
+  chain_10,
   chain_137,
   chain_80001,
   chain_1666700000,
