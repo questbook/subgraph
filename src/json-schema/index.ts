@@ -107,11 +107,18 @@ export class ReviewItem {
 }
 
 export class Review {
+	isApproved: Boolean = new Boolean()
+	comment: string | null = null
+	evaluation: Review_evaluation = new Review_evaluation()
+}
+
+export class Review_evaluation {
 	additionalProperties: TypedMap<string, ReviewItem> = new TypedMap()
 }
 
 export class ReviewSetRequest {
 	reviewer: Bytes = new Bytes(0)
+	publicReviewDataHash: string | null = null
 	encryptedReview: ReviewSetRequest_encryptedReview = new ReviewSetRequest_encryptedReview()
 }
 
@@ -122,9 +129,15 @@ export class ReviewSetRequest_encryptedReview {
 export class RubricItem {
 	title: string = ''
 	details: string | null = null
+	maximumPoints: BigInt = new BigInt(0)
 }
 
 export class Rubric {
+	isPrivate: Boolean = new Boolean()
+	rubric: Rubric_rubric = new Rubric_rubric()
+}
+
+export class Rubric_rubric {
 	additionalProperties: TypedMap<string, RubricItem> = new TypedMap()
 }
 
@@ -792,6 +805,42 @@ if(objResult.error) {
 	return { value: null, error: objResult.error }
 }
 const obj = objResult.value!
+const isApprovedJson = obj.get('isApproved')
+if(!isApprovedJson) return { value: null, error: "Expected 'isApproved' to be present in Review" }
+if(isApprovedJson) {
+	const isApprovedResult = validateBoolean(isApprovedJson)
+	if(isApprovedResult.error) {
+		return { value: null, error: ["Error in mapping 'isApproved': ", isApprovedResult.error!].join('') }
+	}
+	value.isApproved = isApprovedResult.value!
+}
+const commentJson = obj.get('comment')
+if(commentJson) {
+	const commentResult = validateString(commentJson, 1, -1, null)
+	if(commentResult.error) {
+		return { value: null, error: ["Error in mapping 'comment': ", commentResult.error!].join('') }
+	}
+	value.comment = commentResult.value!
+}
+const evaluationJson = obj.get('evaluation')
+if(!evaluationJson) return { value: null, error: "Expected 'evaluation' to be present in Review" }
+if(evaluationJson) {
+	const evaluationResult = validateReview_evaluation(evaluationJson)
+	if(evaluationResult.error) {
+		return { value: null, error: ["Error in mapping 'evaluation': ", evaluationResult.error!].join('') }
+	}
+	value.evaluation = evaluationResult.value!
+}
+return { value, error: null }
+}
+
+export function validateReview_evaluation(json: JSONValue): Result<Review_evaluation> {
+const value = new Review_evaluation()
+const objResult = validateObject(json)
+if(objResult.error) {
+	return { value: null, error: objResult.error }
+}
+const obj = objResult.value!
 const addPropertiesResult = validateTypedMap(json, null, validateReviewItem)
 if(addPropertiesResult.error) {
 	return { value: null, error: ['Error in mapping additionalProperties: ', addPropertiesResult.error].join('') }
@@ -816,6 +865,14 @@ if(reviewerJson) {
 		return { value: null, error: ["Error in mapping 'reviewer': ", reviewerResult.error!].join('') }
 	}
 	value.reviewer = reviewerResult.value!
+}
+const publicReviewDataHashJson = obj.get('publicReviewDataHash')
+if(publicReviewDataHashJson) {
+	const publicReviewDataHashResult = validateString(publicReviewDataHashJson, -1, 255, null)
+	if(publicReviewDataHashResult.error) {
+		return { value: null, error: ["Error in mapping 'publicReviewDataHash': ", publicReviewDataHashResult.error!].join('') }
+	}
+	value.publicReviewDataHash = publicReviewDataHashResult.value!
 }
 const encryptedReviewJson = obj.get('encryptedReview')
 if(!encryptedReviewJson) return { value: null, error: "Expected 'encryptedReview' to be present in ReviewSetRequest" }
@@ -867,17 +924,54 @@ if(titleJson) {
 }
 const detailsJson = obj.get('details')
 if(detailsJson) {
-	const detailsResult = validateString(detailsJson, -1, 4096, null)
+	const detailsResult = validateString(detailsJson, -1, 6000, null)
 	if(detailsResult.error) {
 		return { value: null, error: ["Error in mapping 'details': ", detailsResult.error!].join('') }
 	}
 	value.details = detailsResult.value!
+}
+const maximumPointsJson = obj.get('maximumPoints')
+if(!maximumPointsJson) return { value: null, error: "Expected 'maximumPoints' to be present in RubricItem" }
+if(maximumPointsJson) {
+	const maximumPointsResult = validateInteger(maximumPointsJson, BigInt.fromString('1'), BigInt.fromString('10'))
+	if(maximumPointsResult.error) {
+		return { value: null, error: ["Error in mapping 'maximumPoints': ", maximumPointsResult.error!].join('') }
+	}
+	value.maximumPoints = maximumPointsResult.value!
 }
 return { value, error: null }
 }
 
 export function validateRubric(json: JSONValue): Result<Rubric> {
 const value = new Rubric()
+const objResult = validateObject(json)
+if(objResult.error) {
+	return { value: null, error: objResult.error }
+}
+const obj = objResult.value!
+const isPrivateJson = obj.get('isPrivate')
+if(!isPrivateJson) return { value: null, error: "Expected 'isPrivate' to be present in Rubric" }
+if(isPrivateJson) {
+	const isPrivateResult = validateBoolean(isPrivateJson)
+	if(isPrivateResult.error) {
+		return { value: null, error: ["Error in mapping 'isPrivate': ", isPrivateResult.error!].join('') }
+	}
+	value.isPrivate = isPrivateResult.value!
+}
+const rubricJson = obj.get('rubric')
+if(!rubricJson) return { value: null, error: "Expected 'rubric' to be present in Rubric" }
+if(rubricJson) {
+	const rubricResult = validateRubric_rubric(rubricJson)
+	if(rubricResult.error) {
+		return { value: null, error: ["Error in mapping 'rubric': ", rubricResult.error!].join('') }
+	}
+	value.rubric = rubricResult.value!
+}
+return { value, error: null }
+}
+
+export function validateRubric_rubric(json: JSONValue): Result<Rubric_rubric> {
+const value = new Rubric_rubric()
 const objResult = validateObject(json)
 if(objResult.error) {
 	return { value: null, error: objResult.error }

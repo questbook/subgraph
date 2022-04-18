@@ -379,6 +379,15 @@ export class RubricItem extends Entity {
   set details(value: string) {
     this.set("details", Value.fromString(value));
   }
+
+  get maximumPoints(): i32 {
+    let value = this.get("maximumPoints");
+    return value!.toI32();
+  }
+
+  set maximumPoints(value: i32) {
+    this.set("maximumPoints", Value.fromI32(value));
+  }
 }
 
 export class Rubric extends Entity {
@@ -422,6 +431,15 @@ export class Rubric extends Entity {
 
   set items(value: Array<string>) {
     this.set("items", Value.fromStringArray(value));
+  }
+
+  get isPrivate(): boolean {
+    let value = this.get("isPrivate");
+    return value!.toBoolean();
+  }
+
+  set isPrivate(value: boolean) {
+    this.set("isPrivate", Value.fromBoolean(value));
   }
 
   get createdAtS(): i32 {
@@ -538,6 +556,23 @@ export class Review extends Entity {
 
   set createdAtS(value: i32) {
     this.set("createdAtS", Value.fromI32(value));
+  }
+
+  get publicReviewDataHash(): string | null {
+    let value = this.get("publicReviewDataHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set publicReviewDataHash(value: string | null) {
+    if (!value) {
+      this.unset("publicReviewDataHash");
+    } else {
+      this.set("publicReviewDataHash", Value.fromString(<string>value));
+    }
   }
 
   get data(): Array<string> {

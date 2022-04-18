@@ -28,6 +28,7 @@ export function runTests(): void {
 		const review = Review.load(MOCK_REVIEW_ID.toBigInt().toHex())
 		assert.assertNotNull(review)
 		assertArrayNotEmpty(review!.data)
+		assertStringNotEmpty(review!.publicReviewDataHash)
 
 		for(let i = 0;i < review!.data.length;i++) {
 			const pii = PIIAnswer.load(review!.data[i])
@@ -94,8 +95,9 @@ export function runTests(): void {
 		assertArrayNotEmpty(rubr!.items)
 
 		for(let i = 0;i < rubr!.items.length;i++) {
-			const item = new RubricItem(rubr!.items[i])
+			const item = RubricItem.load(rubr!.items[i])
 			assert.assertNotNull(item)
+			assert.assertTrue(item!.maximumPoints > 0)
 		}
 	})
 }
@@ -103,5 +105,5 @@ export function runTests(): void {
 runTests()
 
 const MOCK_REVIEW_ID = ethereum.Value.fromI32( 0x01 )
-const REVIEW_JSON = `json:{"reviewer":"${WORKSPACE_CREATOR_ID}","encryptedReview":{"${WORKSPACE_CREATOR_ID}":"12323123132313"}}`
-const RUBRIC_JSON = `json:{"rubric":{"quality":{"title":"Quality of the app","details":"Judge, like, the quality of the application"},"name":{"title":"Name of the application","details":"Judge how cool the application name is"}}}`
+const REVIEW_JSON = `json:{"reviewer":"${WORKSPACE_CREATOR_ID}","publicReviewDataHash":"1234","encryptedReview":{"${WORKSPACE_CREATOR_ID}":"12323123132313"}}`
+const RUBRIC_JSON = `json:{"rubric":{"isPrivate":true,"rubric":{"quality":{"title":"Quality of the app","details":"Judge, like, the quality of the application","maximumPoints":10},"name":{"title":"Name of the application","details":"Judge how cool the application name is","maximumPoints":5}}}}`

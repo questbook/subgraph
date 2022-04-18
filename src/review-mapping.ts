@@ -25,6 +25,7 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	review.reviewer = memberId
 	review.application = event.params._applicationId.toHex()
 	review.createdAtS = event.params.time.toI32()
+	review.publicReviewDataHash = json.publicReviewDataHash
 
 	const items: string[] = []
 
@@ -101,10 +102,11 @@ export function handleRubricsSet(event: RubricsSet): void {
 	}
 	rubric.updatedAtS = event.params.time.toI32()
 	rubric.addedBy = `${workspaceId}.${event.transaction.from.toHex()}`
+	rubric.isPrivate = json.rubric.isPrivate.isTrue
 	
 	const items: string[] = []
 
-	const rubricItems = json.rubric.additionalProperties
+	const rubricItems = json.rubric.rubric.additionalProperties
 
 	for(let i = 0;i < rubricItems.entries.length;i++) {
 		const entry = rubricItems.entries[i]
@@ -117,6 +119,7 @@ export function handleRubricsSet(event: RubricsSet): void {
 
 		item.title = entry.value.title
 		item.details = details!
+		item.maximumPoints = entry.value.maximumPoints.toI32()
 		item.save()
 
 		items.push(item.id)
