@@ -61,11 +61,11 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 	for(let i = 0;i < reviewerAddresses.length;i++) {
 		const memberId = `${workspace}.${reviewerAddresses[i].toHex()}`
 		const idx = items.indexOf(memberId)
-		if(active) {
+		if(active[i]) { // add reviewer if not already added
 			if(idx < 0) {
 				items.push(memberId)
 			}
-		} else {
+		} else { // remove from reviewer list if present
 			if(idx >= 0) {
 				items.splice(idx, 1)
 			}

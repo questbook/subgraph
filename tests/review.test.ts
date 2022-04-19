@@ -66,6 +66,25 @@ export function runTests(): void {
 
 		const member = WorkspaceMember.load(app!.reviewers[0])
 		assert.assertNotNull(member)
+
+		// now we remove the reviewer
+		enabled[0] = false
+		ev.parameters = [
+			new ethereum.EventParam('_reviewIds', ethereum.Value.fromArray([ MOCK_REVIEW_ID ])),
+			new ethereum.EventParam('_workspaceId', MOCK_WORKSPACE_ID),
+			new ethereum.EventParam('_applicationId', MOCK_APPLICATION_ID),
+			new ethereum.EventParam('_grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
+			// the IPFS hash contains mock data for the workspace
+			new ethereum.EventParam('_reviewers', ethereum.Value.fromAddressArray(reviewers)),
+			new ethereum.EventParam('_active', ethereum.Value.fromBooleanArray(enabled)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32( 123 )),
+		]
+
+		const eventRemove = new ReviewersAssigned(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleReviewersAssigned(eventRemove)
+		
+		const app2 = GrantApplication.load(a!.id)
+		assert.i32Equals(app2!.reviewers.length, 0)
 	})
 
 	test('should add a rubric to a grant', () => {
