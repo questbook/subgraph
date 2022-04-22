@@ -1,11 +1,11 @@
-import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts"
-import { assert, logStore, newMockEvent, test } from "matchstick-as"
-import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
+import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
+import { assert, newMockEvent, test } from "matchstick-as"
+import { ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer } from "../generated/schema"
 import { DisburseReward } from "../generated/templates/QBGrantsContract/QBGrantsContract"
-import { handleApplicationSubmitted, handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
+import { handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
 import { handleDisburseReward } from "../src/grant-mapping"
-import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, MOCK_GRANT_ID, WORKSPACE_CREATOR_ID } from './utils' 
+import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, MOCK_APPLICATION_EVENT_ID, MOCK_APPLICATION_ID } from './utils' 
 
 export function runTests(): void {
 
@@ -195,32 +195,6 @@ export function runTests(): void {
 	})
 }
 
-function createApplication(): GrantApplication | null {
-	const g = createGrant()
-	const ev = newMockEvent()
-
-	ev.parameters = [
-		new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
-		new ethereum.EventParam('grant', ethereum.Value.fromAddress( Address.fromString(g!.id) )),
-		new ethereum.EventParam('owner', ethereum.Value.fromAddress( Address.fromString("0xB25191F360e3847006dB660bae1c6d1b2e17eC2B") )),
-		// the IPFS hash contains mock data for the workspace
-		new ethereum.EventParam('metadataHash', ethereum.Value.fromString(CREATE_JSON)),
-		new ethereum.EventParam('milestoneCount', ethereum.Value.fromI32( 5 )),
-		new ethereum.EventParam('time', ethereum.Value.fromI32( 123 )),
-	]
-	ev.transaction.hash = MOCK_APPLICATION_EVENT_ID
-	const event = new ApplicationSubmitted(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-	handleApplicationSubmitted(event)
-
-	const testId = MOCK_APPLICATION_ID.toBigInt().toHex()
-	const w = GrantApplication.load(testId)
-
-	return w
-}
-
-const MOCK_APPLICATION_ID = ethereum.Value.fromI32( 0x0123 )
-const MOCK_APPLICATION_EVENT_ID = Bytes.fromByteArray(Bytes.fromHexString("0xB17081F360e3847006dB660bae1c6d1b2e17eC2A"))
-const CREATE_JSON = `json:{"grantId":"8d4d6f78-3f38-5b6f-a64d-6510c98f52f4","pii":{"${WORKSPACE_CREATOR_ID}":"lol"},"applicantId":"46461b05-3cda-5448-88fe-adfbccd8dde1","fields":{"0":[{"value":"Gu dibdig mo zilu ni okda zahliz alra voz tuowi me zevuno."}],"1":[{"value":"Huala on wih zu haro poznu ojesoji cernifibi bosojgi cu vom nen ce nimvu."}],"2":[{"value":"Zosahow avholri naz niil pu om jevre cethiep okbihreg joneka emko dazcu cow gunueho."}],"3":[{"value":"Mapar ki roh tutcul puwopuuc ef sownioho ucuizle udlet curunpep ce hahoidu febpo cata zewpo."}],"applicantName":[{"value":"Kevin Patrick"}],"applicantEmail":[{"address":"53a81e47-752a-5291-813f-fe7513dbbc5b","value":"mo@gaw.nu"},{"address":"bb32cf71-de84-5e3e-af67-6d5f01599a47","value":"tata@rihdidon.ga"},{"address":"d3a84a37-0de3-5e1c-9fe5-2cc781f548ac","value":"loh@sojo.af"}],"projectName":[{"value":"Elmer Schultz"}],"projectDetails":[{"value":"Coj omi ho lakijo ir acseg he rezik vaup bobwar bojjiva gedtu cewulo pielo zoz hefebkuj idaogupa vingad. Domhen oze mursi za nul katazdo emu jelfi oged jegasco zur da rupwa wez bedin ac. Lir vofik dem ud cutcuow puji udwela gajhowa car hahbe jep huasli geetadi zodeafu cukof. Moz puiremu lifrug fojukku mo mek ticuegi megwo lopfer ba eziwafi juzmaze apofinoj medsir bisiew ovohu len."}],"fundingBreakdown":[{"value":"Lolla koh uku ino lugdotfa ge lezic kanegbub ulemis lumnu atoahfug veejemi bojun gofimim. Zegkiof zisuwim wulakon bewikcuc goblu zom zodsikip miata rehibgem carojo ramar tundirsu ri gub godiij pin. Ekefezzo ucjujec sudfa karius enifaw rocsafuf bipam goleed ir awaneb nen enwesu acu jut. Leozciv cawezed ohterre beg umafiam vubarisis ociho laverka cahocah kuvap dullala rezob he hafhe sojuj kega vo muzdotwi. Nobcurto pacritbe hodpafih to ruju hezudvi hu zepzo miif nowuhnow sanib mu ulu. Rakcuvho iwnam zezap figji ha wupu emeasozid lub fap ucu leb obvo dazso."}]},"milestones":[{"title":"Onu we tokazubuv hit cog vop jeeracim cegav ofopi golwokuf updo ac tewolow tofter natuco kiggud ezacije.","amount":"86"},{"title":"Ajjuvaw uze izhos ned uzipufema lehjesu coske wuhe feucneb uscijwu madbe loek.","amount":"13"},{"title":"Ojucuc geslic zomanave zoku cepcuwsuf bot misfes mab nimjihvad eboloco echut gemuje zirsas coumaufa suram bib.","amount":"16"},{"title":"Movorzo magan besijned ob laetcew atza tibmiprur pi carre wihca ebavumbo gotesa napiwhej.","amount":"82"},{"title":"Amijaguf siunigos ovuucujon hierfid ogre vogpief mevwu boffakve mi afinep zilgopan ovtetla kurnicnaj.","amount":"96"}]}`
 const UPDATE_JSON = 'json:{"fields":{"2120":[{"value":"Gu1123 dibdig mo zilu ni okda zahliz alra voz tuowi me zevuno."}],"1":[{"value":"Huala on wih zu haro poznu ojesoji cernifibi bosojgi cu vom nen ce nimvu."}],"2":[{"value":"Zosahow avholri naz niil pu om jevre cethiep okbihreg joneka emko dazcu cow gunueho."}],"3":[{"value":"Mapar ki roh tutcul puwopuuc ef sownioho ucuizle udlet curunpep ce hahoidu febpo cata zewpo."}],"applicantName":[{"value":"Kevin Patrick"}],"applicantEmail":[{"address":"53a81e47-752a-5291-813f-fe7513dbbc5b","value":"mo@gaw.nu"},{"address":"bb32cf71-de84-5e3e-af67-6d5f01599a47","value":"tata@rihdidon.ga"},{"address":"d3a84a37-0de3-5e1c-9fe5-2cc781f548ac","value":"loh@sojo.af"}],"projectName":[{"value":"Elmer Schultz"}],"projectDetails":[{"value":"Cojzzzz omi ho lakijo ir acseg he rezik vaup bobwar bojjiva gedtu cewulo pielo zoz hefebkuj idaogupa vingad. Domhen oze mursi za nul katazdo emu jelfi oged jegasco zur da rupwa wez bedin ac. Lir vofik dem ud cutcuow puji udwela gajhowa car hahbe jep huasli geetadi zodeafu cukof. Moz puiremu lifrug fojukku mo mek ticuegi megwo lopfer ba eziwafi juzmaze apofinoj medsir bisiew ovohu len."}],"fundingBreakdown":[{"value":"Lolla koh uku ino lugdotfa ge lezic kanegbub ulemis lumnu atoahfug veejemi bojun gofimim. Zegkiof zisuwim wulakon bewikcuc goblu zom zodsikip miata rehibgem carojo ramar tundirsu ri gub godiij pin. Ekefezzo ucjujec sudfa karius enifaw rocsafuf bipam goleed ir awaneb nen enwesu acu jut. Leozciv cawezed ohterre beg umafiam vubarisis ociho laverka cahocah kuvap dullala rezob he hafhe sojuj kega vo muzdotwi. Nobcurto pacritbe hodpafih to ruju hezudvi hu zepzo miif nowuhnow sanib mu ulu. Rakcuvho iwnam zezap figji ha wupu emeasozid lub fap ucu leb obvo dazso."}]}, "feedback":"some feedback"}'
 const UPDATE_MILESTONE_JSON = 'json:{"text":"hello there"}'
 const APPROVE_MILESTONE_JSON = 'json:{"text":"testing"}'

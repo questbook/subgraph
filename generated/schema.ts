@@ -327,6 +327,264 @@ export class Reward extends Entity {
   }
 }
 
+export class RubricItem extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("title", Value.fromString(""));
+    this.set("details", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save RubricItem entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save RubricItem entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("RubricItem", id.toString(), this);
+    }
+  }
+
+  static load(id: string): RubricItem | null {
+    return changetype<RubricItem | null>(store.get("RubricItem", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get title(): string {
+    let value = this.get("title");
+    return value!.toString();
+  }
+
+  set title(value: string) {
+    this.set("title", Value.fromString(value));
+  }
+
+  get details(): string {
+    let value = this.get("details");
+    return value!.toString();
+  }
+
+  set details(value: string) {
+    this.set("details", Value.fromString(value));
+  }
+
+  get maximumPoints(): i32 {
+    let value = this.get("maximumPoints");
+    return value!.toI32();
+  }
+
+  set maximumPoints(value: i32) {
+    this.set("maximumPoints", Value.fromI32(value));
+  }
+}
+
+export class Rubric extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("items", Value.fromStringArray(new Array(0)));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Rubric entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Rubric entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Rubric", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Rubric | null {
+    return changetype<Rubric | null>(store.get("Rubric", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get items(): Array<string> {
+    let value = this.get("items");
+    return value!.toStringArray();
+  }
+
+  set items(value: Array<string>) {
+    this.set("items", Value.fromStringArray(value));
+  }
+
+  get isPrivate(): boolean {
+    let value = this.get("isPrivate");
+    return value!.toBoolean();
+  }
+
+  set isPrivate(value: boolean) {
+    this.set("isPrivate", Value.fromBoolean(value));
+  }
+
+  get createdAtS(): i32 {
+    let value = this.get("createdAtS");
+    return value!.toI32();
+  }
+
+  set createdAtS(value: i32) {
+    this.set("createdAtS", Value.fromI32(value));
+  }
+
+  get updatedAtS(): i32 {
+    let value = this.get("updatedAtS");
+    return value!.toI32();
+  }
+
+  set updatedAtS(value: i32) {
+    this.set("updatedAtS", Value.fromI32(value));
+  }
+
+  get addedBy(): string | null {
+    let value = this.get("addedBy");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set addedBy(value: string | null) {
+    if (!value) {
+      this.unset("addedBy");
+    } else {
+      this.set("addedBy", Value.fromString(<string>value));
+    }
+  }
+}
+
+export class Review extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("application", Value.fromString(""));
+    this.set("reviewerId", Value.fromString(""));
+    this.set("data", Value.fromStringArray(new Array(0)));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Review entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Review entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Review", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Review | null {
+    return changetype<Review | null>(store.get("Review", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get application(): string {
+    let value = this.get("application");
+    return value!.toString();
+  }
+
+  set application(value: string) {
+    this.set("application", Value.fromString(value));
+  }
+
+  get reviewerId(): string {
+    let value = this.get("reviewerId");
+    return value!.toString();
+  }
+
+  set reviewerId(value: string) {
+    this.set("reviewerId", Value.fromString(value));
+  }
+
+  get reviewer(): string | null {
+    let value = this.get("reviewer");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set reviewer(value: string | null) {
+    if (!value) {
+      this.unset("reviewer");
+    } else {
+      this.set("reviewer", Value.fromString(<string>value));
+    }
+  }
+
+  get createdAtS(): i32 {
+    let value = this.get("createdAtS");
+    return value!.toI32();
+  }
+
+  set createdAtS(value: i32) {
+    this.set("createdAtS", Value.fromI32(value));
+  }
+
+  get publicReviewDataHash(): string | null {
+    let value = this.get("publicReviewDataHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set publicReviewDataHash(value: string | null) {
+    if (!value) {
+      this.unset("publicReviewDataHash");
+    } else {
+      this.set("publicReviewDataHash", Value.fromString(<string>value));
+    }
+  }
+
+  get data(): Array<string> {
+    let value = this.get("data");
+    return value!.toStringArray();
+  }
+
+  set data(value: Array<string>) {
+    this.set("data", Value.fromStringArray(value));
+  }
+}
+
 export class Grant extends Entity {
   constructor(id: string) {
     super();
@@ -520,6 +778,23 @@ export class Grant extends Entity {
 
   set managers(value: Array<string>) {
     this.set("managers", Value.fromStringArray(value));
+  }
+
+  get rubric(): string | null {
+    let value = this.get("rubric");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set rubric(value: string | null) {
+    if (!value) {
+      this.unset("rubric");
+    } else {
+      this.set("rubric", Value.fromString(<string>value));
+    }
   }
 }
 
@@ -1039,6 +1314,7 @@ export class GrantApplication extends Entity {
     this.set("fields", Value.fromStringArray(new Array(0)));
     this.set("pii", Value.fromStringArray(new Array(0)));
     this.set("milestones", Value.fromStringArray(new Array(0)));
+    this.set("reviewers", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
@@ -1173,6 +1449,24 @@ export class GrantApplication extends Entity {
     } else {
       this.set("feedbackDev", Value.fromString(<string>value));
     }
+  }
+
+  get reviews(): Array<string> {
+    let value = this.get("reviews");
+    return value!.toStringArray();
+  }
+
+  set reviews(value: Array<string>) {
+    this.set("reviews", Value.fromStringArray(value));
+  }
+
+  get reviewers(): Array<string> {
+    let value = this.get("reviewers");
+    return value!.toStringArray();
+  }
+
+  set reviewers(value: Array<string>) {
+    this.set("reviewers", Value.fromStringArray(value));
   }
 }
 

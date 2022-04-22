@@ -49,6 +49,7 @@ enum FundsTransferType {
 enum SupportedNetwork {
   chain_1,
   chain_4,
+  chain_10,
   chain_137,
   chain_80001,
   chain_1666700000,
@@ -90,6 +91,42 @@ type Reward @entity {
 	committed: BigInt!
 }
 
+type RubricItem @entity {
+  id: ID!
+  title: String!
+  details: String!
+  maximumPoints: Int!
+}
+
+type Rubric @entity {
+  id: ID!
+  items: [RubricItem!]!
+  "Is private evaluation"
+  isPrivate: Boolean!
+  "Unix timestamp of when the rubric was created"
+  createdAtS: Int!
+  "Unix timestamp of when the rubric was updated"
+  updatedAtS: Int!
+  "Who added this rubric"
+  addedBy: WorkspaceMember
+}
+
+type Review @entity {
+  id: ID!
+  "Application for which the review is"
+  application: GrantApplication!
+  "ID of the reviewer"
+  reviewerId: String!
+  "Workspace member that reviewed the app"
+  reviewer: WorkspaceMember
+  "created at S"
+  createdAtS: Int!
+  "IPFS Hash to the publicly accessible review"
+  publicReviewDataHash: String
+  "The encrypted data of the review"
+  data: [PIIAnswer!]!
+}
+
 type Grant @entity {
   id: ID!
   "Address of who created the grant"
@@ -123,6 +160,8 @@ type Grant @entity {
   applications: [GrantApplication!]! @derivedFrom(field: "grant")
   "People who will manage the grant. They can see the PII submitted in an application"
   managers: [GrantManager!]!
+  "Rubric for evaulating the grant"
+  rubric: Rubric
 }
 
 type GrantManager @entity {
@@ -225,6 +264,10 @@ type GrantApplication @entity {
   feedbackDao: String
   "Feedback from the developer"
   feedbackDev: String
+  "Reviews of the application"
+  reviews: [Review!]! @derivedFrom(field: "application")
+  "People who will review the grant applications"
+  reviewers: [WorkspaceMember!]!
 }
 
 "A revision after an update"

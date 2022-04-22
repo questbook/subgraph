@@ -10,6 +10,46 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
+export class AdminChanged extends ethereum.Event {
+  get params(): AdminChanged__Params {
+    return new AdminChanged__Params(this);
+  }
+}
+
+export class AdminChanged__Params {
+  _event: AdminChanged;
+
+  constructor(event: AdminChanged) {
+    this._event = event;
+  }
+
+  get previousAdmin(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newAdmin(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class BeaconUpgraded extends ethereum.Event {
+  get params(): BeaconUpgraded__Params {
+    return new BeaconUpgraded__Params(this);
+  }
+}
+
+export class BeaconUpgraded__Params {
+  _event: BeaconUpgraded;
+
+  constructor(event: BeaconUpgraded) {
+    this._event = event;
+  }
+
+  get beacon(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class GrantCreated extends ethereum.Event {
   get params(): GrantCreated__Params {
     return new GrantCreated__Params(this);
@@ -37,6 +77,32 @@ export class GrantCreated__Params {
 
   get time(): BigInt {
     return this._event.parameters[3].value.toBigInt();
+  }
+}
+
+export class GrantImplementationUpdated extends ethereum.Event {
+  get params(): GrantImplementationUpdated__Params {
+    return new GrantImplementationUpdated__Params(this);
+  }
+}
+
+export class GrantImplementationUpdated__Params {
+  _event: GrantImplementationUpdated;
+
+  constructor(event: GrantImplementationUpdated) {
+    this._event = event;
+  }
+
+  get grantAddress(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get success(): boolean {
+    return this._event.parameters[1].value.toBoolean();
+  }
+
+  get data(): Bytes {
+    return this._event.parameters[2].value.toBytes();
   }
 }
 
@@ -98,6 +164,24 @@ export class Unpaused__Params {
   }
 }
 
+export class Upgraded extends ethereum.Event {
+  get params(): Upgraded__Params {
+    return new Upgraded__Params(this);
+  }
+}
+
+export class Upgraded__Params {
+  _event: Upgraded;
+
+  constructor(event: Upgraded) {
+    this._event = event;
+  }
+
+  get implementation(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class QBGrantFactoryContract extends ethereum.SmartContract {
   static bind(address: Address): QBGrantFactoryContract {
     return new QBGrantFactoryContract("QBGrantFactoryContract", address);
@@ -146,6 +230,29 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  grantImplementation(): Address {
+    let result = super.call(
+      "grantImplementation",
+      "grantImplementation():(address)",
+      []
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_grantImplementation(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "grantImplementation",
+      "grantImplementation():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   owner(): Address {
     let result = super.call("owner", "owner():(address)", []);
 
@@ -174,6 +281,51 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  proxiableUUID(): Bytes {
+    let result = super.call("proxiableUUID", "proxiableUUID():(bytes32)", []);
+
+    return result[0].toBytes();
+  }
+
+  try_proxiableUUID(): ethereum.CallResult<Bytes> {
+    let result = super.tryCall(
+      "proxiableUUID",
+      "proxiableUUID():(bytes32)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+}
+
+export class ConstructorCall extends ethereum.Call {
+  get inputs(): ConstructorCall__Inputs {
+    return new ConstructorCall__Inputs(this);
+  }
+
+  get outputs(): ConstructorCall__Outputs {
+    return new ConstructorCall__Outputs(this);
+  }
+}
+
+export class ConstructorCall__Inputs {
+  _call: ConstructorCall;
+
+  constructor(call: ConstructorCall) {
+    this._call = call;
+  }
+}
+
+export class ConstructorCall__Outputs {
+  _call: ConstructorCall;
+
+  constructor(call: ConstructorCall) {
+    this._call = call;
   }
 }
 
@@ -220,6 +372,32 @@ export class CreateGrantCall__Outputs {
 
   get value0(): Address {
     return this._call.outputValues[0].value.toAddress();
+  }
+}
+
+export class InitializeCall extends ethereum.Call {
+  get inputs(): InitializeCall__Inputs {
+    return new InitializeCall__Inputs(this);
+  }
+
+  get outputs(): InitializeCall__Outputs {
+    return new InitializeCall__Outputs(this);
+  }
+}
+
+export class InitializeCall__Inputs {
+  _call: InitializeCall;
+
+  constructor(call: InitializeCall) {
+    this._call = call;
+  }
+}
+
+export class InitializeCall__Outputs {
+  _call: InitializeCall;
+
+  constructor(call: InitializeCall) {
+    this._call = call;
   }
 }
 
@@ -327,6 +505,70 @@ export class UnpauseCall__Outputs {
   _call: UnpauseCall;
 
   constructor(call: UnpauseCall) {
+    this._call = call;
+  }
+}
+
+export class UpgradeToCall extends ethereum.Call {
+  get inputs(): UpgradeToCall__Inputs {
+    return new UpgradeToCall__Inputs(this);
+  }
+
+  get outputs(): UpgradeToCall__Outputs {
+    return new UpgradeToCall__Outputs(this);
+  }
+}
+
+export class UpgradeToCall__Inputs {
+  _call: UpgradeToCall;
+
+  constructor(call: UpgradeToCall) {
+    this._call = call;
+  }
+
+  get newImplementation(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class UpgradeToCall__Outputs {
+  _call: UpgradeToCall;
+
+  constructor(call: UpgradeToCall) {
+    this._call = call;
+  }
+}
+
+export class UpgradeToAndCallCall extends ethereum.Call {
+  get inputs(): UpgradeToAndCallCall__Inputs {
+    return new UpgradeToAndCallCall__Inputs(this);
+  }
+
+  get outputs(): UpgradeToAndCallCall__Outputs {
+    return new UpgradeToAndCallCall__Outputs(this);
+  }
+}
+
+export class UpgradeToAndCallCall__Inputs {
+  _call: UpgradeToAndCallCall;
+
+  constructor(call: UpgradeToAndCallCall) {
+    this._call = call;
+  }
+
+  get newImplementation(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get data(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
+}
+
+export class UpgradeToAndCallCall__Outputs {
+  _call: UpgradeToAndCallCall;
+
+  constructor(call: UpgradeToAndCallCall) {
     this._call = call;
   }
 }

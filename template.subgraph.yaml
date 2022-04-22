@@ -14,8 +14,7 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - WorkspaceAdminsAdded
-        - WorkspaceAdminsRemoved
+        - WorkspaceMembersUpdated
         - WorkspaceCreated
         - WorkspaceUpdated
       abis:
@@ -26,10 +25,8 @@ dataSources:
           handler: handleWorkspaceCreated
         - event: WorkspaceUpdated(indexed uint96,indexed address,string,uint256)
           handler: handleWorkspaceUpdated
-        - event: WorkspaceAdminsAdded(indexed uint96,address[],string[],uint256)
-          handler: handleWorkspaceAdminsAdded
-        - event: WorkspaceAdminsRemoved(indexed uint96,address[],uint256)
-          handler: handleWorkspaceAdminsRemoved
+        - event: WorkspaceMembersUpdated(indexed uint96,address[],uint8[],bool[],string[],uint256)
+          handler: handleWorkspaceMembersUpdated
       file: ./src/workspace-mapping.ts
   - kind: ethereum
     name: QBApplicationsContract
@@ -77,6 +74,32 @@ dataSources:
         - event: GrantCreated(address,uint96,string,uint256)
           handler: handleGrantCreated
       file: ./src/grant-mapping.ts
+  - kind: ethereum
+    name: QBReviewsContract
+    network: {{network}}
+    source:
+      address: "{{reviews.address}}"
+      abi: QBReviewsContract
+      startBlock: {{reviews.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - ReviewSubmitted
+        - ReviewersAssigned
+        - RubricsSet
+      abis:
+        - name: QBReviewsContract
+          file: ./abis/QBReviewsContract.json
+      eventHandlers:
+        - event: ReviewSubmitted(indexed uint96,uint96,uint96,address,string,uint256)
+          handler: handleReviewSubmitted
+        - event: ReviewersAssigned(indexed uint96[],uint96,uint96,address,address[],bool[],uint256)
+          handler: handleReviewersAssigned
+        - event: RubricsSet(uint96,indexed address,string,uint256)
+          handler: handleRubricsSet
+      file: ./src/review-mapping.ts
 templates:
   - kind: ethereum
     name: QBGrantsContract

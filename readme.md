@@ -19,6 +19,14 @@ See [here](https://thegraph.com/en/) if you don't know what the graph is.
 2. Postgres is required by the "matchstick" library (testing lib for the graph) to enable building mock databases to run tests against
 3. Once postgres is installed -- run `yarn test`
 
+## Adding a New Chain
+
+1. Add the chain ID to the QB [validator service](https://github.com/questbook/service-validator):
+	1. Edit the openapi yaml to add the new chain ID
+	2. Run `yarn generate:types`
+2. Add the chain ID to the `schema.graphql` file
+3. Run `yarn codegen:validators` to update the validators from the validator service with the new chain ID
+
 ## Prerequisites for Contributing
 
 1. Familiarity with Typescript (assemblyscript ideally)

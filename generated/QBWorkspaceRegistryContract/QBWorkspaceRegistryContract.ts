@@ -10,6 +10,46 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
+export class AdminChanged extends ethereum.Event {
+  get params(): AdminChanged__Params {
+    return new AdminChanged__Params(this);
+  }
+}
+
+export class AdminChanged__Params {
+  _event: AdminChanged;
+
+  constructor(event: AdminChanged) {
+    this._event = event;
+  }
+
+  get previousAdmin(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newAdmin(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class BeaconUpgraded extends ethereum.Event {
+  get params(): BeaconUpgraded__Params {
+    return new BeaconUpgraded__Params(this);
+  }
+}
+
+export class BeaconUpgraded__Params {
+  _event: BeaconUpgraded;
+
+  constructor(event: BeaconUpgraded) {
+    this._event = event;
+  }
+
+  get beacon(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class OwnershipTransferred extends ethereum.Event {
   get params(): OwnershipTransferred__Params {
     return new OwnershipTransferred__Params(this);
@@ -68,59 +108,21 @@ export class Unpaused__Params {
   }
 }
 
-export class WorkspaceAdminsAdded extends ethereum.Event {
-  get params(): WorkspaceAdminsAdded__Params {
-    return new WorkspaceAdminsAdded__Params(this);
+export class Upgraded extends ethereum.Event {
+  get params(): Upgraded__Params {
+    return new Upgraded__Params(this);
   }
 }
 
-export class WorkspaceAdminsAdded__Params {
-  _event: WorkspaceAdminsAdded;
+export class Upgraded__Params {
+  _event: Upgraded;
 
-  constructor(event: WorkspaceAdminsAdded) {
+  constructor(event: Upgraded) {
     this._event = event;
   }
 
-  get id(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get admins(): Array<Address> {
-    return this._event.parameters[1].value.toAddressArray();
-  }
-
-  get emails(): Array<string> {
-    return this._event.parameters[2].value.toStringArray();
-  }
-
-  get time(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
-  }
-}
-
-export class WorkspaceAdminsRemoved extends ethereum.Event {
-  get params(): WorkspaceAdminsRemoved__Params {
-    return new WorkspaceAdminsRemoved__Params(this);
-  }
-}
-
-export class WorkspaceAdminsRemoved__Params {
-  _event: WorkspaceAdminsRemoved;
-
-  constructor(event: WorkspaceAdminsRemoved) {
-    this._event = event;
-  }
-
-  get id(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get admins(): Array<Address> {
-    return this._event.parameters[1].value.toAddressArray();
-  }
-
-  get time(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+  get implementation(): Address {
+    return this._event.parameters[0].value.toAddress();
   }
 }
 
@@ -151,6 +153,44 @@ export class WorkspaceCreated__Params {
 
   get time(): BigInt {
     return this._event.parameters[3].value.toBigInt();
+  }
+}
+
+export class WorkspaceMembersUpdated extends ethereum.Event {
+  get params(): WorkspaceMembersUpdated__Params {
+    return new WorkspaceMembersUpdated__Params(this);
+  }
+}
+
+export class WorkspaceMembersUpdated__Params {
+  _event: WorkspaceMembersUpdated;
+
+  constructor(event: WorkspaceMembersUpdated) {
+    this._event = event;
+  }
+
+  get id(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get members(): Array<Address> {
+    return this._event.parameters[1].value.toAddressArray();
+  }
+
+  get roles(): Array<i32> {
+    return this._event.parameters[2].value.toI32Array();
+  }
+
+  get enabled(): Array<boolean> {
+    return this._event.parameters[3].value.toBooleanArray();
+  }
+
+  get emails(): Array<string> {
+    return this._event.parameters[4].value.toStringArray();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
   }
 }
 
@@ -244,6 +284,67 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
+  isWorkspaceAdminOrReviewer(_id: BigInt, _address: Address): boolean {
+    let result = super.call(
+      "isWorkspaceAdminOrReviewer",
+      "isWorkspaceAdminOrReviewer(uint96,address):(bool)",
+      [
+        ethereum.Value.fromUnsignedBigInt(_id),
+        ethereum.Value.fromAddress(_address)
+      ]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_isWorkspaceAdminOrReviewer(
+    _id: BigInt,
+    _address: Address
+  ): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "isWorkspaceAdminOrReviewer",
+      "isWorkspaceAdminOrReviewer(uint96,address):(bool)",
+      [
+        ethereum.Value.fromUnsignedBigInt(_id),
+        ethereum.Value.fromAddress(_address)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  memberRoles(param0: BigInt, param1: Address): Bytes {
+    let result = super.call(
+      "memberRoles",
+      "memberRoles(uint96,address):(bytes32)",
+      [
+        ethereum.Value.fromUnsignedBigInt(param0),
+        ethereum.Value.fromAddress(param1)
+      ]
+    );
+
+    return result[0].toBytes();
+  }
+
+  try_memberRoles(param0: BigInt, param1: Address): ethereum.CallResult<Bytes> {
+    let result = super.tryCall(
+      "memberRoles",
+      "memberRoles(uint96,address):(bytes32)",
+      [
+        ethereum.Value.fromUnsignedBigInt(param0),
+        ethereum.Value.fromAddress(param1)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+
   owner(): Address {
     let result = super.call("owner", "owner():(address)", []);
 
@@ -274,36 +375,23 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  workspaceAdmins(param0: BigInt, param1: Address): boolean {
-    let result = super.call(
-      "workspaceAdmins",
-      "workspaceAdmins(uint96,address):(bool)",
-      [
-        ethereum.Value.fromUnsignedBigInt(param0),
-        ethereum.Value.fromAddress(param1)
-      ]
-    );
+  proxiableUUID(): Bytes {
+    let result = super.call("proxiableUUID", "proxiableUUID():(bytes32)", []);
 
-    return result[0].toBoolean();
+    return result[0].toBytes();
   }
 
-  try_workspaceAdmins(
-    param0: BigInt,
-    param1: Address
-  ): ethereum.CallResult<boolean> {
+  try_proxiableUUID(): ethereum.CallResult<Bytes> {
     let result = super.tryCall(
-      "workspaceAdmins",
-      "workspaceAdmins(uint96,address):(bool)",
-      [
-        ethereum.Value.fromUnsignedBigInt(param0),
-        ethereum.Value.fromAddress(param1)
-      ]
+      "proxiableUUID",
+      "proxiableUUID():(bytes32)",
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
   workspaceCount(): BigInt {
@@ -361,44 +449,6 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
   }
 }
 
-export class AddWorkspaceAdminsCall extends ethereum.Call {
-  get inputs(): AddWorkspaceAdminsCall__Inputs {
-    return new AddWorkspaceAdminsCall__Inputs(this);
-  }
-
-  get outputs(): AddWorkspaceAdminsCall__Outputs {
-    return new AddWorkspaceAdminsCall__Outputs(this);
-  }
-}
-
-export class AddWorkspaceAdminsCall__Inputs {
-  _call: AddWorkspaceAdminsCall;
-
-  constructor(call: AddWorkspaceAdminsCall) {
-    this._call = call;
-  }
-
-  get _id(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _admins(): Array<Address> {
-    return this._call.inputValues[1].value.toAddressArray();
-  }
-
-  get _emails(): Array<string> {
-    return this._call.inputValues[2].value.toStringArray();
-  }
-}
-
-export class AddWorkspaceAdminsCall__Outputs {
-  _call: AddWorkspaceAdminsCall;
-
-  constructor(call: AddWorkspaceAdminsCall) {
-    this._call = call;
-  }
-}
-
 export class CreateWorkspaceCall extends ethereum.Call {
   get inputs(): CreateWorkspaceCall__Inputs {
     return new CreateWorkspaceCall__Inputs(this);
@@ -429,6 +479,32 @@ export class CreateWorkspaceCall__Outputs {
   }
 }
 
+export class InitializeCall extends ethereum.Call {
+  get inputs(): InitializeCall__Inputs {
+    return new InitializeCall__Inputs(this);
+  }
+
+  get outputs(): InitializeCall__Outputs {
+    return new InitializeCall__Outputs(this);
+  }
+}
+
+export class InitializeCall__Inputs {
+  _call: InitializeCall;
+
+  constructor(call: InitializeCall) {
+    this._call = call;
+  }
+}
+
+export class InitializeCall__Outputs {
+  _call: InitializeCall;
+
+  constructor(call: InitializeCall) {
+    this._call = call;
+  }
+}
+
 export class PauseCall extends ethereum.Call {
   get inputs(): PauseCall__Inputs {
     return new PauseCall__Inputs(this);
@@ -451,40 +527,6 @@ export class PauseCall__Outputs {
   _call: PauseCall;
 
   constructor(call: PauseCall) {
-    this._call = call;
-  }
-}
-
-export class RemoveWorkspaceAdminsCall extends ethereum.Call {
-  get inputs(): RemoveWorkspaceAdminsCall__Inputs {
-    return new RemoveWorkspaceAdminsCall__Inputs(this);
-  }
-
-  get outputs(): RemoveWorkspaceAdminsCall__Outputs {
-    return new RemoveWorkspaceAdminsCall__Outputs(this);
-  }
-}
-
-export class RemoveWorkspaceAdminsCall__Inputs {
-  _call: RemoveWorkspaceAdminsCall;
-
-  constructor(call: RemoveWorkspaceAdminsCall) {
-    this._call = call;
-  }
-
-  get _id(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _admins(): Array<Address> {
-    return this._call.inputValues[1].value.toAddressArray();
-  }
-}
-
-export class RemoveWorkspaceAdminsCall__Outputs {
-  _call: RemoveWorkspaceAdminsCall;
-
-  constructor(call: RemoveWorkspaceAdminsCall) {
     this._call = call;
   }
 }
@@ -571,6 +613,52 @@ export class UnpauseCall__Outputs {
   }
 }
 
+export class UpdateWorkspaceMembersCall extends ethereum.Call {
+  get inputs(): UpdateWorkspaceMembersCall__Inputs {
+    return new UpdateWorkspaceMembersCall__Inputs(this);
+  }
+
+  get outputs(): UpdateWorkspaceMembersCall__Outputs {
+    return new UpdateWorkspaceMembersCall__Outputs(this);
+  }
+}
+
+export class UpdateWorkspaceMembersCall__Inputs {
+  _call: UpdateWorkspaceMembersCall;
+
+  constructor(call: UpdateWorkspaceMembersCall) {
+    this._call = call;
+  }
+
+  get _id(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _members(): Array<Address> {
+    return this._call.inputValues[1].value.toAddressArray();
+  }
+
+  get _roles(): Array<i32> {
+    return this._call.inputValues[2].value.toI32Array();
+  }
+
+  get _enabled(): Array<boolean> {
+    return this._call.inputValues[3].value.toBooleanArray();
+  }
+
+  get _emails(): Array<string> {
+    return this._call.inputValues[4].value.toStringArray();
+  }
+}
+
+export class UpdateWorkspaceMembersCall__Outputs {
+  _call: UpdateWorkspaceMembersCall;
+
+  constructor(call: UpdateWorkspaceMembersCall) {
+    this._call = call;
+  }
+}
+
 export class UpdateWorkspaceMetadataCall extends ethereum.Call {
   get inputs(): UpdateWorkspaceMetadataCall__Inputs {
     return new UpdateWorkspaceMetadataCall__Inputs(this);
@@ -601,6 +689,70 @@ export class UpdateWorkspaceMetadataCall__Outputs {
   _call: UpdateWorkspaceMetadataCall;
 
   constructor(call: UpdateWorkspaceMetadataCall) {
+    this._call = call;
+  }
+}
+
+export class UpgradeToCall extends ethereum.Call {
+  get inputs(): UpgradeToCall__Inputs {
+    return new UpgradeToCall__Inputs(this);
+  }
+
+  get outputs(): UpgradeToCall__Outputs {
+    return new UpgradeToCall__Outputs(this);
+  }
+}
+
+export class UpgradeToCall__Inputs {
+  _call: UpgradeToCall;
+
+  constructor(call: UpgradeToCall) {
+    this._call = call;
+  }
+
+  get newImplementation(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class UpgradeToCall__Outputs {
+  _call: UpgradeToCall;
+
+  constructor(call: UpgradeToCall) {
+    this._call = call;
+  }
+}
+
+export class UpgradeToAndCallCall extends ethereum.Call {
+  get inputs(): UpgradeToAndCallCall__Inputs {
+    return new UpgradeToAndCallCall__Inputs(this);
+  }
+
+  get outputs(): UpgradeToAndCallCall__Outputs {
+    return new UpgradeToAndCallCall__Outputs(this);
+  }
+}
+
+export class UpgradeToAndCallCall__Inputs {
+  _call: UpgradeToAndCallCall;
+
+  constructor(call: UpgradeToAndCallCall) {
+    this._call = call;
+  }
+
+  get newImplementation(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get data(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
+}
+
+export class UpgradeToAndCallCall__Outputs {
+  _call: UpgradeToAndCallCall;
+
+  constructor(call: UpgradeToAndCallCall) {
     this._call = call;
   }
 }

@@ -1,15 +1,19 @@
 {
 	"network": "harmonytest",
 	"workspace": {
-		"address": "0x0E41057B1DfB745949D147DFc79448e2994D5A37",
+		"address": "0x6D0f81BDA11995f25921aAd5B43359630E65Ca96",
 		"startBlock": 21595892
 	},
 	"applications": {
-		"address": "0xe9666A3aE8B19040572c81f8A6FDB3D771db002d",
+		"address": "0x32798CC9da06363eF2b0eE12e54cD4476D9C891a",
 		"startBlock": 21595915
 	},
 	"grantFactory": {
-		"address": "0xB6db4eB8C2DA3298E93B26fce59c790663360788",
+		"address": "0xda717ab1206c59493e1E5c66F4e0712B39EC6D81",
+		"startBlock": 21595903
+	},
+	"reviews": {
+		"address": "0x2d49a247AA77cA433218C9567953645bE04A7b3A",
 		"startBlock": 21595903
 	}
 }
