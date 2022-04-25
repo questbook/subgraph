@@ -11,9 +11,11 @@ export function runTests(): void {
 
 	test('should create an application', () => {
 		const g = createApplication()
+
 		assertStringNotEmpty(g!.grant, 'grant.value')
 		assert.assertTrue(g!.applicantId.length > 0)
 		assert.stringEquals(g!.state, 'submitted')
+		assert.i32Equals(g!.version, 1)
 		assertArrayNotEmpty(g!.fields)
 
 		for(let i = 0;i < g!.fields.length;i++) {
@@ -87,6 +89,7 @@ export function runTests(): void {
 		const gUpdate = GrantApplication.load(g!.id)
 		assert.i32Equals(gUpdate!.updatedAtS, 125)
 		assert.stringEquals(gUpdate!.state, 'resubmit')
+		assert.assertTrue(gUpdate!.version > 1)
 		// project details were updated, check value changed
 		const projectDetailsFieldUpdate = GrantFieldAnswerItem.load(`${g!.id}.projectDetails.0`)!
 		assert.assertTrue(projectDetailsField.value != projectDetailsFieldUpdate.value)
@@ -103,6 +106,7 @@ export function runTests(): void {
 
 		assert.assertTrue(rev0!.createdAtS != rev1!.createdAtS)
 		assert.assertTrue(rev0!.state != rev1!.state)
+		assert.assertTrue(rev1!.version > rev0!.version)
 	})
 
 	test('should update a milestone with requesing payment', () => {

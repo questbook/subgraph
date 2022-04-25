@@ -271,6 +271,8 @@ type GrantApplication @entity {
   reviews: [Review!]! @derivedFrom(field: "application")
   "People who will review the grant applications"
   reviewers: [WorkspaceMember!]!
+  "Version of the application, incremented on resubmission"
+  version: Int!
 }
 
 "A revision after an update"
@@ -292,6 +294,8 @@ type GrantApplicationRevision @entity {
   feedbackDao: String
   "Feedback from the developer"
   feedbackDev: String
+  "Version number of the grant application"
+  version: Int!
 }
 
 type FundsTransfer @entity {

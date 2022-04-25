@@ -1478,6 +1478,15 @@ export class GrantApplication extends Entity {
   set reviewers(value: Array<string>) {
     this.set("reviewers", Value.fromStringArray(value));
   }
+
+  get version(): i32 {
+    let value = this.get("version");
+    return value!.toI32();
+  }
+
+  set version(value: i32) {
+    this.set("version", Value.fromI32(value));
+  }
 }
 
 export class GrantApplicationRevision extends Entity {
@@ -1609,6 +1618,15 @@ export class GrantApplicationRevision extends Entity {
     } else {
       this.set("feedbackDev", Value.fromString(<string>value));
     }
+  }
+
+  get version(): i32 {
+    let value = this.get("version");
+    return value!.toI32();
+  }
+
+  set version(value: i32) {
+    this.set("version", Value.fromI32(value));
   }
 }
 

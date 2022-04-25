@@ -39,7 +39,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	entity.updatedAtS = entity.createdAtS
 	entity.milestones = mapMilestones(applicationId, json.milestones)
 	entity.reviewers = []
-
+	entity.version = 1
 
 	if(json.pii) {
 		entity.pii = mapGrantPII(applicationId, grantId, json.pii!)
@@ -108,6 +108,8 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 				entity.feedbackDev = json.feedback!
 			}
 		}
+
+		entity.version += 1
 	}
 
 	entity.save()

@@ -10,6 +10,7 @@ export function addApplicationRevision(app: GrantApplication, actorId: Address):
 	rev.createdAtS = app.updatedAtS
 	rev.feedbackDev = app.feedbackDev
 	rev.feedbackDao = app.feedbackDao
+	rev.version = app.version
 
 	const fields: string[] = []
 	for(let i = 0;i < app.fields.length;i++) {
