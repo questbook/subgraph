@@ -1128,6 +1128,7 @@ export class ApplicationMilestone extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
+    this.set("application", Value.fromString(""));
     this.set("state", Value.fromString(""));
     this.set("title", Value.fromString(""));
     this.set("amount", Value.fromBigInt(BigInt.zero()));
@@ -1160,6 +1161,15 @@ export class ApplicationMilestone extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get application(): string {
+    let value = this.get("application");
+    return value!.toString();
+  }
+
+  set application(value: string) {
+    this.set("application", Value.fromString(value));
   }
 
   get state(): string {

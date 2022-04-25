@@ -55,6 +55,7 @@ export function mapMilestones(applicationId: string, milestoneList: GrantPropose
 	const milestones: string[] = []
 	for(let i = 0;i < milestoneList.length;i++) {
 		const milestone = new ApplicationMilestone(`${applicationId}.${i}`)
+		milestone.application = applicationId
 		milestone.state = 'submitted'
 		milestone.title = milestoneList[i].title
 		milestone.amount = milestoneList[i].amount

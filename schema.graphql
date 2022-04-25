@@ -220,6 +220,9 @@ type Workspace @entity {
 "the milestone of a grant application"
 type ApplicationMilestone @entity {
   id: ID!
+  "The grant application this milestone belongs to"
+  application: GrantApplication!
+  "Current state of the milestone"
   state: MilestoneState!
   title: String!
   "amount expected by applicant"
