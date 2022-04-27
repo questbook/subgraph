@@ -89,6 +89,7 @@ dataSources:
         - ReviewSubmitted
         - ReviewersAssigned
         - RubricsSet
+        - ReviewPaymentMarkedDone
       abis:
         - name: QBReviewsContract
           file: ./abis/QBReviewsContract.json
@@ -99,6 +100,8 @@ dataSources:
           handler: handleReviewersAssigned
         - event: RubricsSet(uint96,indexed address,string,uint256)
           handler: handleRubricsSet
+        - event: ReviewPaymentMarkedDone(uint96[],address,address,uint256,string,uint256)
+          handler: handleReviewPaymentMarkedDone
       file: ./src/review-mapping.ts
 templates:
   - kind: ethereum

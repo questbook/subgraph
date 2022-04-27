@@ -866,6 +866,7 @@ export class WorkspaceMember extends Entity {
 
     this.set("actorId", Value.fromBytes(Bytes.empty()));
     this.set("accessLevel", Value.fromString(""));
+    this.set("outstandingReviewIds", Value.fromStringArray(new Array(0)));
     this.set("workspace", Value.fromString(""));
   }
 
@@ -963,6 +964,24 @@ export class WorkspaceMember extends Entity {
 
   set updatedAt(value: i32) {
     this.set("updatedAt", Value.fromI32(value));
+  }
+
+  get lastReviewSubmittedAt(): i32 {
+    let value = this.get("lastReviewSubmittedAt");
+    return value!.toI32();
+  }
+
+  set lastReviewSubmittedAt(value: i32) {
+    this.set("lastReviewSubmittedAt", Value.fromI32(value));
+  }
+
+  get outstandingReviewIds(): Array<string> {
+    let value = this.get("outstandingReviewIds");
+    return value!.toStringArray();
+  }
+
+  set outstandingReviewIds(value: Array<string>) {
+    this.set("outstandingReviewIds", Value.fromStringArray(value));
   }
 
   get workspace(): string {
@@ -1640,6 +1659,7 @@ export class FundsTransfer extends Entity {
     this.set("sender", Value.fromBytes(Bytes.empty()));
     this.set("to", Value.fromBytes(Bytes.empty()));
     this.set("type", Value.fromString(""));
+    this.set("asset", Value.fromBytes(Bytes.empty()));
   }
 
   save(): void {
@@ -1702,6 +1722,23 @@ export class FundsTransfer extends Entity {
     }
   }
 
+  get review(): string | null {
+    let value = this.get("review");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set review(value: string | null) {
+    if (!value) {
+      this.unset("review");
+    } else {
+      this.set("review", Value.fromString(<string>value));
+    }
+  }
+
   get grant(): string {
     let value = this.get("grant");
     return value!.toString();
@@ -1754,6 +1791,15 @@ export class FundsTransfer extends Entity {
 
   set type(value: string) {
     this.set("type", Value.fromString(value));
+  }
+
+  get asset(): Bytes {
+    let value = this.get("asset");
+    return value!.toBytes();
+  }
+
+  set asset(value: Bytes) {
+    this.set("asset", Value.fromBytes(value));
   }
 }
 

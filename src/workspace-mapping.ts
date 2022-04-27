@@ -39,6 +39,8 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
   member.publicKey = json.creatorPublicKey
   member.addedAt = entity.createdAtS
   member.updatedAt = entity.updatedAtS
+  member.outstandingReviewIds = []
+  member.lastReviewSubmittedAt = 0
   member.save()
 
   entity.save()
@@ -106,6 +108,8 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
       if(!member) {
         member = new WorkspaceMember(id)
         member.addedAt = entity.updatedAtS
+        member.lastReviewSubmittedAt = 0
+        member.outstandingReviewIds = []
       }
 
       member.actorId = memberId

@@ -43,7 +43,8 @@ enum NotificationType {
 enum FundsTransferType {
   funds_disbursed,
   funds_deposited,
-  funds_withdrawn
+  funds_withdrawn,
+  review_payment_done,
 }
 
 enum SupportedNetwork {
@@ -187,6 +188,11 @@ type WorkspaceMember @entity {
   addedAt: Int!
   "Last update on member"
   updatedAt: Int!
+  "Timestamp of when the last review was done"
+  lastReviewSubmittedAt: Int!
+  "The review IDs for which this member is owed a payment"
+  outstandingReviewIds: [String!]!
+
   workspace: Workspace!
 }
 
@@ -304,6 +310,8 @@ type FundsTransfer @entity {
   application: GrantApplication
   "Milestone for which the funds were released"
   milestone: ApplicationMilestone
+  "Reviw for which the payment was done"
+  review: Review
   "Which grant were the funds transferred to/from"
   grant: Grant!
   "How much of the funds were allocated"
@@ -316,6 +324,8 @@ type FundsTransfer @entity {
   createdAtS: Int!
   "What the type of funds transfer is"
   type: FundsTransferType!
+  "Asset that was used in the funds transfer"
+  asset: Bytes!
 }
 
 type Notification @entity {

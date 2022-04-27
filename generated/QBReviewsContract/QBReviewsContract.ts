@@ -72,6 +72,82 @@ export class OwnershipTransferred__Params {
   }
 }
 
+export class ReviewPaymentFulfilled extends ethereum.Event {
+  get params(): ReviewPaymentFulfilled__Params {
+    return new ReviewPaymentFulfilled__Params(this);
+  }
+}
+
+export class ReviewPaymentFulfilled__Params {
+  _event: ReviewPaymentFulfilled;
+
+  constructor(event: ReviewPaymentFulfilled) {
+    this._event = event;
+  }
+
+  get _reviewIds(): Array<BigInt> {
+    return this._event.parameters[0].value.toBigIntArray();
+  }
+
+  get _asset(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get _sender(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get _reviewer(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+
+  get _amount(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+}
+
+export class ReviewPaymentMarkedDone extends ethereum.Event {
+  get params(): ReviewPaymentMarkedDone__Params {
+    return new ReviewPaymentMarkedDone__Params(this);
+  }
+}
+
+export class ReviewPaymentMarkedDone__Params {
+  _event: ReviewPaymentMarkedDone;
+
+  constructor(event: ReviewPaymentMarkedDone) {
+    this._event = event;
+  }
+
+  get _reviewIds(): Array<BigInt> {
+    return this._event.parameters[0].value.toBigIntArray();
+  }
+
+  get _asset(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get _reviewer(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get _amount(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get _transactionHash(): string {
+    return this._event.parameters[4].value.toString();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+}
+
 export class ReviewSubmitted extends ethereum.Event {
   get params(): ReviewSubmitted__Params {
     return new ReviewSubmitted__Params(this);
@@ -390,6 +466,29 @@ export class QBReviewsContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  reviewPaymentsStatus(param0: BigInt): boolean {
+    let result = super.call(
+      "reviewPaymentsStatus",
+      "reviewPaymentsStatus(uint96):(bool)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_reviewPaymentsStatus(param0: BigInt): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "reviewPaymentsStatus",
+      "reviewPaymentsStatus(uint96):(bool)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
   reviews(param0: Address, param1: BigInt): QBReviewsContract__reviewsResult {
     let result = super.call(
       "reviews",
@@ -502,6 +601,56 @@ export class AssignReviewersCall__Outputs {
   }
 }
 
+export class FulfillPaymentCall extends ethereum.Call {
+  get inputs(): FulfillPaymentCall__Inputs {
+    return new FulfillPaymentCall__Inputs(this);
+  }
+
+  get outputs(): FulfillPaymentCall__Outputs {
+    return new FulfillPaymentCall__Outputs(this);
+  }
+}
+
+export class FulfillPaymentCall__Inputs {
+  _call: FulfillPaymentCall;
+
+  constructor(call: FulfillPaymentCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _applicationIds(): Array<BigInt> {
+    return this._call.inputValues[1].value.toBigIntArray();
+  }
+
+  get _reviewer(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
+  get _reviewIds(): Array<BigInt> {
+    return this._call.inputValues[3].value.toBigIntArray();
+  }
+
+  get _erc20Interface(): Address {
+    return this._call.inputValues[4].value.toAddress();
+  }
+
+  get _amount(): BigInt {
+    return this._call.inputValues[5].value.toBigInt();
+  }
+}
+
+export class FulfillPaymentCall__Outputs {
+  _call: FulfillPaymentCall;
+
+  constructor(call: FulfillPaymentCall) {
+    this._call = call;
+  }
+}
+
 export class InitializeCall extends ethereum.Call {
   get inputs(): InitializeCall__Inputs {
     return new InitializeCall__Inputs(this);
@@ -524,6 +673,60 @@ export class InitializeCall__Outputs {
   _call: InitializeCall;
 
   constructor(call: InitializeCall) {
+    this._call = call;
+  }
+}
+
+export class MarkPaymentDoneCall extends ethereum.Call {
+  get inputs(): MarkPaymentDoneCall__Inputs {
+    return new MarkPaymentDoneCall__Inputs(this);
+  }
+
+  get outputs(): MarkPaymentDoneCall__Outputs {
+    return new MarkPaymentDoneCall__Outputs(this);
+  }
+}
+
+export class MarkPaymentDoneCall__Inputs {
+  _call: MarkPaymentDoneCall;
+
+  constructor(call: MarkPaymentDoneCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _applicationIds(): Array<BigInt> {
+    return this._call.inputValues[1].value.toBigIntArray();
+  }
+
+  get _reviewer(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
+  get _reviewIds(): Array<BigInt> {
+    return this._call.inputValues[3].value.toBigIntArray();
+  }
+
+  get _erc20Interface(): Address {
+    return this._call.inputValues[4].value.toAddress();
+  }
+
+  get _amount(): BigInt {
+    return this._call.inputValues[5].value.toBigInt();
+  }
+
+  get _transactionHash(): string {
+    return this._call.inputValues[6].value.toString();
+  }
+}
+
+export class MarkPaymentDoneCall__Outputs {
+  _call: MarkPaymentDoneCall;
+
+  constructor(call: MarkPaymentDoneCall) {
     this._call = call;
   }
 }
