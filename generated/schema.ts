@@ -868,6 +868,7 @@ export class WorkspaceMember extends Entity {
     this.set("accessLevel", Value.fromString(""));
     this.set("outstandingReviewIds", Value.fromStringArray(new Array(0)));
     this.set("workspace", Value.fromString(""));
+    this.set("addedBy", Value.fromString(""));
   }
 
   save(): void {
@@ -991,6 +992,15 @@ export class WorkspaceMember extends Entity {
 
   set workspace(value: string) {
     this.set("workspace", Value.fromString(value));
+  }
+
+  get addedBy(): string {
+    let value = this.get("addedBy");
+    return value!.toString();
+  }
+
+  set addedBy(value: string) {
+    this.set("addedBy", Value.fromString(value));
   }
 }
 

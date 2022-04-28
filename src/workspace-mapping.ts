@@ -41,6 +41,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
   member.updatedAt = entity.updatedAtS
   member.outstandingReviewIds = []
   member.lastReviewSubmittedAt = 0
+  member.addedBy = member.id
   member.save()
 
   entity.save()
@@ -121,6 +122,7 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
         member.accessLevel = 'reviewer'
       }
       member.workspace = entityId
+      member.addedBy = `${entityId}.${event.transaction.from.toHex()}`
       member.save()
 
       // if this member was to be removed
