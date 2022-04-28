@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, PIIAnswer, Reward, Social } from "../../generated/schema";
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, PIIAnswer, Reward, Social, Token } from "../../generated/schema";
 import { Result } from "../json-schema/json";
-import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, PIIAnswers, SocialItem } from "../json-schema";
+import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, PIIAnswers, SocialItem, Token as TokenItem } from "../json-schema";
 import { GrantTransfersERC20 } from "../../generated/templates";
 
 export function isPlausibleIPFSHash(str: string): boolean {
@@ -128,6 +128,21 @@ export function mapWorkspaceSocials(workspaceId: string, socialsList: SocialItem
 		social.save()
 		
 		items.push(social.id)
+	}
+	return items
+}
+
+export function mapWorkspaceTokens(workspaceId: string, tokensList: TokenItem[]){
+	const items: string[] = []
+	for(let i = 0; i<tokensList.length; i++){
+		const token = new Token(`${workspaceId}.${tokensList[i].address}`)
+		token.label = tokensList[i].label
+		token.address = tokensList[i].address
+		token.decimal = tokensList[i].decimal
+		token.iconHash = tokensList[i].iconHash
+		token.save()
+
+		items.push(token.id)
 	}
 	return items
 }

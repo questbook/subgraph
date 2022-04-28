@@ -19,6 +19,13 @@ export class Error_data {
 
 }
 
+export class Token {
+	label: string = ''
+	address: Bytes = new Bytes(0)
+	decimal: BigInt = new BigInt(0)
+	iconHash: string = ''
+}
+
 export class GrantField {
 	title: string = ''
 	inputType: string = ''
@@ -81,6 +88,7 @@ export class WorkspaceUpdateRequest {
 	coverImageIpfsHash: string | null = null
 	socials: SocialItem[] | null = null
 	publicKey: string | null = null
+	tokens: Token[] | null = null
 }
 
 export class ApplicationMilestoneUpdate {
@@ -228,6 +236,52 @@ return validateBytesFromStringResult(validateString(json, 16, 256, null))
 
 export function validateAmount(json: JSONValue): Result<BigInt> {
 return validateStringResultInteger(validateString(json, -1, 64, null))
+}
+
+export function validateToken(json: JSONValue): Result<Token> {
+const value = new Token()
+const objResult = validateObject(json)
+if(objResult.error) {
+	return { value: null, error: objResult.error }
+}
+const obj = objResult.value!
+const labelJson = obj.get('label')
+if(!labelJson) return { value: null, error: "Expected 'label' to be present in Token" }
+if(labelJson) {
+	const labelResult = validateString(labelJson, -1, 64, null)
+	if(labelResult.error) {
+		return { value: null, error: ["Error in mapping 'label': ", labelResult.error!].join('') }
+	}
+	value.label = labelResult.value!
+}
+const addressJson = obj.get('address')
+if(!addressJson) return { value: null, error: "Expected 'address' to be present in Token" }
+if(addressJson) {
+	const addressResult = validateAddress(addressJson)
+	if(addressResult.error) {
+		return { value: null, error: ["Error in mapping 'address': ", addressResult.error!].join('') }
+	}
+	value.address = addressResult.value!
+}
+const decimalJson = obj.get('decimal')
+if(!decimalJson) return { value: null, error: "Expected 'decimal' to be present in Token" }
+if(decimalJson) {
+	const decimalResult = validateStringResultInteger(validateString(decimalJson, -1, 4, null))
+	if(decimalResult.error) {
+		return { value: null, error: ["Error in mapping 'decimal': ", decimalResult.error!].join('') }
+	}
+	value.decimal = decimalResult.value!
+}
+const iconHashJson = obj.get('iconHash')
+if(!iconHashJson) return { value: null, error: "Expected 'iconHash' to be present in Token" }
+if(iconHashJson) {
+	const iconHashResult = validateString(iconHashJson, -1, 128, null)
+	if(iconHashResult.error) {
+		return { value: null, error: ["Error in mapping 'iconHash': ", iconHashResult.error!].join('') }
+	}
+	value.iconHash = iconHashResult.value!
+}
+return { value, error: null }
 }
 
 export function validateSupportedNetwork(json: JSONValue): Result<string> {
@@ -656,11 +710,23 @@ if(publicKeyJson) {
 	}
 	value.publicKey = publicKeyResult.value!
 }
+const tokensJson = obj.get('tokens')
+if(tokensJson) {
+	const tokensResult = validateWorkspaceUpdateRequest_tokens(tokensJson)
+	if(tokensResult.error) {
+		return { value: null, error: ["Error in mapping 'tokens': ", tokensResult.error!].join('') }
+	}
+	value.tokens = tokensResult.value!
+}
 return { value, error: null }
 }
 
 export function validateWorkspaceUpdateRequest_socials(json: JSONValue): Result<SocialItem[]> {
 return validateArray(json, -1, 10, validateSocialItem)
+}
+
+export function validateWorkspaceUpdateRequest_tokens(json: JSONValue): Result<Token[]> {
+return validateArray(json, -1, -1, validateToken)
 }
 
 export function validateApplicationMilestoneUpdate(json: JSONValue): Result<ApplicationMilestoneUpdate> {
