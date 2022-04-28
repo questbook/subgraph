@@ -132,13 +132,13 @@ export function mapWorkspaceSocials(workspaceId: string, socialsList: SocialItem
 	return items
 }
 
-export function mapWorkspaceTokens(workspaceId: string, tokensList: TokenItem[]){
+export function mapWorkspaceTokens(workspaceId: string, tokensList: TokenItem[]): string[] {
 	const items: string[] = []
-	for(let i = 0; i<tokensList.length; i++){
+	for(let i = 0; i < tokensList.length; i++){
 		const token = new Token(`${workspaceId}.${tokensList[i].address}`)
 		token.label = tokensList[i].label
 		token.address = tokensList[i].address
-		token.decimal = tokensList[i].decimal
+		token.decimal = tokensList[i].decimal.toI32()
 		token.iconHash = tokensList[i].iconHash
 		token.save()
 

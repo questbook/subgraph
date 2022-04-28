@@ -334,7 +334,6 @@ export class Token extends Entity {
 
     this.set("label", Value.fromString(""));
     this.set("address", Value.fromBytes(Bytes.empty()));
-    this.set("decimal", Value.fromBigInt(BigInt.zero()));
     this.set("iconHash", Value.fromString(""));
   }
 
@@ -382,13 +381,13 @@ export class Token extends Entity {
     this.set("address", Value.fromBytes(value));
   }
 
-  get decimal(): BigInt {
+  get decimal(): i32 {
     let value = this.get("decimal");
-    return value!.toBigInt();
+    return value!.toI32();
   }
 
-  set decimal(value: BigInt) {
-    this.set("decimal", Value.fromBigInt(value));
+  set decimal(value: i32) {
+    this.set("decimal", Value.fromI32(value));
   }
 
   get iconHash(): string {

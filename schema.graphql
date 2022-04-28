@@ -95,7 +95,7 @@ type Token @entity {
   id: ID!
   label: String!
   address: Bytes!
-  decimal: BigInt!
+  decimal: Int!
   iconHash: String!
 }
 
