@@ -192,8 +192,9 @@ type WorkspaceMember @entity {
   lastReviewSubmittedAt: Int!
   "The review IDs for which this member is owed a payment"
   outstandingReviewIds: [String!]!
-
   workspace: Workspace!
+  "Address of the workspace member who added this member"
+  addedBy: WorkspaceMember!
 }
 
 "Schema for a Workspace or DAO"
