@@ -31,6 +31,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
   entity.updatedAtS = entity.createdAtS
   entity.socials = mapWorkspaceSocials(entityId, json.socials)
   entity.metadataHash = event.params.metadataHash
+  entity.tokens = []
   
   const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
   member.actorId = event.params.owner
