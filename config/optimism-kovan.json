@@ -1,15 +1,19 @@
 {
 	"network": "optimism-kovan",
 	"workspace": {
-		"address": "0xeDb10f503E128e9167a31c612aDeF4E098Da717e",
-		"startBlock": 1818833
+		"address": "0x168A72b08FCFF48192E0B1A27486f4394a4F86e1",
+		"startBlock": 194188
 	},
 	"applications": {
-		"address": "0x2dB223158288B2299480aF577eDF30D5a533F137",
-		"startBlock": 1818835
+		"address": "0xC6b6356FBdcf6CC6EA4Cb90Cd11B7E3c5848F312",
+		"startBlock": 194188
 	},
 	"grantFactory": {
-		"address": "0x6D0f81BDA11995f25921aAd5B43359630E65Ca96",
-		"startBlock": 1818834
+		"address": "0xCc3367953734da16bC7740696617b62d80845C90",
+		"startBlock": 194188
+	},
+	"reviews": {
+		"address": "0x6178d7Ac94E045d39850Ef6f35cCD0D4851DAbeC",
+		"startBlock": 194188
 	}
 }
