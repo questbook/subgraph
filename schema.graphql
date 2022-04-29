@@ -89,6 +89,7 @@ type Reward @entity {
   id: ID!
 	asset: Bytes!
 	committed: BigInt!
+  token: Token!
 }
 
 type Token @entity {

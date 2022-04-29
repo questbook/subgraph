@@ -280,6 +280,7 @@ export class Reward extends Entity {
 
     this.set("asset", Value.fromBytes(Bytes.empty()));
     this.set("committed", Value.fromBigInt(BigInt.zero()));
+    this.set("token", Value.fromString(""));
   }
 
   save(): void {
@@ -324,6 +325,15 @@ export class Reward extends Entity {
 
   set committed(value: BigInt) {
     this.set("committed", Value.fromBigInt(value));
+  }
+
+  get token(): string {
+    let value = this.get("token");
+    return value!.toString();
+  }
+
+  set token(value: string) {
+    this.set("token", Value.fromString(value));
   }
 }
 

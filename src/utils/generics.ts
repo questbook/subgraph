@@ -200,6 +200,7 @@ export function mapGrantRewardAndListen(id: string, rewardJson: GrantReward): Re
 	const reward = new Reward(id)
 	reward.asset = rewardJson.asset
 	reward.committed = rewardJson.committed
+	if(rewardJson.token) reward.token = rewardJson.token.label
 	reward.save()
 
 	const hexAssetAddr = reward.asset.toHex()
