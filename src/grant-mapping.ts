@@ -32,7 +32,7 @@ export function handleGrantCreated(event: GrantCreated): void {
   entity.summary = json.summary
   entity.details = json.details
   
-  const reward = mapGrantRewardAndListen(entity.id, json.reward)
+  const reward = mapGrantRewardAndListen(entity.id, workspaceId, json.reward)
 
   entity.reward = reward.id
   entity.workspace = workspaceId
@@ -142,7 +142,7 @@ export function handleGrantUpdated(event: GrantUpdated): void {
     if(json.details) entity.details = json.details!
     if(json.deadline) entity.deadline = json.deadline!
     if(json.reward) {
-      entity.reward = mapGrantRewardAndListen(entity.id, json.reward!).id
+      entity.reward = mapGrantRewardAndListen(entity.id, entity.workspace, json.reward!).id
     }
     if(json.fields) {
       entity.fields = mapGrantFieldMap(entity.id, json.fields!)

@@ -280,7 +280,6 @@ export class Reward extends Entity {
 
     this.set("asset", Value.fromBytes(Bytes.empty()));
     this.set("committed", Value.fromBigInt(BigInt.zero()));
-    this.set("token", Value.fromString(""));
   }
 
   save(): void {
@@ -327,13 +326,21 @@ export class Reward extends Entity {
     this.set("committed", Value.fromBigInt(value));
   }
 
-  get token(): string {
+  get token(): string | null {
     let value = this.get("token");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set token(value: string) {
-    this.set("token", Value.fromString(value));
+  set token(value: string | null) {
+    if (!value) {
+      this.unset("token");
+    } else {
+      this.set("token", Value.fromString(<string>value));
+    }
   }
 }
 
@@ -407,6 +414,23 @@ export class Token extends Entity {
 
   set iconHash(value: string) {
     this.set("iconHash", Value.fromString(value));
+  }
+
+  get workspace(): string | null {
+    let value = this.get("workspace");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set workspace(value: string | null) {
+    if (!value) {
+      this.unset("workspace");
+    } else {
+      this.set("workspace", Value.fromString(<string>value));
+    }
   }
 }
 
@@ -1070,7 +1094,6 @@ export class Workspace extends Entity {
     this.set("supportedNetworks", Value.fromStringArray(new Array(0)));
     this.set("socials", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
-    this.set("tokens", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
@@ -1206,13 +1229,21 @@ export class Workspace extends Entity {
     this.set("metadataHash", Value.fromString(value));
   }
 
-  get tokens(): Array<string> {
+  get tokens(): Array<string> | null {
     let value = this.get("tokens");
-    return value!.toStringArray();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
   }
 
-  set tokens(value: Array<string>) {
-    this.set("tokens", Value.fromStringArray(value));
+  set tokens(value: Array<string> | null) {
+    if (!value) {
+      this.unset("tokens");
+    } else {
+      this.set("tokens", Value.fromStringArray(<Array<string>>value));
+    }
   }
 }
 

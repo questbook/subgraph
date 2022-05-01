@@ -132,19 +132,15 @@ export function mapWorkspaceSocials(workspaceId: string, socialsList: SocialItem
 	return items
 }
 
-export function mapWorkspaceTokens(workspaceId: string, tokensList: TokenItem[]): string[] {
-	const items: string[] = []
-	for(let i = 0; i < tokensList.length; i++){
-		const token = new Token(`${workspaceId}.${tokensList[i].address}`)
-		token.label = tokensList[i].label
-		token.address = tokensList[i].address
-		token.decimal = tokensList[i].decimal.toI32()
-		token.iconHash = tokensList[i].iconHash
+export function mapWorkspaceTokens(workspaceId: string, newToken: TokenItem): string {
+		const token = new Token(newToken.address.toHex())
+		token.label = newToken.label
+		token.address = newToken.address
+		token.decimal = newToken.decimal.toI32()
+		token.iconHash = newToken.iconHash
+		token.workspace = workspaceId
 		token.save()
-
-		items.push(token.id)
-	}
-	return items
+	return token.id
 }
 
 export function mapGrantManagers(managerWalletIds: Bytes[] | null, grantId: string, workspaceId: string): string[] {
@@ -196,11 +192,14 @@ function mapGrantField(grantId: string, title: string, json: GrantFieldJSON): st
 	return field.id
 }
 
-export function mapGrantRewardAndListen(id: string, rewardJson: GrantReward): Reward {
+export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJson: GrantReward): Reward {
 	const reward = new Reward(id)
 	reward.asset = rewardJson.asset
 	reward.committed = rewardJson.committed
-	if(rewardJson.token) reward.token = rewardJson.token.label
+	if(rewardJson.token) {
+		const tokenId = mapWorkspaceTokens(workspaceId, rewardJson.token)
+		reward.token = tokenId
+	}
 	reward.save()
 
 	const hexAssetAddr = reward.asset.toHex()

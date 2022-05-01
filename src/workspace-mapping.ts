@@ -68,7 +68,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
   if(json.logoIpfsHash) entity.logoIpfsHash = json.logoIpfsHash!
   if(json.coverImageIpfsHash) entity.coverImageIpfsHash = json.coverImageIpfsHash
   if(json.socials) entity.socials = mapWorkspaceSocials(entityId, json.socials!)
-  if(json.tokens) entity.tokens = mapWorkspaceTokens(entityId, json.tokens!)
+  
   if(json.publicKey) {
     const memberId = event.transaction.from.toHex()
     const mem = WorkspaceMember.load(`${entityId}.${memberId}`)
