@@ -352,6 +352,7 @@ export class Token extends Entity {
     this.set("label", Value.fromString(""));
     this.set("address", Value.fromBytes(Bytes.empty()));
     this.set("iconHash", Value.fromString(""));
+    this.set("workspace", Value.fromString(""));
   }
 
   save(): void {
@@ -416,21 +417,13 @@ export class Token extends Entity {
     this.set("iconHash", Value.fromString(value));
   }
 
-  get workspace(): string | null {
+  get workspace(): string {
     let value = this.get("workspace");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
+    return value!.toString();
   }
 
-  set workspace(value: string | null) {
-    if (!value) {
-      this.unset("workspace");
-    } else {
-      this.set("workspace", Value.fromString(<string>value));
-    }
+  set workspace(value: string) {
+    this.set("workspace", Value.fromString(value));
   }
 }
 
@@ -1229,21 +1222,13 @@ export class Workspace extends Entity {
     this.set("metadataHash", Value.fromString(value));
   }
 
-  get tokens(): Array<string> | null {
+  get tokens(): Array<string> {
     let value = this.get("tokens");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
+    return value!.toStringArray();
   }
 
-  set tokens(value: Array<string> | null) {
-    if (!value) {
-      this.unset("tokens");
-    } else {
-      this.set("tokens", Value.fromStringArray(<Array<string>>value));
-    }
+  set tokens(value: Array<string>) {
+    this.set("tokens", Value.fromStringArray(value));
   }
 }
 

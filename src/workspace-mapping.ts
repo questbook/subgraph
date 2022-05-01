@@ -31,7 +31,6 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
   entity.updatedAtS = entity.createdAtS
   entity.socials = mapWorkspaceSocials(entityId, json.socials)
   entity.metadataHash = event.params.metadataHash
-  entity.tokens = []
   
   const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
   member.actorId = event.params.owner
@@ -68,7 +67,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
   if(json.logoIpfsHash) entity.logoIpfsHash = json.logoIpfsHash!
   if(json.coverImageIpfsHash) entity.coverImageIpfsHash = json.coverImageIpfsHash
   if(json.socials) entity.socials = mapWorkspaceSocials(entityId, json.socials!)
-  
+  // TODO: map tokens and save
   if(json.publicKey) {
     const memberId = event.transaction.from.toHex()
     const mem = WorkspaceMember.load(`${entityId}.${memberId}`)
