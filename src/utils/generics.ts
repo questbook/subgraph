@@ -135,7 +135,7 @@ export function mapWorkspaceSocials(workspaceId: string, socialsList: SocialItem
 export function mapWorkspaceTokens(workspaceId: string, tokensList: TokenItem[]): string[] {
 	const items: string[] = []
 	for(let i = 0; i<tokensList.length; i++){
-		const token = new Token(`${workspaceId}.${tokensList[i].address}`)
+		const token = new Token(`${workspaceId}.${tokensList[i].address.toHex()}`)
 		token.label = tokensList[i].label
 		token.address = tokensList[i].address
 		token.decimal = tokensList[i].decimal.toI32()
@@ -202,7 +202,7 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	reward.asset = rewardJson.asset
 	reward.committed = rewardJson.committed
 	if (rewardJson.token) {
-		const token = mapWorkspaceTokens(workspaceId, [rewardJson.token])
+		const token = mapWorkspaceTokens(workspaceId, [rewardJson.token!])
 		reward.token = token[0]
 	}
 	reward.save()
