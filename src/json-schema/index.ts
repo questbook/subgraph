@@ -107,6 +107,7 @@ export class GrantFieldMap {
 export class GrantReward {
 	committed: BigInt = new BigInt(0)
 	asset: Bytes = new Bytes(0)
+	token: Token | null = null
 }
 
 export class ReviewItem {
@@ -833,6 +834,14 @@ if(assetJson) {
 		return { value: null, error: ["Error in mapping 'asset': ", assetResult.error!].join('') }
 	}
 	value.asset = assetResult.value!
+}
+const tokenJson = obj.get('token')
+if(tokenJson) {
+	const tokenResult = validateToken(tokenJson)
+	if(tokenResult.error) {
+		return { value: null, error: ["Error in mapping 'token': ", tokenResult.error!].join('') }
+	}
+	value.token = tokenResult.value!
 }
 return { value, error: null }
 }

@@ -90,6 +90,16 @@ type Reward @entity {
   id: ID!
 	asset: Bytes!
 	committed: BigInt!
+  token: Token
+}
+
+type Token @entity {
+  id: ID!
+  label: String!
+  address: Bytes!
+  decimal: Int!
+  iconHash: String!
+  workspace: Workspace!
 }
 
 type RubricItem @entity {
@@ -222,6 +232,8 @@ type Workspace @entity {
   socials: [Social!]!
   "Hash of the IPFS file from which the details about the workspace were pulled"
   metadataHash: String!
+  "Custom tokens setup by the workspace"
+  tokens: [Token!]! @derivedFrom(field: "workspace")
 }
 
 "the milestone of a grant application"

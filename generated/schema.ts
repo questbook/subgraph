@@ -325,6 +325,106 @@ export class Reward extends Entity {
   set committed(value: BigInt) {
     this.set("committed", Value.fromBigInt(value));
   }
+
+  get token(): string | null {
+    let value = this.get("token");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set token(value: string | null) {
+    if (!value) {
+      this.unset("token");
+    } else {
+      this.set("token", Value.fromString(<string>value));
+    }
+  }
+}
+
+export class Token extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("label", Value.fromString(""));
+    this.set("address", Value.fromBytes(Bytes.empty()));
+    this.set("iconHash", Value.fromString(""));
+    this.set("workspace", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Token entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Token entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Token", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Token | null {
+    return changetype<Token | null>(store.get("Token", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get label(): string {
+    let value = this.get("label");
+    return value!.toString();
+  }
+
+  set label(value: string) {
+    this.set("label", Value.fromString(value));
+  }
+
+  get address(): Bytes {
+    let value = this.get("address");
+    return value!.toBytes();
+  }
+
+  set address(value: Bytes) {
+    this.set("address", Value.fromBytes(value));
+  }
+
+  get decimal(): i32 {
+    let value = this.get("decimal");
+    return value!.toI32();
+  }
+
+  set decimal(value: i32) {
+    this.set("decimal", Value.fromI32(value));
+  }
+
+  get iconHash(): string {
+    let value = this.get("iconHash");
+    return value!.toString();
+  }
+
+  set iconHash(value: string) {
+    this.set("iconHash", Value.fromString(value));
+  }
+
+  get workspace(): string {
+    let value = this.get("workspace");
+    return value!.toString();
+  }
+
+  set workspace(value: string) {
+    this.set("workspace", Value.fromString(value));
+  }
 }
 
 export class RubricItem extends Entity {
@@ -1149,6 +1249,15 @@ export class Workspace extends Entity {
 
   set metadataHash(value: string) {
     this.set("metadataHash", Value.fromString(value));
+  }
+
+  get tokens(): Array<string> {
+    let value = this.get("tokens");
+    return value!.toStringArray();
+  }
+
+  set tokens(value: Array<string>) {
+    this.set("tokens", Value.fromStringArray(value));
   }
 }
 
