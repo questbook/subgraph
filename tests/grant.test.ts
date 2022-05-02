@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
-import { FundsTransfer, Grant, GrantManager, Notification, WorkspaceMember } from "../generated/schema"
+import { FundsTransfer, Grant, GrantManager, Notification, Token, WorkspaceMember } from "../generated/schema"
 import { FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdated } from '../src/grant-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from "./utils"
@@ -16,6 +16,7 @@ export function runTests(): void {
 		assert.assertTrue(g!.title.length > 0)
 		assert.assertTrue(g!.summary.length > 0)
 		assert.booleanEquals(g!.acceptingApplications, true)
+		assert.assertNotNull(g!.reward)
 		
 		assertArrayNotEmpty(g!.fields)
 
@@ -26,6 +27,32 @@ export function runTests(): void {
 
 		assert.assertNotNull(WorkspaceMember.load(mem!.member!))
 	})
+
+	test('should create a grant with custom token reward', () => {
+		const g = createGrant()
+		assert.i32Equals(g!.createdAtS, 123)
+		assert.assertTrue(g!.title.length > 0)
+		assert.assertTrue(g!.summary.length > 0)
+		assert.booleanEquals(g!.acceptingApplications, true)
+		assert.assertNotNull(g!.reward)
+		
+		assertArrayNotEmpty(g!.fields)
+
+		const memId = `${g!.id}.${WORKSPACE_CREATOR_ID}`
+		const mem = GrantManager.load(memId)
+		assert.assertNotNull(mem)
+		assert.assertNotNull(mem!.member)
+
+		assert.assertNotNull(WorkspaceMember.load(mem!.member!))
+
+		const t = Token.load(`${ethereum.Value.fromI32( 0x01 )}.${CUSTOM_TOKEN_ADDRESS}`)
+		assert.assertNotNull(t)
+		assert.assertNotNull(t.address)
+		assert.assertNotNull(t.decimal)
+		assert.assertNotNull(t.iconHash)
+	})
+
+	const CUSTOM_TOKEN_ADDRESS = '0x95b58a6bff3d14b7db2f5cb5f0ad413dc2940658'
 
 	test('should fail to create a grant due to invalid reward', () => {
 		const ev = newMockEvent()
