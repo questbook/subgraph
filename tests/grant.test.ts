@@ -26,24 +26,6 @@ export function runTests(): void {
 		assert.assertNotNull(mem!.member)
 
 		assert.assertNotNull(WorkspaceMember.load(mem!.member!))
-	})
-
-	test('should create a grant with custom token reward', () => {
-		const g = createGrant()
-		assert.i32Equals(g!.createdAtS, 123)
-		assert.assertTrue(g!.title.length > 0)
-		assert.assertTrue(g!.summary.length > 0)
-		assert.booleanEquals(g!.acceptingApplications, true)
-		assert.assertNotNull(g!.reward)
-		
-		assertArrayNotEmpty(g!.fields)
-
-		const memId = `${g!.id}.${WORKSPACE_CREATOR_ID}`
-		const mem = GrantManager.load(memId)
-		assert.assertNotNull(mem)
-		assert.assertNotNull(mem!.member)
-
-		assert.assertNotNull(WorkspaceMember.load(mem!.member!))
 
 		const t = Token.load(`${ethereum.Value.fromI32( 0x01 )}.${CUSTOM_TOKEN_ADDRESS}`)
 		assert.assertNotNull(t)
