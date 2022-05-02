@@ -1,11 +1,11 @@
-import { log, store } from '@graphprotocol/graph-ts'
+import { log } from '@graphprotocol/graph-ts'
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
 import { ApplicationMilestone, Grant, GrantApplication } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
-import { ApplicationMilestoneUpdate, GrantApplicationRequest, GrantApplicationUpdate, validateApplicationMilestoneUpdate, validateGrantApplicationRequest, validateGrantApplicationUpdate } from './json-schema'
 import { addApplicationRevision } from './utils/add-application-revision'
 import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
 import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from './utils/notifications'
+import { ApplicationMilestoneUpdate, GrantApplicationRequest, GrantApplicationUpdate, validateApplicationMilestoneUpdate, validateGrantApplicationRequest, validateGrantApplicationUpdate } from './json-schema'
 
 export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	const applicationId = event.params.applicationId.toHex()
@@ -93,13 +93,16 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		if(json.fields) {
 			entity.fields = mapGrantFieldAnswers(entity.id, entity.grant, json.fields!)
 		}
+
 		if(json.pii) {
 			removeEntityCollection('PIIAnswer', entity.pii)
 			entity.pii = mapGrantPII(entity.id, entity.grant, json.pii!)
 		}
+
 		if(json.milestones) {
 			entity.milestones = mapMilestones(entity.id, json.milestones!)
 		}
+
 		if(json.feedback) {
 			// when state moves to resubmit or reject -- that's when DAO adds feedback
 			if(entity.state === 'resubmit' || entity.state === 'rejected') {
@@ -145,9 +148,9 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 		}
 
 		const json = jsonResult.value!
-		if(entity.state === "requested") {
+		if(entity.state === 'requested') {
 			entity.feedbackDev = json.text
-		} else if(entity.state === "approved" || entity.state === 'submitted') {
+		} else if(entity.state === 'approved' || entity.state === 'submitted') {
 			entity.feedbackDao = json.text
 		}
 		

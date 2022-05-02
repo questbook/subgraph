@@ -1,8 +1,8 @@
 import { log } from '@graphprotocol/graph-ts'
 import { ReviewersAssigned, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
 import { FundsTransfer, Grant, GrantApplication, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
-import { ReviewSetRequest, RubricSetRequest, validateReviewSetRequest, validateRubricSetRequest } from './json-schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
+import { ReviewSetRequest, RubricSetRequest, validateReviewSetRequest, validateRubricSetRequest } from './json-schema'
 
 export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	const reviewId = event.params._reviewId.toHex()
@@ -117,6 +117,7 @@ export function handleRubricsSet(event: RubricsSet): void {
 		rubric = new Rubric(grantId)
 		rubric.createdAtS = event.params.time.toI32()
 	}
+
 	rubric.updatedAtS = event.params.time.toI32()
 	rubric.addedBy = `${workspaceId}.${event.transaction.from.toHex()}`
 	rubric.isPrivate = json.rubric.isPrivate.isTrue
@@ -184,6 +185,7 @@ export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): v
 		if(revIdx >= 0) {
 			outstandingReviewIds.splice(revIdx, 1)
 		}
+
 		member.outstandingReviewIds = outstandingReviewIds
 
 		member.save()

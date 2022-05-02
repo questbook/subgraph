@@ -1,6 +1,6 @@
-import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts"
-import { FundsTransfer, Grant, Reward } from "../../generated/schema"
-import { addFundsTransferNotification } from "./notifications"
+import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts'
+import { FundsTransfer, Grant, Reward } from '../../generated/schema'
+import { addFundsTransferNotification } from './notifications'
 
 export function applyGrantFundUpdate(
 	event: ethereum.Event, 
@@ -13,8 +13,8 @@ export function applyGrantFundUpdate(
 	const transactionId = event.transaction.hash.toHex()
 
 	const entity = Grant.load(grantId)
-	if (!entity) {
-		log.debug(`recv funds ${isDeposit ? "deposit" : "withdraw"} for unknown grant, ID="${grantId}"`, [])
+	if(!entity) {
+		log.debug(`recv funds ${isDeposit ? 'deposit' : 'withdraw'} for unknown grant, ID="${grantId}"`, [])
 		return false
 	}
 
@@ -35,10 +35,10 @@ export function applyGrantFundUpdate(
 	
 
 	if(isDeposit) {
-		fundEntity.type = "funds_deposited"
+		fundEntity.type = 'funds_deposited'
 		entity.funding = entity.funding.plus(amount)
 	} else {
-		fundEntity.type = "funds_withdrawn"
+		fundEntity.type = 'funds_withdrawn'
 		entity.funding = entity.funding.minus(amount)
 	}
 

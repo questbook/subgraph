@@ -1,5 +1,5 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { ApplicationMilestone, GrantApplication, GrantApplicationRevision, GrantFieldAnswer } from "../../generated/schema";
+import { Address } from '@graphprotocol/graph-ts'
+import { ApplicationMilestone, GrantApplication, GrantApplicationRevision, GrantFieldAnswer } from '../../generated/schema'
 
 export function addApplicationRevision(app: GrantApplication, actorId: Address): void {
 	const version = app.updatedAtS

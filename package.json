@@ -7,25 +7,27 @@
     "codegen:validators": "graph-json-validator --file https://raw.githubusercontent.com/questbook/service-validator/main/openapi.yaml --schemaPath components.schemas --outDirectory src/json-schema",
     "build": "graph build",
     "test": "graph test",
-    
-    "prepare": "mustache config/$NETWORK.json template.subgraph.yaml > subgraph.yaml",
+    "prepare-subgraph": "mustache config/$NETWORK.json template.subgraph.yaml > subgraph.yaml",
     "create-subgraph": "graph create --node http://the-graph.questbook.app:8020/ qb-subgraph-$NETWORK",
     "deploy": "yarn prepare && graph deploy --node http://the-graph.questbook.app:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph-$NETWORK",
     "remove": "graph remove --node http://the-graph.questbook.app:8020/ qb-subgraph-$NETWORK",
-
     "remove-local": "graph remove --node http://localhost:8020/ qb-subgraph-$NETWORK",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs https://api.thegraph.com/ipfs/ qb-subgraph-$NETWORK",
     "create-subgraph-local": "graph create --node http://localhost:8020/ --ipfs https://ipfs.infura.io:5001 qb-subgraph-$NETWORK",
-
-    "deploy:all": "node scripts/deploy"
+    "deploy:all": "node scripts/deploy",
+    "lint": "eslint ./src --ext .js,.ts,.jsx,.tsx",
+    "lint:fix": "eslint ./src --fix --ext .js,.ts,.jsx,.tsx"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.25.2",
     "@graphprotocol/graph-ts": "0.24.1"
   },
   "devDependencies": {
+    "@creatoros/eslint-config": "git+https://github.com/creatoros/eslint-config",
     "@questbook/graph-json-validator": "git+https://github.com/questbook/graph-json-validator",
+    "eslint": "^7.14.0",
     "matchstick-as": "^0.2.3",
-    "mustache": "^4.2.0"
+    "mustache": "^4.2.0",
+    "typescript": "^4.6.4"
   }
 }
