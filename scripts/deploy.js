@@ -29,7 +29,7 @@ const getNetworks = async() => {
 }
 
 const create = async (network) => {
-	await spawn('yarn', ['prepare'], {
+	await spawn('yarn', ['prepare-subgraph'], {
 		env: {
 			...process.env,
 			NETWORK: network
