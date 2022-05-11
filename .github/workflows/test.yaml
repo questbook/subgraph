@@ -16,7 +16,7 @@ jobs:
         node-version: 16.x
 
     - name: Install packages
-      run: yarn
+      run: yarn --network-concurrency 1
     
     - name: Check linting
       run: yarn lint
@@ -34,7 +34,7 @@ jobs:
         node-version: 16.x
 
     - name: Install packages
-      run: yarn
+      run: yarn --network-concurrency 1
     
     - name: Prepare Rinkeby subgraph
       run: NETWORK=rinkeby yarn prepare-subgraph
