@@ -36,5 +36,8 @@ jobs:
     - name: Install packages
       run: yarn
     
+    - name: Prepare Rinkeby subgraph
+      run: NEWORK=rinkeby yarn prepare
+    
     - name: Run Tests
       run: yarn test
