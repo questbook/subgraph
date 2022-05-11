@@ -9,9 +9,10 @@ See [here](https://thegraph.com/en/) if you don't know what the graph is.
 1. Clone the repo
 2. Run `yarn`
 3. Run a graph node locally, see [here](https://github.com/graphprotocol/graph-node/tree/master/docker) on how to do that. Simplest method would be to run a local graph node on Docker.
-4. We use mustache to template the subgraph yaml, in order to reduce repeating ourselves when deploying to dfferent networks. To prepare the subgraph yaml for deployment on a network, run `NETWORK={network} yarn prepare`.
-	- Eg. to prepare for deployment on Rinkeby -- run `NETWORK=rinkeby yarn prepare`
-4. Finally to deploy on your local graph node, run `yarn deploy-local`
+4. We use mustache to template the subgraph yaml, in order to reduce repeating ourselves when deploying to dfferent networks. To prepare the subgraph yaml for deployment on a network, run `NETWORK={network} yarn prepare-subgraph`.
+	- Eg. to prepare for deployment on Rinkeby -- run `NETWORK=rinkeby yarn prepare-subgraph`
+4. Finally to deploy on your local graph node, run `NETWORK=rinkeby GRAPH_NODE=http://localhost:8020 yarn deploy-subgraph`
+	- Note: change `GRAPH_NODE` environment variable to the graph node of your choice's admin URL. Typically this will be on port `8020`
 
 ## Running Tests
 

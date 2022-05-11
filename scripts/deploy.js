@@ -46,7 +46,7 @@ const create = async (network) => {
 
 const deploy = async (network, version) => {
 	console.log(`deploying to "${network}"...`)
-	await spawn('yarn', ['deploy', '-l', version], {
+	await spawn('yarn', ['deploy-subgraph', '-l', version], {
 		env: {
 			...process.env,
 			NETWORK: network
