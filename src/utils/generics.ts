@@ -204,7 +204,7 @@ function mapGrantField(grantId: string, title: string, json: GrantFieldJSON): st
 }
 
 export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJson: GrantReward): Reward {
-	store.remove('Reward', id)
+	// store.remove('Reward', id)
 	const reward = new Reward(id)
 	// log.info(`New Empty Reward created "${reward}"`, [])
 	reward.asset = rewardJson.asset
