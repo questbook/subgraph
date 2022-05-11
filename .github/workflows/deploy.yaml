@@ -23,6 +23,11 @@ jobs:
 
     - name: Install packages
       run: yarn --network-concurrency 1
+
+    - name: Run tests
+      run: |
+        NETWORK=rinkeby yarn prepare-subgraph
+        yarn test
     
     - name: Deploy subgraphs
       run: NETWORK=${{github.event.inputs.tags}} GRAPH_NODE=${{secrets.GRAPH_NODE}} yarn deploy:all
