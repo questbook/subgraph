@@ -218,10 +218,11 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	}
 	
 	reward.save()
-	if (reward.token) {
+	if(reward.token) {
 		log.info('After saving the reward', [])
 		log.info('Reward populated asset: {}, committed: {}, token: {}', [reward.asset.toString(), reward.committed.toString(), reward.token])
 	}
+
 	log.info('Reward populated asset: {}, committed: {}, token: {} ', [reward.asset.toString(), reward.committed.toString()])
 
 	const hexAssetAddr = reward.asset.toHex()
