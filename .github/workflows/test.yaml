@@ -37,7 +37,7 @@ jobs:
       run: yarn
     
     - name: Prepare Rinkeby subgraph
-      run: NEWORK=rinkeby yarn prepare-subgraph
+      run: NETWORK=rinkeby yarn prepare-subgraph
     
     - name: Run Tests
       run: yarn test
