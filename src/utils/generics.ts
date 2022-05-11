@@ -216,8 +216,6 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	}
 	
 	reward.save()
-	const savedReward = Reward.load(id)
-	log.info('Reward populated asset: {}, committed: {}, token: {} ', [savedReward!.asset.toString(), savedReward!.committed!.toString(), savedReward!.token!])
 
 	const hexAssetAddr = reward.asset.toHex()
 
