@@ -210,6 +210,8 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	if(rewardJson.token) {
 		const token = mapWorkspaceTokens(workspaceId, [rewardJson.token!])
 		reward.token = token[0]
+	} else {
+		reward.token = null
 	}
 
 	reward.save()

@@ -1,7 +1,7 @@
 import { Address, BigInt, ByteArray, Bytes, ethereum, log } from "@graphprotocol/graph-ts"
 import { assert, newMockEvent, test } from "matchstick-as"
 import { GrantCreated } from "../generated/QBGrantFactoryContract/QBGrantFactoryContract"
-import { FundsTransfer, Grant, GrantManager, Notification, Token, WorkspaceMember } from "../generated/schema"
+import { FundsTransfer, Grant, GrantManager, Notification, Reward, Token, WorkspaceMember } from "../generated/schema"
 import { FundsWithdrawn, GrantUpdated } from "../generated/templates/QBGrantsContract/QBGrantsContract"
 import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdated } from '../src/grant-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, CUSTOM_TOKEN_ADDRESS_GRANT, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from "./utils"
@@ -155,7 +155,9 @@ export function runTests(): void {
 		assert.assertTrue(gUpdate!.title != g!.title)
 		assert.assertTrue(gUpdate!.details != g!.details)
 
-		assert.assertTrue(gUpdate!.fields.includes(`${gUpdate!.id}.applicantName2`))
+		// assert.assertTrue(gUpdate!.fields.includes(`${gUpdate!.id}.applicantName2`))
+		const reward = Reward.load(g!.id)
+		assert.assertNull(reward?.token)
 	})
 	
 	
