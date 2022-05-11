@@ -1,0 +1,28 @@
+name: Deploy Subgraph
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: Networks to deploy to. Use `all` to deploy to all.
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16.x
+
+    - name: Install packages
+      run: yarn --network-concurrency 1
+    
+    - name: Deploy subgraphs
+      run: NETWORK=${{github.event.inputs.tags}} GRAPH_NODE=${{secrets.GRAPH_NODE}} yarn deploy:all
