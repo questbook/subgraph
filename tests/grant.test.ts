@@ -133,7 +133,7 @@ export function runTests(): void {
 
 		ev.parameters = [
 			new ethereum.EventParam('workspaceId', ethereum.Value.fromI32( 0x03 )),
-			new ethereum.EventParam('metadataHash', ethereum.Value.fromString( UPDATE_JSON_WITH_TOKEN )),
+			new ethereum.EventParam('metadataHash', ethereum.Value.fromString( UPDATE_JSON_WITHOUT_TOKEN )),
 			new ethereum.EventParam('active', ethereum.Value.fromBoolean(false)),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('time', ethereum.Value.fromI32(130)),

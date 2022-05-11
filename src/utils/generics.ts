@@ -206,13 +206,11 @@ function mapGrantField(grantId: string, title: string, json: GrantFieldJSON): st
 export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJson: GrantReward): Reward {
 	// store.remove('Reward', id)
 	const reward = new Reward(id)
-	// log.info(`New Empty Reward created "${reward}"`, [])
 	reward.asset = rewardJson.asset
 	reward.committed = rewardJson.committed
 	if(rewardJson.token) {
 		const token = mapWorkspaceTokens(workspaceId, [rewardJson.token!])
 		reward.token = token[0]
-		// log.info('Reward populated asset: {}, committed: {}, token: {}', [reward.asset.toString(), reward.committed!.toString(), reward.token])
 	} else {
 		reward.token = null
 	}
