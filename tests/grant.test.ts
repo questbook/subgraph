@@ -157,7 +157,7 @@ export function runTests(): void {
 
 		// assert.assertTrue(gUpdate!.fields.includes(`${gUpdate!.id}.applicantName2`))
 		const reward = Reward.load(g!.id)
-		assert.assertNull(reward?.token)
+		assert.assertNull(reward!.token)
 	})
 
 	test('should update grant reward with token', () => {
@@ -191,7 +191,7 @@ export function runTests(): void {
 
 		// assert.assertTrue(gUpdate!.fields.includes(`${gUpdate!.id}.applicantName2`))
 		const reward = Reward.load(g!.id)
-		assert.assertNotNull(reward?.token)
+		assert.assertNotNull(reward!.token)
 	})
 	
 	
