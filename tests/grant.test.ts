@@ -126,7 +126,7 @@ export function runTests(): void {
 		assert.stringEquals(notificationEntity!.entityId, g!.id)
 	})
 
-	test('should update grant reward without token', () => {
+	test('should fail to update grant reward without token', () => {
 		const g = createGrant()
 
 		const ev = newMockEvent()
@@ -157,7 +157,7 @@ export function runTests(): void {
 
 		// assert.assertTrue(gUpdate!.fields.includes(`${gUpdate!.id}.applicantName2`))
 		const reward = Reward.load(g!.id)
-		assert.assertNull(reward!.token)
+		assert.assertNotNull(reward!.token)
 	})
 
 	test('should update grant reward with token', () => {
