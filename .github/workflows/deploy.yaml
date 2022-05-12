@@ -30,4 +30,4 @@ jobs:
         yarn test
     
     - name: Deploy subgraphs
-      run: NETWORK=${{github.event.inputs.tags}} GRAPH_NODE=${{secrets.GRAPH_NODE}} yarn deploy:all
+      run: NETWORK=${{github.event.inputs.network}} GRAPH_NODE=${{secrets.GRAPH_NODE}} yarn deploy:all
