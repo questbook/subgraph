@@ -1,5 +1,5 @@
 {
-	"network": "neon-devnet",
+	"network": "neon-devnet2",
 	"workspace": {
 		"address": "0x6D0f81BDA11995f25921aAd5B43359630E65Ca96",
 		"startBlock": 132559317
