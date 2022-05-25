@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt, Bytes, ipfs, json, JSONValue, JSONValueKind, TypedMap } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, Bytes, ipfs, json, JSONValue, JSONValueKind, log, TypedMap } from '@graphprotocol/graph-ts'
 
 /** Generic result structure to catch successful & errorred results */
 export class Result<T> {
@@ -123,6 +123,15 @@ export function validateString(json: JSONValue, minimumLength: number, maximumLe
 
 	return { value, error: null }
 }
+
+export function validateDateTimeFromStringResult(result: Result<string>): Result<Date> {
+	if(result.error) {
+		return { value: null, error: result.error }
+	}
+
+	const value = Date.parse(result.value!)
+	return { value, error: null }
+} 
 
 export function validateBoolean(json: JSONValue): Result<Boolean> {
 	if(json.kind !== JSONValueKind.BOOL) {

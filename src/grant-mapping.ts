@@ -5,7 +5,7 @@ import { QBGrantsContract } from '../generated/templates'
 import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { applyGrantFundUpdate } from './utils/apply-grant-deposit'
-import { isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from './utils/generics'
+import { dateToUnixTimestamp, isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from './utils/generics'
 import { addFundsTransferNotification } from './utils/notifications'
 import { GrantCreateRequest, GrantUpdateRequest, validateGrantCreateRequest, validateGrantUpdateRequest } from './json-schema'
 
@@ -36,7 +36,12 @@ export function handleGrantCreated(event: GrantCreated): void {
 
 	entity.reward = reward.id
 	entity.workspace = workspaceId
-	entity.deadline = json.deadline
+	if(json.deadline) {
+		entity.deadline = json.deadline!.toISOString()
+		entity.deadlineS = dateToUnixTimestamp(json.deadline!)
+	} else {
+		entity.deadlineS = 0
+	}
 
 	entity.fields = mapGrantFieldMap(entity.id, json.fields)
 
@@ -150,7 +155,8 @@ export function handleGrantUpdated(event: GrantUpdated): void {
 		}
 
 		if(json.deadline) {
-			entity.deadline = json.deadline!
+			entity.deadline = json.deadline!.toISOString()
+			entity.deadlineS = dateToUnixTimestamp(json.deadline!)
 		}
 
 		if(json.reward) {

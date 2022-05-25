@@ -2,7 +2,7 @@
 // Auto generated file using graph-json-validator. Do not modify manually.
 
 import { TypedMap, BigInt, BigDecimal, Bytes, JSONValue } from '@graphprotocol/graph-ts'
-import { Boolean, Result, toSet, validateObject, validateNumber, validateInteger, validateArray, validateBoolean, validateString, validateTypedMap, validateBytesFromStringResult, validateStringResultInteger, validateStringResultNumber } from './json'
+import { Boolean, Result, toSet, validateObject, validateNumber, validateInteger, validateArray, validateBoolean, validateString, validateTypedMap, validateBytesFromStringResult, validateStringResultInteger, validateStringResultNumber, validateDateTimeFromStringResult } from './json'
 
 const SupportedNetworkEnumSet = toSet(['1', '10', '4', '137', '80001', '245022926', '245022934', '1666700000', '1666600000'])
 const GrantField_inputTypeEnumSet = toSet(['short-form', 'long-form', 'numeric', 'array'])
@@ -158,7 +158,7 @@ export class GrantCreateRequest {
 	title: string = ''
 	summary: string = ''
 	details: string = ''
-	deadline: string | null = null
+	deadline: Date | null = null
 	reward: GrantReward = new GrantReward()
 	creatorId: string = ''
 	workspaceId: string = ''
@@ -170,7 +170,7 @@ export class GrantUpdateRequest {
 	title: string | null = null
 	summary: string | null = null
 	details: string | null = null
-	deadline: string | null = null
+	deadline: Date | null = null
 	reward: GrantReward | null = null
 	fields: GrantFieldMap | null = null
 	grantManagers: Bytes[] | null = null
@@ -190,7 +190,9 @@ if(statusCodeJson) {
 	if(statusCodeResult.error) {
 		return { value: null, error: ["Error in mapping 'statusCode': ", statusCodeResult.error!].join('') }
 	}
-	value.statusCode = statusCodeResult.value!
+	if(statusCodeResult.value) {
+		value.statusCode = statusCodeResult.value!
+	}
 }
 const errorJson = obj.get('error')
 if(!errorJson) return { value: null, error: "Expected 'error' to be present in Error" }
@@ -199,7 +201,9 @@ if(errorJson) {
 	if(errorResult.error) {
 		return { value: null, error: ["Error in mapping 'error': ", errorResult.error!].join('') }
 	}
-	value.error = errorResult.value!
+	if(errorResult.value) {
+		value.error = errorResult.value!
+	}
 }
 const messageJson = obj.get('message')
 if(!messageJson) return { value: null, error: "Expected 'message' to be present in Error" }
@@ -208,7 +212,9 @@ if(messageJson) {
 	if(messageResult.error) {
 		return { value: null, error: ["Error in mapping 'message': ", messageResult.error!].join('') }
 	}
-	value.message = messageResult.value!
+	if(messageResult.value) {
+		value.message = messageResult.value!
+	}
 }
 const dataJson = obj.get('data')
 if(dataJson) {
@@ -216,7 +222,9 @@ if(dataJson) {
 	if(dataResult.error) {
 		return { value: null, error: ["Error in mapping 'data': ", dataResult.error!].join('') }
 	}
-	value.data = dataResult.value!
+	if(dataResult.value) {
+		value.data = dataResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -253,7 +261,9 @@ if(labelJson) {
 	if(labelResult.error) {
 		return { value: null, error: ["Error in mapping 'label': ", labelResult.error!].join('') }
 	}
-	value.label = labelResult.value!
+	if(labelResult.value) {
+		value.label = labelResult.value!
+	}
 }
 const addressJson = obj.get('address')
 if(!addressJson) return { value: null, error: "Expected 'address' to be present in Token" }
@@ -262,7 +272,9 @@ if(addressJson) {
 	if(addressResult.error) {
 		return { value: null, error: ["Error in mapping 'address': ", addressResult.error!].join('') }
 	}
-	value.address = addressResult.value!
+	if(addressResult.value) {
+		value.address = addressResult.value!
+	}
 }
 const decimalJson = obj.get('decimal')
 if(!decimalJson) return { value: null, error: "Expected 'decimal' to be present in Token" }
@@ -271,7 +283,9 @@ if(decimalJson) {
 	if(decimalResult.error) {
 		return { value: null, error: ["Error in mapping 'decimal': ", decimalResult.error!].join('') }
 	}
-	value.decimal = decimalResult.value!
+	if(decimalResult.value) {
+		value.decimal = decimalResult.value!
+	}
 }
 const iconHashJson = obj.get('iconHash')
 if(!iconHashJson) return { value: null, error: "Expected 'iconHash' to be present in Token" }
@@ -280,7 +294,9 @@ if(iconHashJson) {
 	if(iconHashResult.error) {
 		return { value: null, error: ["Error in mapping 'iconHash': ", iconHashResult.error!].join('') }
 	}
-	value.iconHash = iconHashResult.value!
+	if(iconHashResult.value) {
+		value.iconHash = iconHashResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -303,7 +319,9 @@ if(titleJson) {
 	if(titleResult.error) {
 		return { value: null, error: ["Error in mapping 'title': ", titleResult.error!].join('') }
 	}
-	value.title = titleResult.value!
+	if(titleResult.value) {
+		value.title = titleResult.value!
+	}
 }
 const inputTypeJson = obj.get('inputType')
 if(!inputTypeJson) return { value: null, error: "Expected 'inputType' to be present in GrantField" }
@@ -312,7 +330,9 @@ if(inputTypeJson) {
 	if(inputTypeResult.error) {
 		return { value: null, error: ["Error in mapping 'inputType': ", inputTypeResult.error!].join('') }
 	}
-	value.inputType = inputTypeResult.value!
+	if(inputTypeResult.value) {
+		value.inputType = inputTypeResult.value!
+	}
 }
 const enumJson = obj.get('enum')
 if(enumJson) {
@@ -320,7 +340,9 @@ if(enumJson) {
 	if(enumResult.error) {
 		return { value: null, error: ["Error in mapping 'enum': ", enumResult.error!].join('') }
 	}
-	value.enum = enumResult.value!
+	if(enumResult.value) {
+		value.enum = enumResult.value!
+	}
 }
 const piiJson = obj.get('pii')
 if(piiJson) {
@@ -328,7 +350,9 @@ if(piiJson) {
 	if(piiResult.error) {
 		return { value: null, error: ["Error in mapping 'pii': ", piiResult.error!].join('') }
 	}
-	value.pii = piiResult.value!
+	if(piiResult.value) {
+		value.pii = piiResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -355,7 +379,9 @@ if(titleJson) {
 	if(titleResult.error) {
 		return { value: null, error: ["Error in mapping 'title': ", titleResult.error!].join('') }
 	}
-	value.title = titleResult.value!
+	if(titleResult.value) {
+		value.title = titleResult.value!
+	}
 }
 const amountJson = obj.get('amount')
 if(!amountJson) return { value: null, error: "Expected 'amount' to be present in GrantProposedMilestone" }
@@ -364,7 +390,9 @@ if(amountJson) {
 	if(amountResult.error) {
 		return { value: null, error: ["Error in mapping 'amount': ", amountResult.error!].join('') }
 	}
-	value.amount = amountResult.value!
+	if(amountResult.value) {
+		value.amount = amountResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -391,7 +419,9 @@ if(valueJson) {
 	if(valueResult.error) {
 		return { value: null, error: ["Error in mapping 'value': ", valueResult.error!].join('') }
 	}
-	value.value = valueResult.value!
+	if(valueResult.value) {
+		value.value = valueResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -446,7 +476,9 @@ if(grantIdJson) {
 	if(grantIdResult.error) {
 		return { value: null, error: ["Error in mapping 'grantId': ", grantIdResult.error!].join('') }
 	}
-	value.grantId = grantIdResult.value!
+	if(grantIdResult.value) {
+		value.grantId = grantIdResult.value!
+	}
 }
 const applicantIdJson = obj.get('applicantId')
 if(!applicantIdJson) return { value: null, error: "Expected 'applicantId' to be present in GrantApplicationRequest" }
@@ -455,7 +487,9 @@ if(applicantIdJson) {
 	if(applicantIdResult.error) {
 		return { value: null, error: ["Error in mapping 'applicantId': ", applicantIdResult.error!].join('') }
 	}
-	value.applicantId = applicantIdResult.value!
+	if(applicantIdResult.value) {
+		value.applicantId = applicantIdResult.value!
+	}
 }
 const fieldsJson = obj.get('fields')
 if(!fieldsJson) return { value: null, error: "Expected 'fields' to be present in GrantApplicationRequest" }
@@ -464,7 +498,9 @@ if(fieldsJson) {
 	if(fieldsResult.error) {
 		return { value: null, error: ["Error in mapping 'fields': ", fieldsResult.error!].join('') }
 	}
-	value.fields = fieldsResult.value!
+	if(fieldsResult.value) {
+		value.fields = fieldsResult.value!
+	}
 }
 const piiJson = obj.get('pii')
 if(piiJson) {
@@ -472,7 +508,9 @@ if(piiJson) {
 	if(piiResult.error) {
 		return { value: null, error: ["Error in mapping 'pii': ", piiResult.error!].join('') }
 	}
-	value.pii = piiResult.value!
+	if(piiResult.value) {
+		value.pii = piiResult.value!
+	}
 }
 const milestonesJson = obj.get('milestones')
 if(!milestonesJson) return { value: null, error: "Expected 'milestones' to be present in GrantApplicationRequest" }
@@ -481,7 +519,9 @@ if(milestonesJson) {
 	if(milestonesResult.error) {
 		return { value: null, error: ["Error in mapping 'milestones': ", milestonesResult.error!].join('') }
 	}
-	value.milestones = milestonesResult.value!
+	if(milestonesResult.value) {
+		value.milestones = milestonesResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -503,7 +543,9 @@ if(fieldsJson) {
 	if(fieldsResult.error) {
 		return { value: null, error: ["Error in mapping 'fields': ", fieldsResult.error!].join('') }
 	}
-	value.fields = fieldsResult.value!
+	if(fieldsResult.value) {
+		value.fields = fieldsResult.value!
+	}
 }
 const piiJson = obj.get('pii')
 if(piiJson) {
@@ -511,7 +553,9 @@ if(piiJson) {
 	if(piiResult.error) {
 		return { value: null, error: ["Error in mapping 'pii': ", piiResult.error!].join('') }
 	}
-	value.pii = piiResult.value!
+	if(piiResult.value) {
+		value.pii = piiResult.value!
+	}
 }
 const milestonesJson = obj.get('milestones')
 if(milestonesJson) {
@@ -519,7 +563,9 @@ if(milestonesJson) {
 	if(milestonesResult.error) {
 		return { value: null, error: ["Error in mapping 'milestones': ", milestonesResult.error!].join('') }
 	}
-	value.milestones = milestonesResult.value!
+	if(milestonesResult.value) {
+		value.milestones = milestonesResult.value!
+	}
 }
 const feedbackJson = obj.get('feedback')
 if(feedbackJson) {
@@ -527,7 +573,9 @@ if(feedbackJson) {
 	if(feedbackResult.error) {
 		return { value: null, error: ["Error in mapping 'feedback': ", feedbackResult.error!].join('') }
 	}
-	value.feedback = feedbackResult.value!
+	if(feedbackResult.value) {
+		value.feedback = feedbackResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -550,7 +598,9 @@ if(nameJson) {
 	if(nameResult.error) {
 		return { value: null, error: ["Error in mapping 'name': ", nameResult.error!].join('') }
 	}
-	value.name = nameResult.value!
+	if(nameResult.value) {
+		value.name = nameResult.value!
+	}
 }
 const valueJson = obj.get('value')
 if(!valueJson) return { value: null, error: "Expected 'value' to be present in SocialItem" }
@@ -559,7 +609,9 @@ if(valueJson) {
 	if(valueResult.error) {
 		return { value: null, error: ["Error in mapping 'value': ", valueResult.error!].join('') }
 	}
-	value.value = valueResult.value!
+	if(valueResult.value) {
+		value.value = valueResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -578,7 +630,9 @@ if(titleJson) {
 	if(titleResult.error) {
 		return { value: null, error: ["Error in mapping 'title': ", titleResult.error!].join('') }
 	}
-	value.title = titleResult.value!
+	if(titleResult.value) {
+		value.title = titleResult.value!
+	}
 }
 const aboutJson = obj.get('about')
 if(!aboutJson) return { value: null, error: "Expected 'about' to be present in WorkspaceCreateRequest" }
@@ -587,7 +641,9 @@ if(aboutJson) {
 	if(aboutResult.error) {
 		return { value: null, error: ["Error in mapping 'about': ", aboutResult.error!].join('') }
 	}
-	value.about = aboutResult.value!
+	if(aboutResult.value) {
+		value.about = aboutResult.value!
+	}
 }
 const logoIpfsHashJson = obj.get('logoIpfsHash')
 if(!logoIpfsHashJson) return { value: null, error: "Expected 'logoIpfsHash' to be present in WorkspaceCreateRequest" }
@@ -596,7 +652,9 @@ if(logoIpfsHashJson) {
 	if(logoIpfsHashResult.error) {
 		return { value: null, error: ["Error in mapping 'logoIpfsHash': ", logoIpfsHashResult.error!].join('') }
 	}
-	value.logoIpfsHash = logoIpfsHashResult.value!
+	if(logoIpfsHashResult.value) {
+		value.logoIpfsHash = logoIpfsHashResult.value!
+	}
 }
 const coverImageIpfsHashJson = obj.get('coverImageIpfsHash')
 if(coverImageIpfsHashJson) {
@@ -604,7 +662,9 @@ if(coverImageIpfsHashJson) {
 	if(coverImageIpfsHashResult.error) {
 		return { value: null, error: ["Error in mapping 'coverImageIpfsHash': ", coverImageIpfsHashResult.error!].join('') }
 	}
-	value.coverImageIpfsHash = coverImageIpfsHashResult.value!
+	if(coverImageIpfsHashResult.value) {
+		value.coverImageIpfsHash = coverImageIpfsHashResult.value!
+	}
 }
 const creatorIdJson = obj.get('creatorId')
 if(!creatorIdJson) return { value: null, error: "Expected 'creatorId' to be present in WorkspaceCreateRequest" }
@@ -613,7 +673,9 @@ if(creatorIdJson) {
 	if(creatorIdResult.error) {
 		return { value: null, error: ["Error in mapping 'creatorId': ", creatorIdResult.error!].join('') }
 	}
-	value.creatorId = creatorIdResult.value!
+	if(creatorIdResult.value) {
+		value.creatorId = creatorIdResult.value!
+	}
 }
 const creatorPublicKeyJson = obj.get('creatorPublicKey')
 if(creatorPublicKeyJson) {
@@ -621,7 +683,9 @@ if(creatorPublicKeyJson) {
 	if(creatorPublicKeyResult.error) {
 		return { value: null, error: ["Error in mapping 'creatorPublicKey': ", creatorPublicKeyResult.error!].join('') }
 	}
-	value.creatorPublicKey = creatorPublicKeyResult.value!
+	if(creatorPublicKeyResult.value) {
+		value.creatorPublicKey = creatorPublicKeyResult.value!
+	}
 }
 const supportedNetworksJson = obj.get('supportedNetworks')
 if(!supportedNetworksJson) return { value: null, error: "Expected 'supportedNetworks' to be present in WorkspaceCreateRequest" }
@@ -630,7 +694,9 @@ if(supportedNetworksJson) {
 	if(supportedNetworksResult.error) {
 		return { value: null, error: ["Error in mapping 'supportedNetworks': ", supportedNetworksResult.error!].join('') }
 	}
-	value.supportedNetworks = supportedNetworksResult.value!
+	if(supportedNetworksResult.value) {
+		value.supportedNetworks = supportedNetworksResult.value!
+	}
 }
 const socialsJson = obj.get('socials')
 if(!socialsJson) return { value: null, error: "Expected 'socials' to be present in WorkspaceCreateRequest" }
@@ -639,7 +705,9 @@ if(socialsJson) {
 	if(socialsResult.error) {
 		return { value: null, error: ["Error in mapping 'socials': ", socialsResult.error!].join('') }
 	}
-	value.socials = socialsResult.value!
+	if(socialsResult.value) {
+		value.socials = socialsResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -669,7 +737,9 @@ if(titleJson) {
 	if(titleResult.error) {
 		return { value: null, error: ["Error in mapping 'title': ", titleResult.error!].join('') }
 	}
-	value.title = titleResult.value!
+	if(titleResult.value) {
+		value.title = titleResult.value!
+	}
 }
 const aboutJson = obj.get('about')
 if(aboutJson) {
@@ -677,7 +747,9 @@ if(aboutJson) {
 	if(aboutResult.error) {
 		return { value: null, error: ["Error in mapping 'about': ", aboutResult.error!].join('') }
 	}
-	value.about = aboutResult.value!
+	if(aboutResult.value) {
+		value.about = aboutResult.value!
+	}
 }
 const logoIpfsHashJson = obj.get('logoIpfsHash')
 if(logoIpfsHashJson) {
@@ -685,7 +757,9 @@ if(logoIpfsHashJson) {
 	if(logoIpfsHashResult.error) {
 		return { value: null, error: ["Error in mapping 'logoIpfsHash': ", logoIpfsHashResult.error!].join('') }
 	}
-	value.logoIpfsHash = logoIpfsHashResult.value!
+	if(logoIpfsHashResult.value) {
+		value.logoIpfsHash = logoIpfsHashResult.value!
+	}
 }
 const coverImageIpfsHashJson = obj.get('coverImageIpfsHash')
 if(coverImageIpfsHashJson) {
@@ -693,7 +767,9 @@ if(coverImageIpfsHashJson) {
 	if(coverImageIpfsHashResult.error) {
 		return { value: null, error: ["Error in mapping 'coverImageIpfsHash': ", coverImageIpfsHashResult.error!].join('') }
 	}
-	value.coverImageIpfsHash = coverImageIpfsHashResult.value!
+	if(coverImageIpfsHashResult.value) {
+		value.coverImageIpfsHash = coverImageIpfsHashResult.value!
+	}
 }
 const socialsJson = obj.get('socials')
 if(socialsJson) {
@@ -701,7 +777,9 @@ if(socialsJson) {
 	if(socialsResult.error) {
 		return { value: null, error: ["Error in mapping 'socials': ", socialsResult.error!].join('') }
 	}
-	value.socials = socialsResult.value!
+	if(socialsResult.value) {
+		value.socials = socialsResult.value!
+	}
 }
 const publicKeyJson = obj.get('publicKey')
 if(publicKeyJson) {
@@ -709,7 +787,9 @@ if(publicKeyJson) {
 	if(publicKeyResult.error) {
 		return { value: null, error: ["Error in mapping 'publicKey': ", publicKeyResult.error!].join('') }
 	}
-	value.publicKey = publicKeyResult.value!
+	if(publicKeyResult.value) {
+		value.publicKey = publicKeyResult.value!
+	}
 }
 const tokensJson = obj.get('tokens')
 if(tokensJson) {
@@ -717,7 +797,9 @@ if(tokensJson) {
 	if(tokensResult.error) {
 		return { value: null, error: ["Error in mapping 'tokens': ", tokensResult.error!].join('') }
 	}
-	value.tokens = tokensResult.value!
+	if(tokensResult.value) {
+		value.tokens = tokensResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -744,7 +826,9 @@ if(textJson) {
 	if(textResult.error) {
 		return { value: null, error: ["Error in mapping 'text': ", textResult.error!].join('') }
 	}
-	value.text = textResult.value!
+	if(textResult.value) {
+		value.text = textResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -769,7 +853,9 @@ if(applicantNameJson) {
 	if(applicantNameResult.error) {
 		return { value: null, error: ["Error in mapping 'applicantName': ", applicantNameResult.error!].join('') }
 	}
-	value.applicantName = applicantNameResult.value!
+	if(applicantNameResult.value) {
+		value.applicantName = applicantNameResult.value!
+	}
 }
 const applicantEmailJson = obj.get('applicantEmail')
 if(!applicantEmailJson) return { value: null, error: "Expected 'applicantEmail' to be present in GrantFieldMap" }
@@ -778,7 +864,9 @@ if(applicantEmailJson) {
 	if(applicantEmailResult.error) {
 		return { value: null, error: ["Error in mapping 'applicantEmail': ", applicantEmailResult.error!].join('') }
 	}
-	value.applicantEmail = applicantEmailResult.value!
+	if(applicantEmailResult.value) {
+		value.applicantEmail = applicantEmailResult.value!
+	}
 }
 const projectNameJson = obj.get('projectName')
 if(!projectNameJson) return { value: null, error: "Expected 'projectName' to be present in GrantFieldMap" }
@@ -787,7 +875,9 @@ if(projectNameJson) {
 	if(projectNameResult.error) {
 		return { value: null, error: ["Error in mapping 'projectName': ", projectNameResult.error!].join('') }
 	}
-	value.projectName = projectNameResult.value!
+	if(projectNameResult.value) {
+		value.projectName = projectNameResult.value!
+	}
 }
 const projectDetailsJson = obj.get('projectDetails')
 if(!projectDetailsJson) return { value: null, error: "Expected 'projectDetails' to be present in GrantFieldMap" }
@@ -796,7 +886,9 @@ if(projectDetailsJson) {
 	if(projectDetailsResult.error) {
 		return { value: null, error: ["Error in mapping 'projectDetails': ", projectDetailsResult.error!].join('') }
 	}
-	value.projectDetails = projectDetailsResult.value!
+	if(projectDetailsResult.value) {
+		value.projectDetails = projectDetailsResult.value!
+	}
 }
 const fundingBreakdownJson = obj.get('fundingBreakdown')
 if(!fundingBreakdownJson) return { value: null, error: "Expected 'fundingBreakdown' to be present in GrantFieldMap" }
@@ -805,7 +897,9 @@ if(fundingBreakdownJson) {
 	if(fundingBreakdownResult.error) {
 		return { value: null, error: ["Error in mapping 'fundingBreakdown': ", fundingBreakdownResult.error!].join('') }
 	}
-	value.fundingBreakdown = fundingBreakdownResult.value!
+	if(fundingBreakdownResult.value) {
+		value.fundingBreakdown = fundingBreakdownResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -824,7 +918,9 @@ if(committedJson) {
 	if(committedResult.error) {
 		return { value: null, error: ["Error in mapping 'committed': ", committedResult.error!].join('') }
 	}
-	value.committed = committedResult.value!
+	if(committedResult.value) {
+		value.committed = committedResult.value!
+	}
 }
 const assetJson = obj.get('asset')
 if(!assetJson) return { value: null, error: "Expected 'asset' to be present in GrantReward" }
@@ -833,7 +929,9 @@ if(assetJson) {
 	if(assetResult.error) {
 		return { value: null, error: ["Error in mapping 'asset': ", assetResult.error!].join('') }
 	}
-	value.asset = assetResult.value!
+	if(assetResult.value) {
+		value.asset = assetResult.value!
+	}
 }
 const tokenJson = obj.get('token')
 if(tokenJson) {
@@ -841,7 +939,9 @@ if(tokenJson) {
 	if(tokenResult.error) {
 		return { value: null, error: ["Error in mapping 'token': ", tokenResult.error!].join('') }
 	}
-	value.token = tokenResult.value!
+	if(tokenResult.value) {
+		value.token = tokenResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -860,7 +960,9 @@ if(ratingJson) {
 	if(ratingResult.error) {
 		return { value: null, error: ["Error in mapping 'rating': ", ratingResult.error!].join('') }
 	}
-	value.rating = ratingResult.value!
+	if(ratingResult.value) {
+		value.rating = ratingResult.value!
+	}
 }
 const noteJson = obj.get('note')
 if(noteJson) {
@@ -868,7 +970,9 @@ if(noteJson) {
 	if(noteResult.error) {
 		return { value: null, error: ["Error in mapping 'note': ", noteResult.error!].join('') }
 	}
-	value.note = noteResult.value!
+	if(noteResult.value) {
+		value.note = noteResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -887,7 +991,9 @@ if(isApprovedJson) {
 	if(isApprovedResult.error) {
 		return { value: null, error: ["Error in mapping 'isApproved': ", isApprovedResult.error!].join('') }
 	}
-	value.isApproved = isApprovedResult.value!
+	if(isApprovedResult.value) {
+		value.isApproved = isApprovedResult.value!
+	}
 }
 const commentJson = obj.get('comment')
 if(commentJson) {
@@ -895,7 +1001,9 @@ if(commentJson) {
 	if(commentResult.error) {
 		return { value: null, error: ["Error in mapping 'comment': ", commentResult.error!].join('') }
 	}
-	value.comment = commentResult.value!
+	if(commentResult.value) {
+		value.comment = commentResult.value!
+	}
 }
 const evaluationJson = obj.get('evaluation')
 if(!evaluationJson) return { value: null, error: "Expected 'evaluation' to be present in Review" }
@@ -904,7 +1012,9 @@ if(evaluationJson) {
 	if(evaluationResult.error) {
 		return { value: null, error: ["Error in mapping 'evaluation': ", evaluationResult.error!].join('') }
 	}
-	value.evaluation = evaluationResult.value!
+	if(evaluationResult.value) {
+		value.evaluation = evaluationResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -939,7 +1049,9 @@ if(reviewerJson) {
 	if(reviewerResult.error) {
 		return { value: null, error: ["Error in mapping 'reviewer': ", reviewerResult.error!].join('') }
 	}
-	value.reviewer = reviewerResult.value!
+	if(reviewerResult.value) {
+		value.reviewer = reviewerResult.value!
+	}
 }
 const publicReviewDataHashJson = obj.get('publicReviewDataHash')
 if(publicReviewDataHashJson) {
@@ -947,7 +1059,9 @@ if(publicReviewDataHashJson) {
 	if(publicReviewDataHashResult.error) {
 		return { value: null, error: ["Error in mapping 'publicReviewDataHash': ", publicReviewDataHashResult.error!].join('') }
 	}
-	value.publicReviewDataHash = publicReviewDataHashResult.value!
+	if(publicReviewDataHashResult.value) {
+		value.publicReviewDataHash = publicReviewDataHashResult.value!
+	}
 }
 const encryptedReviewJson = obj.get('encryptedReview')
 if(!encryptedReviewJson) return { value: null, error: "Expected 'encryptedReview' to be present in ReviewSetRequest" }
@@ -956,7 +1070,9 @@ if(encryptedReviewJson) {
 	if(encryptedReviewResult.error) {
 		return { value: null, error: ["Error in mapping 'encryptedReview': ", encryptedReviewResult.error!].join('') }
 	}
-	value.encryptedReview = encryptedReviewResult.value!
+	if(encryptedReviewResult.value) {
+		value.encryptedReview = encryptedReviewResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -995,7 +1111,9 @@ if(titleJson) {
 	if(titleResult.error) {
 		return { value: null, error: ["Error in mapping 'title': ", titleResult.error!].join('') }
 	}
-	value.title = titleResult.value!
+	if(titleResult.value) {
+		value.title = titleResult.value!
+	}
 }
 const detailsJson = obj.get('details')
 if(detailsJson) {
@@ -1003,7 +1121,9 @@ if(detailsJson) {
 	if(detailsResult.error) {
 		return { value: null, error: ["Error in mapping 'details': ", detailsResult.error!].join('') }
 	}
-	value.details = detailsResult.value!
+	if(detailsResult.value) {
+		value.details = detailsResult.value!
+	}
 }
 const maximumPointsJson = obj.get('maximumPoints')
 if(!maximumPointsJson) return { value: null, error: "Expected 'maximumPoints' to be present in RubricItem" }
@@ -1012,7 +1132,9 @@ if(maximumPointsJson) {
 	if(maximumPointsResult.error) {
 		return { value: null, error: ["Error in mapping 'maximumPoints': ", maximumPointsResult.error!].join('') }
 	}
-	value.maximumPoints = maximumPointsResult.value!
+	if(maximumPointsResult.value) {
+		value.maximumPoints = maximumPointsResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -1031,7 +1153,9 @@ if(isPrivateJson) {
 	if(isPrivateResult.error) {
 		return { value: null, error: ["Error in mapping 'isPrivate': ", isPrivateResult.error!].join('') }
 	}
-	value.isPrivate = isPrivateResult.value!
+	if(isPrivateResult.value) {
+		value.isPrivate = isPrivateResult.value!
+	}
 }
 const rubricJson = obj.get('rubric')
 if(!rubricJson) return { value: null, error: "Expected 'rubric' to be present in Rubric" }
@@ -1040,7 +1164,9 @@ if(rubricJson) {
 	if(rubricResult.error) {
 		return { value: null, error: ["Error in mapping 'rubric': ", rubricResult.error!].join('') }
 	}
-	value.rubric = rubricResult.value!
+	if(rubricResult.value) {
+		value.rubric = rubricResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -1075,7 +1201,9 @@ if(rubricJson) {
 	if(rubricResult.error) {
 		return { value: null, error: ["Error in mapping 'rubric': ", rubricResult.error!].join('') }
 	}
-	value.rubric = rubricResult.value!
+	if(rubricResult.value) {
+		value.rubric = rubricResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -1094,7 +1222,9 @@ if(titleJson) {
 	if(titleResult.error) {
 		return { value: null, error: ["Error in mapping 'title': ", titleResult.error!].join('') }
 	}
-	value.title = titleResult.value!
+	if(titleResult.value) {
+		value.title = titleResult.value!
+	}
 }
 const summaryJson = obj.get('summary')
 if(!summaryJson) return { value: null, error: "Expected 'summary' to be present in GrantCreateRequest" }
@@ -1103,7 +1233,9 @@ if(summaryJson) {
 	if(summaryResult.error) {
 		return { value: null, error: ["Error in mapping 'summary': ", summaryResult.error!].join('') }
 	}
-	value.summary = summaryResult.value!
+	if(summaryResult.value) {
+		value.summary = summaryResult.value!
+	}
 }
 const detailsJson = obj.get('details')
 if(!detailsJson) return { value: null, error: "Expected 'details' to be present in GrantCreateRequest" }
@@ -1112,15 +1244,19 @@ if(detailsJson) {
 	if(detailsResult.error) {
 		return { value: null, error: ["Error in mapping 'details': ", detailsResult.error!].join('') }
 	}
-	value.details = detailsResult.value!
+	if(detailsResult.value) {
+		value.details = detailsResult.value!
+	}
 }
 const deadlineJson = obj.get('deadline')
 if(deadlineJson) {
-	const deadlineResult = validateString(deadlineJson, -1, 128, null)
+	const deadlineResult = validateDateTimeFromStringResult(validateString(deadlineJson, -1, 128, null))
 	if(deadlineResult.error) {
 		return { value: null, error: ["Error in mapping 'deadline': ", deadlineResult.error!].join('') }
 	}
-	value.deadline = deadlineResult.value!
+	if(deadlineResult.value) {
+		value.deadline = deadlineResult.value!
+	}
 }
 const rewardJson = obj.get('reward')
 if(!rewardJson) return { value: null, error: "Expected 'reward' to be present in GrantCreateRequest" }
@@ -1129,7 +1265,9 @@ if(rewardJson) {
 	if(rewardResult.error) {
 		return { value: null, error: ["Error in mapping 'reward': ", rewardResult.error!].join('') }
 	}
-	value.reward = rewardResult.value!
+	if(rewardResult.value) {
+		value.reward = rewardResult.value!
+	}
 }
 const creatorIdJson = obj.get('creatorId')
 if(!creatorIdJson) return { value: null, error: "Expected 'creatorId' to be present in GrantCreateRequest" }
@@ -1138,7 +1276,9 @@ if(creatorIdJson) {
 	if(creatorIdResult.error) {
 		return { value: null, error: ["Error in mapping 'creatorId': ", creatorIdResult.error!].join('') }
 	}
-	value.creatorId = creatorIdResult.value!
+	if(creatorIdResult.value) {
+		value.creatorId = creatorIdResult.value!
+	}
 }
 const workspaceIdJson = obj.get('workspaceId')
 if(!workspaceIdJson) return { value: null, error: "Expected 'workspaceId' to be present in GrantCreateRequest" }
@@ -1147,7 +1287,9 @@ if(workspaceIdJson) {
 	if(workspaceIdResult.error) {
 		return { value: null, error: ["Error in mapping 'workspaceId': ", workspaceIdResult.error!].join('') }
 	}
-	value.workspaceId = workspaceIdResult.value!
+	if(workspaceIdResult.value) {
+		value.workspaceId = workspaceIdResult.value!
+	}
 }
 const fieldsJson = obj.get('fields')
 if(!fieldsJson) return { value: null, error: "Expected 'fields' to be present in GrantCreateRequest" }
@@ -1156,7 +1298,9 @@ if(fieldsJson) {
 	if(fieldsResult.error) {
 		return { value: null, error: ["Error in mapping 'fields': ", fieldsResult.error!].join('') }
 	}
-	value.fields = fieldsResult.value!
+	if(fieldsResult.value) {
+		value.fields = fieldsResult.value!
+	}
 }
 const grantManagersJson = obj.get('grantManagers')
 if(grantManagersJson) {
@@ -1164,7 +1308,9 @@ if(grantManagersJson) {
 	if(grantManagersResult.error) {
 		return { value: null, error: ["Error in mapping 'grantManagers': ", grantManagersResult.error!].join('') }
 	}
-	value.grantManagers = grantManagersResult.value!
+	if(grantManagersResult.value) {
+		value.grantManagers = grantManagersResult.value!
+	}
 }
 return { value, error: null }
 }
@@ -1186,7 +1332,9 @@ if(titleJson) {
 	if(titleResult.error) {
 		return { value: null, error: ["Error in mapping 'title': ", titleResult.error!].join('') }
 	}
-	value.title = titleResult.value!
+	if(titleResult.value) {
+		value.title = titleResult.value!
+	}
 }
 const summaryJson = obj.get('summary')
 if(summaryJson) {
@@ -1194,7 +1342,9 @@ if(summaryJson) {
 	if(summaryResult.error) {
 		return { value: null, error: ["Error in mapping 'summary': ", summaryResult.error!].join('') }
 	}
-	value.summary = summaryResult.value!
+	if(summaryResult.value) {
+		value.summary = summaryResult.value!
+	}
 }
 const detailsJson = obj.get('details')
 if(detailsJson) {
@@ -1202,15 +1352,19 @@ if(detailsJson) {
 	if(detailsResult.error) {
 		return { value: null, error: ["Error in mapping 'details': ", detailsResult.error!].join('') }
 	}
-	value.details = detailsResult.value!
+	if(detailsResult.value) {
+		value.details = detailsResult.value!
+	}
 }
 const deadlineJson = obj.get('deadline')
 if(deadlineJson) {
-	const deadlineResult = validateString(deadlineJson, -1, 128, null)
+	const deadlineResult = validateDateTimeFromStringResult(validateString(deadlineJson, -1, 128, null))
 	if(deadlineResult.error) {
 		return { value: null, error: ["Error in mapping 'deadline': ", deadlineResult.error!].join('') }
 	}
-	value.deadline = deadlineResult.value!
+	if(deadlineResult.value) {
+		value.deadline = deadlineResult.value!
+	}
 }
 const rewardJson = obj.get('reward')
 if(rewardJson) {
@@ -1218,7 +1372,9 @@ if(rewardJson) {
 	if(rewardResult.error) {
 		return { value: null, error: ["Error in mapping 'reward': ", rewardResult.error!].join('') }
 	}
-	value.reward = rewardResult.value!
+	if(rewardResult.value) {
+		value.reward = rewardResult.value!
+	}
 }
 const fieldsJson = obj.get('fields')
 if(fieldsJson) {
@@ -1226,7 +1382,9 @@ if(fieldsJson) {
 	if(fieldsResult.error) {
 		return { value: null, error: ["Error in mapping 'fields': ", fieldsResult.error!].join('') }
 	}
-	value.fields = fieldsResult.value!
+	if(fieldsResult.value) {
+		value.fields = fieldsResult.value!
+	}
 }
 const grantManagersJson = obj.get('grantManagers')
 if(grantManagersJson) {
@@ -1234,7 +1392,9 @@ if(grantManagersJson) {
 	if(grantManagersResult.error) {
 		return { value: null, error: ["Error in mapping 'grantManagers': ", grantManagersResult.error!].join('') }
 	}
-	value.grantManagers = grantManagersResult.value!
+	if(grantManagersResult.value) {
+		value.grantManagers = grantManagersResult.value!
+	}
 }
 return { value, error: null }
 }

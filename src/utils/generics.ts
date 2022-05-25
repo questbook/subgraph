@@ -226,3 +226,7 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	log.info(`listening to ERC20 "${hexAssetAddr}"`, [])
 	return reward
 }
+
+export function dateToUnixTimestamp(date: Date): i32 {
+	return date.getTime()/1000 as i32
+}

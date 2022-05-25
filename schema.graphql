@@ -155,6 +155,8 @@ type Grant @entity {
   workspace: Workspace!
   "ISO formatted date string"
   deadline: String
+  "Deadlint for the grant, in seconds since epoch"
+  deadlineS: Int!
   "Expected fields from the applicants of the grant"
   fields: [GrantField!]!
   "Whether the grant is currently accepting applications or not"

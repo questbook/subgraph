@@ -799,6 +799,15 @@ export class Grant extends Entity {
     }
   }
 
+  get deadlineS(): i32 {
+    let value = this.get("deadlineS");
+    return value!.toI32();
+  }
+
+  set deadlineS(value: i32) {
+    this.set("deadlineS", Value.fromI32(value));
+  }
+
   get fields(): Array<string> {
     let value = this.get("fields");
     return value!.toStringArray();
