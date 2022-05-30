@@ -1,5 +1,5 @@
 {
-	"network": "alfajores-celo-testnet",
+	"network": "celo-alfajores-testnet",
 	"workspace": {
 		"address": "0xF39E0AA8cA215D41dF7c9AeB3aBa76FfdAd0951F",
 		"startBlock": 11709425
