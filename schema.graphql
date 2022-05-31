@@ -56,7 +56,9 @@ enum SupportedNetwork {
   chain_1666700000,
   chain_1666600000,
   chain_245022926,
-  chain_245022934
+  chain_245022934,
+  chain_44787,
+  chain_42220
 }
 
 type Social @entity {

@@ -4,7 +4,7 @@
 import { TypedMap, BigInt, BigDecimal, Bytes, JSONValue } from '@graphprotocol/graph-ts'
 import { Boolean, Result, toSet, validateObject, validateNumber, validateInteger, validateArray, validateBoolean, validateString, validateTypedMap, validateBytesFromStringResult, validateStringResultInteger, validateStringResultNumber, validateDateTimeFromStringResult } from './json'
 
-const SupportedNetworkEnumSet = toSet(['1', '10', '4', '137', '80001', '245022926', '245022934', '1666700000', '1666600000'])
+const SupportedNetworkEnumSet = toSet(['1', '10', '4', '137', '80001', '245022926', '245022934', '44787', '42220', '1666700000', '1666600000'])
 const GrantField_inputTypeEnumSet = toSet(['short-form', 'long-form', 'numeric', 'array'])
 const GrantFieldMapPropertiesSet = toSet(['applicantName', 'applicantEmail', 'projectName', 'projectDetails', 'fundingBreakdown'])
 
