@@ -48,17 +48,14 @@ enum FundsTransferType {
 }
 
 enum SupportedNetwork {
-  chain_1,
-  chain_4,
-  chain_10,
-  chain_137,
-  chain_80001,
-  chain_1666700000,
-  chain_1666600000,
-  chain_245022926,
-  chain_245022934,
-  chain_44787,
-  chain_42220
+  chain_44787, # celo-alfajores-testnet
+  chain_1666700000, # harmony-testnet
+  chain_245022926, # neon-devnet
+  chain_69, # optimism-kovan
+  chain_10, # optimism-mainnet
+  chain_137, # polygon-mainnet
+  chain_80001, # polygon-mumbai
+  chain_4, # rinkeby
 }
 
 type Social @entity {
