@@ -1076,6 +1076,15 @@ export class WorkspaceMember extends Entity {
     this.set("updatedAt", Value.fromI32(value));
   }
 
+  get removedAt(): i32 {
+    let value = this.get("removedAt");
+    return value!.toI32();
+  }
+
+  set removedAt(value: i32) {
+    this.set("removedAt", Value.fromI32(value));
+  }
+
   get lastReviewSubmittedAt(): i32 {
     let value = this.get("lastReviewSubmittedAt");
     return value!.toI32();

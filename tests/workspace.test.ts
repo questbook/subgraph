@@ -1,5 +1,5 @@
 import { Address, ByteArray, ethereum } from '@graphprotocol/graph-ts'
-import { test, newMockEvent, assert } from 'matchstick-as/assembly/index'
+import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
 import { WorkspaceMembersUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Social, Token, Workspace, WorkspaceMember } from '../generated/schema'
 import { handleWorkspaceMembersUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
@@ -36,7 +36,7 @@ export function runTests(): void {
 		const ev = newMockEvent()
 		ev.parameters = [
 			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
-			new ethereum.EventParam('owner', ethereum.Value.fromBytes( Address.fromByteArray(Address.fromI32(2)) )),
+			new ethereum.EventParam('owner', ethereum.Value.fromBytes(Address.fromByteArray(Address.fromI32(2)))),
 			// contains mock data for update event
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(UPDATE_JSON)),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(124))
@@ -70,7 +70,7 @@ export function runTests(): void {
 		const ev = newMockEvent()
 		ev.parameters = [
 			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
-			new ethereum.EventParam('owner', ethereum.Value.fromBytes( Address.fromByteArray(Address.fromI32(2)) )),
+			new ethereum.EventParam('owner', ethereum.Value.fromBytes(Address.fromByteArray(Address.fromI32(2)))),
 			// contains mock data for update event
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString('json:{"publicKey":"-1i2jrc12rc13rc"}')),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(124))
@@ -89,8 +89,8 @@ export function runTests(): void {
 
 	test('should add admins to a workspace', () => {
 		const addresses = [
-			Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2C"),
-			Address.fromString("0xB16081F360e3847006dB660bae1c6d1b2e17eC2E")
+			Address.fromString('0xA16081F360e3847006dB660bae1c6d1b2e17eC2C'),
+			Address.fromString('0xB16081F360e3847006dB660bae1c6d1b2e17eC2E')
 		]
 
 		const emails = [
@@ -114,8 +114,8 @@ export function runTests(): void {
 		}
 	})
 
-	test('should remove admins to a workspace', () => {
-		const addresses = [Address.fromString("0xE16081F360e3847006dB660bae1c6d1b2e17eC2D")]
+	test('should remove admins from a workspace', () => {
+		const addresses = [Address.fromString('0xE16081F360e3847006dB660bae1c6d1b2e17eC2D')]
 		const emails = ['abcd@abcd.com']
 		const roles: i32[] = [0]
 		const enabled: boolean[] = [false]
@@ -143,8 +143,9 @@ export function runTests(): void {
 
 		for(let i = 0;i < addresses.length;i++) {
 			const memberAddedId = `${wUpdate!.id}.${addresses[i].toHex()}`
-			const member = WorkspaceMember.load(memberAddedId)
-			assert.assertNull(member)
+			const member = WorkspaceMember.load(memberAddedId)!
+			assert.assertNotNull(member)
+			assert.i32Equals(member.removedAt, wUpdate!.updatedAtS)
 		}
 	})
 }

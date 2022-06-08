@@ -201,6 +201,8 @@ type WorkspaceMember @entity {
   addedAt: Int!
   "Last update on member"
   updatedAt: Int!
+  "If the member was removed, when"
+  removedAt: Int
   "Timestamp of when the last review was done"
   lastReviewSubmittedAt: Int!
   "The review IDs for which this member is owed a payment"
