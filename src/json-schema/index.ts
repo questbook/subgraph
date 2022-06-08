@@ -19,6 +19,13 @@ export class Error_data {
 
 }
 
+export class Partner {
+	name: string = ''
+	industry: string = ''
+	website: string | null = null
+	partnerImageHash: string | null = null
+}
+
 export class Token {
 	label: string = ''
 	address: Bytes = new Bytes(0)
@@ -72,7 +79,9 @@ export class SocialItem {
 
 export class WorkspaceCreateRequest {
 	title: string = ''
+	bio: string | null = null
 	about: string = ''
+	partners: Partner[] | null = null
 	logoIpfsHash: string = ''
 	coverImageIpfsHash: string | null = null
 	creatorId: string = ''
@@ -83,8 +92,10 @@ export class WorkspaceCreateRequest {
 
 export class WorkspaceUpdateRequest {
 	title: string | null = null
+	bio: string | null = null
 	about: string | null = null
 	logoIpfsHash: string | null = null
+	partners: Partner[] | null = null
 	coverImageIpfsHash: string | null = null
 	socials: SocialItem[] | null = null
 	publicKey: string | null = null
@@ -245,6 +256,58 @@ return validateBytesFromStringResult(validateString(json, 16, 256, null))
 
 export function validateAmount(json: JSONValue): Result<BigInt> {
 return validateStringResultInteger(validateString(json, -1, 64, null))
+}
+
+export function validatePartner(json: JSONValue): Result<Partner> {
+const value = new Partner()
+const objResult = validateObject(json)
+if(objResult.error) {
+	return { value: null, error: objResult.error }
+}
+const obj = objResult.value!
+const nameJson = obj.get('name')
+if(!nameJson) return { value: null, error: "Expected 'name' to be present in Partner" }
+if(nameJson) {
+	const nameResult = validateString(nameJson, -1, 64, null)
+	if(nameResult.error) {
+		return { value: null, error: ["Error in mapping 'name': ", nameResult.error!].join('') }
+	}
+	if(nameResult.value) {
+		value.name = nameResult.value!
+	}
+}
+const industryJson = obj.get('industry')
+if(!industryJson) return { value: null, error: "Expected 'industry' to be present in Partner" }
+if(industryJson) {
+	const industryResult = validateString(industryJson, -1, 64, null)
+	if(industryResult.error) {
+		return { value: null, error: ["Error in mapping 'industry': ", industryResult.error!].join('') }
+	}
+	if(industryResult.value) {
+		value.industry = industryResult.value!
+	}
+}
+const websiteJson = obj.get('website')
+if(websiteJson) {
+	const websiteResult = validateString(websiteJson, -1, 256, null)
+	if(websiteResult.error) {
+		return { value: null, error: ["Error in mapping 'website': ", websiteResult.error!].join('') }
+	}
+	if(websiteResult.value) {
+		value.website = websiteResult.value!
+	}
+}
+const partnerImageHashJson = obj.get('partnerImageHash')
+if(partnerImageHashJson) {
+	const partnerImageHashResult = validateString(partnerImageHashJson, -1, 128, null)
+	if(partnerImageHashResult.error) {
+		return { value: null, error: ["Error in mapping 'partnerImageHash': ", partnerImageHashResult.error!].join('') }
+	}
+	if(partnerImageHashResult.value) {
+		value.partnerImageHash = partnerImageHashResult.value!
+	}
+}
+return { value, error: null }
 }
 
 export function validateToken(json: JSONValue): Result<Token> {
@@ -634,6 +697,16 @@ if(titleJson) {
 		value.title = titleResult.value!
 	}
 }
+const bioJson = obj.get('bio')
+if(bioJson) {
+	const bioResult = validateString(bioJson, -1, 200, null)
+	if(bioResult.error) {
+		return { value: null, error: ["Error in mapping 'bio': ", bioResult.error!].join('') }
+	}
+	if(bioResult.value) {
+		value.bio = bioResult.value!
+	}
+}
 const aboutJson = obj.get('about')
 if(!aboutJson) return { value: null, error: "Expected 'about' to be present in WorkspaceCreateRequest" }
 if(aboutJson) {
@@ -643,6 +716,16 @@ if(aboutJson) {
 	}
 	if(aboutResult.value) {
 		value.about = aboutResult.value!
+	}
+}
+const partnersJson = obj.get('partners')
+if(partnersJson) {
+	const partnersResult = validateWorkspaceCreateRequest_partners(partnersJson)
+	if(partnersResult.error) {
+		return { value: null, error: ["Error in mapping 'partners': ", partnersResult.error!].join('') }
+	}
+	if(partnersResult.value) {
+		value.partners = partnersResult.value!
 	}
 }
 const logoIpfsHashJson = obj.get('logoIpfsHash')
@@ -712,6 +795,10 @@ if(socialsJson) {
 return { value, error: null }
 }
 
+export function validateWorkspaceCreateRequest_partners(json: JSONValue): Result<Partner[]> {
+return validateArray(json, -1, -1, validatePartner)
+}
+
 export function validateWorkspaceCreateRequest_supportedNetworks(json: JSONValue): Result<string[]> {
 return validateArray(json, -1, 25, validateSupportedNetwork)
 }
@@ -741,6 +828,16 @@ if(titleJson) {
 		value.title = titleResult.value!
 	}
 }
+const bioJson = obj.get('bio')
+if(bioJson) {
+	const bioResult = validateString(bioJson, -1, 200, null)
+	if(bioResult.error) {
+		return { value: null, error: ["Error in mapping 'bio': ", bioResult.error!].join('') }
+	}
+	if(bioResult.value) {
+		value.bio = bioResult.value!
+	}
+}
 const aboutJson = obj.get('about')
 if(aboutJson) {
 	const aboutResult = validateString(aboutJson, -1, 5000, null)
@@ -759,6 +856,16 @@ if(logoIpfsHashJson) {
 	}
 	if(logoIpfsHashResult.value) {
 		value.logoIpfsHash = logoIpfsHashResult.value!
+	}
+}
+const partnersJson = obj.get('partners')
+if(partnersJson) {
+	const partnersResult = validateWorkspaceUpdateRequest_partners(partnersJson)
+	if(partnersResult.error) {
+		return { value: null, error: ["Error in mapping 'partners': ", partnersResult.error!].join('') }
+	}
+	if(partnersResult.value) {
+		value.partners = partnersResult.value!
 	}
 }
 const coverImageIpfsHashJson = obj.get('coverImageIpfsHash')
@@ -802,6 +909,10 @@ if(tokensJson) {
 	}
 }
 return { value, error: null }
+}
+
+export function validateWorkspaceUpdateRequest_partners(json: JSONValue): Result<Partner[]> {
+return validateArray(json, -1, -1, validatePartner)
 }
 
 export function validateWorkspaceUpdateRequest_socials(json: JSONValue): Result<SocialItem[]> {

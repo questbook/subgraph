@@ -11,7 +11,7 @@ import { validateWorkspaceCreateRequest, validateWorkspaceUpdateRequest, Workspa
 
 export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	const entityId = event.params.id.toHex()
-  
+
 	const jsonResult = validatedJsonFromIpfs<WorkspaceCreateRequest>(event.params.metadataHash, validateWorkspaceCreateRequest)
 	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace create: "${jsonResult.error!}"`, [])
@@ -24,14 +24,16 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.ownerId = event.params.owner
 	entity.title = json.title
 	entity.about = json.about
+	entity.bio = json.bio
 	entity.logoIpfsHash = json.logoIpfsHash
 	entity.coverImageIpfsHash = json.coverImageIpfsHash
 	entity.supportedNetworks = mapWorkspaceSupportedNetworks(json.supportedNetworks)
+	entity.partners = json.partners
 	entity.createdAtS = event.params.time.toI32()
 	entity.updatedAtS = entity.createdAtS
 	entity.socials = mapWorkspaceSocials(entityId, json.socials)
 	entity.metadataHash = event.params.metadataHash
-  
+
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
 	member.actorId = event.params.owner
 	member.accessLevel = 'owner'
@@ -49,7 +51,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 
 export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 	const entityId = event.params.id.toHex()
-  
+
 	const entity = Workspace.load(entityId)
 	if(!entity) {
 		log.warning(`recv workspace update without workspace existing, ID = ${entityId}`, [])
@@ -57,7 +59,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 	}
 
 	entity.updatedAtS = event.params.time.toI32()
-  
+
 	const jsonResult = validatedJsonFromIpfs<WorkspaceUpdateRequest>(event.params.metadataHash, validateWorkspaceUpdateRequest)
 	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace update: "${jsonResult.error!}"`, [])
@@ -79,6 +81,10 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 
 	if(json.coverImageIpfsHash) {
 		entity.coverImageIpfsHash = json.coverImageIpfsHash
+	}
+
+	if(json.partners) {
+		entity.partners = mapWorkspacePartners(entityId, json.partners!)
 	}
 
 	if(json.socials) {
@@ -106,13 +112,13 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 
 export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): void {
 	const entityId = event.params.id.toHex()
-  
+
 	const entity = Workspace.load(entityId)
 	if(!entity) {
 		log.warning(`recv workspace members update without workspace existing, ID = ${entityId}`, [])
 		return
 	}
-  
+
 	entity.updatedAtS = event.params.time.toI32()
 	const removals: string[] = []
 	// add the admins
@@ -122,7 +128,7 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 		const enabled = event.params.enabled[i]
 
 		const id = `${entityId}.${memberId.toHex()}`
-    
+
 		if(enabled) {
 			let member = WorkspaceMember.load(id)
 			if(!member) {
