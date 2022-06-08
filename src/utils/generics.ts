@@ -144,6 +144,8 @@ export function mapWorkspacePartners(partnerList: Partner[]): string[] {
 		partner.website = partnerList[i].website
 		partner.partnerImageHash = partnerList[i].partnerImageHash
 		partner.save();
+
+		partner.push(partner.id)
 	}
 
 	return items
