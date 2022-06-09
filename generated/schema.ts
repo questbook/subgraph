@@ -1469,6 +1469,64 @@ export class PIIAnswer extends Entity {
   }
 }
 
+export class GrantApplicationReviewer extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("member", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save GrantApplicationReviewer entity without an ID"
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save GrantApplicationReviewer entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("GrantApplicationReviewer", id.toString(), this);
+    }
+  }
+
+  static load(id: string): GrantApplicationReviewer | null {
+    return changetype<GrantApplicationReviewer | null>(
+      store.get("GrantApplicationReviewer", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get member(): string {
+    let value = this.get("member");
+    return value!.toString();
+  }
+
+  set member(value: string) {
+    this.set("member", Value.fromString(value));
+  }
+
+  get assignedAtS(): i32 {
+    let value = this.get("assignedAtS");
+    return value!.toI32();
+  }
+
+  set assignedAtS(value: i32) {
+    this.set("assignedAtS", Value.fromI32(value));
+  }
+}
+
 export class GrantApplication extends Entity {
   constructor(id: string) {
     super();
@@ -1481,6 +1539,7 @@ export class GrantApplication extends Entity {
     this.set("pii", Value.fromStringArray(new Array(0)));
     this.set("milestones", Value.fromStringArray(new Array(0)));
     this.set("reviewers", Value.fromStringArray(new Array(0)));
+    this.set("applicationReviewers", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
@@ -1633,6 +1692,15 @@ export class GrantApplication extends Entity {
 
   set reviewers(value: Array<string>) {
     this.set("reviewers", Value.fromStringArray(value));
+  }
+
+  get applicationReviewers(): Array<string> {
+    let value = this.get("applicationReviewers");
+    return value!.toStringArray();
+  }
+
+  set applicationReviewers(value: Array<string>) {
+    this.set("applicationReviewers", Value.fromStringArray(value));
   }
 
   get version(): i32 {

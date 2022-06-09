@@ -269,6 +269,14 @@ type PIIAnswer @entity {
   data: String!
 }
 
+type GrantApplicationReviewer @entity {
+  id: ID!
+  "The member who was assigned"
+  member: WorkspaceMember!
+  "Unix timestamp of when the user was assigned"
+  assignedAtS: Int!
+}
+
 type GrantApplication @entity {
   id: ID!
   "The grant for which the application is for"
@@ -293,8 +301,10 @@ type GrantApplication @entity {
   feedbackDev: String
   "Reviews of the application"
   reviews: [Review!]! @derivedFrom(field: "application")
-  "People who will review the grant applications"
+  "@deprecated (use 'applicationReviewers') People who will review the grant application"
   reviewers: [WorkspaceMember!]!
+  "People who will review this grant application"
+  applicationReviewers: [GrantApplicationReviewer!]!
   "Version of the application, incremented on resubmission"
   version: Int!
 }
