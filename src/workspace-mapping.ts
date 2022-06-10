@@ -24,22 +24,15 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.ownerId = event.params.owner
 	entity.title = json.title
 	entity.about = json.about
+	if (json.bio) (entity.bio = json.bio)
 	entity.logoIpfsHash = json.logoIpfsHash
 	entity.coverImageIpfsHash = json.coverImageIpfsHash
+	if (json.partners) (entity.partners = mapWorkspacePartners(entityId, json.partners))
 	entity.supportedNetworks = mapWorkspaceSupportedNetworks(json.supportedNetworks)
 	entity.createdAtS = event.params.time.toI32()
 	entity.updatedAtS = entity.createdAtS
 	entity.socials = mapWorkspaceSocials(entityId, json.socials)
 	entity.metadataHash = event.params.metadataHash
-
-	if (json.bio) {
-		entity.bio = json.bio
-	}
-
-	if (json.partners) {
-		entity.partners = mapWorkspacePartners(entityId, json.partners)
-	}
-
 
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
 	member.actorId = event.params.owner
@@ -79,6 +72,10 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 
 	if(json.about) {
 		entity.about = json.about!
+	}
+
+	if(json.about) {
+		entity.bio = json.bio!
 	}
 
 	if(json.logoIpfsHash) {

@@ -72,8 +72,6 @@ export class Partner extends Entity {
 
     this.set("name", Value.fromString(""));
     this.set("industry", Value.fromString(""));
-    this.set("website", Value.fromString(""));
-    this.set("partnerImageHash", Value.fromString(""));
   }
 
   save(): void {
@@ -120,22 +118,38 @@ export class Partner extends Entity {
     this.set("industry", Value.fromString(value));
   }
 
-  get website(): string {
+  get website(): string | null {
     let value = this.get("website");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set website(value: string) {
-    this.set("website", Value.fromString(value));
+  set website(value: string | null) {
+    if (!value) {
+      this.unset("website");
+    } else {
+      this.set("website", Value.fromString(<string>value));
+    }
   }
 
-  get partnerImageHash(): string {
+  get partnerImageHash(): string | null {
     let value = this.get("partnerImageHash");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set partnerImageHash(value: string) {
-    this.set("partnerImageHash", Value.fromString(value));
+  set partnerImageHash(value: string | null) {
+    if (!value) {
+      this.unset("partnerImageHash");
+    } else {
+      this.set("partnerImageHash", Value.fromString(<string>value));
+    }
   }
 }
 

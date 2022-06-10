@@ -70,8 +70,8 @@ type Partner @entity {
   id: ID!
   name: String!
   industry: String!
-  website: String!
-  partnerImageHash: String!
+  website: String
+  partnerImageHash: String
 }
 
 type GrantField @entity {
