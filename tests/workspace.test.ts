@@ -1,7 +1,7 @@
 import { Address, ByteArray, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
 import { WorkspaceMembersUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Social, Token, Workspace, WorkspaceMember } from '../generated/schema'
+import { Social, Token, Workspace, WorkspaceMember, Partner } from '../generated/schema'
 import { handleWorkspaceMembersUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createWorkspace, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 
@@ -14,8 +14,10 @@ export function runTests(): void {
 		assert.i32Equals(w!.createdAtS, 123)
 		assertStringNotEmpty(w!.title, 'w.title')
 		assertStringNotEmpty(w!.about, 'w.about')
+		assertStringNotEmpty(w!.bio, 'w.bio')
 		assertStringNotEmpty(w!.logoIpfsHash, 'w.logoIpfsHash')
 		assertStringNotEmpty(w!.coverImageIpfsHash, 'w.coverImageIpfsHash')
+		assertArrayNotEmpty(w!.partners)
 		assertArrayNotEmpty(w!.supportedNetworks)
 		assertArrayNotEmpty(w!.socials)
 
@@ -32,6 +34,7 @@ export function runTests(): void {
 	test('should update a workspace', () => {
 		const w = createWorkspace()!
 		const s = Social.load(w.socials[0])
+		const p = Partner.load(w.partners[0])
 
 		const ev = newMockEvent()
 		ev.parameters = [
@@ -50,9 +53,11 @@ export function runTests(): void {
 		assert.i32Equals(wUpdate!.updatedAtS, 124)
 		assert.assertTrue(wUpdate!.title != w.title)
 		assert.assertTrue(wUpdate!.about != w.about)
+		assert.assertTrue(wUpdate!.bio != w.bio)
 		assert.assertTrue(wUpdate!.logoIpfsHash != w.logoIpfsHash)
 		assert.assertTrue(wUpdate!.coverImageIpfsHash != w.coverImageIpfsHash)
 		assertArrayNotEmpty(wUpdate!.socials)
+		assertArrayNotEmpty(wUpdate!.partners)
 
 		const tokenId = `${wUpdate!.id}.${CUSTOM_TOKEN_ADDRESS.toHex()}`
 		const token = Token.load(tokenId)
@@ -62,6 +67,9 @@ export function runTests(): void {
 		
 		const sUpdate = Social.load(wUpdate!.socials[0])
 		assert.assertTrue(s!.value != sUpdate!.value)
+
+		const pUpdate = Partner.load(wUpdate!.partners[0])
+		assert.assertTrue(s!.name != pUpdate!.name)
 	})
 
 	test('should update public key', () => {

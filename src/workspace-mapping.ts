@@ -25,13 +25,15 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.title = json.title
 	entity.about = json.about
 	if(json.bio) {
-		(entity.bio = json.bio)
+		entity.bio = json.bio
 	}
 
 	entity.logoIpfsHash = json.logoIpfsHash
 	entity.coverImageIpfsHash = json.coverImageIpfsHash
 	if(json.partners) {
 		(entity.partners = mapWorkspacePartners(entityId, json.partners))
+	} else {
+		entity.partners = []
 	}
 
 	entity.supportedNetworks = mapWorkspaceSupportedNetworks(json.supportedNetworks)
