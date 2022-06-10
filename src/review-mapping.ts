@@ -1,6 +1,6 @@
-import { log } from '@graphprotocol/graph-ts'
+import { log, store } from '@graphprotocol/graph-ts'
 import { ReviewersAssigned, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
-import { FundsTransfer, Grant, GrantApplication, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
+import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { ReviewSetRequest, RubricSetRequest, validateReviewSetRequest, validateRubricSetRequest } from './json-schema'
 
@@ -67,6 +67,7 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 	const workspace = event.params._workspaceId.toHex()
 	const reviewerAddresses = event.params._reviewers
 	const active = event.params._active
+	const eventTimestampS = event.params.time.toI32()
 
 	const application = GrantApplication.load(applicationId)
 	if(!application) {
@@ -74,23 +75,36 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 		return
 	}
 
-	const items = application.reviewers
+	const appReviewers = application.applicationReviewers
+	// apply to deprecated property
+	const memberReviewers: string[] = []
 	for(let i = 0;i < reviewerAddresses.length;i++) {
 		const memberId = `${workspace}.${reviewerAddresses[i].toHex()}`
-		const idx = items.indexOf(memberId)
+		const reviewerId = `${applicationId}.${memberId}`
+		const idx = appReviewers.indexOf(reviewerId)
 		if(active[i]) { // add reviewer if not already added
 			if(idx < 0) {
-				items.push(memberId)
+				const reviewer = new GrantApplicationReviewer(reviewerId)
+				reviewer.member = memberId
+				reviewer.assignedAtS = eventTimestampS
+				reviewer.save()
+
+				appReviewers.push(reviewerId)
+				memberReviewers.push(memberId)
 			}
 		} else { // remove from reviewer list if present
 			if(idx >= 0) {
-				items.splice(idx, 1)
+				store.remove('GrantApplicationReviewer', reviewerId)
+				appReviewers.splice(idx, 1)
+				memberReviewers.splice(idx, 1)
 			}
 		}
 	}
 
-	application.reviewers = items
-	application.updatedAtS = event.params.time.toI32()
+	application.applicationReviewers = appReviewers
+	application.reviewers = memberReviewers
+
+	application.updatedAtS = eventTimestampS
 	application.save()
 }
 

@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, log, store } from '@graphprotocol/graph-ts'
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, PIIAnswer, Reward, Social, Token } from '../../generated/schema'
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, PIIAnswer, Reward, Social, Token, Partner } from '../../generated/schema'
 import { GrantTransfersERC20 } from '../../generated/templates'
-import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, PIIAnswers, SocialItem, Token as TokenItem, Partner } from '../json-schema'
+import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, PIIAnswers, SocialItem, Token as TokenItem } from '../json-schema'
 import { Result } from '../json-schema/json'
 
 export function isPlausibleIPFSHash(str: string): boolean {
@@ -121,6 +121,22 @@ export function mapWorkspaceSupportedNetworks(networksList: string[]): string[] 
 	return items
 }
 
+export function mapWorkspacePartners(workspaceId: string, partnerList: Partner[]): string[] {
+	const items: string[] = []
+	for(let i = 0; i < partnerList.length; i++) {
+		const partner = new Partner(`${workspaceId}.${partnerList[i].name}`)
+		partner.name = partnerList[i].name
+		partner.industry = partnerList[i].industry
+		partner.website = partnerList[i].website
+		partner.partnerImageHash = partnerList[i].partnerImageHash
+		partner.save()
+
+		items.push(partner.id)
+	}
+
+	return items
+}
+
 export function mapWorkspaceSocials(workspaceId: string, socialsList: SocialItem[]): string[] {
 	const items: string[] = []
 	for(let i = 0; i < socialsList.length; i++) {
@@ -130,22 +146,6 @@ export function mapWorkspaceSocials(workspaceId: string, socialsList: SocialItem
 		social.save()
 
 		items.push(social.id)
-	}
-
-	return items
-}
-
-export function mapWorkspacePartners(partnerList: Partner[]): string[] {
-	const items: string[] = []
-	for(let i = 0; i < partnerList.length; i++) {
-		const partner = new Partner()
-		partner.name = partnerList[i].name
-		partner.industry = partnerList[i].industry
-		partner.website = partnerList[i].website
-		partner.partnerImageHash = partnerList[i].partnerImageHash
-		partner.save();
-
-		partner.push(partner.id)
 	}
 
 	return items

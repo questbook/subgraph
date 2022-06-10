@@ -3,7 +3,7 @@ import { assert, newMockEvent, test } from "matchstick-as"
 import { ReviewersAssigned, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createGrant, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
 import { handleReviewersAssigned, handleReviewPaymentMarkedDone, handleReviewSubmitted, handleRubricsSet } from '../src/review-mapping'
-import { FundsTransfer, Grant, GrantApplication, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from "../generated/schema"
+import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from "../generated/schema"
 
 export function runTests(): void {
 
@@ -23,7 +23,7 @@ export function runTests(): void {
 		const member = WorkspaceMember.load(review!.reviewerId)
 		assert.assertNotNull(member)
 		assert.i32Equals(member!.lastReviewSubmittedAt, review!.createdAtS)
-		assert.assertTrue(member!.outstandingReviewIds.includes(review!.id))
+		assert.assertTrue(!!member!.outstandingReviewIds.includes(review!.id))
 	})
 	
 	test('should add/remove reviewers to an application', () => {
@@ -51,10 +51,11 @@ export function runTests(): void {
 		handleReviewersAssigned(event)
 
 		const app = GrantApplication.load(a!.id)
-		assertArrayNotEmpty(app!.reviewers)
+		assertArrayNotEmpty(app!.applicationReviewers)
 
-		const member = WorkspaceMember.load(app!.reviewers[0])
-		assert.assertNotNull(member)
+		const reviewer = GrantApplicationReviewer.load(app!.applicationReviewers[0])
+		assert.assertNotNull(reviewer)
+		assert.i32Equals(reviewer!.assignedAtS, 123)
 
 		// now we remove the reviewer
 		enabled[0] = false
@@ -73,7 +74,11 @@ export function runTests(): void {
 		handleReviewersAssigned(eventRemove)
 		
 		const app2 = GrantApplication.load(a!.id)
-		assert.i32Equals(app2!.reviewers.length, 0)
+		// the reviewer list should be empty now
+		assert.i32Equals(app2!.applicationReviewers.length, 0)
+		// the member entity should also be removed now
+		const member2 = GrantApplicationReviewer.load(reviewer!.id)
+		assert.assertNull(member2)
 	})
 
 	test('should add a rubric to a grant', () => {

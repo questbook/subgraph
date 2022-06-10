@@ -39,6 +39,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	entity.updatedAtS = entity.createdAtS
 	entity.milestones = mapMilestones(applicationId, json.milestones)
 	entity.reviewers = []
+	entity.applicationReviewers = []
 	entity.version = 1
 
 	if(json.pii) {

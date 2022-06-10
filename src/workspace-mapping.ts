@@ -1,4 +1,4 @@
-import { log, store } from '@graphprotocol/graph-ts'
+import { log, Value } from '@graphprotocol/graph-ts'
 import {
 	WorkspaceCreated,
 	WorkspaceMembersUpdated,
@@ -6,7 +6,7 @@ import {
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Workspace, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
-import { mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens } from './utils/generics'
+import { mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens, mapWorkspacePartners } from './utils/generics'
 import { validateWorkspaceCreateRequest, validateWorkspaceUpdateRequest, WorkspaceCreateRequest, WorkspaceUpdateRequest } from './json-schema'
 
 export function handleWorkspaceCreated(event: WorkspaceCreated): void {
@@ -120,7 +120,6 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 	}
 
 	entity.updatedAtS = event.params.time.toI32()
-	const removals: string[] = []
 	// add the admins
 	for(let i = 0;i < event.params.members.length;i++) {
 		const memberId = event.params.members[i]
@@ -128,9 +127,9 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 		const enabled = event.params.enabled[i]
 
 		const id = `${entityId}.${memberId.toHex()}`
+		let member = WorkspaceMember.load(id)
 
 		if(enabled) {
-			let member = WorkspaceMember.load(id)
 			if(!member) {
 				member = new WorkspaceMember(id)
 				member.addedAt = entity.updatedAtS
@@ -149,19 +148,14 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 
 			member.workspace = entityId
 			member.addedBy = `${entityId}.${event.transaction.from.toHex()}`
+			member.set('removedAt', Value.fromNull())
 			member.save()
-
-			// if this member was to be removed
-			// cancel that
-			const removeIdx = removals.indexOf(id)
-			removals.splice(removeIdx, 1)
+		} else if(member) {
+			member.removedAt = entity.updatedAtS
+			member.save()
 		} else {
-			removals.push(id)
+			log.warning(`[${event.transaction.hash.toHex()}] recv member remove but member not found`, [])
 		}
-	}
-
-	for(let i = 0;i < removals.length;i++) {
-		store.remove('WorkspaceMember', removals[i])
 	}
 
 	entity.save()
