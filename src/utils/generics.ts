@@ -124,7 +124,7 @@ export function mapWorkspaceSupportedNetworks(networksList: string[]): string[] 
 export function mapWorkspacePartners(workspaceId: string, partnerList: Partner[]): string[] {
 	const items: string[] = []
 	for(let i = 0; i < partnerList.length; i++) {
-		const partner = new Partner(`${workspaceId}.${partnerList[i].name}`)
+		const partner = new Partner(`${workspaceId}`)
 		partner.name = partnerList[i].name
 		partner.industry = partnerList[i].industry
 		partner.website = partnerList[i].website
