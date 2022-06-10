@@ -2,4 +2,4 @@ extends: '@creatoros'
 parserOptions:
   project: ./tsconfig.json
 rules:
-  eqeqeq: [false]
+  eqeqeq: 0
