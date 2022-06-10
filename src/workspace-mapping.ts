@@ -6,7 +6,7 @@ import {
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Workspace, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
-import { mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens, mapWorkspacePartners } from './utils/generics'
+import { mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens } from './utils/generics'
 import { validateWorkspaceCreateRequest, validateWorkspaceUpdateRequest, WorkspaceCreateRequest, WorkspaceUpdateRequest } from './json-schema'
 
 export function handleWorkspaceCreated(event: WorkspaceCreated): void {
@@ -24,10 +24,16 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.ownerId = event.params.owner
 	entity.title = json.title
 	entity.about = json.about
-	if (json.bio) (entity.bio = json.bio)
+	if(json.bio) {
+		(entity.bio = json.bio)
+	}
+
 	entity.logoIpfsHash = json.logoIpfsHash
 	entity.coverImageIpfsHash = json.coverImageIpfsHash
-	if (json.partners) (entity.partners = mapWorkspacePartners(entityId, json.partners))
+	if(json.partners) {
+		(entity.partners = mapWorkspacePartners(entityId, json.partners))
+	}
+
 	entity.supportedNetworks = mapWorkspaceSupportedNetworks(json.supportedNetworks)
 	entity.createdAtS = event.params.time.toI32()
 	entity.updatedAtS = entity.createdAtS

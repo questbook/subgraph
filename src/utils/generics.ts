@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, log, store } from '@graphprotocol/graph-ts'
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, PIIAnswer, Reward, Social, Token, Partner } from '../../generated/schema'
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, Reward, Social, Token } from '../../generated/schema'
 import { GrantTransfersERC20 } from '../../generated/templates'
-import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, PIIAnswers, SocialItem, Token as TokenItem, Partner as PartnerItem } from '../json-schema'
+import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem } from '../json-schema'
 import { Result } from '../json-schema/json'
 
 export function isPlausibleIPFSHash(str: string): boolean {
