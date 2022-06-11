@@ -29,6 +29,11 @@ export function runTests(): void {
 		assert.assertNotNull(s)
 		assert.assertTrue(s!.name.length > 0)
 		assert.assertTrue(s!.value.length > 0)
+
+		const p = Partner.load(w!.partners[0])
+		assert.assertNotNull(p)
+		assert.assertTrue(p!.name.length > 0)
+		assert.assertTrue(p!.industry.length > 0)
 	})
 
 	test('should update a workspace', () => {
