@@ -82,7 +82,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 		entity.about = json.about!
 	}
 
-	if(json.about) {
+	if(json.bio) {
 		entity.bio = json.bio!
 	}
 
