@@ -11,7 +11,7 @@ export function runTests(): void {
 		const w = createWorkspace()
 		
 		assert.assertNotNull(w)
-		assert.i32Equals(w!.createdAtS, 123)
+		assert.i32Equals(w!.createdAtS, 124)
 		assertStringNotEmpty(w!.title, 'w.title')
 		assertStringNotEmpty(w!.about, 'w.about')
 		assertStringNotEmpty(w!.bio, 'w.bio')
