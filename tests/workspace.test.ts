@@ -11,7 +11,7 @@ export function runTests(): void {
 		const w = createWorkspace()
 		
 		assert.assertNotNull(w)
-		assert.i32Equals(w!.createdAtS, 124)
+		assert.i32Equals(w!.createdAtS, 123)
 		assertStringNotEmpty(w!.title, 'w.title')
 		assertStringNotEmpty(w!.about, 'w.about')
 		assertStringNotEmpty(w!.bio, 'w.bio')
@@ -55,7 +55,7 @@ export function runTests(): void {
 		
 		const wUpdate = Workspace.load(w.id)
 		assert.assertNotNull(wUpdate)
-		assert.i32Equals(wUpdate!.updatedAtS, 124)
+		assert.i32Equals(wUpdate!.updatedAtS, 123)
 		assert.assertTrue(wUpdate!.title != w.title)
 		assert.assertTrue(wUpdate!.about != w.about)
 		assert.assertTrue(wUpdate!.bio != w.bio)
@@ -193,6 +193,6 @@ function workspaceWithAdditionalMembers(addresses: Address[], emails: string[]):
 }
 
 const CUSTOM_TOKEN_ADDRESS = ByteArray.fromHexString('0x95b58a6bff3d14b7db2f5cb5f0ad413dc2940658')
-const UPDATE_JSON = 'json:{"title":"Zakoj zihuut behkeeve haluz ipu numaf aluba beobucu zodac itomevo lajbipih hafnoded asogamga wuip ufogzac kup ze.","bio": "lorem ipsum", about":"Badikdo lem wop tav wa wam fah voveili zab letrifhi murmukun sutgisod kide wa hiwwowi doj. Ovociodu lamanuf kotuhe nezote ol pela ud owirowewa nukjug lajutfed cil ekhuc hu. Zifa adiguul zuchagmel rub acze buloggob minre nauh pon ozanoti pab safudu. Felsah ar hiakimir ketga roganmen poblo muznitag sudil hi hecruib mikma limtukfik guubale gegolu. Zi ozihun gekfoafa soce kicnujnoh aroruc fudcuhu wetlalduz duezpe tokeha ihhivoz he latid doasilof busej eco unipofu. Ni lin deppalos neap kiseklam lol reb guvogti ke futdujso boj se ov docabem.","logoIpfsHash":"10762a04-0da6-5e17-8886-ca2b0227601b","coverImageIpfsHash":"2527d562-1736-54ba-b930-64abba4c4b6c", "partners": [{"name": "lorem", "industry": "ipsum", "website": "https://www.lipsum.com/", "partnerImageHash": "815983c5-3ce7-50a5-b1bf-6c591af3be49"}], "socials":[{"name":"twitter","value":"http://ro.uk/cos"},{"name":"discord","value":"http://ewbaj.ao/povit"}],"createdAt":"2022-01-28T18:00:09.267Z", "tokens": [{"label": "WMATIC", "address": "0x95b58a6bff3d14b7db2f5cb5f0ad413dc2940658", "decimal": "18", "iconHash": "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco"}]}'
+const UPDATE_JSON = 'json:{"title":"Zakoj zihuut behkeeve haluz ipu numaf aluba beobucu zodac itomevo lajbipih hafnoded asogamga wuip ufogzac kup ze.","bio": "lorem ipsum", about":"Badikdo lem wop tav wa wam fah voveili zab letrifhi murmukun sutgisod kide wa hiwwowi doj. Ovociodu lamanuf kotuhe nezote ol pela ud owirowewa nukjug lajutfed cil ekhuc hu. Zifa adiguul zuchagmel rub acze buloggob minre nauh pon ozanoti pab safudu. Felsah ar hiakimir ketga roganmen poblo muznitag sudil hi hecruib mikma limtukfik guubale gegolu. Zi ozihun gekfoafa soce kicnujnoh aroruc fudcuhu wetlalduz duezpe tokeha ihhivoz he latid doasilof busej eco unipofu. Ni lin deppalos neap kiseklam lol reb guvogti ke futdujso boj se ov docabem.","logoIpfsHash":"10762a04-0da6-5e17-8886-ca2b0227601b","coverImageIpfsHash":"2527d562-1736-54ba-b930-64abba4c4b6c", "partners": [{"name": "lorem1", "industry": "ipsum2", "website": "https://www.lipsum.com/", "partnerImageHash": "815983c5-3ce7-50a5-b1bf-6c591af3be49"}], "socials":[{"name":"twitter","value":"http://ro.uk/cos"},{"name":"discord","value":"http://ewbaj.ao/povit"}],"createdAt":"2022-01-28T18:00:09.267Z", "tokens": [{"label": "WMATIC", "address": "0x95b58a6bff3d14b7db2f5cb5f0ad413dc2940658", "decimal": "18", "iconHash": "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco"}]}'
 
 runTests()
