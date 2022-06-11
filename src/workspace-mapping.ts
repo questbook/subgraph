@@ -24,7 +24,9 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.ownerId = event.params.owner
 	entity.title = json.title
 	entity.about = json.about
-	if(json.bio) entity.bio = json.bio
+	if(json.bio) {
+		entity.bio = json.bio
+	}
 
 	entity.logoIpfsHash = json.logoIpfsHash
 	entity.coverImageIpfsHash = json.coverImageIpfsHash
