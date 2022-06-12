@@ -3,10 +3,10 @@ import { FundsTransfer, Grant, Reward } from '../../generated/schema'
 import { addFundsTransferNotification } from './notifications'
 
 export function applyGrantFundUpdate(
-	event: ethereum.Event, 
-	isDeposit: boolean, 
-	grantId: string, 
-	amount: BigInt, 
+	event: ethereum.Event,
+	isDeposit: boolean,
+	grantId: string,
+	amount: BigInt,
 	recipient: Address,
 	eventTime: i32
 ): boolean {
@@ -32,7 +32,7 @@ export function applyGrantFundUpdate(
 	}
 
 	fundEntity.asset = reward.asset
-	
+
 
 	if(isDeposit) {
 		fundEntity.type = 'funds_deposited'

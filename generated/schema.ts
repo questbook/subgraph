@@ -65,6 +65,94 @@ export class Social extends Entity {
   }
 }
 
+export class Partner extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("name", Value.fromString(""));
+    this.set("industry", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Partner entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Partner entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Partner", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Partner | null {
+    return changetype<Partner | null>(store.get("Partner", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get name(): string {
+    let value = this.get("name");
+    return value!.toString();
+  }
+
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
+  }
+
+  get industry(): string {
+    let value = this.get("industry");
+    return value!.toString();
+  }
+
+  set industry(value: string) {
+    this.set("industry", Value.fromString(value));
+  }
+
+  get website(): string | null {
+    let value = this.get("website");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set website(value: string | null) {
+    if (!value) {
+      this.unset("website");
+    } else {
+      this.set("website", Value.fromString(<string>value));
+    }
+  }
+
+  get partnerImageHash(): string | null {
+    let value = this.get("partnerImageHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set partnerImageHash(value: string | null) {
+    if (!value) {
+      this.unset("partnerImageHash");
+    } else {
+      this.set("partnerImageHash", Value.fromString(<string>value));
+    }
+  }
+}
+
 export class GrantField extends Entity {
   constructor(id: string) {
     super();
@@ -1129,8 +1217,10 @@ export class Workspace extends Entity {
 
     this.set("ownerId", Value.fromBytes(Bytes.empty()));
     this.set("title", Value.fromString(""));
+    this.set("bio", Value.fromString(""));
     this.set("about", Value.fromString(""));
     this.set("logoIpfsHash", Value.fromString(""));
+    this.set("partners", Value.fromStringArray(new Array(0)));
     this.set("supportedNetworks", Value.fromStringArray(new Array(0)));
     this.set("socials", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
@@ -1180,6 +1270,15 @@ export class Workspace extends Entity {
     this.set("title", Value.fromString(value));
   }
 
+  get bio(): string {
+    let value = this.get("bio");
+    return value!.toString();
+  }
+
+  set bio(value: string) {
+    this.set("bio", Value.fromString(value));
+  }
+
   get about(): string {
     let value = this.get("about");
     return value!.toString();
@@ -1213,6 +1312,15 @@ export class Workspace extends Entity {
     } else {
       this.set("coverImageIpfsHash", Value.fromString(<string>value));
     }
+  }
+
+  get partners(): Array<string> {
+    let value = this.get("partners");
+    return value!.toStringArray();
+  }
+
+  set partners(value: Array<string>) {
+    this.set("partners", Value.fromStringArray(value));
   }
 
   get supportedNetworks(): Array<string> {

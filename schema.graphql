@@ -12,13 +12,13 @@ enum WorkspaceMemberAccessLevel {
   reviewer
 }
 
-enum MilestoneState { 
+enum MilestoneState {
   submitted,
   requested,
   approved
 }
 
-enum ApplicationState { 
+enum ApplicationState {
   submitted,
   resubmit,
   approved,
@@ -64,6 +64,14 @@ type Social @entity {
   name: String!
   "Handle or URL"
   value: String!
+}
+
+type Partner @entity {
+  id: ID!
+  name: String!
+  industry: String!
+  website: String
+  partnerImageHash: String
 }
 
 type GrantField @entity {
@@ -219,12 +227,15 @@ type Workspace @entity {
   ownerId: Bytes!
   "Title of the workspace"
   title: String!
+  "Quick description of the workspace"
+  bio: String!
   "General info about the workspace"
   about: String!
   "Hash to fetch the logo"
   logoIpfsHash: String!
   "Cover image for the workspace"
   coverImageIpfsHash: String
+  partners: [Partner!]!
   "List of supported networks of the workspace"
   supportedNetworks: [SupportedNetwork!]!
   "in seconds since epoch"

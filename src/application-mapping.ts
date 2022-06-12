@@ -15,7 +15,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	const grant = Grant.load(grantId)
 	if(!grant) {
 		log.warning(`[${event.transaction.hash.toHex()}] grant (${grantId}) not found for application submit (${applicationId})`, [])
-		return 
+		return
 	}
 
 	const jsonResult = validatedJsonFromIpfs<GrantApplicationRequest>(event.params.metadataHash, validateGrantApplicationRequest)
@@ -23,7 +23,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	  log.warning(`[${event.transaction.hash.toHex()}] error in mapping application: "${jsonResult.error!}"`, [])
 	  return
 	}
-	
+
 	const json = jsonResult.value!
 	if(json.milestones.length !== milestoneCount) {
 		log.warning(`[${event.transaction.hash.toHex()}] metadata has ${json.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
@@ -53,7 +53,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	grant.numberOfApplications += 1
 
 	grant.save()
-	
+
 	addApplicationRevision(entity, event.transaction.from)
 	addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
 }
@@ -90,7 +90,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 			log.warning(`[${event.transaction.hash.toHex()}] metadata update has ${json.milestones!.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
 			return
 		}
-		
+
 		if(json.fields) {
 			entity.fields = mapGrantFieldAnswers(entity.id, entity.grant, json.fields!)
 		}
@@ -154,7 +154,7 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 		} else if(entity.state === 'approved' || entity.state === 'submitted') {
 			entity.feedbackDao = json.text
 		}
-		
+
 	}
 
 	entity.save()

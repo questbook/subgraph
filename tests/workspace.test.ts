@@ -1,7 +1,7 @@
 import { Address, ByteArray, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
 import { WorkspaceMembersUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Social, Token, Workspace, WorkspaceMember } from '../generated/schema'
+import { Social, Token, Workspace, WorkspaceMember, Partner } from '../generated/schema'
 import { handleWorkspaceMembersUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createWorkspace, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 
@@ -14,8 +14,10 @@ export function runTests(): void {
 		assert.i32Equals(w!.createdAtS, 123)
 		assertStringNotEmpty(w!.title, 'w.title')
 		assertStringNotEmpty(w!.about, 'w.about')
+		assertStringNotEmpty(w!.bio, 'w.bio')
 		assertStringNotEmpty(w!.logoIpfsHash, 'w.logoIpfsHash')
 		assertStringNotEmpty(w!.coverImageIpfsHash, 'w.coverImageIpfsHash')
+		assertArrayNotEmpty(w!.partners)
 		assertArrayNotEmpty(w!.supportedNetworks)
 		assertArrayNotEmpty(w!.socials)
 
@@ -27,11 +29,17 @@ export function runTests(): void {
 		assert.assertNotNull(s)
 		assert.assertTrue(s!.name.length > 0)
 		assert.assertTrue(s!.value.length > 0)
+
+		const p = Partner.load(w!.partners[0])
+		assert.assertNotNull(p)
+		assert.assertTrue(p!.name.length > 0)
+		assert.assertTrue(p!.industry.length > 0)
 	})
 
 	test('should update a workspace', () => {
 		const w = createWorkspace()!
 		const s = Social.load(w.socials[0])
+		const p = Partner.load(w.partners[0])
 
 		const ev = newMockEvent()
 		ev.parameters = [
@@ -50,9 +58,11 @@ export function runTests(): void {
 		assert.i32Equals(wUpdate!.updatedAtS, 124)
 		assert.assertTrue(wUpdate!.title != w.title)
 		assert.assertTrue(wUpdate!.about != w.about)
+		assert.assertTrue(wUpdate!.bio != w.bio)
 		assert.assertTrue(wUpdate!.logoIpfsHash != w.logoIpfsHash)
 		assert.assertTrue(wUpdate!.coverImageIpfsHash != w.coverImageIpfsHash)
 		assertArrayNotEmpty(wUpdate!.socials)
+		assertArrayNotEmpty(wUpdate!.partners)
 
 		const tokenId = `${wUpdate!.id}.${CUSTOM_TOKEN_ADDRESS.toHex()}`
 		const token = Token.load(tokenId)
@@ -62,6 +72,9 @@ export function runTests(): void {
 		
 		const sUpdate = Social.load(wUpdate!.socials[0])
 		assert.assertTrue(s!.value != sUpdate!.value)
+
+		const pUpdate = Partner.load(wUpdate!.partners[0])
+		assert.assertTrue(s!.name != pUpdate!.name)
 	})
 
 	test('should update public key', () => {
@@ -180,6 +193,6 @@ function workspaceWithAdditionalMembers(addresses: Address[], emails: string[]):
 }
 
 const CUSTOM_TOKEN_ADDRESS = ByteArray.fromHexString('0x95b58a6bff3d14b7db2f5cb5f0ad413dc2940658')
-const UPDATE_JSON = 'json:{"title":"Zakoj zihuut behkeeve haluz ipu numaf aluba beobucu zodac itomevo lajbipih hafnoded asogamga wuip ufogzac kup ze.","about":"Badikdo lem wop tav wa wam fah voveili zab letrifhi murmukun sutgisod kide wa hiwwowi doj. Ovociodu lamanuf kotuhe nezote ol pela ud owirowewa nukjug lajutfed cil ekhuc hu. Zifa adiguul zuchagmel rub acze buloggob minre nauh pon ozanoti pab safudu. Felsah ar hiakimir ketga roganmen poblo muznitag sudil hi hecruib mikma limtukfik guubale gegolu. Zi ozihun gekfoafa soce kicnujnoh aroruc fudcuhu wetlalduz duezpe tokeha ihhivoz he latid doasilof busej eco unipofu. Ni lin deppalos neap kiseklam lol reb guvogti ke futdujso boj se ov docabem.","logoIpfsHash":"10762a04-0da6-5e17-8886-ca2b0227601b","coverImageIpfsHash":"2527d562-1736-54ba-b930-64abba4c4b6c","socials":[{"name":"twitter","value":"http://ro.uk/cos"},{"name":"discord","value":"http://ewbaj.ao/povit"}],"createdAt":"2022-01-28T18:00:09.267Z", "tokens": [{"label": "WMATIC", "address": "0x95b58a6bff3d14b7db2f5cb5f0ad413dc2940658", "decimal": "18", "iconHash": "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco"}]}'
+const UPDATE_JSON = 'json:{"title":"Zakoj zihuut behkeeve haluz ipu numaf aluba beobucu zodac itomevo lajbipih hafnoded asogamga wuip ufogzac kup ze.","bio": "lorem ipsum", "about":"Badikdo lem wop tav wa wam fah voveili zab letrifhi murmukun sutgisod kide wa hiwwowi doj. Ovociodu lamanuf kotuhe nezote ol pela ud owirowewa nukjug lajutfed cil ekhuc hu. Zifa adiguul zuchagmel rub acze buloggob minre nauh pon ozanoti pab safudu. Felsah ar hiakimir ketga roganmen poblo muznitag sudil hi hecruib mikma limtukfik guubale gegolu. Zi ozihun gekfoafa soce kicnujnoh aroruc fudcuhu wetlalduz duezpe tokeha ihhivoz he latid doasilof busej eco unipofu. Ni lin deppalos neap kiseklam lol reb guvogti ke futdujso boj se ov docabem.","logoIpfsHash":"10762a04-0da6-5e17-8886-ca2b0227601b","coverImageIpfsHash":"2527d562-1736-54ba-b930-64abba4c4b6c", "partners": [{"name": "lorem1", "industry": "ipsum2", "website": "https://www.lipsum.com/", "partnerImageHash": "815983c5-3ce7-50a5-b1bf-6c591af3be49"}], "socials":[{"name":"twitter","value":"http://ro.uk/cos"},{"name":"discord","value":"http://ewbaj.ao/povit"}],"createdAt":"2022-01-28T18:00:09.267Z", "tokens": [{"label": "WMATIC", "address": "0x95b58a6bff3d14b7db2f5cb5f0ad413dc2940658", "decimal": "18", "iconHash": "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco"}]}'
 
 runTests()

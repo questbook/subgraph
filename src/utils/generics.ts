@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, log, store } from '@graphprotocol/graph-ts'
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, PIIAnswer, Reward, Social, Token } from '../../generated/schema'
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, Reward, Social, Token } from '../../generated/schema'
 import { GrantTransfersERC20 } from '../../generated/templates'
-import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, PIIAnswers, SocialItem, Token as TokenItem } from '../json-schema'
+import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem } from '../json-schema'
 import { Result } from '../json-schema/json'
 
 export function isPlausibleIPFSHash(str: string): boolean {
@@ -121,6 +121,22 @@ export function mapWorkspaceSupportedNetworks(networksList: string[]): string[] 
 	return items
 }
 
+export function mapWorkspacePartners(workspaceId: string, partnerList: PartnerItem[]): string[] {
+	const items: string[] = []
+	for(let i = 0; i < partnerList.length; i++) {
+		const partner = new Partner(`${workspaceId}`)
+		partner.name = partnerList[i].name
+		partner.industry = partnerList[i].industry
+		partner.website = partnerList[i].website
+		partner.partnerImageHash = partnerList[i].partnerImageHash
+		partner.save()
+
+		items.push(partner.id)
+	}
+
+	return items
+}
+
 export function mapWorkspaceSocials(workspaceId: string, socialsList: SocialItem[]): string[] {
 	const items: string[] = []
 	for(let i = 0; i < socialsList.length; i++) {
@@ -214,7 +230,7 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	} else {
 		reward.token = null
 	}
-	
+
 	reward.save()
 
 	const hexAssetAddr = reward.asset.toHex()
@@ -228,5 +244,5 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 }
 
 export function dateToUnixTimestamp(date: Date): i32 {
-	return date.getTime()/1000 as i32
+	return date.getTime() / 1000 as i32
 }

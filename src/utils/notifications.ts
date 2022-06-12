@@ -10,7 +10,7 @@ export function addFundsTransferNotification(transfer: FundsTransfer): void {
 			if(transfer.type === 'funds_disburse') {
 				notif.title = 'Funds Released!'
 				notif.content = `'${workspace.title}' just released ${transfer.amount.toString()} to your wallet for your application to '${grant.title}'`
-				
+
 				const app = GrantApplication.load(transfer.application!)
 				if(!app) {
 					log.warning(`application absent for funds disburse, ID=${transfer.id}`, [])
@@ -32,7 +32,7 @@ export function addFundsTransferNotification(transfer: FundsTransfer): void {
 				notif.recipientIds = [grant.creatorId]
 				notif.entityId = grant.id
 			}
-			
+
 			notif.actorId = transfer.sender
 			notif.cursor = transfer.createdAtS.toString(16)
 			notif.type = transfer.type
@@ -65,7 +65,7 @@ export function addApplicationUpdateNotification(application: GrantApplication, 
 			const workspace = Workspace.load(grant.workspace)
 			if(!workspace) {
 				log.warning(`workspace absent for application update, ID=${eventId}`, [])
-				return 
+				return
 			}
 
 			notif.content = `${workspace.title} has requested you make changes & resubmit your application to the grant '${grant.title}'\n\n--\n\n${feedbackDao!}`
@@ -121,22 +121,22 @@ export function addMilestoneUpdateNotification(milestone: ApplicationMilestone, 
 
 					notif.content = `${workspace.title} has rejected your request for release of your milestone on ${grant.title}\n\n\n${text!}`
 					notif.type = 'milestone_rejected'
-					
+
 					notif.recipientIds = [application.applicantId]
 				} else if(milestone.state === 'requested') {
 					notif.title = 'Milestone Fund Release Requested'
 					notif.content = `${application.applicantId.toHex()} has requested release of their payment for a milestone on their application to ${grant.title}`
 					notif.type = 'milestone_requested'
-					
+
 					notif.recipientIds = [grant.creatorId]
 				} else if(milestone.state === 'approved') {
 					notif.title = 'Milestone Approved!'
 					notif.content = `${workspace.title} has approved your milestone on your application to their grant ${grant.title}`
 					notif.type = 'milestone_accepted'
-		
+
 					notif.recipientIds = [application.applicantId]
 				}
-			
+
 				notif.entityId = milestone.id
 				notif.actorId = actorId
 				notif.cursor = milestone.updatedAtS.toString(16)

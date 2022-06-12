@@ -125,7 +125,7 @@ export function handleRubricsSet(event: RubricsSet): void {
 		log.warning(`[${event.transaction.hash.toHex()}] error in setting rubric: "grant '${grantId}' not found"`, [])
 		return
 	}
-	
+
 	let rubric = Rubric.load(grantId)
 	if(!rubric) {
 		rubric = new Rubric(grantId)
@@ -135,7 +135,7 @@ export function handleRubricsSet(event: RubricsSet): void {
 	rubric.updatedAtS = event.params.time.toI32()
 	rubric.addedBy = `${workspaceId}.${event.transaction.from.toHex()}`
 	rubric.isPrivate = json.rubric.isPrivate.isTrue
-	
+
 	const items: string[] = []
 
 	const rubricItems = json.rubric.rubric.additionalProperties
@@ -169,9 +169,9 @@ export function handleRubricsSet(event: RubricsSet): void {
 export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): void {
 	const transactionId = event.transaction.hash.toHex()
 	const reviewIds = event.params._reviewIds
-	
+
 	const reviewer = event.params._reviewer
-	
+
 	for(let i = 0;i < reviewIds.length;i++) {
 		const reviewId = reviewIds[i].toHex()
 		const review = Review.load(reviewId)
@@ -213,7 +213,7 @@ export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): v
 		fundEntity.createdAtS = event.params.time.toI32()
 		fundEntity.type = 'review_payment_done'
 		fundEntity.asset = event.params._asset
-		
+
 		fundEntity.save()
 	}
 }

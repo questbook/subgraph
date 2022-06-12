@@ -31,7 +31,7 @@ export function handleGrantCreated(event: GrantCreated): void {
 	entity.title = json.title
 	entity.summary = json.summary
 	entity.details = json.details
-  
+
 	const reward = mapGrantRewardAndListen(entity.id, workspaceId, json.reward)
 
 	entity.reward = reward.id
@@ -105,11 +105,11 @@ export function handleDisburseReward(event: DisburseReward): void {
 }
 
 export function handleDisburseRewardFailed(event: DisburseRewardFailed): void {
-  
+
 }
 
 export function handleFundsDepositFailed(event: FundsDepositFailed): void {
-  
+
 }
 
 export function handleFundsWithdrawn(event: FundsWithdrawn): void {
