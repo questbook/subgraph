@@ -23,7 +23,7 @@ export function addApplicationRevision(app: GrantApplication, actorId: Address):
 		}
 	}
 
-	rev.fields = fields 
+	rev.fields = fields
 
 	const milestones: string[] = []
 	for(let i = 0;i < app.milestones.length;i++) {
@@ -36,7 +36,7 @@ export function addApplicationRevision(app: GrantApplication, actorId: Address):
 		}
 	}
 
-	rev.milestones = milestones 
+	rev.milestones = milestones
 
 	rev.save()
 }

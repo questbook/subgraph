@@ -244,5 +244,5 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 }
 
 export function dateToUnixTimestamp(date: Date): i32 {
-	return date.getTime()/1000 as i32
+	return date.getTime() / 1000 as i32
 }
