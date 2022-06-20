@@ -977,6 +977,15 @@ export class Grant extends Entity {
     this.set("managers", Value.fromStringArray(value));
   }
 
+  get fundTransfers(): Array<string> {
+    let value = this.get("fundTransfers");
+    return value!.toStringArray();
+  }
+
+  set fundTransfers(value: Array<string>) {
+    this.set("fundTransfers", Value.fromStringArray(value));
+  }
+
   get rubric(): string | null {
     let value = this.get("rubric");
     if (!value || value.kind == ValueKind.NULL) {

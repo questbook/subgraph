@@ -184,6 +184,8 @@ type Grant @entity {
   applications: [GrantApplication!]! @derivedFrom(field: "grant")
   "People who will manage the grant. They can see the PII submitted in an application"
   managers: [GrantManager!]!
+  "List of fund transfer records for the grant"
+  fundTransfers: [FundsTransfer!]! @derivedFrom(field: "grant")
   "Rubric for evaulating the grant"
   rubric: Rubric
 }
