@@ -51,6 +51,7 @@ enum SupportedNetwork {
   chain_44787, # celo-alfajores-testnet
   chain_1666600000, # harmony-mainnet
   chain_1666700000, # harmony-testnet
+  chain_8217, # klaytn-mainnet
   chain_1001, # klaytn-testnet
   chain_245022926, # neon-devnet
   chain_69, # optimism-kovan
