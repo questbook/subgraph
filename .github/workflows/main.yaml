@@ -1,0 +1,25 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16.x
+
+    - name: Install packages
+      run: yarn --network-concurrency 1
+
+    - name: Deploy undeployed networks
+      run: GRAPH_NODE=${{secrets.GRAPH_NODE}} yarn deploy:undeployed
