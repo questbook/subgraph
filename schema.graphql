@@ -54,6 +54,7 @@ enum SupportedNetwork {
   chain_1666700000, # harmony-testnet
   chain_8217, # klaytn-mainnet
   chain_1001, # klaytn-testnet
+  chain_42, # kovan
   chain_245022926, # neon-devnet
   chain_69, # optimism-kovan
   chain_10, # optimism-mainnet
