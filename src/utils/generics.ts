@@ -214,9 +214,9 @@ function mapGrantFieldAnswer(applicationId: string, grantId: string, title: stri
 function mapGrantField(grantId: string, title: string, json: GrantFieldJSON): string {
 	const field = new GrantField(`${grantId}.${title}`)
 	field.title = title
-	field.possibleValues = json!.enum
-	field.inputType = json!.inputType.replace('-', '_')
-	field.isPii = !!json!.pii && json!.pii!.isTrue
+	field.possibleValues = json.enum
+	field.inputType = json.inputType.replace('-', '_')
+	field.isPii = !!json.pii && json.pii!.isTrue
 	field.save()
 
 	return field.id
