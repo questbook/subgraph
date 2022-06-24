@@ -4,7 +4,7 @@
 import { TypedMap, BigInt, BigDecimal, Bytes, JSONValue } from '@graphprotocol/graph-ts'
 import { Boolean, Result, toSet, validateObject, validateNumber, validateInteger, validateArray, validateBoolean, validateString, validateTypedMap, validateBytesFromStringResult, validateStringResultInteger, validateStringResultNumber, validateDateTimeFromStringResult } from './json'
 
-const SupportedNetworkEnumSet = toSet(['44787', '2153', '1666600000', '1666700000', '8217', '1001', '245022926', '69', '10', '137', '80001', '4'])
+const SupportedNetworkEnumSet = toSet(['44787', '2153', '1666600000', '1666700000', '8217', '1001', '42', '245022926', '69', '10', '137', '80001', '4'])
 const GrantField_inputTypeEnumSet = toSet(['short-form', 'long-form', 'numeric', 'array'])
 const GrantFieldMapPropertiesSet = toSet(['applicantName', 'applicantEmail', 'projectName', 'projectDetails', 'fundingBreakdown'])
 
@@ -111,7 +111,7 @@ export class GrantFieldMap {
 	applicantEmail: GrantField = new GrantField()
 	projectName: GrantField = new GrantField()
 	projectDetails: GrantField = new GrantField()
-	fundingBreakdown: GrantField = new GrantField()
+	fundingBreakdown: GrantField | null = null
 	additionalProperties: TypedMap<string, GrantField> = new TypedMap()
 }
 
@@ -1002,7 +1002,6 @@ if(projectDetailsJson) {
 	}
 }
 const fundingBreakdownJson = obj.get('fundingBreakdown')
-if(!fundingBreakdownJson) return { value: null, error: "Expected 'fundingBreakdown' to be present in GrantFieldMap" }
 if(fundingBreakdownJson) {
 	const fundingBreakdownResult = validateGrantField(fundingBreakdownJson)
 	if(fundingBreakdownResult.error) {
