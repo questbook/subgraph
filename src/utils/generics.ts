@@ -15,8 +15,10 @@ export function mapGrantFieldMap(grantId: string, map: GrantFieldMap): string[] 
 	fields.push(mapGrantField(grantId, 'projectName', map.projectName))
 	fields.push(mapGrantField(grantId, 'projectDetails', map.projectDetails))
 	if(map.fundingBreakdown) {
+		map.fundingBreakdown
 		fields.push(mapGrantField(grantId, 'fundingBreakdown', map.fundingBreakdown))
 	}
+	
 
 	const additionalEntries = map.additionalProperties.entries
 	for(let i = 0; i < additionalEntries.length; i++) {
@@ -210,12 +212,12 @@ function mapGrantFieldAnswer(applicationId: string, grantId: string, title: stri
 	return answer.id
 }
 
-function mapGrantField(grantId: string, title: string, json: GrantFieldJSON): string {
+function mapGrantField(grantId: string, title: string, json: GrantFieldJSON | null): string {
 	const field = new GrantField(`${grantId}.${title}`)
 	field.title = title
-	field.possibleValues = json.enum
-	field.inputType = json.inputType.replace('-', '_')
-	field.isPii = !!json.pii && json.pii!.isTrue
+	field.possibleValues = json!.enum
+	field.inputType = json!.inputType.replace('-', '_')
+	field.isPii = !!json!.pii && json!.pii!.isTrue
 	field.save()
 
 	return field.id
