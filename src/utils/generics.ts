@@ -15,8 +15,7 @@ export function mapGrantFieldMap(grantId: string, map: GrantFieldMap): string[] 
 	fields.push(mapGrantField(grantId, 'projectName', map.projectName))
 	fields.push(mapGrantField(grantId, 'projectDetails', map.projectDetails))
 	if(map.fundingBreakdown) {
-		map.fundingBreakdown
-		fields.push(mapGrantField(grantId, 'fundingBreakdown', map.fundingBreakdown))
+		fields.push(mapGrantField(grantId, 'fundingBreakdown', map.fundingBreakdown!))
 	}
 	
 
@@ -212,7 +211,7 @@ function mapGrantFieldAnswer(applicationId: string, grantId: string, title: stri
 	return answer.id
 }
 
-function mapGrantField(grantId: string, title: string, json: GrantFieldJSON | null): string {
+function mapGrantField(grantId: string, title: string, json: GrantFieldJSON): string {
 	const field = new GrantField(`${grantId}.${title}`)
 	field.title = title
 	field.possibleValues = json!.enum
