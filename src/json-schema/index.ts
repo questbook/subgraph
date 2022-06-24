@@ -111,7 +111,7 @@ export class GrantFieldMap {
 	applicantEmail: GrantField = new GrantField()
 	projectName: GrantField = new GrantField()
 	projectDetails: GrantField = new GrantField()
-	fundingBreakdown: GrantField = new GrantField()
+	fundingBreakdown: GrantField | null = null
 	additionalProperties: TypedMap<string, GrantField> = new TypedMap()
 }
 
@@ -1002,7 +1002,6 @@ if(projectDetailsJson) {
 	}
 }
 const fundingBreakdownJson = obj.get('fundingBreakdown')
-if(!fundingBreakdownJson) return { value: null, error: "Expected 'fundingBreakdown' to be present in GrantFieldMap" }
 if(fundingBreakdownJson) {
 	const fundingBreakdownResult = validateGrantField(fundingBreakdownJson)
 	if(fundingBreakdownResult.error) {

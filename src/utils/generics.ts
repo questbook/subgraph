@@ -14,7 +14,10 @@ export function mapGrantFieldMap(grantId: string, map: GrantFieldMap): string[] 
 	fields.push(mapGrantField(grantId, 'applicantEmail', map.applicantEmail))
 	fields.push(mapGrantField(grantId, 'projectName', map.projectName))
 	fields.push(mapGrantField(grantId, 'projectDetails', map.projectDetails))
-	fields.push(mapGrantField(grantId, 'fundingBreakdown', map.fundingBreakdown))
+	if(map.fundingBreakdown) {
+		fields.push(mapGrantField(grantId, 'fundingBreakdown', map.fundingBreakdown!))
+	}
+	
 
 	const additionalEntries = map.additionalProperties.entries
 	for(let i = 0; i < additionalEntries.length; i++) {
