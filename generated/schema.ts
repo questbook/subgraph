@@ -577,6 +577,23 @@ export class Token extends Entity {
   set workspace(value: string) {
     this.set("workspace", Value.fromString(value));
   }
+
+  get chainId(): BigInt | null {
+    let value = this.get("chainId");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set chainId(value: BigInt | null) {
+    if (!value) {
+      this.unset("chainId");
+    } else {
+      this.set("chainId", Value.fromBigInt(<BigInt>value));
+    }
+  }
 }
 
 export class RubricItem extends Entity {

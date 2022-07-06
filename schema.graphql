@@ -125,6 +125,7 @@ type Token @entity {
   decimal: Int!
   iconHash: String!
   workspace: Workspace!
+  chainId: BigInt
 }
 
 type RubricItem @entity {

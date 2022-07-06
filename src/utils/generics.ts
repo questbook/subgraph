@@ -164,6 +164,7 @@ export function mapWorkspaceTokens(workspaceId: string, tokensList: TokenItem[])
 		token.address = tokensList[i].address
 		token.decimal = tokensList[i].decimal.toI32()
 		token.iconHash = tokensList[i].iconHash
+		token.chainId = tokensList[i].chainId
 		token.workspace = workspaceId
 		token.save()
 

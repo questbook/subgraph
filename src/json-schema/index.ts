@@ -29,6 +29,7 @@ export class Partner {
 export class Token {
 	label: string = ''
 	address: Bytes = new Bytes(0)
+	chainId: BigInt | null = null
 	decimal: BigInt = new BigInt(0)
 	iconHash: string = ''
 }
@@ -337,6 +338,16 @@ if(addressJson) {
 	}
 	if(addressResult.value) {
 		value.address = addressResult.value!
+	}
+}
+const chainIdJson = obj.get('chainId')
+if(chainIdJson) {
+	const chainIdResult = validateInteger(chainIdJson, null, null)
+	if(chainIdResult.error) {
+		return { value: null, error: ["Error in mapping 'chainId': ", chainIdResult.error!].join('') }
+	}
+	if(chainIdResult.value) {
+		value.chainId = chainIdResult.value!
 	}
 }
 const decimalJson = obj.get('decimal')
