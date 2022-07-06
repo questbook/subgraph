@@ -238,9 +238,9 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 
 	const hexAssetAddr = reward.asset.toHex()
 
-	GrantTransfersERC20.create(
-		Address.fromString(hexAssetAddr)
-	)
+	// GrantTransfersERC20.create(
+	// 	Address.fromString(hexAssetAddr)
+	// )
 
 	log.info(`listening to ERC20 "${hexAssetAddr}"`, [])
 	return reward
