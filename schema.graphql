@@ -64,6 +64,16 @@ enum SupportedNetwork {
   chain_4, # rinkeby
 }
 
+type WorkspaceSafe @entity {
+  id: ID!
+  "Workspace of the space"
+  workspace: Workspace!
+  "Address of the safe"
+  address: Bytes!
+  "Chain ID of the chain"
+  chainId: BigInt!
+}
+
 type Social @entity {
   id: ID!
   "Name of the network. Eg. twitter, discord"
@@ -258,6 +268,8 @@ type Workspace @entity {
   metadataHash: String!
   "Custom tokens setup by the workspace"
   tokens: [Token!]! @derivedFrom(field: "workspace")
+  "Workpsace safe"
+  safe: WorkspaceSafe @derivedFrom(field: "workspace")
 }
 
 "the milestone of a grant application"

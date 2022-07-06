@@ -17,6 +17,7 @@ dataSources:
         - WorkspaceMembersUpdated
         - WorkspaceCreated
         - WorkspaceUpdated
+        - WorkspaceSafeUpdated
       abis:
         - name: QBWorkspaceRegistryContract
           file: ./abis/QBWorkspaceRegistryContract.json
@@ -27,6 +28,8 @@ dataSources:
           handler: handleWorkspaceUpdated
         - event: WorkspaceMembersUpdated(indexed uint96,address[],uint8[],bool[],string[],uint256)
           handler: handleWorkspaceMembersUpdated
+        - event: WorkspaceSafeUpdated(indexed uint96,bytes32,uint256,uint256)
+          handler: handleWorkspaceSafeUpdated
       file: ./src/workspace-mapping.ts
   - kind: ethereum
     name: QBApplicationsContract

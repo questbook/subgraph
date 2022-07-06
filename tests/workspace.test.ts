@@ -1,8 +1,8 @@
-import { Address, ByteArray, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
-import { WorkspaceMembersUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Social, Token, Workspace, WorkspaceMember, Partner } from '../generated/schema'
-import { handleWorkspaceMembersUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
+import { WorkspaceMembersUpdated, WorkspaceSafeUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
+import { Partner, Social, Token, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { handleWorkspaceMembersUpdated, handleWorkspaceSafeUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createWorkspace, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 
 export function runTests(): void {
@@ -160,6 +160,40 @@ export function runTests(): void {
 			assert.assertNotNull(member)
 			assert.i32Equals(member.removedAt, wUpdate!.updatedAtS)
 		}
+	})
+
+	test('update a safe', () => {
+		const w = createWorkspace()!
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
+			new ethereum.EventParam('safeAddress', ethereum.Value.fromBytes(Bytes.fromByteArray(Bytes.fromHexString('0x0000000000000000000000000000000000000001')))),
+			new ethereum.EventParam('safeChainId', ethereum.Value.fromUnsignedBigInt(BigInt.fromString('123'))),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(126))
+		]
+
+		const event = new WorkspaceSafeUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleWorkspaceSafeUpdated(event)
+
+		const safe = WorkspaceSafe.load(w.id)!
+		assert.assertNotNull(safe)
+		assert.assertNotNull(safe.workspace)
+
+		// delete ev params
+		ev.parameters = [
+			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
+			new ethereum.EventParam('safeAddress', ethereum.Value.fromBytes(Bytes.fromByteArray(Bytes.fromHexString('0x0000000000000000000000000000000000000001')))),
+			new ethereum.EventParam('safeChainId', ethereum.Value.fromUnsignedBigInt(BigInt.fromString('0'))),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(126))
+		]
+
+		const eventDel = new WorkspaceSafeUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleWorkspaceSafeUpdated(eventDel)
+
+		const safe2 = WorkspaceSafe.load(w.id)
+		assert.assertNull(safe2)
 	})
 }
 

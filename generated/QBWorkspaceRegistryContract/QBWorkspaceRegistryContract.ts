@@ -50,6 +50,24 @@ export class BeaconUpgraded__Params {
   }
 }
 
+export class Initialized extends ethereum.Event {
+  get params(): Initialized__Params {
+    return new Initialized__Params(this);
+  }
+}
+
+export class Initialized__Params {
+  _event: Initialized;
+
+  constructor(event: Initialized) {
+    this._event = event;
+  }
+
+  get version(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+}
+
 export class OwnershipTransferred extends ethereum.Event {
   get params(): OwnershipTransferred__Params {
     return new OwnershipTransferred__Params(this);
@@ -194,6 +212,36 @@ export class WorkspaceMembersUpdated__Params {
   }
 }
 
+export class WorkspaceSafeUpdated extends ethereum.Event {
+  get params(): WorkspaceSafeUpdated__Params {
+    return new WorkspaceSafeUpdated__Params(this);
+  }
+}
+
+export class WorkspaceSafeUpdated__Params {
+  _event: WorkspaceSafeUpdated;
+
+  constructor(event: WorkspaceSafeUpdated) {
+    this._event = event;
+  }
+
+  get id(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get safeAddress(): Bytes {
+    return this._event.parameters[1].value.toBytes();
+  }
+
+  get safeChainId(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+}
+
 export class WorkspaceUpdated extends ethereum.Event {
   get params(): WorkspaceUpdated__Params {
     return new WorkspaceUpdated__Params(this);
@@ -224,15 +272,32 @@ export class WorkspaceUpdated__Params {
   }
 }
 
+export class QBWorkspaceRegistryContract__workspacesResultSafeStruct extends ethereum.Tuple {
+  get _address(): Bytes {
+    return this[0].toBytes();
+  }
+
+  get chainId(): BigInt {
+    return this[1].toBigInt();
+  }
+}
+
 export class QBWorkspaceRegistryContract__workspacesResult {
   value0: BigInt;
   value1: Address;
   value2: string;
+  value3: QBWorkspaceRegistryContract__workspacesResultSafeStruct;
 
-  constructor(value0: BigInt, value1: Address, value2: string) {
+  constructor(
+    value0: BigInt,
+    value1: Address,
+    value2: string,
+    value3: QBWorkspaceRegistryContract__workspacesResultSafeStruct
+  ) {
     this.value0 = value0;
     this.value1 = value1;
     this.value2 = value2;
+    this.value3 = value3;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -240,6 +305,7 @@ export class QBWorkspaceRegistryContract__workspacesResult {
     map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
     map.set("value1", ethereum.Value.fromAddress(this.value1));
     map.set("value2", ethereum.Value.fromString(this.value2));
+    map.set("value3", ethereum.Value.fromTuple(this.value3));
     return map;
   }
 }
@@ -416,14 +482,17 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
   workspaces(param0: BigInt): QBWorkspaceRegistryContract__workspacesResult {
     let result = super.call(
       "workspaces",
-      "workspaces(uint96):(uint96,address,string)",
+      "workspaces(uint96):(uint96,address,string,(bytes32,uint256))",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
     return new QBWorkspaceRegistryContract__workspacesResult(
       result[0].toBigInt(),
       result[1].toAddress(),
-      result[2].toString()
+      result[2].toString(),
+      changetype<QBWorkspaceRegistryContract__workspacesResultSafeStruct>(
+        result[3].toTuple()
+      )
     );
   }
 
@@ -432,7 +501,7 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
   ): ethereum.CallResult<QBWorkspaceRegistryContract__workspacesResult> {
     let result = super.tryCall(
       "workspaces",
-      "workspaces(uint96):(uint96,address,string)",
+      "workspaces(uint96):(uint96,address,string,(bytes32,uint256))",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
     if (result.reverted) {
@@ -443,7 +512,10 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
       new QBWorkspaceRegistryContract__workspacesResult(
         value[0].toBigInt(),
         value[1].toAddress(),
-        value[2].toString()
+        value[2].toString(),
+        changetype<QBWorkspaceRegistryContract__workspacesResultSafeStruct>(
+          value[3].toTuple()
+        )
       )
     );
   }
@@ -468,6 +540,14 @@ export class CreateWorkspaceCall__Inputs {
 
   get _metadataHash(): string {
     return this._call.inputValues[0].value.toString();
+  }
+
+  get _safeAddress(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
+
+  get _safeChainId(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
   }
 }
 
@@ -689,6 +769,44 @@ export class UpdateWorkspaceMetadataCall__Outputs {
   _call: UpdateWorkspaceMetadataCall;
 
   constructor(call: UpdateWorkspaceMetadataCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateWorkspaceSafeCall extends ethereum.Call {
+  get inputs(): UpdateWorkspaceSafeCall__Inputs {
+    return new UpdateWorkspaceSafeCall__Inputs(this);
+  }
+
+  get outputs(): UpdateWorkspaceSafeCall__Outputs {
+    return new UpdateWorkspaceSafeCall__Outputs(this);
+  }
+}
+
+export class UpdateWorkspaceSafeCall__Inputs {
+  _call: UpdateWorkspaceSafeCall;
+
+  constructor(call: UpdateWorkspaceSafeCall) {
+    this._call = call;
+  }
+
+  get _id(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _safeAddress(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
+
+  get _safeChainId(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+}
+
+export class UpdateWorkspaceSafeCall__Outputs {
+  _call: UpdateWorkspaceSafeCall;
+
+  constructor(call: UpdateWorkspaceSafeCall) {
     this._call = call;
   }
 }

@@ -1,10 +1,11 @@
-import { log, Value } from '@graphprotocol/graph-ts'
+import { BigInt, log, store, Value } from '@graphprotocol/graph-ts'
 import {
 	WorkspaceCreated,
 	WorkspaceMembersUpdated,
+	WorkspaceSafeUpdated,
 	WorkspaceUpdated,
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Workspace, WorkspaceMember } from '../generated/schema'
+import { Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens } from './utils/generics'
 import { validateWorkspaceCreateRequest, validateWorkspaceUpdateRequest, WorkspaceCreateRequest, WorkspaceUpdateRequest } from './json-schema'
@@ -119,6 +120,20 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 	}
 
 	entity.save()
+}
+
+export function handleWorkspaceSafeUpdated(event: WorkspaceSafeUpdated): void {
+	const entityId = event.params.id.toHex()
+	if(event.params.safeChainId.gt(new BigInt(0))) {
+		const entity = new WorkspaceSafe(entityId)
+		entity.workspace = entityId
+		entity.chainId = event.params.safeChainId
+		entity.address = event.params.safeAddress
+
+		entity.save()
+	} else {
+		store.remove('WorkspaceSafe', entityId)
+	}
 }
 
 export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): void {
