@@ -4,6 +4,8 @@ import { GrantTransfersERC20 } from '../../generated/templates'
 import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem } from '../json-schema'
 import { Result } from '../json-schema/json'
 
+const VALID_ADDRESS_LENGTH = 20
+
 export function isPlausibleIPFSHash(str: string): boolean {
 	return str.length > 2
 }
@@ -238,11 +240,16 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 
 	const hexAssetAddr = reward.asset.toHex()
 
-	GrantTransfersERC20.create(
-		Address.fromString(hexAssetAddr)
-	)
+	if(reward.asset.length === VALID_ADDRESS_LENGTH) {
+		GrantTransfersERC20.create(
+			Address.fromString(hexAssetAddr)
+		)
+	
+		log.info(`listening to ERC20 "${hexAssetAddr}"`, [])
+	} else {
+		log.info(`invalid ETH address "${hexAssetAddr}", not listening`, [])
+	}
 
-	log.info(`listening to ERC20 "${hexAssetAddr}"`, [])
 	return reward
 }
 

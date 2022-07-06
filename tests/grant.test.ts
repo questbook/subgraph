@@ -55,6 +55,26 @@ export function runTests(): void {
 		assert.assertNull(g)
 	})
 
+	test('should create a grant with a non ERC20 token', () => {
+		const ev = newMockEvent()
+		const GRANT_ID = Address.fromString('0xC23181F360e3847006dB660bae1c6d1b2e17eE2E')
+		const CREATE_JSON = `json:{"grantManagers":["${WORKSPACE_CREATOR_ID}"],"title":"Kukgi 12ewqwe.","deadline":"2022-05-25T17:12:29+00:00","summary":"Dic zuhfot kef ji sekeva bokrovzez.","details":"Pafnor cosbiv togdactuv joz za dalepcuv wohor duhub obi kupnar kolgogo luc","reward":{"committed":"100","asset":"34Eegy89hWD8HskhX8GzkkrEgdWDAAsTd5ZPKPHs6pBN","token":{"label":"WMATIC","address":"34Eegy89hWD8HskhX8GzkkrEgdWDAAsTd5ZPKPHs6pBN","decimal":"18","iconHash":"QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco"}},"creatorId":"529b3343-9af5-5e72-9f7e-d9167c7aaf48","workspaceId":"2","fields":{"applicantName":{"title":"Uhpu ru mopuh vahkag ju kusihod lug cu cafle ravibara juebufa ap ta.","inputType":"long-form", "pii":true},"applicantEmail":{"title":"Heojba binli zepah maposunur pa mateveib dofeh rutafudug cuwil ol ina jafrak.","inputType":"long-form"},"projectName":{"title":"Pawiv zarmep ilautebe uza gemele aluzamo agvici di sop itoam nudiwli liiracid kar okuidu nenejni dag uw mijceuf.","inputType":"long-form"},"projectDetails":{"title":"Tekaiz konam lararu kaovuota jib logruewu fevu owe zi tuzze guw ficaler.","inputType":"short-form"},"fundingBreakdown":{"title":"Nuni jaslaf jenunis nusrej doc ize rirma azraphe tovovugu ze ku sogijvem mop suctewno.","inputType":"short-form"},"83256fb1-dcee-5d24-ba91-d85136348931":{"title":"Sukok honok nagfa ubazabu udado zu fedok supitmi dades gok gisti jihwow lage iwa ze izegaju eridom.","inputType":"long-form"}}}`
+
+		ev.parameters = [
+			new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(GRANT_ID)),
+			new ethereum.EventParam('workspaceId', MOCK_WORKSPACE_ID),
+			// the IPFS hash contains mock data for the workspace
+			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(CREATE_JSON)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
+		]
+
+		const event = new GrantCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleGrantCreated(event)
+
+		const g = Grant.load(GRANT_ID.toHex())
+		assert.assertNotNull(g)
+	})
+
 	test('should fund a grant', () => {
 		const g = createGrant()
 
