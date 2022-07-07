@@ -386,6 +386,8 @@ type FundsTransfer @entity {
   type: FundsTransferType!
   "Asset that was used in the funds transfer"
   asset: Bytes!
+  "Hash/signature of the transaction"
+  transactionHash: Bytes
 }
 
 type Notification @entity {

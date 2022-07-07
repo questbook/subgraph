@@ -1,10 +1,10 @@
-import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
-import { assert, newMockEvent, test } from "matchstick-as"
-import { ApplicationUpdated, MilestoneUpdated } from "../generated/QBApplicationsContract/QBApplicationsContract"
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer } from "../generated/schema"
-import { DisburseReward } from "../generated/templates/QBGrantsContract/QBGrantsContract"
+import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
+import { assert, newMockEvent, test } from 'matchstick-as'
+import { ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer } from '../generated/schema'
+import { DisburseReward, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
-import { handleDisburseReward } from "../src/grant-mapping"
+import { handleDisburseReward, handleTransactionRecord } from '../src/grant-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, MOCK_APPLICATION_EVENT_ID, MOCK_APPLICATION_ID } from './utils' 
 
 export function runTests(): void {
@@ -50,7 +50,7 @@ export function runTests(): void {
 		// check notification
 		const n = Notification.load(`n.${MOCK_APPLICATION_EVENT_ID.toHex()}`)
 		assert.assertNotNull(n)
-		assert.stringEquals(n!.type, "application_submitted")
+		assert.stringEquals(n!.type, 'application_submitted')
 		assert.stringEquals(n!.actorId!.toHex(), g!.applicantId.toHex())
 		
 		// check revision was generated
@@ -75,12 +75,12 @@ export function runTests(): void {
 
 		ev.parameters = [
 			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
-			new ethereum.EventParam('owner', ethereum.Value.fromAddress( Address.fromString("0xB25191F360e3847006dB660bae1c6d1b2e17eC2B") )),
+			new ethereum.EventParam('owner', ethereum.Value.fromAddress(Address.fromString('0xB25191F360e3847006dB660bae1c6d1b2e17eC2B'))),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(UPDATE_JSON)),
-			new ethereum.EventParam('state', ethereum.Value.fromI32( 0x01 )),
-			new ethereum.EventParam('milestoneCount', ethereum.Value.fromI32( 0x00 )),
-			new ethereum.EventParam('time', ethereum.Value.fromI32( 125 )),
+			new ethereum.EventParam('state', ethereum.Value.fromI32(0x01)),
+			new ethereum.EventParam('milestoneCount', ethereum.Value.fromI32(0x00)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
 		]
 
 		const event = new ApplicationUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
@@ -96,7 +96,7 @@ export function runTests(): void {
 		// did not update milestones, should remain the same
 		assert.stringEquals(gUpdate!.milestones[0], g!.milestones[0])
 
-		assertStringNotEmpty(gUpdate!.feedbackDao, "feedback DAO empty")
+		assertStringNotEmpty(gUpdate!.feedbackDao, 'feedback DAO empty')
 		// check new revision was generated
 		const rev0 = GrantApplicationRevision.load(`${g!.id}.${g!.updatedAtS}`)
 		const rev1 = GrantApplicationRevision.load(`${g!.id}.${gUpdate!.updatedAtS}`)
@@ -118,11 +118,11 @@ export function runTests(): void {
 
 		ev.parameters = [
 			new ethereum.EventParam('_id', MOCK_APPLICATION_ID),
-			new ethereum.EventParam('_milestoneId', ethereum.Value.fromI32( 0x00 )),
-			new ethereum.EventParam('_state', ethereum.Value.fromI32( 0x01 )),
+			new ethereum.EventParam('_milestoneId', ethereum.Value.fromI32(0x00)),
+			new ethereum.EventParam('_state', ethereum.Value.fromI32(0x01)),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('_metadataHash', ethereum.Value.fromString(UPDATE_MILESTONE_JSON)),
-			new ethereum.EventParam('time', ethereum.Value.fromI32( 125 )),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
 		]
 
 		const event = new MilestoneUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
@@ -144,11 +144,11 @@ export function runTests(): void {
 
 		ev.parameters = [
 			new ethereum.EventParam('_id', MOCK_APPLICATION_ID),
-			new ethereum.EventParam('_milestoneId', ethereum.Value.fromI32( 0x00 )),
-			new ethereum.EventParam('_state', ethereum.Value.fromI32( 0x02 )),
+			new ethereum.EventParam('_milestoneId', ethereum.Value.fromI32(0x00)),
+			new ethereum.EventParam('_state', ethereum.Value.fromI32(0x02)),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('_metadataHash', ethereum.Value.fromString(APPROVE_MILESTONE_JSON)),
-			new ethereum.EventParam('time', ethereum.Value.fromI32( 126 )),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(126)),
 		]
 
 		const event = new MilestoneUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
@@ -170,23 +170,23 @@ export function runTests(): void {
 
 		ev.parameters = [
 			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
-			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32( 0x00 )),
-			new ethereum.EventParam('asset', ethereum.Value.fromAddress( Address.fromString("0xC23081F360e3847006dB660bae1c6d1b2e17eC2B") )),
+			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32(0x00)),
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xC23081F360e3847006dB660bae1c6d1b2e17eC2B'))),
 			// the IPFS hash contains mock data for the workspace
-			new ethereum.EventParam('sender', ethereum.Value.fromAddress( Address.fromString("0xC33081F360e3847006dB660bae1c6d1b2e17eC2B") )),
-			new ethereum.EventParam('amount', ethereum.Value.fromI32( 100 )),
-			new ethereum.EventParam('amount', ethereum.Value.fromBoolean( false )),
-			new ethereum.EventParam('time', ethereum.Value.fromI32( 127 )),
+			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0xC33081F360e3847006dB660bae1c6d1b2e17eC2B'))),
+			new ethereum.EventParam('amount', ethereum.Value.fromI32(100)),
+			new ethereum.EventParam('isP2P', ethereum.Value.fromBoolean(false)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(127)),
 		]
 
-		ev.transaction.hash = Bytes.fromByteArray(Bytes.fromHexString("0xA13191E360e3847006dB660bae1c6d1b2e17eC2B"))
+		ev.transaction.hash = Bytes.fromByteArray(Bytes.fromHexString('0xA13191E360e3847006dB660bae1c6d1b2e17eC2B'))
 
 		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseReward(event)		
 
 		const gUpdate = ApplicationMilestone.load(milestoneId)
 		assert.i32Equals(gUpdate!.updatedAtS, 127)
-		assert.assertTrue(gUpdate!.amountPaid.ge( BigInt.fromString('100') ))
+		assert.assertTrue(gUpdate!.amountPaid.ge(BigInt.fromString('100')))
 
 		const disburseEntity = FundsTransfer.load(ev.transaction.hash.toHex())
 		assert.assertNotNull(disburseEntity)
@@ -195,7 +195,45 @@ export function runTests(): void {
 		// check notification
 		const n = Notification.load(`n.${ev.transaction.hash.toHex()}`)
 		assert.assertNotNull(n)
-		assert.stringEquals(n!.type, "funds_disbursed")
+		assert.stringEquals(n!.type, 'funds_disbursed')
+	})
+
+	test('record a transaction', () => {
+		const g = createApplication()
+
+		const milestoneId = g!.milestones[0]
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
+			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32(0x00)),
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xC23081F360e3847006dB660bae1c6d1b2e17eC2B'))),
+			// the IPFS hash contains mock data for the workspace
+			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0xC33081F360e3847006dB660bae1c6d1b2e17eC2B'))),
+			new ethereum.EventParam('transactionHash', ethereum.Value.fromBytes(Bytes.fromByteArray(Bytes.fromHexString('0xC23081000000F360e3847006dB660bae1c6d1b2e17eC2B')))),
+			new ethereum.EventParam('amount', ethereum.Value.fromI32(100)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(127)),
+		]
+
+		ev.transaction.hash = Bytes.fromByteArray(Bytes.fromHexString('0xA13191E360e3847006dB660bae1c6d1b2e17eC2B'))
+
+		const event = new TransactionRecord(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleTransactionRecord(event)		
+
+		const gUpdate = ApplicationMilestone.load(milestoneId)
+		assert.i32Equals(gUpdate!.updatedAtS, 127)
+		assert.assertTrue(gUpdate!.amountPaid.ge(BigInt.fromString('100')))
+
+		const disburseEntity = FundsTransfer.load(ev.transaction.hash.toHex())
+		assert.assertNotNull(disburseEntity)
+		assert.i32Equals(disburseEntity!.createdAtS, 127)
+		assert.assertTrue(disburseEntity!.transactionHash!.length > 0)
+
+		// check notification
+		const n = Notification.load(`n.${ev.transaction.hash.toHex()}`)
+		assert.assertNotNull(n)
+		assert.stringEquals(n!.type, 'funds_disbursed')
 	})
 }
 

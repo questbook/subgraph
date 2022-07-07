@@ -2221,6 +2221,23 @@ export class FundsTransfer extends Entity {
   set asset(value: Bytes) {
     this.set("asset", Value.fromBytes(value));
   }
+
+  get transactionHash(): Bytes | null {
+    let value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes | null) {
+    if (!value) {
+      this.unset("transactionHash");
+    } else {
+      this.set("transactionHash", Value.fromBytes(<Bytes>value));
+    }
+  }
 }
 
 export class Notification extends Entity {

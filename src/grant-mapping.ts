@@ -2,7 +2,7 @@ import { BigInt, log } from '@graphprotocol/graph-ts'
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from '../generated/schema'
 import { QBGrantsContract } from '../generated/templates'
-import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from '../generated/templates/QBGrantsContract/QBGrantsContract'
+import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { applyGrantFundUpdate } from './utils/apply-grant-deposit'
 import { dateToUnixTimestamp, isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from './utils/generics'
@@ -98,6 +98,47 @@ export function handleDisburseReward(event: DisburseReward): void {
 			grantEntity.save()
 		}
 	}
+
+	entity.save()
+
+	addFundsTransferNotification(disburseEntity)
+}
+
+
+export function handleTransactionRecord(event: TransactionRecord): void {
+	const applicationId = event.params.applicationId.toHex()
+	const milestoneIndex = event.params.milestoneId.toI32()
+	const milestoneId = `${applicationId}.${milestoneIndex}`
+	const transactionHash = event.params.transactionHash
+	const amountPaid = event.params.amount
+
+	const application = GrantApplication.load(applicationId)
+	if(!application) {
+		log.warning(`[${event.transaction.hash.toHex()}] recv disburse reward for unknown application: ID="${applicationId}"`, [])
+		return
+	}
+
+	const disburseEntity = new FundsTransfer(event.transaction.hash.toHex())
+	disburseEntity.createdAtS = event.params.time.toI32()
+	disburseEntity.amount = amountPaid
+	disburseEntity.sender = event.params.sender
+	disburseEntity.to = application.applicantId
+	disburseEntity.application = applicationId
+	disburseEntity.milestone = milestoneId
+	disburseEntity.type = 'funds_disbursed'
+	disburseEntity.grant = application.grant
+	disburseEntity.transactionHash = transactionHash
+
+	disburseEntity.save()
+
+	const entity = ApplicationMilestone.load(milestoneId)
+	if(!entity) {
+		log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+		return
+	}
+
+	entity.amountPaid = entity.amountPaid.plus(amountPaid)
+	entity.updatedAtS = event.params.time.toI32()
 
 	entity.save()
 

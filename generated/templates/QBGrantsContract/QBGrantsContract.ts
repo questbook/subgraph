@@ -216,6 +216,24 @@ export class GrantUpdated__Params {
   }
 }
 
+export class Initialized extends ethereum.Event {
+  get params(): Initialized__Params {
+    return new Initialized__Params(this);
+  }
+}
+
+export class Initialized__Params {
+  _event: Initialized;
+
+  constructor(event: Initialized) {
+    this._event = event;
+  }
+
+  get version(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+}
+
 export class OwnershipTransferred extends ethereum.Event {
   get params(): OwnershipTransferred__Params {
     return new OwnershipTransferred__Params(this);
@@ -235,6 +253,48 @@ export class OwnershipTransferred__Params {
 
   get newOwner(): Address {
     return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class TransactionRecord extends ethereum.Event {
+  get params(): TransactionRecord__Params {
+    return new TransactionRecord__Params(this);
+  }
+}
+
+export class TransactionRecord__Params {
+  _event: TransactionRecord;
+
+  constructor(event: TransactionRecord) {
+    this._event = event;
+  }
+
+  get applicationId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get milestoneId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get asset(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get sender(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+
+  get transactionHash(): Bytes {
+    return this._event.parameters[4].value.toBytes();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
   }
 }
 
@@ -542,6 +602,48 @@ export class InitializeCall__Outputs {
   _call: InitializeCall;
 
   constructor(call: InitializeCall) {
+    this._call = call;
+  }
+}
+
+export class RecordTransactionCall extends ethereum.Call {
+  get inputs(): RecordTransactionCall__Inputs {
+    return new RecordTransactionCall__Inputs(this);
+  }
+
+  get outputs(): RecordTransactionCall__Outputs {
+    return new RecordTransactionCall__Outputs(this);
+  }
+}
+
+export class RecordTransactionCall__Inputs {
+  _call: RecordTransactionCall;
+
+  constructor(call: RecordTransactionCall) {
+    this._call = call;
+  }
+
+  get _applicationId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _milestoneId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _transactionHash(): Bytes {
+    return this._call.inputValues[2].value.toBytes();
+  }
+
+  get _amount(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+}
+
+export class RecordTransactionCall__Outputs {
+  _call: RecordTransactionCall;
+
+  constructor(call: RecordTransactionCall) {
     this._call = call;
   }
 }

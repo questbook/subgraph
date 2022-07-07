@@ -123,6 +123,7 @@ templates:
         - FundsDepositFailed
         - DisburseReward
         - DisburseRewardFailed
+        - TransactionRecord
       abis:
         - name: QBGrantsContract
           file: ./abis/QBGrantsContract.json
@@ -137,6 +138,8 @@ templates:
           handler: handleGrantUpdated
         - event: FundsWithdrawn(address,uint256,address,uint256)
           handler: handleFundsWithdrawn
+        - event: TransactionRecord(indexed uint96,uint96,address,address,bytes,uint256,uint256)
+          handler: handleTransactionRecord
   - kind: ethereum
     name: GrantTransfersERC20
     network: {{network}}
