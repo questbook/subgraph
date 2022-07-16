@@ -5,8 +5,8 @@ import {
 	WorkspaceSafeUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens } from './utils/generics'
 import { disburseReward } from './utils/handle-disburse-reward'
@@ -16,7 +16,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	const entityId = event.params.id.toHex()
 
 	const jsonResult = validatedJsonFromIpfs<WorkspaceCreateRequest>(event.params.metadataHash, validateWorkspaceCreateRequest)
-	if (jsonResult.error) {
+	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace create: "${jsonResult.error!}"`, [])
 		return
 	}
@@ -27,13 +27,13 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.ownerId = event.params.owner
 	entity.title = json.title
 	entity.about = json.about
-	if (json.bio) {
+	if(json.bio) {
 		entity.bio = json.bio!
 	}
 
 	entity.logoIpfsHash = json.logoIpfsHash
 	entity.coverImageIpfsHash = json.coverImageIpfsHash
-	if (json.partners) {
+	if(json.partners) {
 		entity.partners = mapWorkspacePartners(entityId, json.partners!)
 	} else {
 		entity.partners = []
@@ -63,7 +63,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 	const entityId = event.params.id.toHex()
 
 	const entity = Workspace.load(entityId)
-	if (!entity) {
+	if(!entity) {
 		log.warning(`recv workspace update without workspace existing, ID = ${entityId}`, [])
 		return
 	}
@@ -71,48 +71,48 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 	entity.updatedAtS = event.params.time.toI32()
 
 	const jsonResult = validatedJsonFromIpfs<WorkspaceUpdateRequest>(event.params.metadataHash, validateWorkspaceUpdateRequest)
-	if (jsonResult.error) {
+	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace update: "${jsonResult.error!}"`, [])
 		return
 	}
 
 	const json = jsonResult.value!
-	if (json.title) {
+	if(json.title) {
 		entity.title = json.title!
 	}
 
-	if (json.about) {
+	if(json.about) {
 		entity.about = json.about!
 	}
 
-	if (json.bio) {
+	if(json.bio) {
 		entity.bio = json.bio!
 	}
 
-	if (json.logoIpfsHash) {
+	if(json.logoIpfsHash) {
 		entity.logoIpfsHash = json.logoIpfsHash!
 	}
 
-	if (json.coverImageIpfsHash) {
+	if(json.coverImageIpfsHash) {
 		entity.coverImageIpfsHash = json.coverImageIpfsHash
 	}
 
-	if (json.partners) {
+	if(json.partners) {
 		entity.partners = mapWorkspacePartners(entityId, json.partners!)
 	}
 
-	if (json.socials) {
+	if(json.socials) {
 		entity.socials = mapWorkspaceSocials(entityId, json.socials!)
 	}
 
-	if (json.tokens) {
+	if(json.tokens) {
 		mapWorkspaceTokens(entity.id, json.tokens!)
 	}
 
-	if (json.publicKey) {
+	if(json.publicKey) {
 		const memberId = event.transaction.from.toHex()
 		const mem = WorkspaceMember.load(`${entityId}.${memberId}`)
-		if (mem) {
+		if(mem) {
 			mem.publicKey = json.publicKey
 			mem.updatedAt = entity.updatedAtS
 			mem.save()
@@ -126,7 +126,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 
 export function handleWorkspaceSafeUpdated(event: WorkspaceSafeUpdated): void {
 	const entityId = event.params.id.toHex()
-	if (event.params.safeChainId.gt(new BigInt(0))) {
+	if(event.params.safeChainId.gt(new BigInt(0))) {
 		const entity = new WorkspaceSafe(entityId)
 		entity.workspace = entityId
 		entity.chainId = event.params.safeChainId
@@ -142,14 +142,14 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 	const entityId = event.params.id.toHex()
 
 	const entity = Workspace.load(entityId)
-	if (!entity) {
+	if(!entity) {
 		log.warning(`recv workspace members update without workspace existing, ID = ${entityId}`, [])
 		return
 	}
 
 	entity.updatedAtS = event.params.time.toI32()
 	// add the admins
-	for (let i = 0; i < event.params.members.length; i++) {
+	for(let i = 0; i < event.params.members.length; i++) {
 		const memberId = event.params.members[i]
 		const role = event.params.roles[i]
 		const enabled = event.params.enabled[i]
@@ -157,8 +157,8 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 		const id = `${entityId}.${memberId.toHex()}`
 		let member = WorkspaceMember.load(id)
 
-		if (enabled) {
-			if (!member) {
+		if(enabled) {
+			if(!member) {
 				member = new WorkspaceMember(id)
 				member.addedAt = entity.updatedAtS
 				member.lastReviewSubmittedAt = 0
@@ -168,9 +168,9 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 			member.actorId = memberId
 			member.email = event.params.emails[i]
 			member.updatedAt = entity.updatedAtS
-			if (role === 0) { // become an admin
+			if(role === 0) { // become an admin
 				member.accessLevel = 'admin'
-			} else if (role === 1) { // become a reviewer
+			} else if(role === 1) { // become a reviewer
 				member.accessLevel = 'reviewer'
 			}
 
@@ -178,7 +178,7 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 			member.addedBy = `${entityId}.${event.transaction.from.toHex()}`
 			member.set('removedAt', Value.fromNull())
 			member.save()
-		} else if (member) {
+		} else if(member) {
 			member.removedAt = entity.updatedAtS
 			member.save()
 		} else {
