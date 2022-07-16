@@ -1,16 +1,15 @@
 import { BigInt, log, store, Value } from '@graphprotocol/graph-ts'
 import {
+	DisburseReward,
 	WorkspaceCreated,
 	WorkspaceMembersUpdated,
 	WorkspaceSafeUpdated,
-	WorkspaceUpdated,
-	DisburseReward
-} from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
+	WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens } from './utils/generics'
-import { validateWorkspaceCreateRequest, validateWorkspaceUpdateRequest, WorkspaceCreateRequest, WorkspaceUpdateRequest } from './json-schema'
 import { disburseReward } from './utils/handle-disburse-reward'
+import { validateWorkspaceCreateRequest, validateWorkspaceUpdateRequest, WorkspaceCreateRequest, WorkspaceUpdateRequest } from './json-schema'
 
 export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	const entityId = event.params.id.toHex()

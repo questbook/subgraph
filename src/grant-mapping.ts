@@ -6,9 +6,9 @@ import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdraw
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { applyGrantFundUpdate } from './utils/apply-grant-deposit'
 import { dateToUnixTimestamp, isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from './utils/generics'
+import { disburseReward } from './utils/handle-disburse-reward'
 import { addFundsTransferNotification } from './utils/notifications'
 import { GrantCreateRequest, GrantUpdateRequest, validateGrantCreateRequest, validateGrantUpdateRequest } from './json-schema'
-import { disburseReward } from './utils/handle-disburse-reward'
 
 export function handleGrantCreated(event: GrantCreated): void {
 	const workspaceId = event.params.workspaceId.toHex()
