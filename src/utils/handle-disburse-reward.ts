@@ -1,5 +1,5 @@
 import { log } from '@graphprotocol/graph-ts'
-import { DisburseReward } from '../../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
+import { DisburseReward } from '../../generated/templates/QBGrantsContract/QBGrantsContract'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from '../../generated/schema'
 import { addFundsTransferNotification } from './notifications'
 
