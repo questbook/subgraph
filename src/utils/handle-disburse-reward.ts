@@ -1,6 +1,6 @@
 import { log } from '@graphprotocol/graph-ts'
-import { DisburseReward } from '../../generated/templates/QBGrantsContract/QBGrantsContract'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from '../../generated/schema'
+import { DisburseReward } from '../../generated/templates/QBGrantsContract/QBGrantsContract'
 import { addFundsTransferNotification } from './notifications'
 
 export function disburseReward(event: DisburseReward): void {
