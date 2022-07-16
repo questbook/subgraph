@@ -513,16 +513,20 @@ export class DisburseRewardP2PCall__Inputs {
     return this._call.inputValues[0].value.toBigInt();
   }
 
+  get _applicantWalletAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
   get _milestoneId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[2].value.toBigInt();
   }
 
   get _erc20Interface(): Address {
-    return this._call.inputValues[2].value.toAddress();
+    return this._call.inputValues[3].value.toAddress();
   }
 
   get _amount(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+    return this._call.inputValues[4].value.toBigInt();
   }
 }
 
@@ -631,12 +635,16 @@ export class RecordTransactionCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
+  get _asset(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
   get _transactionHash(): Bytes {
-    return this._call.inputValues[2].value.toBytes();
+    return this._call.inputValues[3].value.toBytes();
   }
 
   get _amount(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+    return this._call.inputValues[4].value.toBigInt();
   }
 }
 
