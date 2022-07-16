@@ -1,9 +1,11 @@
 import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
 import { WorkspaceMembersUpdated, WorkspaceSafeUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Partner, Social, Token, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
-import { handleWorkspaceMembersUpdated, handleWorkspaceSafeUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
-import { assertArrayNotEmpty, assertStringNotEmpty, createWorkspace, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
+import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
+import { FundsTransfer, Partner, Social, Token, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { handleDisburseReward, handleWorkspaceMembersUpdated, handleWorkspaceSafeUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
+import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createWorkspace, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
+import { MOCK_APPLICATION_ID } from './utils'
 
 export function runTests(): void {
 
@@ -194,6 +196,29 @@ export function runTests(): void {
 
 		const safe2 = WorkspaceSafe.load(w.id)
 		assert.assertNull(safe2)
+	})
+
+	test('should disburse reward', () => {
+		const w = createWorkspace()
+		const a = createApplication()
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
+			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32(0)),
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString("0xE3D997D569b5b03B577C6a2Edd1d2613FE776cb0"))),
+			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0x230fb4c4d462eEF9e6790337Cf57271E519bB697'))),
+			new ethereum.EventParam('amount', ethereum.Value.fromI32(10)),
+			new ethereum.EventParam('isP2P', ethereum.Value.fromBoolean(true)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
+		]
+
+		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters )
+		handleDisburseReward(event)
+
+		const fundTransfer = FundsTransfer.load(ev.transaction.hash.toHex())
+		assert.assertNotNull(fundTransfer)
 	})
 }
 
