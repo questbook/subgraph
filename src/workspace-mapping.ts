@@ -6,11 +6,11 @@ import {
 	WorkspaceUpdated,
 	DisburseReward
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Workspace, WorkspaceMember, WorkspaceSafe, GrantApplication, FundsTransfer, ApplicationMilestone, Grant } from '../generated/schema'
+import { Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens } from './utils/generics'
 import { validateWorkspaceCreateRequest, validateWorkspaceUpdateRequest, WorkspaceCreateRequest, WorkspaceUpdateRequest } from './json-schema'
-import { addFundsTransferNotification } from './utils/notifications'
+import { disburseReward } from './utils/handle-disburse-reward'
 
 export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	const entityId = event.params.id.toHex()
@@ -190,48 +190,5 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 }
 
 export function handleDisburseReward(event: DisburseReward): void {
-	const applicationId = event.params.applicationId.toHex()
-	const milestoneIndex = event.params.milestoneId.toI32()
-	const milestoneId = `${applicationId}.${milestoneIndex}`
-	const amountPaid = event.params.amount
-
-	const application = GrantApplication.load(applicationId)
-	if(!application) {
-		log.warning(`[${event.transaction.hash.toHex()}] recv disburse reward for unknown application: ID="${applicationId}"`, [])
-		return
-	}
-
-	const disburseEntity = new FundsTransfer(event.transaction.hash.toHex())
-	disburseEntity.createdAtS = event.params.time.toI32()
-	disburseEntity.amount = amountPaid
-	disburseEntity.sender = event.params.sender
-	disburseEntity.to = event.transaction.to!
-	disburseEntity.application = applicationId
-	disburseEntity.milestone = milestoneId
-	disburseEntity.type = 'funds_disbursed'
-	disburseEntity.grant = application.grant
-
-	disburseEntity.save()
-
-	const entity = ApplicationMilestone.load(milestoneId)
-	if(!entity) {
-		log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
-		return
-	}
-
-	entity.amountPaid = entity.amountPaid.plus(amountPaid)
-	entity.updatedAtS = event.params.time.toI32()
-	// find grant and reduce the amount of the funding
-	// only if not a P2P exchange
-	if(!event.params.isP2P) {
-		const grantEntity = Grant.load(application.grant)
-		if(grantEntity) {
-			grantEntity.funding = grantEntity.funding.minus(amountPaid)
-			grantEntity.save()
-		}
-	}
-
-	entity.save()
-
-	addFundsTransferNotification(disburseEntity)
+	disburseReward(event)
 }
