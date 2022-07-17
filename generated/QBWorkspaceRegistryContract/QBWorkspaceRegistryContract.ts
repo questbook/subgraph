@@ -50,6 +50,48 @@ export class BeaconUpgraded__Params {
   }
 }
 
+export class DisburseReward extends ethereum.Event {
+  get params(): DisburseReward__Params {
+    return new DisburseReward__Params(this);
+  }
+}
+
+export class DisburseReward__Params {
+  _event: DisburseReward;
+
+  constructor(event: DisburseReward) {
+    this._event = event;
+  }
+
+  get applicationId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get milestoneId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get asset(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get sender(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get isP2P(): boolean {
+    return this._event.parameters[5].value.toBoolean();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -318,6 +360,48 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     );
   }
 
+  anonAuthoriserAddress(): Address {
+    let result = super.call(
+      "anonAuthoriserAddress",
+      "anonAuthoriserAddress():(address)",
+      []
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_anonAuthoriserAddress(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "anonAuthoriserAddress",
+      "anonAuthoriserAddress():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  applicationReg(): Address {
+    let result = super.call("applicationReg", "applicationReg():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_applicationReg(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "applicationReg",
+      "applicationReg():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   isWorkspaceAdmin(_id: BigInt, _address: Address): boolean {
     let result = super.call(
       "isWorkspaceAdmin",
@@ -521,6 +605,44 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
   }
 }
 
+export class CreateInviteLinkCall extends ethereum.Call {
+  get inputs(): CreateInviteLinkCall__Inputs {
+    return new CreateInviteLinkCall__Inputs(this);
+  }
+
+  get outputs(): CreateInviteLinkCall__Outputs {
+    return new CreateInviteLinkCall__Outputs(this);
+  }
+}
+
+export class CreateInviteLinkCall__Inputs {
+  _call: CreateInviteLinkCall;
+
+  constructor(call: CreateInviteLinkCall) {
+    this._call = call;
+  }
+
+  get _id(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _role(): i32 {
+    return this._call.inputValues[1].value.toI32();
+  }
+
+  get publicKeyAddress(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+}
+
+export class CreateInviteLinkCall__Outputs {
+  _call: CreateInviteLinkCall;
+
+  constructor(call: CreateInviteLinkCall) {
+    this._call = call;
+  }
+}
+
 export class CreateWorkspaceCall extends ethereum.Call {
   get inputs(): CreateWorkspaceCall__Inputs {
     return new CreateWorkspaceCall__Inputs(this);
@@ -559,6 +681,56 @@ export class CreateWorkspaceCall__Outputs {
   }
 }
 
+export class DisburseRewardP2PCall extends ethereum.Call {
+  get inputs(): DisburseRewardP2PCall__Inputs {
+    return new DisburseRewardP2PCall__Inputs(this);
+  }
+
+  get outputs(): DisburseRewardP2PCall__Outputs {
+    return new DisburseRewardP2PCall__Outputs(this);
+  }
+}
+
+export class DisburseRewardP2PCall__Inputs {
+  _call: DisburseRewardP2PCall;
+
+  constructor(call: DisburseRewardP2PCall) {
+    this._call = call;
+  }
+
+  get _applicationId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _applicantWalletAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _milestoneId(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get _erc20Interface(): Address {
+    return this._call.inputValues[3].value.toAddress();
+  }
+
+  get _amount(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[5].value.toBigInt();
+  }
+}
+
+export class DisburseRewardP2PCall__Outputs {
+  _call: DisburseRewardP2PCall;
+
+  constructor(call: DisburseRewardP2PCall) {
+    this._call = call;
+  }
+}
+
 export class InitializeCall extends ethereum.Call {
   get inputs(): InitializeCall__Inputs {
     return new InitializeCall__Inputs(this);
@@ -581,6 +753,56 @@ export class InitializeCall__Outputs {
   _call: InitializeCall;
 
   constructor(call: InitializeCall) {
+    this._call = call;
+  }
+}
+
+export class JoinViaInviteLinkCall extends ethereum.Call {
+  get inputs(): JoinViaInviteLinkCall__Inputs {
+    return new JoinViaInviteLinkCall__Inputs(this);
+  }
+
+  get outputs(): JoinViaInviteLinkCall__Outputs {
+    return new JoinViaInviteLinkCall__Outputs(this);
+  }
+}
+
+export class JoinViaInviteLinkCall__Inputs {
+  _call: JoinViaInviteLinkCall;
+
+  constructor(call: JoinViaInviteLinkCall) {
+    this._call = call;
+  }
+
+  get _id(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _email(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _role(): i32 {
+    return this._call.inputValues[2].value.toI32();
+  }
+
+  get signatureV(): i32 {
+    return this._call.inputValues[3].value.toI32();
+  }
+
+  get signatureR(): Bytes {
+    return this._call.inputValues[4].value.toBytes();
+  }
+
+  get signatureS(): Bytes {
+    return this._call.inputValues[5].value.toBytes();
+  }
+}
+
+export class JoinViaInviteLinkCall__Outputs {
+  _call: JoinViaInviteLinkCall;
+
+  constructor(call: JoinViaInviteLinkCall) {
     this._call = call;
   }
 }
@@ -689,6 +911,36 @@ export class UnpauseCall__Outputs {
   _call: UnpauseCall;
 
   constructor(call: UnpauseCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateAnonAuthoriserAddressCall extends ethereum.Call {
+  get inputs(): UpdateAnonAuthoriserAddressCall__Inputs {
+    return new UpdateAnonAuthoriserAddressCall__Inputs(this);
+  }
+
+  get outputs(): UpdateAnonAuthoriserAddressCall__Outputs {
+    return new UpdateAnonAuthoriserAddressCall__Outputs(this);
+  }
+}
+
+export class UpdateAnonAuthoriserAddressCall__Inputs {
+  _call: UpdateAnonAuthoriserAddressCall;
+
+  constructor(call: UpdateAnonAuthoriserAddressCall) {
+    this._call = call;
+  }
+
+  get addr(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class UpdateAnonAuthoriserAddressCall__Outputs {
+  _call: UpdateAnonAuthoriserAddressCall;
+
+  constructor(call: UpdateAnonAuthoriserAddressCall) {
     this._call = call;
   }
 }

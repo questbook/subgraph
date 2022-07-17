@@ -106,6 +106,24 @@ export class GrantImplementationUpdated__Params {
   }
 }
 
+export class Initialized extends ethereum.Event {
+  get params(): Initialized__Params {
+    return new Initialized__Params(this);
+  }
+}
+
+export class Initialized__Params {
+  _event: Initialized;
+
+  constructor(event: Initialized) {
+    this._event = event;
+  }
+
+  get version(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+}
+
 export class OwnershipTransferred extends ethereum.Event {
   get params(): OwnershipTransferred__Params {
     return new OwnershipTransferred__Params(this);
@@ -187,18 +205,43 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
     return new QBGrantFactoryContract("QBGrantFactoryContract", address);
   }
 
+  applicationReviewReg(): Address {
+    let result = super.call(
+      "applicationReviewReg",
+      "applicationReviewReg():(address)",
+      []
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_applicationReviewReg(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "applicationReviewReg",
+      "applicationReviewReg():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   createGrant(
     _workspaceId: BigInt,
     _metadataHash: string,
+    _rubricsMetadataHash: string,
     _workspaceReg: Address,
     _applicationReg: Address
   ): Address {
     let result = super.call(
       "createGrant",
-      "createGrant(uint96,string,address,address):(address)",
+      "createGrant(uint96,string,string,address,address):(address)",
       [
         ethereum.Value.fromUnsignedBigInt(_workspaceId),
         ethereum.Value.fromString(_metadataHash),
+        ethereum.Value.fromString(_rubricsMetadataHash),
         ethereum.Value.fromAddress(_workspaceReg),
         ethereum.Value.fromAddress(_applicationReg)
       ]
@@ -210,15 +253,17 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
   try_createGrant(
     _workspaceId: BigInt,
     _metadataHash: string,
+    _rubricsMetadataHash: string,
     _workspaceReg: Address,
     _applicationReg: Address
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       "createGrant",
-      "createGrant(uint96,string,address,address):(address)",
+      "createGrant(uint96,string,string,address,address):(address)",
       [
         ethereum.Value.fromUnsignedBigInt(_workspaceId),
         ethereum.Value.fromString(_metadataHash),
+        ethereum.Value.fromString(_rubricsMetadataHash),
         ethereum.Value.fromAddress(_workspaceReg),
         ethereum.Value.fromAddress(_applicationReg)
       ]
@@ -354,12 +399,16 @@ export class CreateGrantCall__Inputs {
     return this._call.inputValues[1].value.toString();
   }
 
+  get _rubricsMetadataHash(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+
   get _workspaceReg(): Address {
-    return this._call.inputValues[2].value.toAddress();
+    return this._call.inputValues[3].value.toAddress();
   }
 
   get _applicationReg(): Address {
-    return this._call.inputValues[3].value.toAddress();
+    return this._call.inputValues[4].value.toAddress();
   }
 }
 
@@ -449,6 +498,36 @@ export class RenounceOwnershipCall__Outputs {
   _call: RenounceOwnershipCall;
 
   constructor(call: RenounceOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class SetApplicationReviewRegCall extends ethereum.Call {
+  get inputs(): SetApplicationReviewRegCall__Inputs {
+    return new SetApplicationReviewRegCall__Inputs(this);
+  }
+
+  get outputs(): SetApplicationReviewRegCall__Outputs {
+    return new SetApplicationReviewRegCall__Outputs(this);
+  }
+}
+
+export class SetApplicationReviewRegCall__Inputs {
+  _call: SetApplicationReviewRegCall;
+
+  constructor(call: SetApplicationReviewRegCall) {
+    this._call = call;
+  }
+
+  get _applicationReviewReg(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetApplicationReviewRegCall__Outputs {
+  _call: SetApplicationReviewRegCall;
+
+  constructor(call: SetApplicationReviewRegCall) {
     this._call = call;
   }
 }

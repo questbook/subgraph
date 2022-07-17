@@ -30,6 +30,8 @@ dataSources:
           handler: handleWorkspaceMembersUpdated
         - event: WorkspaceSafeUpdated(indexed uint96,bytes32,uint256,uint256)
           handler: handleWorkspaceSafeUpdated
+        - event: DisburseReward(indexed uint96,uint96,address,address,uint256,bool,uint256)
+          handler: handleDisburseReward
       file: ./src/workspace-mapping.ts
   - kind: ethereum
     name: QBApplicationsContract

@@ -126,6 +126,24 @@ export class BeaconUpgraded__Params {
   }
 }
 
+export class Initialized extends ethereum.Event {
+  get params(): Initialized__Params {
+    return new Initialized__Params(this);
+  }
+}
+
+export class Initialized__Params {
+  _event: Initialized;
+
+  constructor(event: Initialized) {
+    this._event = event;
+  }
+
+  get version(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+}
+
 export class MilestoneUpdated extends ethereum.Event {
   get params(): MilestoneUpdated__Params {
     return new MilestoneUpdated__Params(this);
@@ -375,6 +393,31 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  getApplicationWorkspace(_applicationId: BigInt): BigInt {
+    let result = super.call(
+      "getApplicationWorkspace",
+      "getApplicationWorkspace(uint96):(uint96)",
+      [ethereum.Value.fromUnsignedBigInt(_applicationId)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getApplicationWorkspace(
+    _applicationId: BigInt
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getApplicationWorkspace",
+      "getApplicationWorkspace(uint96):(uint96)",
+      [ethereum.Value.fromUnsignedBigInt(_applicationId)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   owner(): Address {

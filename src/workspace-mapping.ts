@@ -3,11 +3,13 @@ import {
 	WorkspaceCreated,
 	WorkspaceMembersUpdated,
 	WorkspaceSafeUpdated,
-	WorkspaceUpdated,
+	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens } from './utils/generics'
+import { disburseReward } from './utils/handle-disburse-reward'
 import { validateWorkspaceCreateRequest, validateWorkspaceUpdateRequest, WorkspaceCreateRequest, WorkspaceUpdateRequest } from './json-schema'
 
 export function handleWorkspaceCreated(event: WorkspaceCreated): void {
@@ -147,7 +149,7 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 
 	entity.updatedAtS = event.params.time.toI32()
 	// add the admins
-	for(let i = 0;i < event.params.members.length;i++) {
+	for(let i = 0; i < event.params.members.length; i++) {
 		const memberId = event.params.members[i]
 		const role = event.params.roles[i]
 		const enabled = event.params.enabled[i]
@@ -185,4 +187,8 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 	}
 
 	entity.save()
+}
+
+export function handleDisburseReward(event: DisburseReward): void {
+	disburseReward(event)
 }
