@@ -66,6 +66,11 @@ export class GrantApplicationRequest {
 	milestones: GrantProposedMilestone[] = []
 }
 
+export class WorkspaceMemberUpdate {
+	fullName: string | null = null
+	profilePictureIpfsHash: string | null = null
+}
+
 export class GrantApplicationUpdate {
 	fields: GrantApplicationFieldAnswers | null = null
 	pii: PIIAnswers | null = null
@@ -602,6 +607,36 @@ return { value, error: null }
 
 export function validateGrantApplicationRequest_milestones(json: JSONValue): Result<GrantProposedMilestone[]> {
 return validateArray(json, -1, 100, validateGrantProposedMilestone)
+}
+
+export function validateWorkspaceMemberUpdate(json: JSONValue): Result<WorkspaceMemberUpdate> {
+const value = new WorkspaceMemberUpdate()
+const objResult = validateObject(json)
+if(objResult.error) {
+	return { value: null, error: objResult.error }
+}
+const obj = objResult.value!
+const fullNameJson = obj.get('fullName')
+if(fullNameJson) {
+	const fullNameResult = validateString(fullNameJson, -1, 255, null)
+	if(fullNameResult.error) {
+		return { value: null, error: ["Error in mapping 'fullName': ", fullNameResult.error!].join('') }
+	}
+	if(fullNameResult.value) {
+		value.fullName = fullNameResult.value!
+	}
+}
+const profilePictureIpfsHashJson = obj.get('profilePictureIpfsHash')
+if(profilePictureIpfsHashJson) {
+	const profilePictureIpfsHashResult = validateString(profilePictureIpfsHashJson, -1, 128, null)
+	if(profilePictureIpfsHashResult.error) {
+		return { value: null, error: ["Error in mapping 'profilePictureIpfsHash': ", profilePictureIpfsHashResult.error!].join('') }
+	}
+	if(profilePictureIpfsHashResult.value) {
+		value.profilePictureIpfsHash = profilePictureIpfsHashResult.value!
+	}
+}
+return { value, error: null }
 }
 
 export function validateGrantApplicationUpdate(json: JSONValue): Result<GrantApplicationUpdate> {
