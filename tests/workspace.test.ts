@@ -1,9 +1,9 @@
 import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
-import { WorkspaceMembersUpdated, WorkspaceSafeUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
+import { WorkspaceMembersUpdated, WorkspaceMemberUpdated, WorkspaceSafeUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { FundsTransfer, Partner, Social, Token, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
-import { handleDisburseReward, handleWorkspaceMembersUpdated, handleWorkspaceSafeUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
+import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
+import { handleDisburseReward, handleWorkspaceMembersUpdated, handleWorkspaceMemberUpdated, handleWorkspaceSafeUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createWorkspace, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 import { MOCK_APPLICATION_ID } from './utils'
 
@@ -129,6 +129,36 @@ export function runTests(): void {
 		}
 	})
 
+	test('should add admin to a workspace via single invite', () => {
+		const w = createWorkspace()!
+
+		const address = Address.fromString('0xB16081F360e3847006dB660bae1c6d1b2e18fD2C')
+		const role = 0x0
+		const enabled = true
+		const metadataHash = 'json:{"fullName":"Abcd1","profilePictureIpfsHash":"1234543222"}'
+
+		const ev = newMockEvent()
+		ev.parameters = [
+			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
+			new ethereum.EventParam('member', ethereum.Value.fromAddress(address)),
+			new ethereum.EventParam('role', ethereum.Value.fromI32(role)),
+			new ethereum.EventParam('enabled', ethereum.Value.fromBoolean(enabled)),
+			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(metadataHash)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
+		]
+
+		const event = new WorkspaceMemberUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleWorkspaceMemberUpdated(event)
+
+		const memberAddedId = `${w!.id}.${address.toHex()}`
+		const member = WorkspaceMember.load(memberAddedId)
+	
+		assert.assertNotNull(member)
+		assert.stringEquals(member!.accessLevel, 'admin')
+		assertStringNotEmpty(member!.fullName, 'member.fullName')
+		assertStringNotEmpty(member!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
+	})
+
 	test('should remove admins from a workspace', () => {
 		const addresses = [Address.fromString('0xE16081F360e3847006dB660bae1c6d1b2e17eC2D')]
 		const emails = ['abcd@abcd.com']
@@ -207,14 +237,14 @@ export function runTests(): void {
 		ev.parameters = [
 			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
 			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32(0)),
-			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString("0xE3D997D569b5b03B577C6a2Edd1d2613FE776cb0"))),
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xE3D997D569b5b03B577C6a2Edd1d2613FE776cb0'))),
 			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0x230fb4c4d462eEF9e6790337Cf57271E519bB697'))),
 			new ethereum.EventParam('amount', ethereum.Value.fromI32(10)),
 			new ethereum.EventParam('isP2P', ethereum.Value.fromBoolean(true)),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 		]
 
-		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters )
+		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseReward(event)
 
 		const fundTransfer = FundsTransfer.load(ev.transaction.hash.toHex())

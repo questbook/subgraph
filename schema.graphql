@@ -220,6 +220,11 @@ type WorkspaceMember @entity {
   id: ID!
   "the ID of the member itself"
   actorId: Bytes!
+  "Full name of the user"
+  fullName: String
+  "Hash of profile picture on IPFS"
+  profilePictureIpfsHash: String
+  
   email: String
   "What permissions the member has on the workspace"
   accessLevel: WorkspaceMemberAccessLevel!

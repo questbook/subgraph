@@ -15,6 +15,7 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - WorkspaceMembersUpdated
+        - WorkspaceMemberUpdated
         - WorkspaceCreated
         - WorkspaceUpdated
         - WorkspaceSafeUpdated
@@ -28,6 +29,8 @@ dataSources:
           handler: handleWorkspaceUpdated
         - event: WorkspaceMembersUpdated(indexed uint96,address[],uint8[],bool[],string[],uint256)
           handler: handleWorkspaceMembersUpdated
+        - event: WorkspaceMemberUpdated(indexed uint96,address,uint8,bool,string,uint256)
+          handler: handleWorkspaceMemberUpdated
         - event: WorkspaceSafeUpdated(indexed uint96,bytes32,uint256,uint256)
           handler: handleWorkspaceSafeUpdated
         - event: DisburseReward(indexed uint96,uint96,address,address,uint256,bool,uint256)

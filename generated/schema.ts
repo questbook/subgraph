@@ -1193,6 +1193,40 @@ export class WorkspaceMember extends Entity {
     this.set("actorId", Value.fromBytes(value));
   }
 
+  get fullName(): string | null {
+    let value = this.get("fullName");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set fullName(value: string | null) {
+    if (!value) {
+      this.unset("fullName");
+    } else {
+      this.set("fullName", Value.fromString(<string>value));
+    }
+  }
+
+  get profilePictureIpfsHash(): string | null {
+    let value = this.get("profilePictureIpfsHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set profilePictureIpfsHash(value: string | null) {
+    if (!value) {
+      this.unset("profilePictureIpfsHash");
+    } else {
+      this.set("profilePictureIpfsHash", Value.fromString(<string>value));
+    }
+  }
+
   get email(): string | null {
     let value = this.get("email");
     if (!value || value.kind == ValueKind.NULL) {

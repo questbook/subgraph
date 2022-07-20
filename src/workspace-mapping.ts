@@ -1,14 +1,15 @@
-import { BigInt, log, store, Value } from '@graphprotocol/graph-ts'
+import { BigInt, log, store } from '@graphprotocol/graph-ts'
 import {
 	WorkspaceCreated,
 	WorkspaceMembersUpdated,
+	WorkspaceMemberUpdated,
 	WorkspaceSafeUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
-import { mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens } from './utils/generics'
+import { mapWorkspaceMembersUpdate, mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens } from './utils/generics'
 import { disburseReward } from './utils/handle-disburse-reward'
 import { validateWorkspaceCreateRequest, validateWorkspaceUpdateRequest, WorkspaceCreateRequest, WorkspaceUpdateRequest } from './json-schema'
 
@@ -139,54 +140,37 @@ export function handleWorkspaceSafeUpdated(event: WorkspaceSafeUpdated): void {
 }
 
 export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): void {
-	const entityId = event.params.id.toHex()
-
-	const entity = Workspace.load(entityId)
-	if(!entity) {
-		log.warning(`recv workspace members update without workspace existing, ID = ${entityId}`, [])
-		return
+	const result = mapWorkspaceMembersUpdate(
+		event.params.id.toHex(),
+		event.params.time,
+		event.params.members,
+		event.params.roles,
+		event.params.enabled,
+		event.params.emails,
+		null,
+		event.transaction.from,
+		event.transaction.hash
+	)
+	if(result.error) {
+		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace member update: "${result.error!}"`, [])
 	}
+}
 
-	entity.updatedAtS = event.params.time.toI32()
-	// add the admins
-	for(let i = 0; i < event.params.members.length; i++) {
-		const memberId = event.params.members[i]
-		const role = event.params.roles[i]
-		const enabled = event.params.enabled[i]
-
-		const id = `${entityId}.${memberId.toHex()}`
-		let member = WorkspaceMember.load(id)
-
-		if(enabled) {
-			if(!member) {
-				member = new WorkspaceMember(id)
-				member.addedAt = entity.updatedAtS
-				member.lastReviewSubmittedAt = 0
-				member.outstandingReviewIds = []
-			}
-
-			member.actorId = memberId
-			member.email = event.params.emails[i]
-			member.updatedAt = entity.updatedAtS
-			if(role === 0) { // become an admin
-				member.accessLevel = 'admin'
-			} else if(role === 1) { // become a reviewer
-				member.accessLevel = 'reviewer'
-			}
-
-			member.workspace = entityId
-			member.addedBy = `${entityId}.${event.transaction.from.toHex()}`
-			member.set('removedAt', Value.fromNull())
-			member.save()
-		} else if(member) {
-			member.removedAt = entity.updatedAtS
-			member.save()
-		} else {
-			log.warning(`[${event.transaction.hash.toHex()}] recv member remove but member not found`, [])
-		}
+export function handleWorkspaceMemberUpdated(event: WorkspaceMemberUpdated): void {
+	const result = mapWorkspaceMembersUpdate(
+		event.params.id.toHex(),
+		event.params.time,
+		[event.params.member],
+		[event.params.role],
+		[event.params.enabled],
+		null,
+		[event.params.metadataHash],
+		event.transaction.from,
+		event.transaction.hash
+	)
+	if(result.error) {
+		log.warning(`[${event.transaction.hash.toHex()}] error in mapping single workspace member update: "${result.error!}"`, [])
 	}
-
-	entity.save()
 }
 
 export function handleDisburseReward(event: DisburseReward): void {

@@ -216,6 +216,44 @@ export class WorkspaceCreated__Params {
   }
 }
 
+export class WorkspaceMemberUpdated extends ethereum.Event {
+  get params(): WorkspaceMemberUpdated__Params {
+    return new WorkspaceMemberUpdated__Params(this);
+  }
+}
+
+export class WorkspaceMemberUpdated__Params {
+  _event: WorkspaceMemberUpdated;
+
+  constructor(event: WorkspaceMemberUpdated) {
+    this._event = event;
+  }
+
+  get id(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get member(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get role(): i32 {
+    return this._event.parameters[2].value.toI32();
+  }
+
+  get enabled(): boolean {
+    return this._event.parameters[3].value.toBoolean();
+  }
+
+  get metadataHash(): string {
+    return this._event.parameters[4].value.toString();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+}
+
 export class WorkspaceMembersUpdated extends ethereum.Event {
   get params(): WorkspaceMembersUpdated__Params {
     return new WorkspaceMembersUpdated__Params(this);
@@ -778,7 +816,7 @@ export class JoinViaInviteLinkCall__Inputs {
     return this._call.inputValues[0].value.toBigInt();
   }
 
-  get _email(): string {
+  get _metadataHash(): string {
     return this._call.inputValues[1].value.toString();
   }
 

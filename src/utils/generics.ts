@@ -1,8 +1,8 @@
-import { Address, BigInt, Bytes, log, store } from '@graphprotocol/graph-ts'
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, Reward, Social, Token } from '../../generated/schema'
+import { Address, BigInt, Bytes, log, store, Value } from '@graphprotocol/graph-ts'
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, Reward, Social, Token, Workspace, WorkspaceMember } from '../../generated/schema'
 import { GrantTransfersERC20 } from '../../generated/templates'
-import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem } from '../json-schema'
-import { Result } from '../json-schema/json'
+import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem, validateWorkspaceMemberUpdate, WorkspaceMemberUpdate } from '../json-schema'
+import { Result, validatedJsonFromIpfs } from '../json-schema/json'
 
 const VALID_ADDRESS_LENGTH = 20
 
@@ -252,6 +252,87 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	}
 
 	return reward
+}
+
+export function mapWorkspaceMembersUpdate(
+	workspaceId: string,
+	time: BigInt,
+	members: Address[],
+	roles: i32[],
+	enabled: boolean[],
+	emails: string[] | null,
+	metadataHash: string[] | null,
+	addedBy: Address,
+	txHash: Bytes
+): Result<string> {
+	const entity = Workspace.load(workspaceId)
+	if(!entity) {
+		return {
+			error: `recv workspace members update without workspace existing, ID = ${workspaceId}`,
+			value: null
+		}
+	}
+
+	entity.updatedAtS = time.toI32()
+	// add the admins
+	for(let i = 0; i < members.length; i++) {
+		const memberId = members[i]
+		const role = roles[i]
+
+		const id = `${workspaceId}.${memberId.toHex()}`
+		let member = WorkspaceMember.load(id)
+
+		if(enabled[i]) {
+			if(!member) {
+				member = new WorkspaceMember(id)
+				member.addedAt = entity.updatedAtS
+				member.lastReviewSubmittedAt = 0
+				member.outstandingReviewIds = []
+			}
+
+			member.actorId = memberId
+			if(emails) {
+				member.email = emails[i]
+			}
+
+			if(metadataHash) {
+				const updateResult = validatedJsonFromIpfs<WorkspaceMemberUpdate>(metadataHash[i], validateWorkspaceMemberUpdate)
+				if(updateResult.error) {
+					return { error: updateResult.error, value: null }
+				}
+
+				const update = updateResult.value!
+				if(update.fullName) {
+					member.fullName = update.fullName
+				}
+				
+				if(update.profilePictureIpfsHash) {
+					member.profilePictureIpfsHash = update.profilePictureIpfsHash
+				}
+				
+			}
+			
+			member.updatedAt = entity.updatedAtS
+			if(role === 0) { // become an admin
+				member.accessLevel = 'admin'
+			} else if(role === 1) { // become a reviewer
+				member.accessLevel = 'reviewer'
+			}
+
+			member.workspace = workspaceId
+			member.addedBy = `${workspaceId}.${addedBy.toHex()}`
+			member.set('removedAt', Value.fromNull())
+			member.save()
+		} else if(member) {
+			member.removedAt = entity.updatedAtS
+			member.save()
+		} else {
+			log.warning(`[${txHash.toHex()}] recv member remove but member not found`, [])
+		}
+	}
+
+	entity.save()
+	return { error: null, value: null }
 }
 
 export function dateToUnixTimestamp(date: Date): i32 {
