@@ -48,6 +48,7 @@ enum FundsTransferType {
 }
 
 enum SupportedNetwork {
+  chain_1313161555, # aurora-testnet
   chain_44787, # celo-alfajores-testnet
   chain_42220, # celo-mainnet
   chain_2153, # findora-testnet
