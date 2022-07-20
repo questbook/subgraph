@@ -51,6 +51,7 @@ enum SupportedNetwork {
   chain_1313161555, # aurora-testnet
   chain_44787, # celo-alfajores-testnet
   chain_42220, # celo-mainnet
+  chain_9000, # evmos-testnet
   chain_2153, # findora-testnet
   chain_1666600000, # harmony-mainnet
   chain_1666700000, # harmony-testnet
