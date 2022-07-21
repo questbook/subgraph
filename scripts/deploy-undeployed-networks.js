@@ -6,9 +6,16 @@ const GRAPHQL_URL_TEMPLATE = 'https://the-graph.questbook.app/subgraphs/name/qb-
 // go through all networks and deploy those that are not deployed
 const run = async() => {
 	const networks = await getNetworks()
+	console.log(`checking ${networks.length} networks`)
 	for(const network of networks) {
 		const url = GRAPHQL_URL_TEMPLATE.replace('{{network}}', network)
-		const { data } = await axios.post(url, { query: '{_meta { block { number } }}' }, { responseType: 'json' })
+		const { data } = await (
+			axios.post(url, { query: '{_meta { block { number } }}' }, { responseType: 'json' })
+				.catch(err => {
+					console.log(`error in fetching ${network}: ${err.message}`)
+					throw err
+				})
+		)
 		const error = data?.errors?.[0]?.message
 		// error is that the network hasn't been deployed yet
 		if(error?.includes('does not exist')) {
