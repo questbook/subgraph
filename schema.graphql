@@ -65,6 +65,8 @@ enum SupportedNetwork {
   chain_137, # polygon-mainnet
   chain_80001, # polygon-mumbai
   chain_4, # rinkeby
+  chain_40, # telos-mainnet
+  chain_41, # telos-testnet
 }
 
 type WorkspaceSafe @entity {
