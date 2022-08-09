@@ -53,6 +53,7 @@ enum SupportedNetwork {
   chain_42220, # celo-mainnet
   chain_9000, # evmos-testnet
   chain_2153, # findora-testnet
+  chain_100, # gnosis-mainnet
   chain_1666600000, # harmony-mainnet
   chain_1666700000, # harmony-testnet
   chain_8217, # klaytn-mainnet
