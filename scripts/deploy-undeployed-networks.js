@@ -9,20 +9,21 @@ const run = async() => {
 	console.log(`checking ${networks.length} networks`)
 	for(const network of networks) {
 		const url = GRAPHQL_URL_TEMPLATE.replace('{{network}}', network)
-		const { data } = await (
-			axios.post(url, { query: '{_meta { block { number } }}' }, { responseType: 'json' })
-				.catch(err => {
-					console.log(`error in fetching ${network}: ${err.message}`)
-					throw err
-				})
-		)
-		const error = data?.errors?.[0]?.message
-		// error is that the network hasn't been deployed yet
-		if(error?.includes('does not exist')) {
-			console.log(`deploying "${network}"...`)
-			await spawn('yarn', ['deploy:all'], { env: { ...process.env, NETWORK: network } })
-			console.log(`deployed "${network}"`)
+		try {
+			const { data } = await (
+				axios.post(url, { query: '{_meta { block { number } }}' }, { responseType: 'json' })
+			)
+			const error = data?.errors?.[0]?.message
+			// error is that the network hasn't been deployed yet
+			if(error?.includes('does not exist')) {
+				console.log(`deploying "${network}"...`)
+				await spawn('yarn', ['deploy:all'], { env: { ...process.env, NETWORK: network } })
+				console.log(`deployed "${network}"`)
+			}
+		} catch(error) {
+			console.log(`error in deploying to ${network}: ${err.message}`)
 		}
+		
 	}	
 }
 
