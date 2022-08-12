@@ -1,19 +1,19 @@
 {
   "network": "goerli-testnet",
   "applications": {
-    "address": "0xF4Db8BdDF1029764e4E09e7cE34149371a9A7027",
-    "startBlock": 7385584
+    "address": "0x06c3C145F0879F969F2beb5d8DB1D25c83a7b7C2",
+    "startBlock": 7391767
   },
   "workspace": {
-    "address": "0x2dB223158288B2299480aF577eDF30D5a533F137",
-    "startBlock": 7385584
+    "address": "0x4881fAB72dE0cBd58Bdc635EE9967d1de87EB5A2",
+    "startBlock": 7391761
   },
   "grantFactory": {
-    "address": "0xf08bCcf3C9DE7Daf25BCe13C87D0dd69754E0a33",
-    "startBlock": 7385584
+    "address": "0x6C95c4b887eAcC52612e3D79575A1b00Ace05A4d",
+    "startBlock": 7391763
   },
   "reviews": {
-    "address": "0xab163375C1aD08e24005771cC9908a1C7c61Adaa",
-    "startBlock": 7385584
+    "address": "0xc782342D667f8355869E9f5D23f245804aB10F56",
+    "startBlock": 7391769
   }
 }
