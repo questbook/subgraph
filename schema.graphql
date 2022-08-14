@@ -212,6 +212,17 @@ type Grant @entity {
   rubric: Rubric
 }
 
+type GrantReviewerCounter @entity {
+  "ID of the entity, grantID . reviewerAddress"
+  id: ID!
+  "The grant itself"
+  grant: Grant!
+  "Address of the reviewer"
+  reviewerAddress: Bytes!
+  "number of applications assigned in the grant"
+  counter: Int!
+}
+
 type GrantManager @entity {
   "Globally unique ID of the member"
   id: ID!
@@ -347,6 +358,8 @@ type GrantApplication @entity {
   reviews: [Review!]! @derivedFrom(field: "application")
   "@deprecated (use 'applicationReviewers') People who will review the grant application"
   reviewers: [WorkspaceMember!]!
+  "Addresses of the reviewers assigned"
+  reviewerAddresses: [Bytes!]!
   "People who will review this grant application"
   applicationReviewers: [GrantApplicationReviewer!]!
   "Version of the application, incremented on resubmission"

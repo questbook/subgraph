@@ -3,7 +3,7 @@ import { assert, newMockEvent, test } from "matchstick-as"
 import { ReviewersAssigned, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createGrant, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
 import { handleReviewersAssigned, handleReviewPaymentMarkedDone, handleReviewSubmitted, handleRubricsSet } from '../src/review-mapping'
-import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from "../generated/schema"
+import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from "../generated/schema"
 
 export function runTests(): void {
 
@@ -52,6 +52,12 @@ export function runTests(): void {
 
 		const app = GrantApplication.load(a!.id)
 		assertArrayNotEmpty(app!.applicationReviewers)
+		assertArrayNotEmpty(app!.reviewerAddresses)
+
+		const counterId = `${app!.grant}.${event.transaction.from.toHex()}`
+		const counter = GrantReviewerCounter.load(counterId)
+		assert.assertNotNull(counter)
+		assert.i32Equals(counter!.counter, 1)
 
 		const reviewer = GrantApplicationReviewer.load(app!.applicationReviewers[0])
 		assert.assertNotNull(reviewer)
@@ -76,9 +82,14 @@ export function runTests(): void {
 		const app2 = GrantApplication.load(a!.id)
 		// the reviewer list should be empty now
 		assert.i32Equals(app2!.applicationReviewers.length, 0)
+		assert.i32Equals(app2!.reviewerAddresses.length, 0)
 		// the member entity should also be removed now
 		const member2 = GrantApplicationReviewer.load(reviewer!.id)
 		assert.assertNull(member2)
+
+		// should have been deleted, as counter = 0
+		const counter2 = GrantReviewerCounter.load(counterId)
+		assert.assertNull(counter2)
 	})
 
 	test('should add a rubric to a grant', () => {

@@ -1085,6 +1085,71 @@ export class Grant extends Entity {
   }
 }
 
+export class GrantReviewerCounter extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("grant", Value.fromString(""));
+    this.set("reviewerAddress", Value.fromBytes(Bytes.empty()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save GrantReviewerCounter entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save GrantReviewerCounter entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("GrantReviewerCounter", id.toString(), this);
+    }
+  }
+
+  static load(id: string): GrantReviewerCounter | null {
+    return changetype<GrantReviewerCounter | null>(
+      store.get("GrantReviewerCounter", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get grant(): string {
+    let value = this.get("grant");
+    return value!.toString();
+  }
+
+  set grant(value: string) {
+    this.set("grant", Value.fromString(value));
+  }
+
+  get reviewerAddress(): Bytes {
+    let value = this.get("reviewerAddress");
+    return value!.toBytes();
+  }
+
+  set reviewerAddress(value: Bytes) {
+    this.set("reviewerAddress", Value.fromBytes(value));
+  }
+
+  get counter(): i32 {
+    let value = this.get("counter");
+    return value!.toI32();
+  }
+
+  set counter(value: i32) {
+    this.set("counter", Value.fromI32(value));
+  }
+}
+
 export class GrantManager extends Entity {
   constructor(id: string) {
     super();
@@ -1788,6 +1853,7 @@ export class GrantApplication extends Entity {
     this.set("pii", Value.fromStringArray(new Array(0)));
     this.set("milestones", Value.fromStringArray(new Array(0)));
     this.set("reviewers", Value.fromStringArray(new Array(0)));
+    this.set("reviewerAddresses", Value.fromBytesArray(new Array(0)));
     this.set("applicationReviewers", Value.fromStringArray(new Array(0)));
   }
 
@@ -1941,6 +2007,15 @@ export class GrantApplication extends Entity {
 
   set reviewers(value: Array<string>) {
     this.set("reviewers", Value.fromStringArray(value));
+  }
+
+  get reviewerAddresses(): Array<Bytes> {
+    let value = this.get("reviewerAddresses");
+    return value!.toBytesArray();
+  }
+
+  set reviewerAddresses(value: Array<Bytes>) {
+    this.set("reviewerAddresses", Value.fromBytesArray(value));
   }
 
   get applicationReviewers(): Array<string> {

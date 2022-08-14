@@ -1,6 +1,6 @@
-import { log, store } from '@graphprotocol/graph-ts'
+import { Bytes, log, store } from '@graphprotocol/graph-ts'
 import { ReviewersAssigned, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
-import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
+import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { ReviewSetRequest, RubricSetRequest, validateReviewSetRequest, validateRubricSetRequest } from './json-schema'
 
@@ -8,7 +8,7 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	const reviewId = event.params._reviewId.toHex()
 	const workspace = event.params._workspaceId.toHex()
 	const reviewer = event.transaction.from.toHex()
-	const grant = event.params._grantAddress.toHex()
+	const grantId = event.params._grantAddress.toHex()
 
 	const memberId = `${workspace}.${reviewer}`
 
@@ -41,7 +41,7 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 
 		const item = new PIIAnswer(`${reviewId}.${info.key}`)
 		item.data = info.value
-		item.manager = `${grant}.${info.key}`
+		item.manager = `${grantId}.${info.key}`
 
 		item.save()
 		items.push(item.id)
@@ -60,6 +60,20 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 
 	member.outstandingReviewIds = outstandingReviewIds
 	member.save()
+
+	const counterId = `${grantId}.${reviewer}`
+	const counter = GrantReviewerCounter.load(counterId)
+	if(!counter) {
+		log.warning(`[${event.transaction.hash.toHex()}] error in mapping review: "counter ${counterId} not found"`, [])
+		return
+	}
+
+	counter.counter -= 1
+	if(counter.counter <= 0) {
+		store.remove('GrantReviewerCounter', counterId)
+	} else {
+		counter.save()
+	}
 }
 
 export function handleReviewersAssigned(event: ReviewersAssigned): void {
@@ -78,9 +92,21 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 	const appReviewers = application.applicationReviewers
 	// apply to deprecated property
 	const memberReviewers: string[] = []
+	const reviewerAddressesInApplication: Bytes[] = []
 	for(let i = 0;i < reviewerAddresses.length;i++) {
-		const memberId = `${workspace}.${reviewerAddresses[i].toHex()}`
+		const reviewerAddressHex = reviewerAddresses[i].toHex()
+		const reviewerAddressBytes = Bytes.fromByteArray(reviewerAddresses[i])
+		const memberId = `${workspace}.${reviewerAddressHex}`
 		const reviewerId = `${applicationId}.${memberId}`
+		const counterId = `${application.grant}.${reviewerAddressHex}`
+		let counter = GrantReviewerCounter.load(counterId)
+		if(!counter) {
+			counter = new GrantReviewerCounter(counterId)
+			counter.counter = 0
+			counter.grant = application.grant
+			counter.reviewerAddress = reviewerAddressBytes
+		}
+
 		const idx = appReviewers.indexOf(reviewerId)
 		if(active[i]) { // add reviewer if not already added
 			if(idx < 0) {
@@ -91,18 +117,33 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 
 				appReviewers.push(reviewerId)
 				memberReviewers.push(memberId)
+				reviewerAddressesInApplication.push(reviewerAddressBytes)
+
+				if(application.state == 'submitted') {
+					counter.counter += 1
+				}
 			}
 		} else { // remove from reviewer list if present
 			if(idx >= 0) {
 				store.remove('GrantApplicationReviewer', reviewerId)
 				appReviewers.splice(idx, 1)
 				memberReviewers.splice(idx, 1)
+				reviewerAddressesInApplication.splice(idx, 1)
+
+				counter.counter -= 1
 			}
+		}
+
+		if(counter.counter <= 0) {
+			store.remove('GrantReviewerCounter', counterId)
+		} else {
+			counter.save()
 		}
 	}
 
 	application.applicationReviewers = appReviewers
 	application.reviewers = memberReviewers
+	application.reviewerAddresses = reviewerAddressesInApplication
 
 	application.updatedAtS = eventTimestampS
 	application.save()
