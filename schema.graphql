@@ -60,6 +60,8 @@ enum SupportedNetwork {
   chain_8217, # klaytn-mainnet
   chain_1001, # klaytn-testnet
   chain_42, # kovan
+  chain_1088, # metis-mainnet
+  chain_588, # metis-testnet
   chain_1287, # moonbase-alpha
   chain_245022926, # neon-devnet
   chain_69, # optimism-kovan
