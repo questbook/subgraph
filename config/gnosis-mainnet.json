@@ -1,19 +1,19 @@
 {
   "network": "gnosis-mainnet",
   "applications": {
-    "address": "0x084aCcB463c38D7e050cf7099B4D11C9EBa78a2E",
-    "startBlock": 186791240
+    "address": "0x20B8F9582eB9108233694daf195AdEC569dDD2fD",
+    "startBlock": 23722402
   },
   "workspace": {
-    "address": "0x37d2df191899C715fE840671C6240C4Be05aF6B3",
-    "startBlock": 23609163
+    "address": "0xea3a9b2A1283E3434AF80b1979351A73c92eAe77",
+    "startBlock": 23722402
   },
   "grantFactory": {
-    "address": "0xAAD5fD023BB96867aF3dCE443F0252CF53FB0424",
-    "startBlock": 23609167
+    "address": "0x39F2aa6354EC64F5C135Fd06D74d457A62b916ef",
+    "startBlock": 23722402
   },
   "reviews": {
-    "address": "0xF386f93269cb23Ff1b5c0635Ff4258d607BF7ae4",
-    "startBlock": 186791272
+    "address": "0x900C24C0c286D02e50f8D51471eD51d4FdAF7677",
+    "startBlock": 23722402
   }
 }
