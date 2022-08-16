@@ -1148,6 +1148,24 @@ export class GrantReviewerCounter extends Entity {
   set counter(value: i32) {
     this.set("counter", Value.fromI32(value));
   }
+
+  get pendingCounter(): i32 {
+    let value = this.get("pendingCounter");
+    return value!.toI32();
+  }
+
+  set pendingCounter(value: i32) {
+    this.set("pendingCounter", Value.fromI32(value));
+  }
+
+  get doneCounter(): i32 {
+    let value = this.get("doneCounter");
+    return value!.toI32();
+  }
+
+  set doneCounter(value: i32) {
+    this.set("doneCounter", Value.fromI32(value));
+  }
 }
 
 export class GrantManager extends Entity {
@@ -1853,7 +1871,8 @@ export class GrantApplication extends Entity {
     this.set("pii", Value.fromStringArray(new Array(0)));
     this.set("milestones", Value.fromStringArray(new Array(0)));
     this.set("reviewers", Value.fromStringArray(new Array(0)));
-    this.set("reviewerAddresses", Value.fromBytesArray(new Array(0)));
+    this.set("pendingReviewerAddresses", Value.fromBytesArray(new Array(0)));
+    this.set("doneReviewerAddresses", Value.fromBytesArray(new Array(0)));
     this.set("applicationReviewers", Value.fromStringArray(new Array(0)));
   }
 
@@ -2009,13 +2028,22 @@ export class GrantApplication extends Entity {
     this.set("reviewers", Value.fromStringArray(value));
   }
 
-  get reviewerAddresses(): Array<Bytes> {
-    let value = this.get("reviewerAddresses");
+  get pendingReviewerAddresses(): Array<Bytes> {
+    let value = this.get("pendingReviewerAddresses");
     return value!.toBytesArray();
   }
 
-  set reviewerAddresses(value: Array<Bytes>) {
-    this.set("reviewerAddresses", Value.fromBytesArray(value));
+  set pendingReviewerAddresses(value: Array<Bytes>) {
+    this.set("pendingReviewerAddresses", Value.fromBytesArray(value));
+  }
+
+  get doneReviewerAddresses(): Array<Bytes> {
+    let value = this.get("doneReviewerAddresses");
+    return value!.toBytesArray();
+  }
+
+  set doneReviewerAddresses(value: Array<Bytes>) {
+    this.set("doneReviewerAddresses", Value.fromBytesArray(value));
   }
 
   get applicationReviewers(): Array<string> {

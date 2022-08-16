@@ -221,8 +221,12 @@ type GrantReviewerCounter @entity {
   grant: Grant!
   "Address of the reviewer"
   reviewerAddress: Bytes!
-  "number of applications assigned in the grant"
+  "total number of applications assigned in grant"
   counter: Int!
+  "number of applications assigned, pending in the grant"
+  pendingCounter: Int!
+  "number of applications reviewed in the grant"
+  doneCounter: Int!
 }
 
 type GrantManager @entity {
@@ -360,8 +364,10 @@ type GrantApplication @entity {
   reviews: [Review!]! @derivedFrom(field: "application")
   "@deprecated (use 'applicationReviewers') People who will review the grant application"
   reviewers: [WorkspaceMember!]!
-  "Addresses of the reviewers assigned"
-  reviewerAddresses: [Bytes!]!
+  "Addresses of the assigned reviewers who are yet to review"
+  pendingReviewerAddresses: [Bytes!]!
+  "Addresses of the assigned reviewers who have reviewed"
+  doneReviewerAddresses: [Bytes!]!
   "People who will review this grant application"
   applicationReviewers: [GrantApplicationReviewer!]!
   "Version of the application, incremented on resubmission"

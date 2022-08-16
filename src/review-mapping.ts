@@ -7,7 +7,8 @@ import { ReviewSetRequest, RubricSetRequest, validateReviewSetRequest, validateR
 export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	const reviewId = event.params._reviewId.toHex()
 	const workspace = event.params._workspaceId.toHex()
-	const reviewer = event.transaction.from.toHex()
+	const reviewerAddress = event.transaction.from
+	const reviewer = reviewerAddress.toHex()
 	const grantId = event.params._grantAddress.toHex()
 
 	const memberId = `${workspace}.${reviewer}`
@@ -26,11 +27,15 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 
 	const json = jsonResult.value!
 
-	const review = new Review(reviewId)
-	review.reviewerId = memberId
-	review.reviewer = memberId
-	review.application = event.params._applicationId.toHex()
-	review.createdAtS = event.params.time.toI32()
+	let review = Review.load(reviewId)
+	if(!review) {
+		review = new Review(reviewId)
+		review.createdAtS = event.params.time.toI32()
+		review.reviewerId = memberId
+		review.reviewer = memberId
+		review.application = event.params._applicationId.toHex()
+	}
+
 	review.publicReviewDataHash = json.publicReviewDataHash
 
 	const items: string[] = []
@@ -62,18 +67,42 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	member.save()
 
 	const counterId = `${grantId}.${reviewer}`
-	const counter = GrantReviewerCounter.load(counterId)
+	let counter = GrantReviewerCounter.load(counterId)
 	if(!counter) {
-		log.warning(`[${event.transaction.hash.toHex()}] error in mapping review: "counter ${counterId} not found"`, [])
+		counter = new GrantReviewerCounter(counterId)
+		counter.grant = grantId
+		counter.reviewerAddress = Bytes.fromByteArray(reviewerAddress)
+		counter.counter = 1
+		counter.pendingCounter = 1
+		counter.doneCounter = 0
+	}
+
+	counter.pendingCounter -= 1
+	counter.doneCounter += 1
+	counter.save()
+
+	const application = GrantApplication.load(event.params._applicationId.toHex())
+	if(!application) {
+		log.warning(`[${event.transaction.hash.toHex()}] error in mapping review: "application ${event.params._applicationId.toHex()} not found"`, [])
 		return
 	}
 
-	counter.counter -= 1
-	if(counter.counter <= 0) {
-		store.remove('GrantReviewerCounter', counterId)
-	} else {
-		counter.save()
+	const pendingReviewerAddresses = application.pendingReviewerAddresses
+	const doneReviewerAddresses = application.pendingReviewerAddresses
+
+	const doneIdx = doneReviewerAddresses.indexOf(reviewerAddress)
+	if(doneIdx < 0) {
+		doneReviewerAddresses.push(reviewerAddress)
 	}
+
+	const pendingIdx = pendingReviewerAddresses.indexOf(reviewerAddress)
+	if(pendingIdx >= 0) {
+		pendingReviewerAddresses.splice(pendingIdx, 1)
+	}
+
+	application.pendingReviewerAddresses = pendingReviewerAddresses
+	application.doneReviewerAddresses = doneReviewerAddresses
+	application.save()
 }
 
 export function handleReviewersAssigned(event: ReviewersAssigned): void {
@@ -92,7 +121,7 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 	const appReviewers = application.applicationReviewers
 	// apply to deprecated property
 	const memberReviewers: string[] = []
-	const reviewerAddressesInApplication: Bytes[] = []
+	const pendingReviewerAddresses: Bytes[] = []
 	for(let i = 0;i < reviewerAddresses.length;i++) {
 		const reviewerAddressHex = reviewerAddresses[i].toHex()
 		const reviewerAddressBytes = Bytes.fromByteArray(reviewerAddresses[i])
@@ -103,11 +132,14 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 		if(!counter) {
 			counter = new GrantReviewerCounter(counterId)
 			counter.counter = 0
+			counter.doneCounter = 0
+			counter.pendingCounter = 0
 			counter.grant = application.grant
 			counter.reviewerAddress = reviewerAddressBytes
 		}
 
 		const idx = appReviewers.indexOf(reviewerId)
+		const pendingIdx = pendingReviewerAddresses.indexOf(reviewerAddressBytes)
 		if(active[i]) { // add reviewer if not already added
 			if(idx < 0) {
 				const reviewer = new GrantApplicationReviewer(reviewerId)
@@ -117,20 +149,27 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 
 				appReviewers.push(reviewerId)
 				memberReviewers.push(memberId)
-				reviewerAddressesInApplication.push(reviewerAddressBytes)
+				pendingReviewerAddresses.push(reviewerAddressBytes)
 
-				if(application.state == 'submitted') {
-					counter.counter += 1
-				}
+				counter.counter += 1
+			}
+
+			if(pendingIdx < 0) {
+				pendingReviewerAddresses.push(reviewerAddressBytes)
+				counter.pendingCounter += 1
 			}
 		} else { // remove from reviewer list if present
 			if(idx >= 0) {
 				store.remove('GrantApplicationReviewer', reviewerId)
 				appReviewers.splice(idx, 1)
 				memberReviewers.splice(idx, 1)
-				reviewerAddressesInApplication.splice(idx, 1)
 
 				counter.counter -= 1
+			}
+			
+			if(pendingIdx >= 0) {
+				pendingReviewerAddresses.splice(pendingIdx, 1)
+				counter.pendingCounter -= 1
 			}
 		}
 
@@ -143,7 +182,7 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 
 	application.applicationReviewers = appReviewers
 	application.reviewers = memberReviewers
-	application.reviewerAddresses = reviewerAddressesInApplication
+	application.pendingReviewerAddresses = pendingReviewerAddresses
 
 	application.updatedAtS = eventTimestampS
 	application.save()

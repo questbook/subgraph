@@ -41,6 +41,8 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	entity.reviewers = []
 	entity.applicationReviewers = []
 	entity.version = 1
+	entity.doneReviewerAddresses = []
+	entity.pendingReviewerAddresses = []
 
 	if(json.pii) {
 		entity.pii = mapGrantPII(applicationId, grantId, json.pii!)
