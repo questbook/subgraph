@@ -88,7 +88,7 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	}
 
 	const pendingReviewerAddresses = application.pendingReviewerAddresses
-	const doneReviewerAddresses = application.pendingReviewerAddresses
+	const doneReviewerAddresses = application.doneReviewerAddresses
 
 	const doneIdx = doneReviewerAddresses.indexOf(reviewerAddress)
 	if(doneIdx < 0) {
@@ -149,7 +149,6 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 
 				appReviewers.push(reviewerId)
 				memberReviewers.push(memberId)
-				pendingReviewerAddresses.push(reviewerAddressBytes)
 
 				counter.counter += 1
 			}
