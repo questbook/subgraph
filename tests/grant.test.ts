@@ -1,10 +1,10 @@
 import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
+import { GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { FundsTransfer, Grant, GrantManager, Notification, Reward, Token, WorkspaceMember } from '../generated/schema'
 import { Transfer } from '../generated/templates/GrantTransfersERC20/ERC20'
-import { FundsWithdrawn, GrantUpdated } from '../generated/templates/QBGrantsContract/QBGrantsContract'
-import { GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
+import { FundsWithdrawn } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdated } from '../src/grant-mapping'
 import { handleTransfer } from '../src/transfer-mapping' 
 import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, CUSTOM_TOKEN_ADDRESS_GRANT, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
@@ -154,7 +154,7 @@ export function runTests(): void {
 		const ev = newMockEvent()
 
 		ev.parameters = [
-			new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(Address.fromString(g?.id!))),
+			new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
 			new ethereum.EventParam('workspaceId', ethereum.Value.fromI32(0x03)),
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(UPDATE_JSON_WITHOUT_TOKEN)),
 			new ethereum.EventParam('active', ethereum.Value.fromBoolean(false)),
@@ -189,7 +189,7 @@ export function runTests(): void {
 		const ev = newMockEvent()
 
 		ev.parameters = [
-			new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(Address.fromString(g?.id!))),
+			new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
 			new ethereum.EventParam('workspaceId', ethereum.Value.fromI32(0x03)),
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(UPDATE_JSON_WITH_TOKEN)),
 			new ethereum.EventParam('active', ethereum.Value.fromBoolean(false)),
@@ -224,7 +224,7 @@ export function runTests(): void {
 		const ev = newMockEvent()
 
 		ev.parameters = [
-			new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(Address.fromString(g?.id!))),
+			new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
 			new ethereum.EventParam('workspaceId', ethereum.Value.fromI32(0x03)),
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(UPDATE_JSON2)),
 			new ethereum.EventParam('active', ethereum.Value.fromBoolean(false)),
