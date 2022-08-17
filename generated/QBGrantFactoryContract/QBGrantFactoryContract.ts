@@ -106,6 +106,70 @@ export class GrantImplementationUpdated__Params {
   }
 }
 
+export class GrantUpdated extends ethereum.Event {
+  get params(): GrantUpdated__Params {
+    return new GrantUpdated__Params(this);
+  }
+}
+
+export class GrantUpdated__Params {
+  _event: GrantUpdated;
+
+  constructor(event: GrantUpdated) {
+    this._event = event;
+  }
+
+  get grantAddress(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get workspaceId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get metadataHash(): string {
+    return this._event.parameters[2].value.toString();
+  }
+
+  get active(): boolean {
+    return this._event.parameters[3].value.toBoolean();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+}
+
+export class GrantUpdatedFromFactory extends ethereum.Event {
+  get params(): GrantUpdatedFromFactory__Params {
+    return new GrantUpdatedFromFactory__Params(this);
+  }
+}
+
+export class GrantUpdatedFromFactory__Params {
+  _event: GrantUpdatedFromFactory;
+
+  constructor(event: GrantUpdatedFromFactory) {
+    this._event = event;
+  }
+
+  get grantAddress(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get workspaceId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get metadataHash(): string {
+    return this._event.parameters[2].value.toString();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -584,6 +648,44 @@ export class UnpauseCall__Outputs {
   _call: UnpauseCall;
 
   constructor(call: UnpauseCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateGrantCall extends ethereum.Call {
+  get inputs(): UpdateGrantCall__Inputs {
+    return new UpdateGrantCall__Inputs(this);
+  }
+
+  get outputs(): UpdateGrantCall__Outputs {
+    return new UpdateGrantCall__Outputs(this);
+  }
+}
+
+export class UpdateGrantCall__Inputs {
+  _call: UpdateGrantCall;
+
+  constructor(call: UpdateGrantCall) {
+    this._call = call;
+  }
+
+  get grantAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _metadataHash(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+}
+
+export class UpdateGrantCall__Outputs {
+  _call: UpdateGrantCall;
+
+  constructor(call: UpdateGrantCall) {
     this._call = call;
   }
 }
