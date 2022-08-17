@@ -106,40 +106,6 @@ export class GrantImplementationUpdated__Params {
   }
 }
 
-export class GrantUpdated extends ethereum.Event {
-  get params(): GrantUpdated__Params {
-    return new GrantUpdated__Params(this);
-  }
-}
-
-export class GrantUpdated__Params {
-  _event: GrantUpdated;
-
-  constructor(event: GrantUpdated) {
-    this._event = event;
-  }
-
-  get grantAddress(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get workspaceId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get metadataHash(): string {
-    return this._event.parameters[2].value.toString();
-  }
-
-  get active(): boolean {
-    return this._event.parameters[3].value.toBoolean();
-  }
-
-  get time(): BigInt {
-    return this._event.parameters[4].value.toBigInt();
-  }
-}
-
 export class GrantUpdatedFromFactory extends ethereum.Event {
   get params(): GrantUpdatedFromFactory__Params {
     return new GrantUpdatedFromFactory__Params(this);
@@ -165,8 +131,12 @@ export class GrantUpdatedFromFactory__Params {
     return this._event.parameters[2].value.toString();
   }
 
+  get active(): boolean {
+    return this._event.parameters[3].value.toBoolean();
+  }
+
   get time(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
+    return this._event.parameters[4].value.toBigInt();
   }
 }
 
@@ -686,6 +656,44 @@ export class UpdateGrantCall__Outputs {
   _call: UpdateGrantCall;
 
   constructor(call: UpdateGrantCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateGrantAccessibilityCall extends ethereum.Call {
+  get inputs(): UpdateGrantAccessibilityCall__Inputs {
+    return new UpdateGrantAccessibilityCall__Inputs(this);
+  }
+
+  get outputs(): UpdateGrantAccessibilityCall__Outputs {
+    return new UpdateGrantAccessibilityCall__Outputs(this);
+  }
+}
+
+export class UpdateGrantAccessibilityCall__Inputs {
+  _call: UpdateGrantAccessibilityCall;
+
+  constructor(call: UpdateGrantAccessibilityCall) {
+    this._call = call;
+  }
+
+  get grantAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _canAcceptApplication(): boolean {
+    return this._call.inputValues[2].value.toBoolean();
+  }
+}
+
+export class UpdateGrantAccessibilityCall__Outputs {
+  _call: UpdateGrantAccessibilityCall;
+
+  constructor(call: UpdateGrantAccessibilityCall) {
     this._call = call;
   }
 }
