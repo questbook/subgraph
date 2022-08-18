@@ -81,7 +81,7 @@ dataSources:
       eventHandlers:
         - event: GrantCreated(address,uint96,string,uint256)
           handler: handleGrantCreated
-        - event: GrantUpdatedFromFactory(indexed address, indexed uint96, string, bool, unint256)
+        - event: GrantUpdatedFromFactory(indexed address,indexed uint96,string,bool,unint256)
           handler: handleGrantUpdated
       file: ./src/grant-mapping.ts
   - kind: ethereum
