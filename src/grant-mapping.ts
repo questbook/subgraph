@@ -1,8 +1,8 @@
 import { BigInt, log } from '@graphprotocol/graph-ts'
-import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
+import { GrantCreated, GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from '../generated/schema'
 import { QBGrantsContract } from '../generated/templates'
-import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
+import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { applyGrantFundUpdate } from './utils/apply-grant-deposit'
 import { dateToUnixTimestamp, isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from './utils/generics'
@@ -119,9 +119,8 @@ export function handleFundsWithdrawn(event: FundsWithdrawn): void {
 	}
 }
 
-export function handleGrantUpdated(event: GrantUpdated): void {
-	const grantId = event.transaction.to!.toHex()
-
+export function handleGrantUpdated(event: GrantUpdatedFromFactory): void {
+	const grantId = event.params.grantAddress.toHex()
 	const entity = Grant.load(grantId)
 	if(!entity) {
 		log.warning(`[${event.transaction.hash.toHex()}] recv grant update for unknown grant, ID="${grantId}"`, [])
@@ -130,6 +129,7 @@ export function handleGrantUpdated(event: GrantUpdated): void {
 
 	entity.updatedAtS = event.params.time.toI32()
 	entity.workspace = event.params.workspaceId.toHex()
+  
 	entity.acceptingApplications = event.params.active
 
 	const hash = event.params.metadataHash

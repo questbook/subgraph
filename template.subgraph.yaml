@@ -81,6 +81,8 @@ dataSources:
       eventHandlers:
         - event: GrantCreated(address,uint96,string,uint256)
           handler: handleGrantCreated
+        - event: GrantUpdatedFromFactory(indexed address, indexed uint96, string, bool, unint256)
+          handler: handleGrantUpdated
       file: ./src/grant-mapping.ts
   - kind: ethereum
     name: QBReviewsContract
@@ -124,7 +126,6 @@ templates:
       file: ./src/grant-mapping.ts
       entities:
         - DisburseReward
-        - GrantUpdated
         - FundsDepositFailed
         - DisburseReward
         - DisburseRewardFailed
@@ -139,8 +140,6 @@ templates:
           handler: handleDisburseRewardFailed
         - event: FundsDepositFailed(address,uint256,uint256)
           handler: handleFundsDepositFailed
-        - event: GrantUpdated(indexed uint96,string,bool,uint256)
-          handler: handleGrantUpdated
         - event: FundsWithdrawn(address,uint256,address,uint256)
           handler: handleFundsWithdrawn
         - event: TransactionRecord(indexed uint96,uint96,address,address,bytes,uint256,uint256)
