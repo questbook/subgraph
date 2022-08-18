@@ -647,8 +647,12 @@ export class UpdateGrantCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
+  get _workspaceReg(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
   get _metadataHash(): string {
-    return this._call.inputValues[2].value.toString();
+    return this._call.inputValues[3].value.toString();
   }
 }
 
@@ -685,8 +689,12 @@ export class UpdateGrantAccessibilityCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
+  get _workspaceReg(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
   get _canAcceptApplication(): boolean {
-    return this._call.inputValues[2].value.toBoolean();
+    return this._call.inputValues[3].value.toBoolean();
   }
 }
 

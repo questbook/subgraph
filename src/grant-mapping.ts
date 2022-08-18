@@ -125,11 +125,13 @@ export function handleGrantUpdated(event: GrantUpdatedFromFactory): void {
 	if(!entity) {
 		log.warning(`[${event.transaction.hash.toHex()}] recv grant update for unknown grant, ID="${grantId}"`, [])
 		return
+	} else {
+		log.info(`[${grantId}] grant found. Updation in progress...`, [])
 	}
 
 	entity.updatedAtS = event.params.time.toI32()
 	entity.workspace = event.params.workspaceId.toHex()
-  
+
 	entity.acceptingApplications = event.params.active
 
 	const hash = event.params.metadataHash
@@ -171,6 +173,8 @@ export function handleGrantUpdated(event: GrantUpdatedFromFactory): void {
 			entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
 		}
 	}
+
+	log.info(`Grant ${grantId} updated`, [])
 
 	entity.save()
 }

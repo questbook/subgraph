@@ -355,6 +355,21 @@ export class QBGrantsContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  grantFactory(): Address {
+    let result = super.call("grantFactory", "grantFactory():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_grantFactory(): ethereum.CallResult<Address> {
+    let result = super.tryCall("grantFactory", "grantFactory():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   metadataHash(): string {
     let result = super.call("metadataHash", "metadataHash():(string)", []);
 
@@ -597,8 +612,12 @@ export class InitializeCall__Inputs {
     return this._call.inputValues[3].value.toAddress();
   }
 
-  get _grantFactoryOwner(): Address {
+  get _grantFactory(): Address {
     return this._call.inputValues[4].value.toAddress();
+  }
+
+  get _grantFactoryOwner(): Address {
+    return this._call.inputValues[5].value.toAddress();
   }
 }
 

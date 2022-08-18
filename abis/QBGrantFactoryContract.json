@@ -371,6 +371,11 @@
         "type": "uint96"
       },
       {
+        "internalType": "contract IWorkspaceRegistry",
+        "name": "_workspaceReg",
+        "type": "address"
+      },
+      {
         "internalType": "string",
         "name": "_metadataHash",
         "type": "string"
@@ -392,6 +397,11 @@
         "internalType": "uint96",
         "name": "_workspaceId",
         "type": "uint96"
+      },
+      {
+        "internalType": "contract IWorkspaceRegistry",
+        "name": "_workspaceReg",
+        "type": "address"
       },
       {
         "internalType": "bool",
