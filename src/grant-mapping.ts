@@ -59,7 +59,7 @@ export function handleGrantCreated(event: GrantCreated): void {
 }
 
 export function handleDisburseReward(event: DisburseReward): void {
-	disburseReward(event)
+	disburseReward(event, 'funds_disbursed', event.params.applicationId.toHex(), event.params.milestoneId.toHex(), event.params.sender, event.params.amount, event.params.isP2P, event.params.time.toI32())
 }
 
 
