@@ -1,13 +1,12 @@
-import { log } from '@graphprotocol/graph-ts'
+import { BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from '../../generated/schema'
-import { DisburseReward } from '../../generated/templates/QBGrantsContract/QBGrantsContract'
 import { addFundsTransferNotification } from './notifications'
 
-export function disburseReward(event: DisburseReward): void {
-	const applicationId = event.params.applicationId.toHex()
-	const milestoneIndex = event.params.milestoneId.toI32()
+export function disburseReward(event: ethereum.Event, depositType: string, _applicationId: string, _milestoneId: string, _sender: Bytes, _amount: BigInt, _isP2P: boolean, _eventTime: i32): void {
+	const applicationId = _applicationId
+	const milestoneIndex = _milestoneId
 	const milestoneId = `${applicationId}.${milestoneIndex}`
-	const amountPaid = event.params.amount
+	const amountPaid = _amount
 
 	const application = GrantApplication.load(applicationId)
 	if(!application) {
@@ -16,13 +15,13 @@ export function disburseReward(event: DisburseReward): void {
 	}
 
 	const disburseEntity = new FundsTransfer(event.transaction.hash.toHex())
-	disburseEntity.createdAtS = event.params.time.toI32()
+	disburseEntity.createdAtS = _eventTime
 	disburseEntity.amount = amountPaid
-	disburseEntity.sender = event.params.sender
+	disburseEntity.sender = _sender
 	disburseEntity.to = event.transaction.to!
 	disburseEntity.application = applicationId
 	disburseEntity.milestone = milestoneId
-	disburseEntity.type = 'funds_disbursed'
+	disburseEntity.type = depositType
 	disburseEntity.grant = application.grant
 
 	disburseEntity.save()
@@ -34,10 +33,10 @@ export function disburseReward(event: DisburseReward): void {
 	}
 
 	entity.amountPaid = entity.amountPaid.plus(amountPaid)
-	entity.updatedAtS = event.params.time.toI32()
+	entity.updatedAtS = _eventTime
 	// find grant and reduce the amount of the funding
 	// only if not a P2P exchange
-	if(!event.params.isP2P) {
+	if(!_isP2P) {
 		const grantEntity = Grant.load(application.grant)
 		if(grantEntity) {
 			grantEntity.funding = grantEntity.funding.minus(amountPaid)
