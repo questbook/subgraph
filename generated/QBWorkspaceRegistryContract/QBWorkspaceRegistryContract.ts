@@ -92,6 +92,48 @@ export class DisburseReward__Params {
   }
 }
 
+export class DisburseRewardFromSafe extends ethereum.Event {
+  get params(): DisburseRewardFromSafe__Params {
+    return new DisburseRewardFromSafe__Params(this);
+  }
+}
+
+export class DisburseRewardFromSafe__Params {
+  _event: DisburseRewardFromSafe;
+
+  constructor(event: DisburseRewardFromSafe) {
+    this._event = event;
+  }
+
+  get applicationId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get milestoneId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get asset(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get sender(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get isP2P(): boolean {
+    return this._event.parameters[5].value.toBoolean();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -421,6 +463,38 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  apiFlagForWorkspaceId(workspaceId: BigInt, role: i32): Bytes {
+    let result = super.call(
+      "apiFlagForWorkspaceId",
+      "apiFlagForWorkspaceId(uint96,uint8):(bytes32)",
+      [
+        ethereum.Value.fromUnsignedBigInt(workspaceId),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(role))
+      ]
+    );
+
+    return result[0].toBytes();
+  }
+
+  try_apiFlagForWorkspaceId(
+    workspaceId: BigInt,
+    role: i32
+  ): ethereum.CallResult<Bytes> {
+    let result = super.tryCall(
+      "apiFlagForWorkspaceId",
+      "apiFlagForWorkspaceId(uint96,uint8):(bytes32)",
+      [
+        ethereum.Value.fromUnsignedBigInt(workspaceId),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(role))
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+
   applicationReg(): Address {
     let result = super.call("applicationReg", "applicationReg():(address)", []);
 
@@ -715,6 +789,52 @@ export class CreateWorkspaceCall__Outputs {
   _call: CreateWorkspaceCall;
 
   constructor(call: CreateWorkspaceCall) {
+    this._call = call;
+  }
+}
+
+export class DisburseRewardFromSafeCall extends ethereum.Call {
+  get inputs(): DisburseRewardFromSafeCall__Inputs {
+    return new DisburseRewardFromSafeCall__Inputs(this);
+  }
+
+  get outputs(): DisburseRewardFromSafeCall__Outputs {
+    return new DisburseRewardFromSafeCall__Outputs(this);
+  }
+}
+
+export class DisburseRewardFromSafeCall__Inputs {
+  _call: DisburseRewardFromSafeCall;
+
+  constructor(call: DisburseRewardFromSafeCall) {
+    this._call = call;
+  }
+
+  get _applicationId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _milestoneId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _erc20Interface(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
+  get _amount(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
+  }
+}
+
+export class DisburseRewardFromSafeCall__Outputs {
+  _call: DisburseRewardFromSafeCall;
+
+  constructor(call: DisburseRewardFromSafeCall) {
     this._call = call;
   }
 }
