@@ -178,6 +178,6 @@ export function handleDisburseReward(event: DisburseReward): void {
 	disburseReward(event, 'funds_disbursed', event.params.applicationId.toHex(), event.params.milestoneId.toHex(), event.params.sender, event.params.amount, event.params.isP2P, event.params.time.toI32())
 }
 
-export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe) {
+export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): void {
 	disburseReward(event, 'funds_disbursed_from_safe', event.params.applicationId.toHex(), event.params.milestoneId.toHex(), event.params.sender, event.params.amount, event.params.isP2P, event.params.time.toI32())
 }
