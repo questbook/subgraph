@@ -11,7 +11,7 @@ export function runTests(): void {
 
 	test('should create a workspace', () => {
 		const w = createWorkspace()
-		
+
 		assert.assertNotNull(w)
 		assert.i32Equals(w!.createdAtS, 123)
 		assertStringNotEmpty(w!.title, 'w.title')
@@ -26,7 +26,7 @@ export function runTests(): void {
 		const m = WorkspaceMember.load(`${w!.id}.${w!.ownerId.toHex()}`)
 		assert.assertNotNull(m)
 		assert.stringEquals(m!.workspace, w!.id)
-		
+
 		const s = Social.load(w!.socials[0])
 		assert.assertNotNull(s)
 		assert.assertTrue(s!.name.length > 0)
@@ -54,7 +54,7 @@ export function runTests(): void {
 
 		const event = new WorkspaceUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspaceUpdated(event)
-		
+
 		const wUpdate = Workspace.load(w.id)
 		assert.assertNotNull(wUpdate)
 		assert.i32Equals(wUpdate!.updatedAtS, 124)
@@ -71,7 +71,7 @@ export function runTests(): void {
 		assert.assertNotNull(token)
 		assertStringNotEmpty(token!.label)
 		assert.assertTrue(token!.decimal > 0)
-		
+
 		const sUpdate = Social.load(wUpdate!.socials[0])
 		assert.assertTrue(s!.value != sUpdate!.value)
 
@@ -90,12 +90,12 @@ export function runTests(): void {
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString('json:{"publicKey":"-1i2jrc12rc13rc"}')),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(124))
 		]
-		
+
 		ev.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
 
 		const event = new WorkspaceUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspaceUpdated(event)
-		
+
 		const wUpdate = WorkspaceMember.load(`${w.id}.${ev.transaction.from.toHex()}`)
 
 		assert.assertNotNull(wUpdate)
@@ -118,10 +118,10 @@ export function runTests(): void {
 		assert.assertNotNull(wUpdate)
 		assert.i32Equals(wUpdate!.updatedAtS, 125)
 
-		for(let i = 0;i < addresses.length;i++) {
+		for(let i = 0; i < addresses.length; i++) {
 			const memberAddedId = `${wUpdate!.id}.${addresses[i].toHex()}`
 			const member = WorkspaceMember.load(memberAddedId)
-	
+
 			assert.assertNotNull(member)
 			assert.stringEquals(member!.accessLevel, 'admin')
 			assert.stringEquals(member!.workspace, wUpdate!.id)
@@ -152,7 +152,7 @@ export function runTests(): void {
 
 		const memberAddedId = `${w!.id}.${address.toHex()}`
 		const member = WorkspaceMember.load(memberAddedId)
-	
+
 		assert.assertNotNull(member)
 		assert.stringEquals(member!.accessLevel, 'admin')
 		assertStringNotEmpty(member!.fullName, 'member.fullName')
@@ -186,7 +186,7 @@ export function runTests(): void {
 		assert.assertNotNull(wUpdate)
 		assert.i32Equals(wUpdate!.updatedAtS, 126)
 
-		for(let i = 0;i < addresses.length;i++) {
+		for(let i = 0; i < addresses.length; i++) {
 			const memberAddedId = `${wUpdate!.id}.${addresses[i].toHex()}`
 			const member = WorkspaceMember.load(memberAddedId)!
 			assert.assertNotNull(member)
@@ -272,7 +272,7 @@ export function runTests(): void {
 
 		const fundTransfer = FundsTransfer.load(ev.transaction.hash.toHex())
 		assert.assertNotNull(fundTransfer)
-		assert.stringEquals(fundTransfer?.type!, 'funds_disbursed_from_safe')
+		assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
 	})
 }
 
@@ -280,12 +280,12 @@ function workspaceWithAdditionalMembers(addresses: Address[], emails: string[]):
 	const w = createWorkspace()!
 
 	const roles: i32[] = []
-	for(let i = 0;i < addresses.length;i++) {
+	for(let i = 0; i < addresses.length; i++) {
 		roles.push(0)
 	}
 
 	const enabled: boolean[] = []
-	for(let i = 0;i < addresses.length;i++) {
+	for(let i = 0; i < addresses.length; i++) {
 		enabled.push(true)
 	}
 
