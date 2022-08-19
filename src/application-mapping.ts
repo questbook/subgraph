@@ -136,7 +136,7 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 
 	const entity = ApplicationMilestone.load(milestoneId)
 	if(!entity) {
-		log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+		log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown milestone: ID="${milestoneId}"`, [])
 		return
 	}
 

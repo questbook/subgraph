@@ -28,7 +28,7 @@ export function disburseReward(event: ethereum.Event, depositType: string, _appl
 
 	const entity = ApplicationMilestone.load(milestoneId)
 	if(!entity) {
-		log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+		log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown milestone: ID="${milestoneId}"`, [])
 		return
 	}
 
