@@ -26,7 +26,7 @@ jobs:
 
     - name: Run tests
       run: |
-        NETWORK=${{github.event.inputs.network}} yarn prepare-subgraph
+        NETWORK=rinkeby yarn prepare-subgraph
         yarn test
     
     - name: Deploy subgraphs
