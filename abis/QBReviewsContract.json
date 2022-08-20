@@ -160,6 +160,12 @@
 		},
 		{
 		  "indexed": false,
+		  "internalType": "address",
+		  "name": "_reviewerAddress",
+		  "type": "address"
+		},
+		{
+		  "indexed": false,
 		  "internalType": "uint96",
 		  "name": "_workspaceId",
 		  "type": "uint96"
@@ -650,6 +656,11 @@
 	{
 	  "inputs": [
 		{
+		  "internalType": "address",
+		  "name": "_reviewerAddress",
+		  "type": "address"
+		},
+		{
 		  "internalType": "uint96",
 		  "name": "_workspaceId",
 		  "type": "uint96"
@@ -732,5 +743,4 @@
 	  "stateMutability": "view",
 	  "type": "function"
 	}
-  ]
-  
+]

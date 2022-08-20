@@ -7,7 +7,7 @@ import { ReviewSetRequest, RubricSetRequest, validateReviewSetRequest, validateR
 export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	const reviewId = event.params._reviewId.toHex()
 	const workspace = event.params._workspaceId.toHex()
-	const reviewerAddress = event.transaction.from
+	const reviewerAddress = event.params._reviewerAddress
 	const reviewer = reviewerAddress.toHex()
 	const grantId = event.params._grantAddress.toHex()
 

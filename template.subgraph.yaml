@@ -104,7 +104,7 @@ dataSources:
         - name: QBReviewsContract
           file: ./abis/QBReviewsContract.json
       eventHandlers:
-        - event: ReviewSubmitted(indexed uint96,uint96,uint96,address,string,uint256)
+        - event: ReviewSubmitted(indexed uint96,address,uint96,uint96,address,string,uint256)
           handler: handleReviewSubmitted
         - event: ReviewersAssigned(indexed uint96[],uint96,uint96,address,address[],bool[],uint256)
           handler: handleReviewersAssigned
