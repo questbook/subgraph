@@ -1,9 +1,9 @@
 import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
-import { WorkspaceMembersUpdated, WorkspaceMemberUpdated, WorkspaceSafeUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
+import { DisburseRewardFromSafe, WorkspaceMembersUpdated, WorkspaceMemberUpdated, WorkspaceSafeUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { FundsTransfer, Partner, Social, Token, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
-import { handleDisburseReward, handleWorkspaceMembersUpdated, handleWorkspaceMemberUpdated, handleWorkspaceSafeUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
+import { handleDisburseReward, handleDisburseRewardFromSafe, handleWorkspaceMembersUpdated, handleWorkspaceMemberUpdated, handleWorkspaceSafeUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createWorkspace, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 import { MOCK_APPLICATION_ID } from './utils'
 
@@ -11,7 +11,7 @@ export function runTests(): void {
 
 	test('should create a workspace', () => {
 		const w = createWorkspace()
-		
+
 		assert.assertNotNull(w)
 		assert.i32Equals(w!.createdAtS, 123)
 		assertStringNotEmpty(w!.title, 'w.title')
@@ -26,7 +26,7 @@ export function runTests(): void {
 		const m = WorkspaceMember.load(`${w!.id}.${w!.ownerId.toHex()}`)
 		assert.assertNotNull(m)
 		assert.stringEquals(m!.workspace, w!.id)
-		
+
 		const s = Social.load(w!.socials[0])
 		assert.assertNotNull(s)
 		assert.assertTrue(s!.name.length > 0)
@@ -54,7 +54,7 @@ export function runTests(): void {
 
 		const event = new WorkspaceUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspaceUpdated(event)
-		
+
 		const wUpdate = Workspace.load(w.id)
 		assert.assertNotNull(wUpdate)
 		assert.i32Equals(wUpdate!.updatedAtS, 124)
@@ -71,7 +71,7 @@ export function runTests(): void {
 		assert.assertNotNull(token)
 		assertStringNotEmpty(token!.label)
 		assert.assertTrue(token!.decimal > 0)
-		
+
 		const sUpdate = Social.load(wUpdate!.socials[0])
 		assert.assertTrue(s!.value != sUpdate!.value)
 
@@ -90,12 +90,12 @@ export function runTests(): void {
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString('json:{"publicKey":"-1i2jrc12rc13rc"}')),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(124))
 		]
-		
+
 		ev.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
 
 		const event = new WorkspaceUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspaceUpdated(event)
-		
+
 		const wUpdate = WorkspaceMember.load(`${w.id}.${ev.transaction.from.toHex()}`)
 
 		assert.assertNotNull(wUpdate)
@@ -118,10 +118,10 @@ export function runTests(): void {
 		assert.assertNotNull(wUpdate)
 		assert.i32Equals(wUpdate!.updatedAtS, 125)
 
-		for(let i = 0;i < addresses.length;i++) {
+		for(let i = 0; i < addresses.length; i++) {
 			const memberAddedId = `${wUpdate!.id}.${addresses[i].toHex()}`
 			const member = WorkspaceMember.load(memberAddedId)
-	
+
 			assert.assertNotNull(member)
 			assert.stringEquals(member!.accessLevel, 'admin')
 			assert.stringEquals(member!.workspace, wUpdate!.id)
@@ -152,7 +152,7 @@ export function runTests(): void {
 
 		const memberAddedId = `${w!.id}.${address.toHex()}`
 		const member = WorkspaceMember.load(memberAddedId)
-	
+
 		assert.assertNotNull(member)
 		assert.stringEquals(member!.accessLevel, 'admin')
 		assertStringNotEmpty(member!.fullName, 'member.fullName')
@@ -186,7 +186,7 @@ export function runTests(): void {
 		assert.assertNotNull(wUpdate)
 		assert.i32Equals(wUpdate!.updatedAtS, 126)
 
-		for(let i = 0;i < addresses.length;i++) {
+		for(let i = 0; i < addresses.length; i++) {
 			const memberAddedId = `${wUpdate!.id}.${addresses[i].toHex()}`
 			const member = WorkspaceMember.load(memberAddedId)!
 			assert.assertNotNull(member)
@@ -250,18 +250,42 @@ export function runTests(): void {
 		const fundTransfer = FundsTransfer.load(ev.transaction.hash.toHex())
 		assert.assertNotNull(fundTransfer)
 	})
+
+	test('should disburse reward from safe', () => {
+		const w = createWorkspace()
+		const a = createApplication()
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
+			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32(0)),
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xE3D997D569b5b03B577C6a2Edd1d2613FE776cb0'))),
+			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0x230fb4c4d462eEF9e6790337Cf57271E519bB697'))),
+			new ethereum.EventParam('amount', ethereum.Value.fromI32(10)),
+			new ethereum.EventParam('isP2P', ethereum.Value.fromBoolean(true)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
+		]
+
+		const event = new DisburseRewardFromSafe(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleDisburseRewardFromSafe(event)
+
+		const fundTransfer = FundsTransfer.load(ev.transaction.hash.toHex())
+		assert.assertNotNull(fundTransfer)
+		assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
+	})
 }
 
 function workspaceWithAdditionalMembers(addresses: Address[], emails: string[]): Workspace | null {
 	const w = createWorkspace()!
 
 	const roles: i32[] = []
-	for(let i = 0;i < addresses.length;i++) {
+	for(let i = 0; i < addresses.length; i++) {
 		roles.push(0)
 	}
 
 	const enabled: boolean[] = []
-	for(let i = 0;i < addresses.length;i++) {
+	for(let i = 0; i < addresses.length; i++) {
 		enabled.push(true)
 	}
 

@@ -1,43 +1,54 @@
-import { log } from '@graphprotocol/graph-ts'
+import { BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from '../../generated/schema'
-import { DisburseReward } from '../../generated/templates/QBGrantsContract/QBGrantsContract'
 import { addFundsTransferNotification } from './notifications'
 
-export function disburseReward(event: DisburseReward): void {
-	const applicationId = event.params.applicationId.toHex()
-	const milestoneIndex = event.params.milestoneId.toI32()
+class disburseRewardInterface {
+	event: ethereum.Event;
+	depositType: string;
+	_applicationId: string;
+	_milestoneId: i32;
+	_sender: Bytes;
+	_amount: BigInt;
+	 _isP2P: boolean
+
+}
+
+export function disburseReward(rewardProps: disburseRewardInterface): void {
+	const applicationId = rewardProps._applicationId
+	const milestoneIndex = rewardProps._milestoneId
 	const milestoneId = `${applicationId}.${milestoneIndex}`
-	const amountPaid = event.params.amount
+	const amountPaid = rewardProps._amount
+	const eventTime = rewardProps.event.block.timestamp.toI32()
 
 	const application = GrantApplication.load(applicationId)
 	if(!application) {
-		log.warning(`[${event.transaction.hash.toHex()}] recv disburse reward for unknown application: ID="${applicationId}"`, [])
+		log.warning(`[${rewardProps.event.transaction.hash.toHex()}] recv disburse reward for unknown application: ID="${applicationId}"`, [])
 		return
 	}
 
-	const disburseEntity = new FundsTransfer(event.transaction.hash.toHex())
-	disburseEntity.createdAtS = event.params.time.toI32()
+	const disburseEntity = new FundsTransfer(rewardProps.event.transaction.hash.toHex())
+	disburseEntity.createdAtS = eventTime
 	disburseEntity.amount = amountPaid
-	disburseEntity.sender = event.params.sender
-	disburseEntity.to = event.transaction.to!
+	disburseEntity.sender = rewardProps._sender
+	disburseEntity.to = rewardProps.event.transaction.to!
 	disburseEntity.application = applicationId
 	disburseEntity.milestone = milestoneId
-	disburseEntity.type = 'funds_disbursed'
+	disburseEntity.type = rewardProps.depositType
 	disburseEntity.grant = application.grant
 
 	disburseEntity.save()
 
 	const entity = ApplicationMilestone.load(milestoneId)
 	if(!entity) {
-		log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+		log.warning(`[${rewardProps.event.transaction.hash.toHex()}] recv milestone updated for unknown milestone: ID="${milestoneId}"`, [])
 		return
 	}
 
 	entity.amountPaid = entity.amountPaid.plus(amountPaid)
-	entity.updatedAtS = event.params.time.toI32()
+	entity.updatedAtS = eventTime
 	// find grant and reduce the amount of the funding
 	// only if not a P2P exchange
-	if(!event.params.isP2P) {
+	if(!rewardProps._isP2P) {
 		const grantEntity = Grant.load(application.grant)
 		if(grantEntity) {
 			grantEntity.funding = grantEntity.funding.minus(amountPaid)

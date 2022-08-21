@@ -59,9 +59,16 @@ export function handleGrantCreated(event: GrantCreated): void {
 }
 
 export function handleDisburseReward(event: DisburseReward): void {
-	disburseReward(event)
+	disburseReward({
+		event, 
+		depositType: 'funds_disbursed',
+		_applicationId: event.params.applicationId.toHex(),
+		_milestoneId: event.params.milestoneId.toI32(),
+		_sender: event.params.sender,
+		_amount: event.params.amount,
+		_isP2P: event.params.isP2P
+	})
 }
-
 
 export function handleTransactionRecord(event: TransactionRecord): void {
 	const applicationId = event.params.applicationId.toHex()
