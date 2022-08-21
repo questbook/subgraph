@@ -167,10 +167,11 @@ export function runTests(): void {
 		const milestoneId = g!.milestones[0]
 
 		const ev = newMockEvent()
+		ev.block.timestamp = BigInt.fromI32(127)
 
 		ev.parameters = [
 			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
-			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32(0)),
+			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32(0)), // first index milestone = 0
 			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xC23081F360e3847006dB660bae1c6d1b2e17eC2B'))),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0xC33081F360e3847006dB660bae1c6d1b2e17eC2B'))),

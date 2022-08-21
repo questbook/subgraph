@@ -2,11 +2,12 @@ import { BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from '../../generated/schema'
 import { addFundsTransferNotification } from './notifications'
 
-export function disburseReward(event: ethereum.Event, depositType: string, _applicationId: string, _milestoneId: string, _sender: Bytes, _amount: BigInt, _isP2P: boolean, _eventTime: i32): void {
+export function disburseReward(event: ethereum.Event, depositType: string, _applicationId: string, _milestoneId: i32, _sender: Bytes, _amount: BigInt, _isP2P: boolean): void {
 	const applicationId = _applicationId
 	const milestoneIndex = _milestoneId
 	const milestoneId = `${applicationId}.${milestoneIndex}`
 	const amountPaid = _amount
+	const eventTime = event.block.timestamp.toI32()
 
 	const application = GrantApplication.load(applicationId)
 	if(!application) {
@@ -15,7 +16,7 @@ export function disburseReward(event: ethereum.Event, depositType: string, _appl
 	}
 
 	const disburseEntity = new FundsTransfer(event.transaction.hash.toHex())
-	disburseEntity.createdAtS = _eventTime
+	disburseEntity.createdAtS = eventTime
 	disburseEntity.amount = amountPaid
 	disburseEntity.sender = _sender
 	disburseEntity.to = event.transaction.to!
@@ -33,7 +34,7 @@ export function disburseReward(event: ethereum.Event, depositType: string, _appl
 	}
 
 	entity.amountPaid = entity.amountPaid.plus(amountPaid)
-	entity.updatedAtS = _eventTime
+	entity.updatedAtS = eventTime
 	// find grant and reduce the amount of the funding
 	// only if not a P2P exchange
 	if(!_isP2P) {
