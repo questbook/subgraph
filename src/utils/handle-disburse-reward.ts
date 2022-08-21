@@ -2,7 +2,7 @@ import { BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from '../../generated/schema'
 import { addFundsTransferNotification } from './notifications'
 
-export class disburseRewardInterface {
+class disburseRewardInterface {
 	event: ethereum.Event;
 	depositType: string;
 	_applicationId: string;
