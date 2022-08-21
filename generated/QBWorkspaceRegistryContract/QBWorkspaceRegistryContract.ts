@@ -810,20 +810,20 @@ export class DisburseRewardFromSafeCall__Inputs {
     this._call = call;
   }
 
-  get _applicationId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
+  get _applicationIds(): Array<BigInt> {
+    return this._call.inputValues[0].value.toBigIntArray();
   }
 
-  get _milestoneId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+  get _milestoneIds(): Array<BigInt> {
+    return this._call.inputValues[1].value.toBigIntArray();
   }
 
   get _erc20Interface(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
 
-  get _amount(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+  get _amounts(): Array<BigInt> {
+    return this._call.inputValues[3].value.toBigIntArray();
   }
 
   get _workspaceId(): BigInt {
