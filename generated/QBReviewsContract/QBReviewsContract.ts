@@ -183,24 +183,28 @@ export class ReviewSubmitted__Params {
     return this._event.parameters[0].value.toBigInt();
   }
 
-  get _workspaceId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
+  get _reviewerAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
   }
 
-  get _applicationId(): BigInt {
+  get _workspaceId(): BigInt {
     return this._event.parameters[2].value.toBigInt();
   }
 
+  get _applicationId(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
   get _grantAddress(): Address {
-    return this._event.parameters[3].value.toAddress();
+    return this._event.parameters[4].value.toAddress();
   }
 
   get _metadataHash(): string {
-    return this._event.parameters[4].value.toString();
+    return this._event.parameters[5].value.toString();
   }
 
   get time(): BigInt {
-    return this._event.parameters[5].value.toBigInt();
+    return this._event.parameters[6].value.toBigInt();
   }
 }
 
@@ -920,20 +924,24 @@ export class SubmitReviewCall__Inputs {
     this._call = call;
   }
 
-  get _workspaceId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
+  get _reviewerAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
   }
 
-  get _applicationId(): BigInt {
+  get _workspaceId(): BigInt {
     return this._call.inputValues[1].value.toBigInt();
   }
 
+  get _applicationId(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
   get _grantAddress(): Address {
-    return this._call.inputValues[2].value.toAddress();
+    return this._call.inputValues[3].value.toAddress();
   }
 
   get _metadataHash(): string {
-    return this._call.inputValues[3].value.toString();
+    return this._call.inputValues[4].value.toString();
   }
 }
 
