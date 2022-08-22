@@ -303,12 +303,20 @@ export class QBReviewsContract__grantReviewStatesResult {
   value1: BigInt;
   value2: BigInt;
   value3: string;
+  value4: BigInt;
 
-  constructor(value0: Address, value1: BigInt, value2: BigInt, value3: string) {
+  constructor(
+    value0: Address,
+    value1: BigInt,
+    value2: BigInt,
+    value3: string,
+    value4: BigInt
+  ) {
     this.value0 = value0;
     this.value1 = value1;
     this.value2 = value2;
     this.value3 = value3;
+    this.value4 = value4;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -317,6 +325,7 @@ export class QBReviewsContract__grantReviewStatesResult {
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     map.set("value3", ethereum.Value.fromString(this.value3));
+    map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
     return map;
   }
 }
@@ -405,7 +414,7 @@ export class QBReviewsContract extends ethereum.SmartContract {
   ): QBReviewsContract__grantReviewStatesResult {
     let result = super.call(
       "grantReviewStates",
-      "grantReviewStates(address):(address,uint96,uint96,string)",
+      "grantReviewStates(address):(address,uint96,uint96,string,uint96)",
       [ethereum.Value.fromAddress(param0)]
     );
 
@@ -413,7 +422,8 @@ export class QBReviewsContract extends ethereum.SmartContract {
       result[0].toAddress(),
       result[1].toBigInt(),
       result[2].toBigInt(),
-      result[3].toString()
+      result[3].toString(),
+      result[4].toBigInt()
     );
   }
 
@@ -422,7 +432,7 @@ export class QBReviewsContract extends ethereum.SmartContract {
   ): ethereum.CallResult<QBReviewsContract__grantReviewStatesResult> {
     let result = super.tryCall(
       "grantReviewStates",
-      "grantReviewStates(address):(address,uint96,uint96,string)",
+      "grantReviewStates(address):(address,uint96,uint96,string,uint96)",
       [ethereum.Value.fromAddress(param0)]
     );
     if (result.reverted) {
@@ -434,9 +444,58 @@ export class QBReviewsContract extends ethereum.SmartContract {
         value[0].toAddress(),
         value[1].toBigInt(),
         value[2].toBigInt(),
-        value[3].toString()
+        value[3].toString(),
+        value[4].toBigInt()
       )
     );
+  }
+
+  hasAutoAssigningEnabled(_grantAddress: Address): boolean {
+    let result = super.call(
+      "hasAutoAssigningEnabled",
+      "hasAutoAssigningEnabled(address):(bool)",
+      [ethereum.Value.fromAddress(_grantAddress)]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_hasAutoAssigningEnabled(
+    _grantAddress: Address
+  ): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "hasAutoAssigningEnabled",
+      "hasAutoAssigningEnabled(address):(bool)",
+      [ethereum.Value.fromAddress(_grantAddress)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  isAutoAssigningEnabled(param0: Address): boolean {
+    let result = super.call(
+      "isAutoAssigningEnabled",
+      "isAutoAssigningEnabled(address):(bool)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_isAutoAssigningEnabled(param0: Address): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "isAutoAssigningEnabled",
+      "isAutoAssigningEnabled(address):(bool)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   owner(): Address {
@@ -509,6 +568,61 @@ export class QBReviewsContract extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  reviewerAssignmentCounts(param0: Address, param1: Address): BigInt {
+    let result = super.call(
+      "reviewerAssignmentCounts",
+      "reviewerAssignmentCounts(address,address):(uint96)",
+      [ethereum.Value.fromAddress(param0), ethereum.Value.fromAddress(param1)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_reviewerAssignmentCounts(
+    param0: Address,
+    param1: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "reviewerAssignmentCounts",
+      "reviewerAssignmentCounts(address,address):(uint96)",
+      [ethereum.Value.fromAddress(param0), ethereum.Value.fromAddress(param1)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  reviewers(param0: Address, param1: BigInt): Address {
+    let result = super.call(
+      "reviewers",
+      "reviewers(address,uint256):(address)",
+      [
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromUnsignedBigInt(param1)
+      ]
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_reviewers(param0: Address, param1: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "reviewers",
+      "reviewers(address,uint256):(address)",
+      [
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromUnsignedBigInt(param1)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   reviews(param0: Address, param1: BigInt): QBReviewsContract__reviewsResult {
@@ -619,6 +733,90 @@ export class AssignReviewersCall__Outputs {
   _call: AssignReviewersCall;
 
   constructor(call: AssignReviewersCall) {
+    this._call = call;
+  }
+}
+
+export class AssignReviewersRoundRobinCall extends ethereum.Call {
+  get inputs(): AssignReviewersRoundRobinCall__Inputs {
+    return new AssignReviewersRoundRobinCall__Inputs(this);
+  }
+
+  get outputs(): AssignReviewersRoundRobinCall__Outputs {
+    return new AssignReviewersRoundRobinCall__Outputs(this);
+  }
+}
+
+export class AssignReviewersRoundRobinCall__Inputs {
+  _call: AssignReviewersRoundRobinCall;
+
+  constructor(call: AssignReviewersRoundRobinCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _applicationId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+}
+
+export class AssignReviewersRoundRobinCall__Outputs {
+  _call: AssignReviewersRoundRobinCall;
+
+  constructor(call: AssignReviewersRoundRobinCall) {
+    this._call = call;
+  }
+}
+
+export class EnableAutoAssignmentOfReviewersCall extends ethereum.Call {
+  get inputs(): EnableAutoAssignmentOfReviewersCall__Inputs {
+    return new EnableAutoAssignmentOfReviewersCall__Inputs(this);
+  }
+
+  get outputs(): EnableAutoAssignmentOfReviewersCall__Outputs {
+    return new EnableAutoAssignmentOfReviewersCall__Outputs(this);
+  }
+}
+
+export class EnableAutoAssignmentOfReviewersCall__Inputs {
+  _call: EnableAutoAssignmentOfReviewersCall;
+
+  constructor(call: EnableAutoAssignmentOfReviewersCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _reviewers(): Array<Address> {
+    return this._call.inputValues[2].value.toAddressArray();
+  }
+
+  get _active(): Array<boolean> {
+    return this._call.inputValues[3].value.toBooleanArray();
+  }
+
+  get _numOfReviewersPerApplication(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
+  }
+}
+
+export class EnableAutoAssignmentOfReviewersCall__Outputs {
+  _call: EnableAutoAssignmentOfReviewersCall;
+
+  constructor(call: EnableAutoAssignmentOfReviewersCall) {
     this._call = call;
   }
 }

@@ -325,6 +325,29 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
+  applicationReviewReg(): Address {
+    let result = super.call(
+      "applicationReviewReg",
+      "applicationReviewReg():(address)",
+      []
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_applicationReviewReg(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "applicationReviewReg",
+      "applicationReviewReg():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   applications(param0: BigInt): QBApplicationsContract__applicationsResult {
     let result = super.call(
       "applications",
@@ -512,6 +535,44 @@ export class ApproveMilestoneCall__Outputs {
   }
 }
 
+export class BatchUpdateApplicationStateCall extends ethereum.Call {
+  get inputs(): BatchUpdateApplicationStateCall__Inputs {
+    return new BatchUpdateApplicationStateCall__Inputs(this);
+  }
+
+  get outputs(): BatchUpdateApplicationStateCall__Outputs {
+    return new BatchUpdateApplicationStateCall__Outputs(this);
+  }
+}
+
+export class BatchUpdateApplicationStateCall__Inputs {
+  _call: BatchUpdateApplicationStateCall;
+
+  constructor(call: BatchUpdateApplicationStateCall) {
+    this._call = call;
+  }
+
+  get _applicationIds(): Array<BigInt> {
+    return this._call.inputValues[0].value.toBigIntArray();
+  }
+
+  get _applicationStates(): Array<i32> {
+    return this._call.inputValues[1].value.toI32Array();
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+}
+
+export class BatchUpdateApplicationStateCall__Outputs {
+  _call: BatchUpdateApplicationStateCall;
+
+  constructor(call: BatchUpdateApplicationStateCall) {
+    this._call = call;
+  }
+}
+
 export class CompleteApplicationCall extends ethereum.Call {
   get inputs(): CompleteApplicationCall__Inputs {
     return new CompleteApplicationCall__Inputs(this);
@@ -636,6 +697,36 @@ export class RequestMilestoneApprovalCall__Outputs {
   _call: RequestMilestoneApprovalCall;
 
   constructor(call: RequestMilestoneApprovalCall) {
+    this._call = call;
+  }
+}
+
+export class SetApplicationReviewRegCall extends ethereum.Call {
+  get inputs(): SetApplicationReviewRegCall__Inputs {
+    return new SetApplicationReviewRegCall__Inputs(this);
+  }
+
+  get outputs(): SetApplicationReviewRegCall__Outputs {
+    return new SetApplicationReviewRegCall__Outputs(this);
+  }
+}
+
+export class SetApplicationReviewRegCall__Inputs {
+  _call: SetApplicationReviewRegCall;
+
+  constructor(call: SetApplicationReviewRegCall) {
+    this._call = call;
+  }
+
+  get _applicationReviewReg(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetApplicationReviewRegCall__Outputs {
+  _call: SetApplicationReviewRegCall;
+
+  constructor(call: SetApplicationReviewRegCall) {
     this._call = call;
   }
 }

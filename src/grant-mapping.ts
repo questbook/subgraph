@@ -22,7 +22,8 @@ export function handleGrantCreated(event: GrantCreated): void {
 
 	const entityResult = validatedJsonFromIpfs<GrantCreateRequest>(event.params.metadataHash, validateGrantCreateRequest)
 	if(entityResult.error) {
-		log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant: "${entityResult.error!}"`, [])
+		log.warning(`Entiti Result:  ${entityResult}`, [])
+		log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant with metadata hash [${event.params.metadataHash}]: "${entityResult.error!}"`, [])
 		return
 	}
 
