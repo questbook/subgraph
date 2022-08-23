@@ -57,6 +57,8 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	member.outstandingReviewIds = []
 	member.lastReviewSubmittedAt = 0
 	member.addedBy = member.id
+	member.lastKnownTxHash = event.transaction.hash
+
 	member.save()
 	entity.save()
 }
