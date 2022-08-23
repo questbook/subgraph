@@ -1239,6 +1239,7 @@ export class WorkspaceMember extends Entity {
     this.set("outstandingReviewIds", Value.fromStringArray(new Array(0)));
     this.set("workspace", Value.fromString(""));
     this.set("addedBy", Value.fromString(""));
+    this.set("lastKnownTxHash", Value.fromBytes(Bytes.empty()));
   }
 
   save(): void {
@@ -1414,6 +1415,15 @@ export class WorkspaceMember extends Entity {
 
   set addedBy(value: string) {
     this.set("addedBy", Value.fromString(value));
+  }
+
+  get lastKnownTxHash(): Bytes {
+    let value = this.get("lastKnownTxHash");
+    return value!.toBytes();
+  }
+
+  set lastKnownTxHash(value: Bytes) {
+    this.set("lastKnownTxHash", Value.fromBytes(value));
   }
 }
 

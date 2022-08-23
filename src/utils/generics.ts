@@ -291,6 +291,7 @@ export function mapWorkspaceMembersUpdate(
 			}
 
 			member.actorId = memberId
+			member.lastKnownTxHash = txHash
 			if(emails) {
 				member.email = emails[i]
 			}

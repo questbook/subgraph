@@ -267,6 +267,8 @@ type WorkspaceMember @entity {
   workspace: Workspace!
   "Address of the workspace member who added this member"
   addedBy: WorkspaceMember!
+  "Last known hash of the TX made by this user"
+  lastKnownTxHash: Bytes!
 }
 
 "Schema for a Workspace or DAO"
