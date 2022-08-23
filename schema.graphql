@@ -195,8 +195,6 @@ type Grant @entity {
   fields: [GrantField!]!
   "Whether the grant is currently accepting applications or not"
   acceptingApplications: Boolean!
-  "Should reviews submitted be encrypted & only be visible privately"
-  privateReviews: Boolean!
 
   metadataHash: String!
   "in seconds since epoch"

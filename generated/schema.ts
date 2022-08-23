@@ -995,15 +995,6 @@ export class Grant extends Entity {
     this.set("acceptingApplications", Value.fromBoolean(value));
   }
 
-  get privateReviews(): boolean {
-    let value = this.get("privateReviews");
-    return value!.toBoolean();
-  }
-
-  set privateReviews(value: boolean) {
-    this.set("privateReviews", Value.fromBoolean(value));
-  }
-
   get metadataHash(): string {
     let value = this.get("metadataHash");
     return value!.toString();
