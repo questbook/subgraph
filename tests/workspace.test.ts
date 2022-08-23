@@ -150,7 +150,7 @@ export function runTests(): void {
 		const event = new WorkspaceMemberUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspaceMemberUpdated(event)
 
-		const memberAddedId = `${w!.id}.${address.toHex()}`
+		const memberAddedId = `${w.id}.${address.toHex()}`
 		const member = WorkspaceMember.load(memberAddedId)
 
 		assert.assertNotNull(member)
