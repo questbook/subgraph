@@ -180,6 +180,7 @@ export class GrantCreateRequest {
 	creatorId: string = ''
 	workspaceId: string = ''
 	fields: GrantFieldMap = new GrantFieldMap()
+	privateReviews: Boolean | null = null
 	grantManagers: Bytes[] | null = null
 }
 
@@ -1456,6 +1457,16 @@ if(fieldsJson) {
 	}
 	if(fieldsResult.value) {
 		value.fields = fieldsResult.value!
+	}
+}
+const privateReviewsJson = obj.get('privateReviews')
+if(privateReviewsJson) {
+	const privateReviewsResult = validateBoolean(privateReviewsJson)
+	if(privateReviewsResult.error) {
+		return { value: null, error: ["Error in mapping 'privateReviews': ", privateReviewsResult.error!].join('') }
+	}
+	if(privateReviewsResult.value) {
+		value.privateReviews = privateReviewsResult.value!
 	}
 }
 const grantManagersJson = obj.get('grantManagers')

@@ -32,6 +32,7 @@ export function handleGrantCreated(event: GrantCreated): void {
 	entity.title = json.title
 	entity.summary = json.summary
 	entity.details = json.details
+	entity.privateReviews = json.privateReviews !== null && json.privateReviews!.isTrue == true
 
 	const reward = mapGrantRewardAndListen(entity.id, workspaceId, json.reward)
 
