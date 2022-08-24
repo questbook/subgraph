@@ -394,6 +394,38 @@ export class QBReviewsContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  applicationsToGrant(param0: Address, param1: BigInt): BigInt {
+    let result = super.call(
+      "applicationsToGrant",
+      "applicationsToGrant(address,uint256):(uint96)",
+      [
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromUnsignedBigInt(param1)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_applicationsToGrant(
+    param0: Address,
+    param1: BigInt
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "applicationsToGrant",
+      "applicationsToGrant(address,uint256):(uint96)",
+      [
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromUnsignedBigInt(param1)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   grantFactory(): Address {
     let result = super.call("grantFactory", "grantFactory():(address)", []);
 
@@ -496,6 +528,31 @@ export class QBReviewsContract extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  lastAssignedReviewerIndices(param0: Address): BigInt {
+    let result = super.call(
+      "lastAssignedReviewerIndices",
+      "lastAssignedReviewerIndices(address):(uint256)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_lastAssignedReviewerIndices(
+    param0: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "lastAssignedReviewerIndices",
+      "lastAssignedReviewerIndices(address):(uint256)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   owner(): Address {
@@ -691,6 +748,40 @@ export class QBReviewsContract extends ethereum.SmartContract {
   }
 }
 
+export class AppendToApplicationListCall extends ethereum.Call {
+  get inputs(): AppendToApplicationListCall__Inputs {
+    return new AppendToApplicationListCall__Inputs(this);
+  }
+
+  get outputs(): AppendToApplicationListCall__Outputs {
+    return new AppendToApplicationListCall__Outputs(this);
+  }
+}
+
+export class AppendToApplicationListCall__Inputs {
+  _call: AppendToApplicationListCall;
+
+  constructor(call: AppendToApplicationListCall) {
+    this._call = call;
+  }
+
+  get _applicationId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class AppendToApplicationListCall__Outputs {
+  _call: AppendToApplicationListCall;
+
+  constructor(call: AppendToApplicationListCall) {
+    this._call = call;
+  }
+}
+
 export class AssignReviewersCall extends ethereum.Call {
   get inputs(): AssignReviewersCall__Inputs {
     return new AssignReviewersCall__Inputs(this);
@@ -771,52 +862,6 @@ export class AssignReviewersRoundRobinCall__Outputs {
   _call: AssignReviewersRoundRobinCall;
 
   constructor(call: AssignReviewersRoundRobinCall) {
-    this._call = call;
-  }
-}
-
-export class EnableAutoAssignmentOfReviewersCall extends ethereum.Call {
-  get inputs(): EnableAutoAssignmentOfReviewersCall__Inputs {
-    return new EnableAutoAssignmentOfReviewersCall__Inputs(this);
-  }
-
-  get outputs(): EnableAutoAssignmentOfReviewersCall__Outputs {
-    return new EnableAutoAssignmentOfReviewersCall__Outputs(this);
-  }
-}
-
-export class EnableAutoAssignmentOfReviewersCall__Inputs {
-  _call: EnableAutoAssignmentOfReviewersCall;
-
-  constructor(call: EnableAutoAssignmentOfReviewersCall) {
-    this._call = call;
-  }
-
-  get _workspaceId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
-  get _reviewers(): Array<Address> {
-    return this._call.inputValues[2].value.toAddressArray();
-  }
-
-  get _active(): Array<boolean> {
-    return this._call.inputValues[3].value.toBooleanArray();
-  }
-
-  get _numOfReviewersPerApplication(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
-  }
-}
-
-export class EnableAutoAssignmentOfReviewersCall__Outputs {
-  _call: EnableAutoAssignmentOfReviewersCall;
-
-  constructor(call: EnableAutoAssignmentOfReviewersCall) {
     this._call = call;
   }
 }
@@ -1071,6 +1116,56 @@ export class SetRubricsCall__Outputs {
   _call: SetRubricsCall;
 
   constructor(call: SetRubricsCall) {
+    this._call = call;
+  }
+}
+
+export class SetRubricsAndEnableAutoAssignCall extends ethereum.Call {
+  get inputs(): SetRubricsAndEnableAutoAssignCall__Inputs {
+    return new SetRubricsAndEnableAutoAssignCall__Inputs(this);
+  }
+
+  get outputs(): SetRubricsAndEnableAutoAssignCall__Outputs {
+    return new SetRubricsAndEnableAutoAssignCall__Outputs(this);
+  }
+}
+
+export class SetRubricsAndEnableAutoAssignCall__Inputs {
+  _call: SetRubricsAndEnableAutoAssignCall;
+
+  constructor(call: SetRubricsAndEnableAutoAssignCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _reviewers(): Array<Address> {
+    return this._call.inputValues[2].value.toAddressArray();
+  }
+
+  get _active(): Array<boolean> {
+    return this._call.inputValues[3].value.toBooleanArray();
+  }
+
+  get _numOfReviewersPerApplication(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
+  }
+
+  get _rubricMetadataHash(): string {
+    return this._call.inputValues[5].value.toString();
+  }
+}
+
+export class SetRubricsAndEnableAutoAssignCall__Outputs {
+  _call: SetRubricsAndEnableAutoAssignCall;
+
+  constructor(call: SetRubricsAndEnableAutoAssignCall) {
     this._call = call;
   }
 }

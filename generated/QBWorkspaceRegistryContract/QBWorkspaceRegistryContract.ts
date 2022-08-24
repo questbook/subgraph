@@ -355,12 +355,16 @@ export class WorkspaceSafeUpdated__Params {
     return this._event.parameters[1].value.toBytes();
   }
 
+  get longSafeAddress(): string {
+    return this._event.parameters[2].value.toString();
+  }
+
   get safeChainId(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[3].value.toBigInt();
   }
 
   get time(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
+    return this._event.parameters[4].value.toBigInt();
   }
 }
 
@@ -780,8 +784,12 @@ export class CreateWorkspaceCall__Inputs {
     return this._call.inputValues[1].value.toBytes();
   }
 
+  get _longSafeAddress(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+
   get _safeChainId(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 }
 
@@ -1208,8 +1216,12 @@ export class UpdateWorkspaceSafeCall__Inputs {
     return this._call.inputValues[1].value.toBytes();
   }
 
+  get _longSafeAddress(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+
   get _safeChainId(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 }
 

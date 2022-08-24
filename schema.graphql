@@ -79,7 +79,7 @@ type WorkspaceSafe @entity {
   "Workspace of the space"
   workspace: Workspace!
   "Address of the safe"
-  address: Bytes!
+  address: String!
   "Chain ID of the chain"
   chainId: BigInt!
 }

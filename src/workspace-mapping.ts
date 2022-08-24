@@ -134,7 +134,7 @@ export function handleWorkspaceSafeUpdated(event: WorkspaceSafeUpdated): void {
 		const entity = new WorkspaceSafe(entityId)
 		entity.workspace = entityId
 		entity.chainId = event.params.safeChainId
-		entity.address = event.params.safeAddress
+		entity.address = event.params.longSafeAddress
 
 		entity.save()
 	} else {

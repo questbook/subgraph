@@ -17,7 +17,7 @@ export class WorkspaceSafe extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("workspace", Value.fromString(""));
-    this.set("address", Value.fromBytes(Bytes.empty()));
+    this.set("address", Value.fromString(""));
     this.set("chainId", Value.fromBigInt(BigInt.zero()));
   }
 
@@ -56,13 +56,13 @@ export class WorkspaceSafe extends Entity {
     this.set("workspace", Value.fromString(value));
   }
 
-  get address(): Bytes {
+  get address(): string {
     let value = this.get("address");
-    return value!.toBytes();
+    return value!.toString();
   }
 
-  set address(value: Bytes) {
-    this.set("address", Value.fromBytes(value));
+  set address(value: string) {
+    this.set("address", Value.fromString(value));
   }
 
   get chainId(): BigInt {
