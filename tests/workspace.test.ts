@@ -201,7 +201,8 @@ export function runTests(): void {
 
 		ev.parameters = [
 			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
-			new ethereum.EventParam('longSafeAddress', ethereum.Value.fromString("HWuCwhwayTaNcRtt72edn2uEMuKCuWMwmDFcJLbah3KC")),
+			new ethereum.EventParam('safeAddress', ethereum.Value.fromBytes(Bytes.fromByteArray(Bytes.fromHexString('0x0000000000000000000000000000000000000001')))),
+			new ethereum.EventParam('longSafeAddress', ethereum.Value.fromBytes(ethereum.Value.fromString("HWuCwhwayTaNcRtt72edn2uEMuKCuWMwmDFcJLbah3KC"))),
 			new ethereum.EventParam('safeChainId', ethereum.Value.fromUnsignedBigInt(BigInt.fromString('123'))),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(126))
 		]
@@ -216,7 +217,8 @@ export function runTests(): void {
 		// delete ev params
 		ev.parameters = [
 			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
-			new ethereum.EventParam('longSafeAddress', ethereum.Value.fromString("HWuCwhwayTaNcRtt72edn2uEMuKCuWMwmDFcJLbah3KC")),
+			new ethereum.EventParam('safeAddress', ethereum.Value.fromBytes(Bytes.fromByteArray(Bytes.fromHexString('0x0000000000000000000000000000000000000001')))),
+			new ethereum.EventParam('longSafeAddress', ethereum.Value.fromBytes(ethereum.Value.fromString("HWuCwhwayTaNcRtt72edn2uEMuKCuWMwmDFcJLbah3KC"))),
 			new ethereum.EventParam('safeChainId', ethereum.Value.fromUnsignedBigInt(BigInt.fromString('0'))),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(126))
 		]
