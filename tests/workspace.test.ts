@@ -216,7 +216,7 @@ export function runTests(): void {
 		// delete ev params
 		ev.parameters = [
 			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
-			new ethereum.EventParam('safeAddress', ethereum.Value.fromString('0x230fb4c4d462eEF9e6790337Cf57271E519bB697')),
+			new ethereum.EventParam('longSafeAddress', ethereum.Value.fromString('0x230fb4c4d462eEF9e6790337Cf57271E519bB697')),
 			new ethereum.EventParam('safeChainId', ethereum.Value.fromUnsignedBigInt(BigInt.fromString('0'))),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(126))
 		]
