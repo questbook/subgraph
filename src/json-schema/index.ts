@@ -69,6 +69,7 @@ export class GrantApplicationRequest {
 export class WorkspaceMemberUpdate {
 	fullName: string | null = null
 	profilePictureIpfsHash: string | null = null
+	publicKey: string | null = null
 }
 
 export class GrantApplicationUpdate {
@@ -144,6 +145,7 @@ export class Review_evaluation {
 
 export class ReviewSetRequest {
 	reviewer: Bytes = new Bytes(0)
+	reviewerPublicKey: string | null = null
 	publicReviewDataHash: string | null = null
 	encryptedReview: ReviewSetRequest_encryptedReview = new ReviewSetRequest_encryptedReview()
 }
@@ -634,6 +636,16 @@ if(profilePictureIpfsHashJson) {
 	}
 	if(profilePictureIpfsHashResult.value) {
 		value.profilePictureIpfsHash = profilePictureIpfsHashResult.value!
+	}
+}
+const publicKeyJson = obj.get('publicKey')
+if(publicKeyJson) {
+	const publicKeyResult = validatePublicKey(publicKeyJson)
+	if(publicKeyResult.error) {
+		return { value: null, error: ["Error in mapping 'publicKey': ", publicKeyResult.error!].join('') }
+	}
+	if(publicKeyResult.value) {
+		value.publicKey = publicKeyResult.value!
 	}
 }
 return { value, error: null }
@@ -1207,6 +1219,16 @@ if(reviewerJson) {
 	}
 	if(reviewerResult.value) {
 		value.reviewer = reviewerResult.value!
+	}
+}
+const reviewerPublicKeyJson = obj.get('reviewerPublicKey')
+if(reviewerPublicKeyJson) {
+	const reviewerPublicKeyResult = validatePublicKey(reviewerPublicKeyJson)
+	if(reviewerPublicKeyResult.error) {
+		return { value: null, error: ["Error in mapping 'reviewerPublicKey': ", reviewerPublicKeyResult.error!].join('') }
+	}
+	if(reviewerPublicKeyResult.value) {
+		value.reviewerPublicKey = reviewerPublicKeyResult.value!
 	}
 }
 const publicReviewDataHashJson = obj.get('publicReviewDataHash')

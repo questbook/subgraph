@@ -64,6 +64,10 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	}
 
 	member.outstandingReviewIds = outstandingReviewIds
+	if(!member.publicKey && json.reviewerPublicKey) {
+		member.publicKey = json.reviewerPublicKey
+	}
+
 	member.save()
 
 	const counterId = `${grantId}.${reviewer}`

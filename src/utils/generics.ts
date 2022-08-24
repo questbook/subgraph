@@ -311,6 +311,9 @@ export function mapWorkspaceMembersUpdate(
 					member.profilePictureIpfsHash = update.profilePictureIpfsHash
 				}
 				
+				if(update.publicKey) {
+					member.publicKey = update.publicKey
+				}
 			}
 			
 			member.updatedAt = entity.updatedAtS
