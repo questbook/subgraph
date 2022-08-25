@@ -264,7 +264,7 @@ export function runTests(): void {
 			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32Array([0, 0, 0])),
 			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xE3D997D569b5b03B577C6a2Edd1d2613FE776cb0'))),
 			new ethereum.EventParam('nonEvmAssetAddress', ethereum.Value.fromString('bfnjr9489njrhHDFHg230fb4c4d462eEF9e6790337Cf57271E519bB697')),
-			new ethereum.EventParam('transactionHash', ethereum.Value.fromString('0xjhmbdhjgeuifb567dgv71E519bB697')),
+			new ethereum.EventParam('transactionHash', ethereum.Value.fromBytes(Bytes.fromHexString('0xB17081F360e3847006dB660bae1c6d1b2e17eC2A'))),
 			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0x230fb4c4d462eEF9e6790337Cf57271E519bB697'))),
 			new ethereum.EventParam('amount', ethereum.Value.fromI32Array([10, 20, 30])),
 			new ethereum.EventParam('isP2P', ethereum.Value.fromBoolean(true)),
