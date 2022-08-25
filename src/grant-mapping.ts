@@ -96,7 +96,7 @@ export function handleTransactionRecord(event: TransactionRecord): void {
 	disburseEntity.milestone = milestoneId
 	disburseEntity.type = 'funds_disbursed'
 	disburseEntity.grant = application.grant
-	// disburseEntity.transactionHash = transactionHash
+	disburseEntity.transactionHash = event.params.transactionHash.toHexString()
 
 	disburseEntity.save()
 
