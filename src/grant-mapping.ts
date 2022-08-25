@@ -60,16 +60,20 @@ export function handleGrantCreated(event: GrantCreated): void {
 
 export function handleDisburseReward(event: DisburseReward): void {
 	disburseReward({
-		event, 
+		event,
 		depositType: 'funds_disbursed',
 		_applicationId: event.params.applicationId.toHex(),
 		_milestoneId: event.params.milestoneId.toI32(),
 		_sender: event.params.sender,
 		_amount: event.params.amount,
-		_isP2P: event.params.isP2P
+		_isP2P: event.params.isP2P,
+		_asset: event.params.asset,
+		_nonEvmAsset: '',
+		_txnHash: ''
 	})
 }
 
+// We should deprecate this handler. The event is not in use
 export function handleTransactionRecord(event: TransactionRecord): void {
 	const applicationId = event.params.applicationId.toHex()
 	const milestoneIndex = event.params.milestoneId.toI32()
@@ -92,7 +96,7 @@ export function handleTransactionRecord(event: TransactionRecord): void {
 	disburseEntity.milestone = milestoneId
 	disburseEntity.type = 'funds_disbursed'
 	disburseEntity.grant = application.grant
-	disburseEntity.transactionHash = transactionHash
+	disburseEntity.transactionHash = event.params.transactionHash.toHexString()
 
 	disburseEntity.save()
 

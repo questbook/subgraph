@@ -1,4 +1,4 @@
-import { BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
+import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from '../../generated/schema'
 import { addFundsTransferNotification } from './notifications'
 
@@ -7,6 +7,9 @@ class disburseRewardInterface {
 	depositType: string;
 	_applicationId: string;
 	_milestoneId: i32;
+	_asset: Bytes;
+	_nonEvmAsset: string;
+	_txnHash: string;
 	_sender: Bytes;
 	_amount: BigInt;
 	 _isP2P: boolean
@@ -19,6 +22,8 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	const milestoneId = `${applicationId}.${milestoneIndex}`
 	const amountPaid = rewardProps._amount
 	const eventTime = rewardProps.event.block.timestamp.toI32()
+	const asset = rewardProps._asset
+	const nonEvmAssetAddress = rewardProps._nonEvmAsset
 
 	const application = GrantApplication.load(applicationId)
 	if(!application) {
@@ -35,6 +40,16 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	disburseEntity.milestone = milestoneId
 	disburseEntity.type = rewardProps.depositType
 	disburseEntity.grant = application.grant
+
+	if(asset) {
+		disburseEntity.asset = asset
+	} else {
+		disburseEntity.asset = Address.fromString('0x0')
+	}
+
+	if(nonEvmAssetAddress) {
+		disburseEntity.nonEvmAsset = nonEvmAssetAddress
+	}
 
 	disburseEntity.save()
 

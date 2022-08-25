@@ -178,24 +178,30 @@ export function handleWorkspaceMemberUpdated(event: WorkspaceMemberUpdated): voi
 
 export function handleDisburseReward(event: DisburseReward): void {
 	disburseReward({
-		event, 
+		event,
 		depositType: 'funds_disbursed',
 		_applicationId: event.params.applicationId.toHex(),
 		_milestoneId: event.params.milestoneId.toI32(),
 		_sender: event.params.sender,
 		_amount: event.params.amount,
-		_isP2P: event.params.isP2P
+		_isP2P: event.params.isP2P,
+		_asset: event.params.asset,
+		_nonEvmAsset: '',
+		_txnHash: ''
 	})
 }
 
 export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): void {
 	disburseReward({
-		event, 
+		event,
 		depositType: 'funds_disbursed_from_safe',
 		_applicationId: event.params.applicationId.toHex(),
 		_milestoneId: event.params.milestoneId.toI32(),
+		_asset: event.params.asset,
 		_sender: event.params.sender,
 		_amount: event.params.amount,
-		_isP2P: event.params.isP2P
+		_isP2P: event.params.isP2P,
+		_nonEvmAsset: event.params.nonEvmAssetAddress,
+		_txnHash: event.params.transactionHash
 	})
 }

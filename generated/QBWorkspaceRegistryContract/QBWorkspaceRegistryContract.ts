@@ -117,20 +117,28 @@ export class DisburseRewardFromSafe__Params {
     return this._event.parameters[2].value.toAddress();
   }
 
+  get nonEvmAssetAddress(): string {
+    return this._event.parameters[3].value.toString();
+  }
+
+  get transactionHash(): string {
+    return this._event.parameters[4].value.toString();
+  }
+
   get sender(): Address {
-    return this._event.parameters[3].value.toAddress();
+    return this._event.parameters[5].value.toAddress();
   }
 
   get amount(): BigInt {
-    return this._event.parameters[4].value.toBigInt();
+    return this._event.parameters[6].value.toBigInt();
   }
 
   get isP2P(): boolean {
-    return this._event.parameters[5].value.toBoolean();
+    return this._event.parameters[7].value.toBoolean();
   }
 
   get time(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
+    return this._event.parameters[8].value.toBigInt();
   }
 }
 
@@ -830,12 +838,20 @@ export class DisburseRewardFromSafeCall__Inputs {
     return this._call.inputValues[2].value.toAddress();
   }
 
+  get nonEvmAssetAddress(): string {
+    return this._call.inputValues[3].value.toString();
+  }
+
   get _amounts(): Array<BigInt> {
-    return this._call.inputValues[3].value.toBigIntArray();
+    return this._call.inputValues[4].value.toBigIntArray();
   }
 
   get _workspaceId(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[5].value.toBigInt();
+  }
+
+  get transactionHash(): string {
+    return this._call.inputValues[6].value.toString();
   }
 }
 
