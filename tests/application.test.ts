@@ -189,7 +189,7 @@ export function runTests(): void {
 		assert.i32Equals(gUpdate!.updatedAtS, 127)
 		assert.assertTrue(gUpdate!.amountPaid.ge(BigInt.fromString('100')))
 
-		const disburseEntity = FundsTransfer.load(ev.transaction.hash.toHex())
+		const disburseEntity = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${g?.id}`)
 		assert.assertNotNull(disburseEntity)
 		assert.i32Equals(disburseEntity!.createdAtS, 127)
 

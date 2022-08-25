@@ -249,13 +249,13 @@ export function runTests(): void {
 		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseReward(event)
 
-		const fundTransfer = FundsTransfer.load(ev.transaction.hash.toHex())
+		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${a?.id}`)
 		assert.assertNotNull(fundTransfer)
 	})
 
 	test('should disburse reward from safe', () => {
 		const w = createWorkspace()
-		
+
 		const ev = newMockEvent()
 
 		ev.parameters = [
