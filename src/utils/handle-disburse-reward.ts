@@ -47,7 +47,7 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 		disburseEntity.asset = Address.fromString('0x0')
 	}
 
-	if(nonEvmAssetAddress){
+	if(nonEvmAssetAddress) {
 		disburseEntity.nonEvmAsset = nonEvmAssetAddress
 	}
 
