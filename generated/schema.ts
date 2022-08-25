@@ -2386,20 +2386,20 @@ export class FundsTransfer extends Entity {
     }
   }
 
-  get transactionHash(): Bytes | null {
+  get transactionHash(): string | null {
     let value = this.get("transactionHash");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set transactionHash(value: Bytes | null) {
+  set transactionHash(value: string | null) {
     if (!value) {
       this.unset("transactionHash");
     } else {
-      this.set("transactionHash", Value.fromBytes(<Bytes>value));
+      this.set("transactionHash", Value.fromString(<string>value));
     }
   }
 }

@@ -424,7 +424,7 @@ type FundsTransfer @entity {
   asset: Bytes!
   "Hash/signature of the transaction"
   nonEvmAsset: String
-  transactionHash: Bytes
+  transactionHash: String
 }
 
 type Notification @entity {

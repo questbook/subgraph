@@ -73,6 +73,7 @@ export function handleDisburseReward(event: DisburseReward): void {
 	})
 }
 
+// We should deprecate this handler. The event is not in use
 export function handleTransactionRecord(event: TransactionRecord): void {
 	const applicationId = event.params.applicationId.toHex()
 	const milestoneIndex = event.params.milestoneId.toI32()
@@ -95,7 +96,7 @@ export function handleTransactionRecord(event: TransactionRecord): void {
 	disburseEntity.milestone = milestoneId
 	disburseEntity.type = 'funds_disbursed'
 	disburseEntity.grant = application.grant
-	disburseEntity.transactionHash = transactionHash
+	// disburseEntity.transactionHash = transactionHash
 
 	disburseEntity.save()
 
