@@ -276,7 +276,7 @@ export function runTests(): void {
 		const event = new DisburseRewardFromSafe(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseRewardFromSafe(event)
 
-		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${a?.applicantId.toHexString()}`)
+		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${a?.id}`)
 		assert.assertNotNull(fundTransfer)
 		assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
 	})
