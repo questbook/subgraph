@@ -423,6 +423,7 @@ type FundsTransfer @entity {
   "Asset that was used in the funds transfer"
   asset: Bytes!
   "Hash/signature of the transaction"
+  nonEvmAsset: String
   transactionHash: Bytes
 }
 
