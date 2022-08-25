@@ -255,10 +255,7 @@ export function runTests(): void {
 
 	test('should disburse reward from safe', () => {
 		const w = createWorkspace()
-		const a = createGrantApplication(ethereum.Value.fromI32(0x1))
-		const b = createGrantApplication(ethereum.Value.fromI32(0x2))
-		const c = createGrantApplication(ethereum.Value.fromI32(0x3))
-
+		
 		const ev = newMockEvent()
 
 		ev.parameters = [
@@ -276,7 +273,7 @@ export function runTests(): void {
 		const event = new DisburseRewardFromSafe(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseRewardFromSafe(event)
 
-		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${a?.id}`)
+		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${MOCK_APPLICATION_ID}`)
 		assert.assertNotNull(fundTransfer)
 		assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
 	})
