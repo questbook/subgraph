@@ -24,6 +24,7 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	const eventTime = rewardProps.event.block.timestamp.toI32()
 	const asset = rewardProps._asset
 	const nonEvmAssetAddress = rewardProps._nonEvmAsset
+	const txnhHash = rewardProps._txnHash
 
 	const application = GrantApplication.load(applicationId)
 	if(!application) {
@@ -40,6 +41,7 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	disburseEntity.milestone = milestoneId
 	disburseEntity.type = rewardProps.depositType
 	disburseEntity.grant = application.grant
+	disburseEntity.transactionHash = txnhHash
 
 	if(asset) {
 		disburseEntity.asset = asset
