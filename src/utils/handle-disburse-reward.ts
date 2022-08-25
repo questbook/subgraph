@@ -32,7 +32,7 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 		return
 	}
 
-	const disburseEntity = new FundsTransfer(rewardProps.event.transaction.hash.toHex())
+	const disburseEntity = new FundsTransfer(`${rewardProps.event.transaction.hash.toHex()}.${applicationId}`)
 	disburseEntity.createdAtS = eventTime
 	disburseEntity.amount = amountPaid
 	disburseEntity.sender = rewardProps._sender

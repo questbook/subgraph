@@ -4,7 +4,7 @@ import { DisburseRewardFromSafe, WorkspaceMembersUpdated, WorkspaceMemberUpdated
 import { FundsTransfer, Partner, Social, Token, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleDisburseReward, handleDisburseRewardFromSafe, handleWorkspaceMembersUpdated, handleWorkspaceMemberUpdated, handleWorkspaceSafeUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
-import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createWorkspace, MOCK_APPLICATION_ID_ARRAY, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
+import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createGrantApplication, createWorkspace, MOCK_APPLICATION_ID_ARRAY, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 import { MOCK_APPLICATION_ID } from './utils'
 
 export function runTests(): void {
@@ -255,7 +255,9 @@ export function runTests(): void {
 
 	test('should disburse reward from safe', () => {
 		const w = createWorkspace()
-		const a = createApplication()
+		const a = createGrantApplication(ethereum.Value.fromI32(0x1))
+		const b = createGrantApplication(ethereum.Value.fromI32(0x2))
+		const c = createGrantApplication(ethereum.Value.fromI32(0x3))
 
 		const ev = newMockEvent()
 
@@ -274,7 +276,7 @@ export function runTests(): void {
 		const event = new DisburseRewardFromSafe(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseRewardFromSafe(event)
 
-		const fundTransfer = FundsTransfer.load(ev.transaction.hash.toHex())
+		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${a?.applicantId.toHexString()}`)
 		assert.assertNotNull(fundTransfer)
 		assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
 	})
