@@ -12,8 +12,7 @@ class disburseRewardInterface {
 	_txnHash: string;
 	_sender: Bytes;
 	_amount: BigInt;
-	 _isP2P: boolean
-
+	_isP2P: boolean
 }
 
 export function disburseReward(rewardProps: disburseRewardInterface): void {
@@ -32,7 +31,7 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 		return
 	}
 
-	const disburseEntity = new FundsTransfer(rewardProps.event.transaction.hash.toHex())
+	const disburseEntity = new FundsTransfer(`${rewardProps.event.transaction.hash.toHex()}.${applicationId}`)
 	disburseEntity.createdAtS = eventTime
 	disburseEntity.amount = amountPaid
 	disburseEntity.sender = rewardProps._sender

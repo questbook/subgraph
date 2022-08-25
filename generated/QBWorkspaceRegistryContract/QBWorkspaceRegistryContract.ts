@@ -105,12 +105,12 @@ export class DisburseRewardFromSafe__Params {
     this._event = event;
   }
 
-  get applicationId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
+  get applicationIds(): Array<BigInt> {
+    return this._event.parameters[0].value.toBigIntArray();
   }
 
-  get milestoneId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
+  get milestoneIds(): Array<BigInt> {
+    return this._event.parameters[1].value.toBigIntArray();
   }
 
   get asset(): Address {
@@ -121,16 +121,16 @@ export class DisburseRewardFromSafe__Params {
     return this._event.parameters[3].value.toString();
   }
 
-  get transactionHash(): string {
-    return this._event.parameters[4].value.toString();
+  get transactionHash(): Bytes {
+    return this._event.parameters[4].value.toBytes();
   }
 
   get sender(): Address {
     return this._event.parameters[5].value.toAddress();
   }
 
-  get amount(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
+  get amounts(): Array<BigInt> {
+    return this._event.parameters[6].value.toBigIntArray();
   }
 
   get isP2P(): boolean {

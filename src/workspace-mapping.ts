@@ -180,7 +180,7 @@ export function handleDisburseReward(event: DisburseReward): void {
 	disburseReward({
 		event,
 		depositType: 'funds_disbursed',
-		_applicationId: event.params.applicationId.toHex(),
+		_applicationId: event.params.applicationId.toHexString(),
 		_milestoneId: event.params.milestoneId.toI32(),
 		_sender: event.params.sender,
 		_amount: event.params.amount,
@@ -192,16 +192,29 @@ export function handleDisburseReward(event: DisburseReward): void {
 }
 
 export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): void {
-	disburseReward({
-		event,
-		depositType: 'funds_disbursed_from_safe',
-		_applicationId: event.params.applicationId.toHex(),
-		_milestoneId: event.params.milestoneId.toI32(),
-		_asset: event.params.asset,
-		_sender: event.params.sender,
-		_amount: event.params.amount,
-		_isP2P: event.params.isP2P,
-		_nonEvmAsset: event.params.nonEvmAssetAddress,
-		_txnHash: event.params.transactionHash
-	})
+		 const depositType = 'funds_disbursed_from_safe'
+		 const applicationIds = event.params.applicationIds
+		 const milestoneIds = event.params.milestoneIds
+		 const asset = event.params.asset
+		 const nonEvmAsset = event.params.nonEvmAssetAddress
+		 const txnHash = event.params.transactionHash
+		 const sender = event.params.sender
+		 const amounts = event.params.amounts
+		 const isP2P = event.params.isP2P
+
+	for(let i=0; i<applicationIds.length; i++) {
+		disburseReward({
+			event,
+			depositType,
+			_applicationId: applicationIds[i].toHexString(),
+			_milestoneId: milestoneIds[i].toI32(),
+			_asset: asset,
+			_nonEvmAsset: nonEvmAsset,
+			_txnHash: txnHash.toHexString(),
+			_sender: sender,
+			_amount: amounts[i],
+			_isP2P: isP2P
+		})
+	}
+
 }

@@ -4,7 +4,7 @@ import { DisburseRewardFromSafe, WorkspaceMembersUpdated, WorkspaceMemberUpdated
 import { FundsTransfer, Partner, Social, Token, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleDisburseReward, handleDisburseRewardFromSafe, handleWorkspaceMembersUpdated, handleWorkspaceMemberUpdated, handleWorkspaceSafeUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
-import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createWorkspace, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
+import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createGrantApplication, createWorkspace, MOCK_APPLICATION_ID_ARRAY, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 import { MOCK_APPLICATION_ID } from './utils'
 
 export function runTests(): void {
@@ -249,7 +249,7 @@ export function runTests(): void {
 		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseReward(event)
 
-		const fundTransfer = FundsTransfer.load(ev.transaction.hash.toHex())
+		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${a!.id}`)
 		assert.assertNotNull(fundTransfer)
 	})
 
@@ -260,13 +260,13 @@ export function runTests(): void {
 		const ev = newMockEvent()
 
 		ev.parameters = [
-			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
-			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32(0)),
+			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID_ARRAY),
+			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32Array([0, 0, 0])),
 			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xE3D997D569b5b03B577C6a2Edd1d2613FE776cb0'))),
 			new ethereum.EventParam('nonEvmAssetAddress', ethereum.Value.fromString('bfnjr9489njrhHDFHg230fb4c4d462eEF9e6790337Cf57271E519bB697')),
-			new ethereum.EventParam('transactionHash', ethereum.Value.fromString('0xjhmbdhjgeuifb567dgv71E519bB697')),
+			new ethereum.EventParam('transactionHash', ethereum.Value.fromBytes(Bytes.fromByteArray(Bytes.fromHexString('0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')))),
 			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0x230fb4c4d462eEF9e6790337Cf57271E519bB697'))),
-			new ethereum.EventParam('amount', ethereum.Value.fromI32(10)),
+			new ethereum.EventParam('amount', ethereum.Value.fromI32Array([10, 20, 30])),
 			new ethereum.EventParam('isP2P', ethereum.Value.fromBoolean(true)),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 		]
@@ -274,7 +274,7 @@ export function runTests(): void {
 		const event = new DisburseRewardFromSafe(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseRewardFromSafe(event)
 
-		const fundTransfer = FundsTransfer.load(ev.transaction.hash.toHex())
+		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${a!.id}`)
 		assert.assertNotNull(fundTransfer)
 		assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
 	})
