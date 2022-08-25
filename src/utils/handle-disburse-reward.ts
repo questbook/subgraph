@@ -12,8 +12,7 @@ class disburseRewardInterface {
 	_txnHash: string;
 	_sender: Bytes;
 	_amount: BigInt;
-	 _isP2P: boolean
-
+	_isP2P: boolean
 }
 
 export function disburseReward(rewardProps: disburseRewardInterface): void {

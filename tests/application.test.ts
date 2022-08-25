@@ -194,7 +194,7 @@ export function runTests(): void {
 		assert.i32Equals(disburseEntity!.createdAtS, 127)
 
 		// check notification
-		const n = Notification.load(`n.${ev.transaction.hash.toHex()}`)
+		const n = Notification.load(`n.${disburseEntity!.id}`)
 		assert.assertNotNull(n)
 		assert.stringEquals(n!.type, 'funds_disbursed')
 	})
