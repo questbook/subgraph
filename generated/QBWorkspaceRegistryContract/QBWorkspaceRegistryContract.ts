@@ -121,8 +121,8 @@ export class DisburseRewardFromSafe__Params {
     return this._event.parameters[3].value.toString();
   }
 
-  get transactionHash(): Bytes {
-    return this._event.parameters[4].value.toBytes();
+  get transactionHash(): string {
+    return this._event.parameters[4].value.toString();
   }
 
   get sender(): Address {
