@@ -36,7 +36,7 @@ dataSources:
           handler: handleWorkspaceSafeUpdated
         - event: DisburseReward(indexed uint96,uint96,address,address,uint256,bool,uint256)
           handler: handleDisburseReward
-        - event: DisburseRewardFromSafe(uint96[],uint96[],address,string,indexed string,address,uint256[],bool,uint256)
+        - event: DisburseRewardFromSafe(uint96[],uint96[],address,string,string,address,uint256[],bool,uint256)
           handler: handleDisburseRewardFromSafe
       file: ./src/workspace-mapping.ts
   - kind: ethereum

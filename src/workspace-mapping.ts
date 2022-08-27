@@ -210,7 +210,7 @@ export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): voi
 			_milestoneId: milestoneIds[i].toI32(),
 			_asset: asset,
 			_nonEvmAsset: nonEvmAsset,
-			_txnHash: txnHash.toHexString(),
+			_txnHash: txnHash,
 			_sender: sender,
 			_amount: amounts[i],
 			_isP2P: isP2P
