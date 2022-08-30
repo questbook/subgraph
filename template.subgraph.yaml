@@ -85,7 +85,7 @@ dataSources:
         - event: GrantCreated(address,uint96,string,uint256)
           handler: handleGrantCreated
         - event: GrantUpdatedFromFactory(indexed address,indexed uint96,string,bool,uint256)
-          handler: handleGrantUpdated
+          handler: handleGrantUpdatedFromFactory
       file: ./src/grant-mapping.ts
   - kind: ethereum
     name: QBReviewsContract
@@ -147,6 +147,8 @@ templates:
           handler: handleFundsWithdrawn
         - event: TransactionRecord(indexed uint96,uint96,address,address,bytes,uint256,uint256)
           handler: handleTransactionRecord
+        - event: GrantUpdated(indexed uint96,string,bool,uint256)
+          handler: handleGrantUpdated
   - kind: ethereum
     name: GrantTransfersERC20
     network: {{network}}

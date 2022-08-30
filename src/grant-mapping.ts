@@ -2,13 +2,14 @@ import { BigInt, log } from '@graphprotocol/graph-ts'
 import { GrantCreated, GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from '../generated/schema'
 import { QBGrantsContract } from '../generated/templates'
-import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
+import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { applyGrantFundUpdate } from './utils/apply-grant-deposit'
-import { dateToUnixTimestamp, isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from './utils/generics'
+import { dateToUnixTimestamp, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen } from './utils/generics'
+import { grantUpdateHandler } from './utils/grantUpdateHandler'
 import { disburseReward } from './utils/handle-disburse-reward'
 import { addFundsTransferNotification } from './utils/notifications'
-import { GrantCreateRequest, GrantUpdateRequest, validateGrantCreateRequest, validateGrantUpdateRequest } from './json-schema'
+import { GrantCreateRequest, validateGrantCreateRequest } from './json-schema'
 
 export function handleGrantCreated(event: GrantCreated): void {
 	const workspaceId = event.params.workspaceId.toHex()
@@ -130,62 +131,20 @@ export function handleFundsWithdrawn(event: FundsWithdrawn): void {
 	}
 }
 
-export function handleGrantUpdated(event: GrantUpdatedFromFactory): void {
-	const grantId = event.params.grantAddress.toHex()
-	const entity = Grant.load(grantId)
-	if(!entity) {
-		log.warning(`[${event.transaction.hash.toHex()}] recv grant update for unknown grant, ID="${grantId}"`, [])
-		return
-	} else {
-		log.info(`[${grantId}] grant found. Updation in progress...`, [])
-	}
-
-	entity.updatedAtS = event.params.time.toI32()
-	entity.workspace = event.params.workspaceId.toHex()
-
-	entity.acceptingApplications = event.params.active
-
+export function handleGrantUpdated(event: GrantUpdated): void {
+	const grantId = event.transaction.to!.toHex()
+	const time = event.params.time.toI32()
+	const workspace = event.params.workspaceId.toHex()
+	const acceptingApplications = event.params.active
 	const hash = event.params.metadataHash
-	if(isPlausibleIPFSHash(hash)) {
-		const jsonResult = validatedJsonFromIpfs<GrantUpdateRequest>(hash, validateGrantUpdateRequest)
-		if(jsonResult.error) {
-			log.warning(`[${event.transaction.hash.toHex()}] error in updating grant metadata, error: ${jsonResult.error!}`, [])
-			return
-		}
+	grantUpdateHandler({ event, grantId, time, workspace, acceptingApplications, hash })
+}
 
-		const json = jsonResult.value!
-		if(json.title) {
-			entity.title = json.title!
-		}
-
-		if(json.summary) {
-			entity.summary = json.summary!
-		}
-
-		if(json.details) {
-			entity.details = json.details!
-		}
-
-		if(json.deadline) {
-			entity.deadline = json.deadline!.toISOString()
-			entity.deadlineS = dateToUnixTimestamp(json.deadline!)
-		}
-
-		if(json.reward) {
-			entity.reward = mapGrantRewardAndListen(entity.id, entity.workspace, json.reward!).id
-		}
-
-		if(json.fields) {
-			entity.fields = mapGrantFieldMap(entity.id, json.fields!)
-		}
-
-		if(json.grantManagers && json.grantManagers!.length) {
-			removeEntityCollection('GrantManager', entity.managers)
-			entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
-		}
-	}
-
-	log.info(`Grant ${grantId} updated`, [])
-
-	entity.save()
+export function handleGrantUpdatedFromFactory(event: GrantUpdatedFromFactory): void {
+	const grantId = event.params.grantAddress.toHex()
+	const time = event.params.time.toI32()
+	const workspace = event.params.workspaceId.toHex()
+	const acceptingApplications = event.params.active
+	const hash = event.params.metadataHash
+	grantUpdateHandler({ event, grantId, time, workspace, acceptingApplications, hash })
 }
