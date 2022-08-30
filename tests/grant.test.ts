@@ -5,7 +5,7 @@ import { GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBG
 import { FundsTransfer, Grant, GrantManager, Notification, Reward, Token, WorkspaceMember } from '../generated/schema'
 import { Transfer } from '../generated/templates/GrantTransfersERC20/ERC20'
 import { FundsWithdrawn } from '../generated/templates/QBGrantsContract/QBGrantsContract'
-import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdated } from '../src/grant-mapping'
+import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdatedFromFactory } from '../src/grant-mapping'
 import { handleTransfer } from '../src/transfer-mapping' 
 import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, CUSTOM_TOKEN_ADDRESS_GRANT, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 
@@ -164,7 +164,7 @@ export function runTests(): void {
 		ev.transaction.to = MOCK_GRANT_ID
 
 		const event = new GrantUpdatedFromFactory(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleGrantUpdated(event)
+		handleGrantUpdatedFromFactory(event)
 
 		const gUpdate = Grant.load(g!.id)
 		assert.i32Equals(gUpdate!.updatedAtS, 130)
@@ -199,7 +199,7 @@ export function runTests(): void {
 		ev.transaction.to = MOCK_GRANT_ID
 
 		const event = new GrantUpdatedFromFactory(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleGrantUpdated(event)
+		handleGrantUpdatedFromFactory(event)
 
 		const gUpdate = Grant.load(g!.id)
 		assert.i32Equals(gUpdate!.updatedAtS, 130)
@@ -234,7 +234,7 @@ export function runTests(): void {
 		ev.transaction.to = MOCK_GRANT_ID
 
 		const event = new GrantUpdatedFromFactory(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleGrantUpdated(event)
+		handleGrantUpdatedFromFactory(event)
 
 		const gUpdate = Grant.load(g!.id)
 		assert.i32Equals(gUpdate!.updatedAtS, 132)
