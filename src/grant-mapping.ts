@@ -137,7 +137,8 @@ export function handleGrantUpdated(event: GrantUpdated): void {
 	const workspace = event.params.workspaceId.toHex()
 	const acceptingApplications = event.params.active
 	const hash = event.params.metadataHash
-	grantUpdateHandler({ event, grantId, time, workspace, acceptingApplications, hash })
+	const transactionHash = event.transaction.hash.toHex()
+	grantUpdateHandler({ transactionHash, grantId, time, workspace, acceptingApplications, hash })
 }
 
 export function handleGrantUpdatedFromFactory(event: GrantUpdatedFromFactory): void {
@@ -146,5 +147,6 @@ export function handleGrantUpdatedFromFactory(event: GrantUpdatedFromFactory): v
 	const workspace = event.params.workspaceId.toHex()
 	const acceptingApplications = event.params.active
 	const hash = event.params.metadataHash
-	grantUpdateHandler({ event, grantId, time, workspace, acceptingApplications, hash })
+	const transactionHash = event.transaction.hash.toHex()
+	grantUpdateHandler({ transactionHash, grantId, time, workspace, acceptingApplications, hash })
 }

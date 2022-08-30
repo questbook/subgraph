@@ -1,36 +1,35 @@
-import { ethereum, log } from '@graphprotocol/graph-ts'
+import { log } from '@graphprotocol/graph-ts'
 import { Grant } from '../../generated/schema'
 import { GrantUpdateRequest, validateGrantUpdateRequest } from '../json-schema'
 import { validatedJsonFromIpfs } from '../json-schema/json'
 import { dateToUnixTimestamp, isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from './generics'
 
-class grantUpdateRequest {
-    event: ethereum.Event;
-    grantId: string;
-    time: number;
-    workspace: string;
-    acceptingApplications: boolean;
+class GrantUpdateParams {
+    transactionHash: string
+    grantId: string
+    time: i32
+    workspace: string
+    acceptingApplications: boolean
     hash: string
 }
 
-export function grantUpdateHandler({ event, grantId, time, workspace, acceptingApplications, hash } : grantUpdateRequest) {
+export function grantUpdateHandler(params: GrantUpdateParams): void {
+	const grantId = params.grantId
 	const entity = Grant.load(grantId)
 	if(!entity) {
-		log.warning(`[${event.transaction.hash.toHex()}] recv grant update for unknown grant, ID="${grantId}"`, [])
+		log.warning(`[${params.transactionHash}] recv grant update for unknown grant, ID="${grantId}"`, [])
 		return
-	} else {
-		log.info(`[${grantId}] grant found. Updation in progress...`, [])
 	}
 
-	entity.updatedAtS = time
-	entity.workspace = workspace
+	entity.updatedAtS = params.time
+	entity.workspace = params.workspace
 
-	entity.acceptingApplications = acceptingApplications
+	entity.acceptingApplications = params.acceptingApplications
 
-	if(isPlausibleIPFSHash(hash)) {
-		const jsonResult = validatedJsonFromIpfs<GrantUpdateRequest>(hash, validateGrantUpdateRequest)
+	if(isPlausibleIPFSHash(params.hash)) {
+		const jsonResult = validatedJsonFromIpfs<GrantUpdateRequest>(params.hash, validateGrantUpdateRequest)
 		if(jsonResult.error) {
-			log.warning(`[${event.transaction.hash.toHex()}] error in updating grant metadata, error: ${jsonResult.error!}`, [])
+			log.warning(`[${params.transactionHash}] error in updating grant metadata, error: ${jsonResult.error!}`, [])
 			return
 		}
 
