@@ -32,7 +32,7 @@ export function runTests(): void {
 		const w = Workspace.load(g!.workspace)
 		assert.assertNotNull(w)
 		assert.i32Equals(w!.mostRecentGrantPostedAtS, g!.createdAtS)
-		assert.assertTrue(w!.totalGrantFundingCommittedUSD > 0)
+		assert.i32Equals(w!.totalGrantFundingCommittedUSD, 5000)
 	})
 
 	test('should fail to create a grant due to invalid reward', () => {

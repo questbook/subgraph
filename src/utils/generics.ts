@@ -8,6 +8,23 @@ const VALID_ADDRESS_LENGTH = 20
 
 export const USD_ASSET_ADDRESS_HEX = '0x0000000000000000000000000000000000000001'
 
+const USDC_ADDRESSES = [
+	'0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+	'0x7f5c764cbc14f9669b88837ca1490cca17c31607',
+	'0x2f3A40A3db8a7e3D09B0adfEfbCe4f6F81927557'
+]
+
+// 10^6
+const USDC_DECIMALS = BigInt.fromI32(10).pow(6)
+
+const CUSD_DAI_ADDRESSES = [
+	'0x765de816845861e75a25fca122bb6898b8b1282a',
+	'0xda10009cbd5d07dd0cecc66161fc93d7c9000da1'
+]
+
+// 10^18
+const CUSD_DAI_DECIMALS = BigInt.fromI32(10).pow(18)
+
 export function isPlausibleIPFSHash(str: string): boolean {
 	return str.length > 2
 }
@@ -255,8 +272,21 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	return reward
 }
 
-export function isUSDReward(r: Reward): boolean {
-	return r.asset.toHex() == USD_ASSET_ADDRESS_HEX
+export function getUSDReward(r: Reward, value: BigInt): i32 {
+	const hexAssetAddr = r.asset.toHex()
+	if(hexAssetAddr == USD_ASSET_ADDRESS_HEX) {
+		return value.toI32()
+	}
+	
+	if(USDC_ADDRESSES.includes(hexAssetAddr)) {
+		return value.div(USDC_DECIMALS).toI32()
+	}
+
+	if(CUSD_DAI_ADDRESSES.includes(hexAssetAddr)) {
+		return value.div(CUSD_DAI_DECIMALS).toI32()
+	}
+
+	return -1
 }
 
 export function mapWorkspaceMembersUpdate(

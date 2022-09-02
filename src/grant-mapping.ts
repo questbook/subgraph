@@ -5,7 +5,7 @@ import { QBGrantsContract } from '../generated/templates'
 import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { applyGrantFundUpdate } from './utils/apply-grant-deposit'
-import { dateToUnixTimestamp, isUSDReward, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen } from './utils/generics'
+import { dateToUnixTimestamp, getUSDReward, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen } from './utils/generics'
 import { grantUpdateHandler } from './utils/grantUpdateHandler'
 import { disburseReward } from './utils/handle-disburse-reward'
 import { addFundsTransferNotification } from './utils/notifications'
@@ -59,8 +59,9 @@ export function handleGrantCreated(event: GrantCreated): void {
 
 	workspace.mostRecentGrantPostedAtS = time
 
-	if(isUSDReward(reward)) {
-		workspace.totalGrantFundingCommittedUSD += reward.committed.toI32()
+	const usdReward = getUSDReward(reward, reward.committed)
+	if(usdReward > 0) {
+		workspace.totalGrantFundingCommittedUSD += usdReward
 	}
 
 	workspace.save()
