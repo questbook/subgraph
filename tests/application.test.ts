@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
 import { ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer } from '../generated/schema'
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer, Workspace } from '../generated/schema'
 import { DisburseReward, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
 import { handleDisburseReward, handleTransactionRecord } from '../src/grant-mapping'
@@ -65,6 +65,12 @@ export function runTests(): void {
 		
 		assert.assertNotNull(grant)
 		assert.assertTrue(grant!.numberOfApplications > 0)
+
+		// check workspace application count increased
+		const workspace = Workspace.load(grant!.workspace)
+
+		assert.assertNotNull(workspace)
+		assert.assertTrue(workspace!.numberOfApplications > 0)
 	})
 
 	test('should update an application', () => {
@@ -78,7 +84,7 @@ export function runTests(): void {
 			new ethereum.EventParam('owner', ethereum.Value.fromAddress(Address.fromString('0xB25191F360e3847006dB660bae1c6d1b2e17eC2B'))),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(UPDATE_JSON)),
-			new ethereum.EventParam('state', ethereum.Value.fromI32(0x01)),
+			new ethereum.EventParam('state', ethereum.Value.fromI32(0x04)), // "completed"
 			new ethereum.EventParam('milestoneCount', ethereum.Value.fromI32(0x00)),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
 		]
@@ -88,15 +94,13 @@ export function runTests(): void {
 
 		const gUpdate = GrantApplication.load(g!.id)
 		assert.i32Equals(gUpdate!.updatedAtS, 125)
-		assert.stringEquals(gUpdate!.state, 'resubmit')
+		assert.stringEquals(gUpdate!.state, 'completed')
 		assert.assertTrue(gUpdate!.version > 1)
 		// project details were updated, check value changed
 		const projectDetailsFieldUpdate = GrantFieldAnswerItem.load(`${g!.id}.projectDetails.0`)!
 		assert.assertTrue(projectDetailsField.value != projectDetailsFieldUpdate.value)
 		// did not update milestones, should remain the same
 		assert.stringEquals(gUpdate!.milestones[0], g!.milestones[0])
-
-		assertStringNotEmpty(gUpdate!.feedbackDao, 'feedback DAO empty')
 		// check new revision was generated
 		const rev0 = GrantApplicationRevision.load(`${g!.id}.${g!.updatedAtS}`)
 		const rev1 = GrantApplicationRevision.load(`${g!.id}.${gUpdate!.updatedAtS}`)
@@ -107,6 +111,12 @@ export function runTests(): void {
 		assert.assertTrue(rev0!.createdAtS != rev1!.createdAtS)
 		assert.assertTrue(rev0!.state != rev1!.state)
 		assert.assertTrue(rev1!.version > rev0!.version)
+
+		const grant = Grant.load(g!.grant)
+		const workspace = Workspace.load(grant!.workspace)
+
+		// check workspace application submitted count increased
+		assert.i32Equals(workspace!.numberOfApplicationsSelected, 1)
 	})
 
 	test('should update a milestone with requesing payment', () => {

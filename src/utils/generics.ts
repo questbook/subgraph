@@ -6,6 +6,8 @@ import { Result, validatedJsonFromIpfs } from '../json-schema/json'
 
 const VALID_ADDRESS_LENGTH = 20
 
+export const USD_ASSET_ADDRESS_HEX = '0x0000000000000000000000000000000000000001'
+
 export function isPlausibleIPFSHash(str: string): boolean {
 	return str.length > 2
 }
@@ -226,7 +228,6 @@ function mapGrantField(grantId: string, title: string, json: GrantFieldJSON): st
 }
 
 export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJson: GrantReward): Reward {
-	// store.remove('Reward', id)
 	const reward = new Reward(id)
 	reward.asset = rewardJson.asset
 	reward.committed = rewardJson.committed
@@ -241,7 +242,7 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 
 	const hexAssetAddr = reward.asset.toHex()
 
-	if(reward.asset.length === VALID_ADDRESS_LENGTH) {
+	if(reward.asset.length === VALID_ADDRESS_LENGTH && hexAssetAddr != USD_ASSET_ADDRESS_HEX) {
 		GrantTransfersERC20.create(
 			Address.fromString(hexAssetAddr)
 		)
@@ -252,6 +253,10 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	}
 
 	return reward
+}
+
+export function isUSDReward(r: Reward): boolean {
+	return r.asset.toHex() == USD_ASSET_ADDRESS_HEX
 }
 
 export function mapWorkspaceMembersUpdate(

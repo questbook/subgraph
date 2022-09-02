@@ -293,6 +293,14 @@ type Workspace @entity {
   createdAtS: Int!
   "in seconds since epoch"
   updatedAtS: Int!
+  "timestamp of when the latest grant was posted"
+  mostRecentGrantPostedAtS: Int!
+  "total number of applications the DAO has received"
+  numberOfApplications: Int!
+  "total number of applications the DAO has accepted"
+  numberOfApplicationsSelected: Int!
+  "total grant funding committed in USD"
+  totalGrantFundingCommittedUSD: Int!
   "Members of the workspace"
   members: [WorkspaceMember!]! @derivedFrom(field: "workspace")
   "List of social media handles of the workspace"

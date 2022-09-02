@@ -2,7 +2,7 @@ import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
-import { FundsTransfer, Grant, GrantManager, Notification, Reward, Token, WorkspaceMember } from '../generated/schema'
+import { FundsTransfer, Grant, GrantManager, Notification, Reward, Workspace, WorkspaceMember } from '../generated/schema'
 import { Transfer } from '../generated/templates/GrantTransfersERC20/ERC20'
 import { FundsWithdrawn } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdatedFromFactory } from '../src/grant-mapping'
@@ -19,7 +19,7 @@ export function runTests(): void {
 		assert.booleanEquals(g!.acceptingApplications, true)
 		assert.assertNotNull(g!.reward)
 		assert.assertTrue(g!.deadlineS > 0)
-		
+
 		assertArrayNotEmpty(g!.fields)
 
 		const memId = `${g!.id}.${WORKSPACE_CREATOR_ID}`
@@ -29,11 +29,10 @@ export function runTests(): void {
 
 		assert.assertNotNull(WorkspaceMember.load(mem!.member!))
 
-		const t = Token.load(`${g!.workspace}.${CUSTOM_TOKEN_ADDRESS_GRANT.toHex()}`)
-		assert.assertNotNull(t)
-		// assert.assertNotNull(t!.address)
-		assert.assertTrue(t!.decimal > 0)
-		assertStringNotEmpty(t!.iconHash)
+		const w = Workspace.load(g!.workspace)
+		assert.assertNotNull(w)
+		assert.i32Equals(w!.mostRecentGrantPostedAtS, g!.createdAtS)
+		assert.assertTrue(w!.totalGrantFundingCommittedUSD > 0)
 	})
 
 	test('should fail to create a grant due to invalid reward', () => {
@@ -96,6 +95,7 @@ export function runTests(): void {
 		assert.assertTrue(gUpdate!.funding.ge(BigInt.fromString('100')))
 
 		const fundEntity = FundsTransfer.load(ev.transaction.hash.toHex())
+
 
 		assert.assertNotNull(fundEntity)
 		assert.i32Equals(fundEntity!.createdAtS, event.block.timestamp.toI32())

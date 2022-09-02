@@ -5,7 +5,7 @@ import { QBGrantsContract } from '../generated/templates'
 import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { applyGrantFundUpdate } from './utils/apply-grant-deposit'
-import { dateToUnixTimestamp, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen } from './utils/generics'
+import { dateToUnixTimestamp, isUSDReward, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen } from './utils/generics'
 import { grantUpdateHandler } from './utils/grantUpdateHandler'
 import { disburseReward } from './utils/handle-disburse-reward'
 import { addFundsTransferNotification } from './utils/notifications'
@@ -14,6 +14,7 @@ import { GrantCreateRequest, validateGrantCreateRequest } from './json-schema'
 export function handleGrantCreated(event: GrantCreated): void {
 	const workspaceId = event.params.workspaceId.toHex()
 	const grantAddress = event.params.grantAddress
+	const time = event.params.time.toI32()
 
 	const workspace = Workspace.load(workspaceId)
 	if(!workspace) {
@@ -49,12 +50,20 @@ export function handleGrantCreated(event: GrantCreated): void {
 
 	entity.metadataHash = event.params.metadataHash
 	entity.acceptingApplications = true
-	entity.createdAtS = event.params.time.toI32()
+	entity.createdAtS = time
 	entity.funding = new BigInt(0)
 	entity.numberOfApplications = 0
 	entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
 
 	entity.save()
+
+	workspace.mostRecentGrantPostedAtS = time
+
+	if(isUSDReward(reward)) {
+		workspace.totalGrantFundingCommittedUSD += reward.committed.toI32()
+	}
+
+	workspace.save()
 
 	QBGrantsContract.create(grantAddress)
 }

@@ -1567,6 +1567,42 @@ export class Workspace extends Entity {
     this.set("updatedAtS", Value.fromI32(value));
   }
 
+  get mostRecentGrantPostedAtS(): i32 {
+    let value = this.get("mostRecentGrantPostedAtS");
+    return value!.toI32();
+  }
+
+  set mostRecentGrantPostedAtS(value: i32) {
+    this.set("mostRecentGrantPostedAtS", Value.fromI32(value));
+  }
+
+  get numberOfApplications(): i32 {
+    let value = this.get("numberOfApplications");
+    return value!.toI32();
+  }
+
+  set numberOfApplications(value: i32) {
+    this.set("numberOfApplications", Value.fromI32(value));
+  }
+
+  get numberOfApplicationsSelected(): i32 {
+    let value = this.get("numberOfApplicationsSelected");
+    return value!.toI32();
+  }
+
+  set numberOfApplicationsSelected(value: i32) {
+    this.set("numberOfApplicationsSelected", Value.fromI32(value));
+  }
+
+  get totalGrantFundingCommittedUSD(): i32 {
+    let value = this.get("totalGrantFundingCommittedUSD");
+    return value!.toI32();
+  }
+
+  set totalGrantFundingCommittedUSD(value: i32) {
+    this.set("totalGrantFundingCommittedUSD", Value.fromI32(value));
+  }
+
   get members(): Array<string> {
     let value = this.get("members");
     return value!.toStringArray();

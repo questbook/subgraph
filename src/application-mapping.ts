@@ -1,6 +1,6 @@
 import { log } from '@graphprotocol/graph-ts'
 import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationMilestone, Grant, GrantApplication } from '../generated/schema'
+import { ApplicationMilestone, Grant, GrantApplication, Workspace } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
 import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
@@ -15,6 +15,12 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	const grant = Grant.load(grantId)
 	if(!grant) {
 		log.warning(`[${event.transaction.hash.toHex()}] grant (${grantId}) not found for application submit (${applicationId})`, [])
+		return
+	}
+
+	const workspace = Workspace.load(grant.workspace)
+	if(!workspace) {
+		log.warning(`[${event.transaction.hash.toHex()}] workspace (${grant.workspace}) not found for application submit (${applicationId})`, [])
 		return
 	}
 
@@ -52,9 +58,12 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 
 	entity.save()
 
+	// increment number of applications recv for grant & workspace
 	grant.numberOfApplications += 1
-
 	grant.save()
+
+	workspace.numberOfApplications += 1
+	workspace.save()
 
 	addApplicationRevision(entity, event.transaction.from)
 	addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
@@ -116,6 +125,24 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		}
 
 		entity.version += 1
+	}
+
+	// increment number of applicants selected for workspace
+	if(strStateResult.value == 'completed') {
+		const grant = Grant.load(entity.grant)
+		if(!grant) {
+			log.warning(`[${event.transaction.hash.toHex()}] grant (${entity.grant}) not found for application completed (${applicationId})`, [])
+			return
+		}
+
+		const workspace = Workspace.load(grant.workspace)
+		if(!workspace) {
+			log.warning(`[${event.transaction.hash.toHex()}] workspace (${grant.workspace}) not found for application completed (${applicationId})`, [])
+			return
+		}
+
+		workspace.numberOfApplicationsSelected += 1
+		workspace.save()
 	}
 
 	entity.save()
