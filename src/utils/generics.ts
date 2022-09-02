@@ -17,7 +17,7 @@ const USDC_ADDRESSES = [
 // 10^6
 const USDC_DECIMALS = BigInt.fromI32(10).pow(6)
 
-const CUSD_DAI_ADDRESSES = [
+export const CUSD_DAI_ADDRESSES = [
 	'0x765de816845861e75a25fca122bb6898b8b1282a',
 	'0xda10009cbd5d07dd0cecc66161fc93d7c9000da1'
 ]
@@ -272,8 +272,8 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	return reward
 }
 
-export function getUSDReward(r: Reward, value: BigInt): i32 {
-	const hexAssetAddr = r.asset.toHex()
+export function getUSDReward(asset: Bytes, value: BigInt): i32 {
+	const hexAssetAddr = asset.toHex()
 	if(hexAssetAddr == USD_ASSET_ADDRESS_HEX) {
 		return value.toI32()
 	}

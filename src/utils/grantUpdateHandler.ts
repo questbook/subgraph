@@ -55,8 +55,8 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 			const newReward = mapGrantRewardAndListen(entity.id, entity.workspace, json.reward!)
 			const oldReward = Reward.load(entity.reward)!
 
-			const oldUSDReward = getUSDReward(oldReward, oldReward.committed)
-			const newUSDReward = getUSDReward(newReward, newReward.committed)
+			const oldUSDReward = getUSDReward(oldReward.asset, oldReward.committed)
+			const newUSDReward = getUSDReward(newReward.asset, newReward.committed)
 
 			if(oldUSDReward > 0 || newUSDReward > 0) {
 				const workspace = Workspace.load(entity.workspace)!

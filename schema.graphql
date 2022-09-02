@@ -301,6 +301,8 @@ type Workspace @entity {
   numberOfApplicationsSelected: Int!
   "total grant funding committed in USD"
   totalGrantFundingCommittedUSD: Int!
+  "total grant funding committed in USD"
+  totalGrantFundingDisbursedUSD: Int!
   "Members of the workspace"
   members: [WorkspaceMember!]! @derivedFrom(field: "workspace")
   "List of social media handles of the workspace"

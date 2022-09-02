@@ -5,6 +5,7 @@ import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantAppl
 import { DisburseReward, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
 import { handleDisburseReward, handleTransactionRecord } from '../src/grant-mapping'
+import { CUSD_DAI_ADDRESSES } from '../src/utils/generics'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, MOCK_APPLICATION_EVENT_ID, MOCK_APPLICATION_ID } from './utils' 
 
 export function runTests(): void {
@@ -182,10 +183,10 @@ export function runTests(): void {
 		ev.parameters = [
 			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
 			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32(0)), // first index milestone = 0
-			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xC23081F360e3847006dB660bae1c6d1b2e17eC2B'))),
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString(CUSD_DAI_ADDRESSES[0]))),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0xC33081F360e3847006dB660bae1c6d1b2e17eC2B'))),
-			new ethereum.EventParam('amount', ethereum.Value.fromI32(100)),
+			new ethereum.EventParam('amount', ethereum.Value.fromUnsignedBigInt(BigInt.fromString('30000000000000000000000'))),
 			new ethereum.EventParam('isP2P', ethereum.Value.fromBoolean(false)),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(127)),
 		]
@@ -207,6 +208,11 @@ export function runTests(): void {
 		const n = Notification.load(`n.${disburseEntity!.id}`)
 		assert.assertNotNull(n)
 		assert.stringEquals(n!.type, 'funds_disbursed')
+
+		const grant = Grant.load(g!.grant)
+		const workspace = Workspace.load(grant!.workspace)
+
+		assert.i32Equals(workspace!.totalGrantFundingDisbursedUSD, 30000)
 	})
 
 	test('record a transaction', () => {

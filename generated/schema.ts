@@ -1603,6 +1603,15 @@ export class Workspace extends Entity {
     this.set("totalGrantFundingCommittedUSD", Value.fromI32(value));
   }
 
+  get totalGrantFundingDisbursedUSD(): i32 {
+    let value = this.get("totalGrantFundingDisbursedUSD");
+    return value!.toI32();
+  }
+
+  set totalGrantFundingDisbursedUSD(value: i32) {
+    this.set("totalGrantFundingDisbursedUSD", Value.fromI32(value));
+  }
+
   get members(): Array<string> {
     let value = this.get("members");
     return value!.toStringArray();

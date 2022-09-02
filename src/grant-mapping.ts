@@ -59,7 +59,7 @@ export function handleGrantCreated(event: GrantCreated): void {
 
 	workspace.mostRecentGrantPostedAtS = time
 
-	const usdReward = getUSDReward(reward, reward.committed)
+	const usdReward = getUSDReward(reward.asset, reward.committed)
 	if(usdReward > 0) {
 		workspace.totalGrantFundingCommittedUSD += usdReward
 	}

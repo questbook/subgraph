@@ -1,5 +1,6 @@
 import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from '../../generated/schema'
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from '../../generated/schema'
+import { getUSDReward } from './generics'
 import { addFundsTransferNotification } from './notifications'
 
 class disburseRewardInterface {
@@ -62,11 +63,22 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 
 	entity.amountPaid = entity.amountPaid.plus(amountPaid)
 	entity.updatedAtS = eventTime
-	// find grant and reduce the amount of the funding
-	// only if not a P2P exchange
-	if(!rewardProps._isP2P) {
-		const grantEntity = Grant.load(application.grant)
-		if(grantEntity) {
+
+	const grantEntity = Grant.load(application.grant)
+	if(grantEntity) {
+		const workspace = Workspace.load(grantEntity.workspace)
+		if(workspace) {
+			const usd = getUSDReward(asset, amountPaid)
+			if(usd > 0) {
+				workspace.totalGrantFundingDisbursedUSD += usd
+			}
+
+			workspace.save()
+		}
+
+		// find grant and reduce the amount of the funding
+		// only if not a P2P exchange
+		if(!rewardProps._isP2P) {
 			grantEntity.funding = grantEntity.funding.minus(amountPaid)
 			grantEntity.save()
 		}

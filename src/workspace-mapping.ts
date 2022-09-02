@@ -50,6 +50,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.totalGrantFundingCommittedUSD = 0
 	entity.numberOfApplications = 0
 	entity.numberOfApplicationsSelected = 0
+	entity.totalGrantFundingDisbursedUSD = 0
 
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
 	member.actorId = event.params.owner
