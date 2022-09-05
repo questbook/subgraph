@@ -162,10 +162,8 @@ type Review @entity {
   id: ID!
   "Application for which the review is"
   application: GrantApplication!
-  "ID of the reviewer"
-  reviewerId: String!
   "Workspace member that reviewed the app"
-  reviewer: WorkspaceMember
+  reviewer: WorkspaceMember!
   "created at S"
   createdAtS: Int!
   "IPFS Hash to the publicly accessible review"
@@ -266,7 +264,7 @@ type WorkspaceMember @entity {
   outstandingReviewIds: [String!]!
   workspace: Workspace!
   "Address of the workspace member who added this member"
-  addedBy: WorkspaceMember!
+  addedBy: WorkspaceMember
   "Last known hash of the TX made by this user"
   lastKnownTxHash: Bytes!
 }

@@ -90,6 +90,40 @@ export class OwnershipTransferred__Params {
   }
 }
 
+export class ReviewMigrate extends ethereum.Event {
+  get params(): ReviewMigrate__Params {
+    return new ReviewMigrate__Params(this);
+  }
+}
+
+export class ReviewMigrate__Params {
+  _event: ReviewMigrate;
+
+  constructor(event: ReviewMigrate) {
+    this._event = event;
+  }
+
+  get _reviewId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get _applicationId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get _previousReviewerAddress(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get _newReviewerAddress(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+}
+
 export class ReviewPaymentFulfilled extends ethereum.Event {
   get params(): ReviewPaymentFulfilled__Params {
     return new ReviewPaymentFulfilled__Params(this);
@@ -992,6 +1026,44 @@ export class MarkPaymentDoneCall__Outputs {
   _call: MarkPaymentDoneCall;
 
   constructor(call: MarkPaymentDoneCall) {
+    this._call = call;
+  }
+}
+
+export class MigrateWalletCall extends ethereum.Call {
+  get inputs(): MigrateWalletCall__Inputs {
+    return new MigrateWalletCall__Inputs(this);
+  }
+
+  get outputs(): MigrateWalletCall__Outputs {
+    return new MigrateWalletCall__Outputs(this);
+  }
+}
+
+export class MigrateWalletCall__Inputs {
+  _call: MigrateWalletCall;
+
+  constructor(call: MigrateWalletCall) {
+    this._call = call;
+  }
+
+  get fromWallet(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get toWallet(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get appId(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+}
+
+export class MigrateWalletCall__Outputs {
+  _call: MigrateWalletCall;
+
+  constructor(call: MigrateWalletCall) {
     this._call = call;
   }
 }

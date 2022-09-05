@@ -266,6 +266,36 @@ export class WorkspaceCreated__Params {
   }
 }
 
+export class WorkspaceMemberMigrate extends ethereum.Event {
+  get params(): WorkspaceMemberMigrate__Params {
+    return new WorkspaceMemberMigrate__Params(this);
+  }
+}
+
+export class WorkspaceMemberMigrate__Params {
+  _event: WorkspaceMemberMigrate;
+
+  constructor(event: WorkspaceMemberMigrate) {
+    this._event = event;
+  }
+
+  get workspaceId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get from(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get to(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+}
+
 export class WorkspaceMemberUpdated extends ethereum.Event {
   get params(): WorkspaceMemberUpdated__Params {
     return new WorkspaceMemberUpdated__Params(this);
@@ -985,6 +1015,40 @@ export class JoinViaInviteLinkCall__Outputs {
   _call: JoinViaInviteLinkCall;
 
   constructor(call: JoinViaInviteLinkCall) {
+    this._call = call;
+  }
+}
+
+export class MigrateWalletCall extends ethereum.Call {
+  get inputs(): MigrateWalletCall__Inputs {
+    return new MigrateWalletCall__Inputs(this);
+  }
+
+  get outputs(): MigrateWalletCall__Outputs {
+    return new MigrateWalletCall__Outputs(this);
+  }
+}
+
+export class MigrateWalletCall__Inputs {
+  _call: MigrateWalletCall;
+
+  constructor(call: MigrateWalletCall) {
+    this._call = call;
+  }
+
+  get fromWallet(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get toWallet(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class MigrateWalletCall__Outputs {
+  _call: MigrateWalletCall;
+
+  constructor(call: MigrateWalletCall) {
     this._call = call;
   }
 }

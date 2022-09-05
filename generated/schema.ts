@@ -753,7 +753,7 @@ export class Review extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("application", Value.fromString(""));
-    this.set("reviewerId", Value.fromString(""));
+    this.set("reviewer", Value.fromString(""));
     this.set("data", Value.fromStringArray(new Array(0)));
   }
 
@@ -792,30 +792,13 @@ export class Review extends Entity {
     this.set("application", Value.fromString(value));
   }
 
-  get reviewerId(): string {
-    let value = this.get("reviewerId");
+  get reviewer(): string {
+    let value = this.get("reviewer");
     return value!.toString();
   }
 
-  set reviewerId(value: string) {
-    this.set("reviewerId", Value.fromString(value));
-  }
-
-  get reviewer(): string | null {
-    let value = this.get("reviewer");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set reviewer(value: string | null) {
-    if (!value) {
-      this.unset("reviewer");
-    } else {
-      this.set("reviewer", Value.fromString(<string>value));
-    }
+  set reviewer(value: string) {
+    this.set("reviewer", Value.fromString(value));
   }
 
   get createdAtS(): i32 {
@@ -1238,7 +1221,6 @@ export class WorkspaceMember extends Entity {
     this.set("accessLevel", Value.fromString(""));
     this.set("outstandingReviewIds", Value.fromStringArray(new Array(0)));
     this.set("workspace", Value.fromString(""));
-    this.set("addedBy", Value.fromString(""));
     this.set("lastKnownTxHash", Value.fromBytes(Bytes.empty()));
   }
 
@@ -1408,13 +1390,21 @@ export class WorkspaceMember extends Entity {
     this.set("workspace", Value.fromString(value));
   }
 
-  get addedBy(): string {
+  get addedBy(): string | null {
     let value = this.get("addedBy");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set addedBy(value: string) {
-    this.set("addedBy", Value.fromString(value));
+  set addedBy(value: string | null) {
+    if (!value) {
+      this.unset("addedBy");
+    } else {
+      this.set("addedBy", Value.fromString(<string>value));
+    }
   }
 
   get lastKnownTxHash(): Bytes {

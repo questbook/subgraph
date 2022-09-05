@@ -20,6 +20,7 @@ dataSources:
         - WorkspaceUpdated
         - WorkspaceSafeUpdated
         - DisburseRewardFromSafe
+        - WorkspaceMemberMigrate
       abis:
         - name: QBWorkspaceRegistryContract
           file: ./abis/QBWorkspaceRegistryContract.json
@@ -38,6 +39,8 @@ dataSources:
           handler: handleDisburseReward
         - event: DisburseRewardFromSafe(uint96[],uint96[],address,string,string,address,uint256[],bool,uint256)
           handler: handleDisburseRewardFromSafe
+        - event: WorkspaceMemberMigrate(uint96,address,address,uint256)
+          handler: handleWorkspaceMemberMigrate
       file: ./src/workspace-mapping.ts
   - kind: ethereum
     name: QBApplicationsContract
@@ -103,6 +106,7 @@ dataSources:
         - ReviewersAssigned
         - RubricsSet
         - ReviewPaymentMarkedDone
+        - ReviewMigrate
       abis:
         - name: QBReviewsContract
           file: ./abis/QBReviewsContract.json
@@ -115,6 +119,8 @@ dataSources:
           handler: handleRubricsSet
         - event: ReviewPaymentMarkedDone(uint96[],address,address,uint256,string,uint256)
           handler: handleReviewPaymentMarkedDone
+        - event: ReviewMigrate(indexed uint96,uint96,address,address,uint256)
+          handler: handleReviewMigrate
       file: ./src/review-mapping.ts
 templates:
   - kind: ethereum
