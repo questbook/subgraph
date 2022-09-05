@@ -2,6 +2,7 @@ import { BigInt, log, store } from '@graphprotocol/graph-ts'
 import {
 	DisburseRewardFromSafe,
 	WorkspaceCreated,
+	WorkspaceMemberMigrate,
 	WorkspaceMembersUpdated,
 	WorkspaceMemberUpdated,
 	WorkspaceSafeUpdated,
@@ -197,17 +198,17 @@ export function handleDisburseReward(event: DisburseReward): void {
 }
 
 export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): void {
-		 const depositType = 'funds_disbursed_from_safe'
-		 const applicationIds = event.params.applicationIds
-		 const milestoneIds = event.params.milestoneIds
-		 const asset = event.params.asset
-		 const nonEvmAsset = event.params.nonEvmAssetAddress
-		 const txnHash = event.params.transactionHash
-		 const sender = event.params.sender
-		 const amounts = event.params.amounts
-		 const isP2P = event.params.isP2P
+	const depositType = 'funds_disbursed_from_safe'
+	const applicationIds = event.params.applicationIds
+	const milestoneIds = event.params.milestoneIds
+	const asset = event.params.asset
+	const nonEvmAsset = event.params.nonEvmAssetAddress
+	const txnHash = event.params.transactionHash
+	const sender = event.params.sender
+	const amounts = event.params.amounts
+	const isP2P = event.params.isP2P
 
-	for(let i=0; i<applicationIds.length; i++) {
+	for(let i = 0; i < applicationIds.length; i++) {
 		disburseReward({
 			event,
 			depositType,
@@ -222,4 +223,34 @@ export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): voi
 		})
 	}
 
+}
+
+export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): void {
+	const fromWallet = event.params.from
+	const toWallet = event.params.to
+	const workspaceId = event.params.workspaceId.toHex()
+	const workspaceMemberId = `${workspaceId}.${fromWallet.toHex()}`
+
+	const workspace = Workspace.load(workspaceId)
+	if(!workspace) {
+		log.warning(`[${event.transaction.hash.toHex()}] workspace not found for member migrate`, [])
+		return
+	}
+
+	const member = WorkspaceMember.load(workspaceMemberId)
+	if(!member) {
+		log.warning(`[${event.transaction.hash.toHex()}] member not found for migrate`, [])
+		return
+	}
+
+	if(workspace.ownerId.toHex() == fromWallet.toHex()) {
+		workspace.ownerId = toWallet
+		workspace.save()
+	}
+
+	store.remove('WorkspaceMember', member.id)
+	member.id = `${event.params.workspaceId.toHex()}.${toWallet.toHex()}`
+	member.actorId = toWallet
+
+	member.save()
 }

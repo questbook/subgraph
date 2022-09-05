@@ -73,6 +73,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	const applicationId = event.params.applicationId.toHex()
 	const metaHash = event.params.metadataHash
 	const milestoneCount = event.params.milestoneCount.toI32()
+	const appOwner = event.params.owner
 
 	const strStateResult = contractApplicationStateToString(event.params.state)
 	if(strStateResult.error) {
@@ -88,6 +89,12 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 
 	entity.updatedAtS = event.params.time.toI32()
 	entity.state = strStateResult.value!
+
+	const didOwnerChange = entity.applicantId.toHex() != event.params.owner.toHex()
+	if(didOwnerChange) {
+		entity.applicantId = appOwner
+	}
+
 	// some valid IPFS hash
 	if(isPlausibleIPFSHash(metaHash)) {
 		const jsonResult = validatedJsonFromIpfs<GrantApplicationUpdate>(event.params.metadataHash, validateGrantApplicationUpdate)

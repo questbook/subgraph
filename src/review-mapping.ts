@@ -1,7 +1,8 @@
 import { Bytes, log, store } from '@graphprotocol/graph-ts'
-import { ReviewersAssigned, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
+import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
 import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
+import { migrateApplicationReviewer, migrateGrant, migrateRubric } from './utils/migrations'
 import { ReviewSetRequest, RubricSetRequest, validateReviewSetRequest, validateRubricSetRequest } from './json-schema'
 
 export function handleReviewSubmitted(event: ReviewSubmitted): void {
@@ -31,7 +32,6 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	if(!review) {
 		review = new Review(reviewId)
 		review.createdAtS = event.params.time.toI32()
-		review.reviewerId = memberId
 		review.reviewer = memberId
 		review.application = event.params._applicationId.toHex()
 	}
@@ -263,7 +263,7 @@ export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): v
 			continue
 		}
 
-		const memberId = review.reviewerId
+		const memberId = review.reviewer
 		const member = WorkspaceMember.load(memberId)
 		if(!member) {
 			log.warning(`[${event.transaction.hash.toHex()}] error in marking review payment done: "member (${memberId}) not found"`, [])
@@ -298,5 +298,40 @@ export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): v
 		fundEntity.asset = event.params._asset
 
 		fundEntity.save()
+	}
+}
+
+export function handleReviewMigrate(event: ReviewMigrate): void {
+	const reviewId = event.params._reviewId.toHex()
+	const fromWallet = event.params._previousReviewerAddress
+	const toWallet = event.params._newReviewerAddress
+	const appId = event.params._applicationId.toHex()
+
+	const application = GrantApplication.load(appId)
+	if(!application) {
+		log.warning(`[${event.transaction.hash.toHex()}] error in migrating review: "application (${appId}) not found"`, [])
+		return
+	}
+
+	const grant = Grant.load(application.grant)
+	if(!grant) {
+		log.warning(`[${event.transaction.hash.toHex()}] error in migrating review: "grant (${application.grant}) not found"`, [])
+		return
+	}
+	
+	migrateGrant(grant, fromWallet, toWallet)
+	migrateApplicationReviewer(application, fromWallet, toWallet)
+	
+	const rubric = Rubric.load(grant.id)
+	if(rubric) {
+		migrateRubric(rubric, fromWallet, toWallet)
+	}
+
+	const review = Review.load(reviewId)
+	if(review) {
+		const reviewerId = `${grant.workspace}.${toWallet.toHex()}`
+		review.reviewer = reviewerId
+
+		review.save()
 	}
 }
