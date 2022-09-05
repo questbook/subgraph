@@ -13,8 +13,8 @@
     "remove-subgraph": "graph remove --node $GRAPH_NODE qb-subgraph-$NETWORK",
     "deploy:all": "node scripts/deploy",
     "deploy:undeployed": "node scripts/deploy-undeployed-networks",
-    "lint": "eslint ./src --ext .js,.ts,.jsx,.tsx",
-    "lint:fix": "eslint ./src --fix --ext .js,.ts,.jsx,.tsx"
+    "lint": "eslint ./ --ext .js,.ts,.jsx,.tsx",
+    "lint:fix": "eslint ./ --fix --ext .js,.ts,.jsx,.tsx"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.25.2",
