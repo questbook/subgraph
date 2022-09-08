@@ -32,13 +32,15 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 		return
 	}
 
+	const milestone = ApplicationMilestone.load(milestoneId)
+
 	const disburseEntity = new FundsTransfer(`${rewardProps.event.transaction.hash.toHex()}.${applicationId}`)
 	disburseEntity.createdAtS = eventTime
 	disburseEntity.amount = amountPaid
 	disburseEntity.sender = rewardProps._sender
 	disburseEntity.to = rewardProps.event.transaction.to!
 	disburseEntity.application = applicationId
-	disburseEntity.milestone = milestoneId
+	disburseEntity.milestone = milestone!.id
 	disburseEntity.type = rewardProps.depositType
 	disburseEntity.grant = application.grant
 	disburseEntity.transactionHash = txnhHash
