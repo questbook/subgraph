@@ -1,10 +1,7 @@
 import { Address, BigInt, Bytes, log, store, Value } from '@graphprotocol/graph-ts'
 import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, Reward, Social, Token, Workspace, WorkspaceMember } from '../../generated/schema'
-import { GrantTransfersERC20 } from '../../generated/templates'
 import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem, validateWorkspaceMemberUpdate, WorkspaceMemberUpdate } from '../json-schema'
 import { Result, validatedJsonFromIpfs } from '../json-schema/json'
-
-const VALID_ADDRESS_LENGTH = 20
 
 export const USD_ASSET_ADDRESS_HEX = '0x0000000000000000000000000000000000000001'
 
@@ -256,19 +253,6 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 	}
 
 	reward.save()
-
-	const hexAssetAddr = reward.asset.toHex()
-
-	if(reward.asset.length === VALID_ADDRESS_LENGTH && hexAssetAddr != USD_ASSET_ADDRESS_HEX) {
-		GrantTransfersERC20.create(
-			Address.fromString(hexAssetAddr)
-		)
-	
-		log.info(`listening to ERC20 "${hexAssetAddr}"`, [])
-	} else {
-		log.info(`invalid ETH address "${hexAssetAddr}", not listening`, [])
-	}
-
 	return reward
 }
 

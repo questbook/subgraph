@@ -19,17 +19,3 @@ export class QBGrantsContract extends DataSourceTemplate {
     );
   }
 }
-
-export class GrantTransfersERC20 extends DataSourceTemplate {
-  static create(address: Address): void {
-    DataSourceTemplate.create("GrantTransfersERC20", [address.toHex()]);
-  }
-
-  static createWithContext(address: Address, context: DataSourceContext): void {
-    DataSourceTemplate.createWithContext(
-      "GrantTransfersERC20",
-      [address.toHex()],
-      context
-    );
-  }
-}

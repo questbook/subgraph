@@ -3,10 +3,8 @@ import { assert, newMockEvent, test } from 'matchstick-as'
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { FundsTransfer, Grant, GrantManager, Notification, Reward, Workspace, WorkspaceMember } from '../generated/schema'
-import { Transfer } from '../generated/templates/GrantTransfersERC20/ERC20'
 import { FundsWithdrawn } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdatedFromFactory } from '../src/grant-mapping'
-import { handleTransfer } from '../src/transfer-mapping' 
 import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, CUSTOM_TOKEN_ADDRESS_GRANT, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 
 export function runTests(): void {
@@ -73,41 +71,6 @@ export function runTests(): void {
 
 		const g = Grant.load(GRANT_ID.toHex())
 		assert.assertNotNull(g)
-	})
-
-	test('should fund a grant', () => {
-		const g = createGrant()
-
-		const ev = newMockEvent()
-
-		ev.parameters = [
-			new ethereum.EventParam('from', ethereum.Value.fromAddress(Address.fromString('0xB23081F360e3847006dB660bae1c6d1b2e17eC2B'))),
-			new ethereum.EventParam('to', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
-			new ethereum.EventParam('value', ethereum.Value.fromI32(100)),
-		]
-		ev.transaction.hash = Bytes.fromByteArray(Bytes.fromHexString('0xC13081F360e3847006dB660bae1c6d1b2e17eC2B'))
-
-		const event = new Transfer(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleTransfer(event)
-
-		const gUpdate = Grant.load(g!.id)
-		assert.i32Equals(gUpdate!.updatedAtS, event.block.timestamp.toI32())
-		assert.assertTrue(gUpdate!.funding.ge(BigInt.fromString('100')))
-
-		const fundEntity = FundsTransfer.load(ev.transaction.hash.toHex())
-
-
-		assert.assertNotNull(fundEntity)
-		assert.i32Equals(fundEntity!.createdAtS, event.block.timestamp.toI32())
-		assert.bytesEquals(fundEntity!.sender, ev.transaction.from)
-		assert.bigIntEquals(fundEntity!.amount, BigInt.fromI32(100))
-		assert.stringEquals(fundEntity!.type, 'funds_deposited')
-
-		const notificationEntity = Notification.load(`n.${fundEntity!.id}`)
-
-		assert.assertNotNull(notificationEntity)
-		assert.stringEquals(notificationEntity!.type, 'funds_deposited')
-		assert.stringEquals(notificationEntity!.entityId, g!.id)
 	})
 
 	test('should withdraw funds from a grant', () => {
