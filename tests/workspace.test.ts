@@ -278,6 +278,7 @@ export function runTests(): void {
 		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${a!.id}`)
 		assert.assertNotNull(fundTransfer)
 		assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
+		assert.assertNotNull(fundTransfer?.milestone)
 	})
 }
 
