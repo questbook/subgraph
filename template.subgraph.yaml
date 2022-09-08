@@ -57,6 +57,7 @@ dataSources:
         - ApplicationSubmitted
         - ApplicationUpdated
         - MilestoneUpdated
+        - ApplicationMigrate
       abis:
         - name: QBApplicationsContract
           file: ./abis/QBApplicationsContract.json
@@ -67,6 +68,8 @@ dataSources:
           handler: handleApplicationUpdated
         - event: MilestoneUpdated(uint96,uint96,uint8,string,uint256)
           handler: handleMilestoneUpdated
+        - event: ApplicationMigrate(indexed uint96,address,uint256)
+          handler: handleApplicationMigrate
       file: ./src/application-mapping.ts
   - kind: ethereum/contract
     name: QBGrantFactoryContract

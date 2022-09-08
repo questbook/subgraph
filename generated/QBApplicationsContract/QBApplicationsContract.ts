@@ -32,6 +32,32 @@ export class AdminChanged__Params {
   }
 }
 
+export class ApplicationMigrate extends ethereum.Event {
+  get params(): ApplicationMigrate__Params {
+    return new ApplicationMigrate__Params(this);
+  }
+}
+
+export class ApplicationMigrate__Params {
+  _event: ApplicationMigrate;
+
+  constructor(event: ApplicationMigrate) {
+    this._event = event;
+  }
+
+  get applicationId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get newApplicantAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class ApplicationSubmitted extends ethereum.Event {
   get params(): ApplicationSubmitted__Params {
     return new ApplicationSubmitted__Params(this);
@@ -633,6 +659,40 @@ export class InitializeCall__Outputs {
   _call: InitializeCall;
 
   constructor(call: InitializeCall) {
+    this._call = call;
+  }
+}
+
+export class MigrateWalletCall extends ethereum.Call {
+  get inputs(): MigrateWalletCall__Inputs {
+    return new MigrateWalletCall__Inputs(this);
+  }
+
+  get outputs(): MigrateWalletCall__Outputs {
+    return new MigrateWalletCall__Outputs(this);
+  }
+}
+
+export class MigrateWalletCall__Inputs {
+  _call: MigrateWalletCall;
+
+  constructor(call: MigrateWalletCall) {
+    this._call = call;
+  }
+
+  get fromWallet(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get toWallet(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class MigrateWalletCall__Outputs {
+  _call: MigrateWalletCall;
+
+  constructor(call: MigrateWalletCall) {
     this._call = call;
   }
 }

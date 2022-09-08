@@ -1,5 +1,5 @@
 import { log } from '@graphprotocol/graph-ts'
-import { ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
+import { ApplicationMigrate, ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
 import { ApplicationMilestone, Grant, GrantApplication, Workspace } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
@@ -89,12 +89,6 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 
 	entity.updatedAtS = event.params.time.toI32()
 	entity.state = strStateResult.value!
-
-	const didOwnerChange = entity.applicantId.toHex() != event.params.owner.toHex()
-	if(didOwnerChange) {
-		entity.applicantId = appOwner
-	}
-
 	// some valid IPFS hash
 	if(isPlausibleIPFSHash(metaHash)) {
 		const jsonResult = validatedJsonFromIpfs<GrantApplicationUpdate>(event.params.metadataHash, validateGrantApplicationUpdate)
@@ -196,4 +190,16 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 	entity.save()
 
 	addMilestoneUpdateNotification(entity, applicationId, event.transaction.hash.toHex(), event.transaction.from)
+}
+
+export function handleApplicationMigrate(event: ApplicationMigrate): void {
+	const applicationId = event.params.applicationId.toHex()
+	const entity = GrantApplication.load(applicationId)
+	if(!entity) {
+		log.warning(`[${event.transaction.hash.toHex()}] recv migrate for unknown application: ID="${applicationId}"`, [])
+		return
+	}
+
+	entity.applicantId = event.params.newApplicantAddress
+	entity.save()
 }

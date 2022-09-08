@@ -1,10 +1,10 @@
 import { Address, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
-import { ApplicationUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
+import { ApplicationMigrate } from '../generated/QBApplicationsContract/QBApplicationsContract'
 import { ReviewersAssigned, ReviewMigrate } from '../generated/QBReviewsContract/QBReviewsContract'
 import { WorkspaceMemberMigrate } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Grant, GrantApplication, Review, Workspace, WorkspaceMember } from '../generated/schema'
-import { handleApplicationUpdated } from '../src/application-mapping'
+import { handleApplicationMigrate } from '../src/application-mapping'
 import { handleReviewersAssigned, handleReviewMigrate } from '../src/review-mapping'
 import { handleWorkspaceMemberMigrate } from '../src/workspace-mapping'
 import { createApplication, createReview, createWorkspace, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_REVIEWER_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
@@ -52,16 +52,12 @@ export function runTests(): void {
 		const ev = newMockEvent()
 		ev.parameters = [
 			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
-			new ethereum.EventParam('owner', ethereum.Value.fromAddress(MIGRATED_WALLET)),
-			// the IPFS hash contains mock data for the workspace
-			new ethereum.EventParam('metadataHash', ethereum.Value.fromString('')),
-			new ethereum.EventParam('state', ethereum.Value.fromI32(0x01)),
-			new ethereum.EventParam('milestoneCount', ethereum.Value.fromI32(0x00)),
+			new ethereum.EventParam('newApplicantAddress', ethereum.Value.fromAddress(MIGRATED_WALLET)),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
 		]
 
-		const event = new ApplicationUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleApplicationUpdated(event)
+		const event = new ApplicationMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleApplicationMigrate(event)
 
 		// check the applicant address has been changed correctly
 		const app2 = GrantApplication.load(app!.id)!
