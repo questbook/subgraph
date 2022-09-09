@@ -443,7 +443,7 @@ return validateArray(json, -1, 20, validateGrantField_enumItem)
 }
 
 export function validateGrantField_enumItem(json: JSONValue): Result<string> {
-return validateString(json, -1, 256, null)
+return validateString(json, -1, 1024, null)
 }
 
 export function validateGrantProposedMilestone(json: JSONValue): Result<GrantProposedMilestone> {
@@ -456,7 +456,7 @@ const obj = objResult.value!
 const titleJson = obj.get('title')
 if(!titleJson) return { value: null, error: "Expected 'title' to be present in GrantProposedMilestone" }
 if(titleJson) {
-	const titleResult = validateString(titleJson, -1, 255, null)
+	const titleResult = validateString(titleJson, -1, 1024, null)
 	if(titleResult.error) {
 		return { value: null, error: ["Error in mapping 'title': ", titleResult.error!].join('') }
 	}
