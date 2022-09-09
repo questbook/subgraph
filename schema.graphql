@@ -37,6 +37,7 @@ enum NotificationType {
   funds_disbursed,
   funds_deposited,
   funds_withdrawn,
+  funds_disbursed_from_safe,
   application_completed
 }
 
