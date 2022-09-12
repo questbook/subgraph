@@ -22,6 +22,9 @@ export const CUSD_DAI_ADDRESSES = [
 // 10^18
 const CUSD_DAI_DECIMALS = BigInt.fromI32(10).pow(18)
 
+const I32_MAX_BIGINT = BigInt.fromI32(i32.MAX_VALUE)
+const I32_MIN_BIGINT = BigInt.fromI32(i32.MIN_VALUE)
+
 export function isPlausibleIPFSHash(str: string): boolean {
 	return str.length > 2
 }
@@ -257,20 +260,24 @@ export function mapGrantRewardAndListen(id: string, workspaceId: string, rewardJ
 }
 
 export function getUSDReward(asset: Bytes, value: BigInt): i32 {
+	let result: BigInt
+
 	const hexAssetAddr = asset.toHex()
 	if(hexAssetAddr == USD_ASSET_ADDRESS_HEX) {
-		return value.toI32()
-	}
-	
-	if(USDC_ADDRESSES.includes(hexAssetAddr)) {
-		return value.div(USDC_DECIMALS).toI32()
-	}
-
-	if(CUSD_DAI_ADDRESSES.includes(hexAssetAddr)) {
-		return value.div(CUSD_DAI_DECIMALS).toI32()
+		result = value
+	} else if(USDC_ADDRESSES.includes(hexAssetAddr)) {
+		result = value.div(USDC_DECIMALS)
+	} else if(CUSD_DAI_ADDRESSES.includes(hexAssetAddr)) {
+		result = value.div(CUSD_DAI_DECIMALS)
+	} else {
+		result = BigInt.fromI32(-1)
 	}
 
-	return -1
+	if(result.ge(I32_MAX_BIGINT) || result.le(I32_MIN_BIGINT)) {
+		return -1
+	}
+
+	return result.toI32()
 }
 
 export function mapWorkspaceMembersUpdate(
