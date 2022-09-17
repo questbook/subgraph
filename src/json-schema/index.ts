@@ -61,6 +61,7 @@ export class GrantApplicationFieldAnswers {
 export class GrantApplicationRequest {
 	grantId: string = ''
 	applicantId: string = ''
+	applicantPublicKey: string | null = null
 	fields: GrantApplicationFieldAnswers = new GrantApplicationFieldAnswers()
 	pii: PIIAnswers | null = null
 	milestones: GrantProposedMilestone[] = []
@@ -570,6 +571,16 @@ if(applicantIdJson) {
 	}
 	if(applicantIdResult.value) {
 		value.applicantId = applicantIdResult.value!
+	}
+}
+const applicantPublicKeyJson = obj.get('applicantPublicKey')
+if(applicantPublicKeyJson) {
+	const applicantPublicKeyResult = validatePublicKey(applicantPublicKeyJson)
+	if(applicantPublicKeyResult.error) {
+		return { value: null, error: ["Error in mapping 'applicantPublicKey': ", applicantPublicKeyResult.error!].join('') }
+	}
+	if(applicantPublicKeyResult.value) {
+		value.applicantPublicKey = applicantPublicKeyResult.value!
 	}
 }
 const fieldsJson = obj.get('fields')

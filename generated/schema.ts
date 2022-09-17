@@ -1967,6 +1967,23 @@ export class GrantApplication extends Entity {
     this.set("applicantId", Value.fromBytes(value));
   }
 
+  get applicantPublicKey(): string | null {
+    let value = this.get("applicantPublicKey");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set applicantPublicKey(value: string | null) {
+    if (!value) {
+      this.unset("applicantPublicKey");
+    } else {
+      this.set("applicantPublicKey", Value.fromString(<string>value));
+    }
+  }
+
   get state(): string {
     let value = this.get("state");
     return value!.toString();

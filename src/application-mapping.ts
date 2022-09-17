@@ -39,6 +39,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	const entity = new GrantApplication(applicationId)
 	entity.grant = grantId
 	entity.applicantId = event.params.owner
+	entity.applicantPublicKey = json.applicantPublicKey
 	entity.state = 'submitted'
 	entity.fields = mapGrantFieldAnswers(applicationId, grantId, json.fields)
 	entity.createdAtS = event.params.time.toI32()
@@ -73,7 +74,6 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	const applicationId = event.params.applicationId.toHex()
 	const metaHash = event.params.metadataHash
 	const milestoneCount = event.params.milestoneCount.toI32()
-	const appOwner = event.params.owner
 
 	const strStateResult = contractApplicationStateToString(event.params.state)
 	if(strStateResult.error) {

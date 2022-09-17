@@ -356,6 +356,8 @@ type GrantApplication @entity {
   grant: Grant!
   "Address of the applicant"
   applicantId: Bytes!
+  "Public key of the applicant, used for PII"
+  applicantPublicKey: String
   "Current state of the application"
   state: ApplicationState!
   "Answers to the fields requested in the grant"
