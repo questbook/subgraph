@@ -50,29 +50,10 @@ enum FundsTransferType {
 }
 
 enum SupportedNetwork {
-  chain_1313161555, # aurora-testnet
-  chain_44787, # celo-alfajores-testnet
   chain_42220, # celo-mainnet
-  chain_9000, # evmos-testnet
-  chain_2153, # findora-testnet
-  chain_100, # gnosis-mainnet
   chain_5, # goerli-testnet
-  chain_1666600000, # harmony-mainnet
-  chain_1666700000, # harmony-testnet
-  chain_8217, # klaytn-mainnet
-  chain_1001, # klaytn-testnet
-  chain_42, # kovan
-  chain_1088, # metis-mainnet
-  chain_588, # metis-testnet
-  chain_1287, # moonbase-alpha
-  chain_245022926, # neon-devnet
-  chain_69, # optimism-kovan
   chain_10, # optimism-mainnet
   chain_137, # polygon-mainnet
-  chain_80001, # polygon-mumbai
-  chain_4, # rinkeby
-  chain_40, # telos-mainnet
-  chain_41, # telos-testnet
 }
 
 type WorkspaceSafe @entity {
