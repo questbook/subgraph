@@ -1767,6 +1767,15 @@ export class ApplicationMilestone extends Entity {
     }
   }
 
+  get feedbackDaoUpdatedAtS(): i32 {
+    let value = this.get("feedbackDaoUpdatedAtS");
+    return value!.toI32();
+  }
+
+  set feedbackDaoUpdatedAtS(value: i32) {
+    this.set("feedbackDaoUpdatedAtS", Value.fromI32(value));
+  }
+
   get feedbackDev(): string | null {
     let value = this.get("feedbackDev");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1782,6 +1791,15 @@ export class ApplicationMilestone extends Entity {
     } else {
       this.set("feedbackDev", Value.fromString(<string>value));
     }
+  }
+
+  get feedbackDevUpdatedAtS(): i32 {
+    let value = this.get("feedbackDevUpdatedAtS");
+    return value!.toI32();
+  }
+
+  set feedbackDevUpdatedAtS(value: i32) {
+    this.set("feedbackDevUpdatedAtS", Value.fromI32(value));
   }
 }
 
