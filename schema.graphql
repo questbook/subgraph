@@ -311,8 +311,12 @@ type ApplicationMilestone @entity {
   updatedAtS: Int
   "Feedback from the grant DAO manager/applicant"
   feedbackDao: String
+  "Time in epoch when the feedback was submitted by the admin"
+  feedbackDaoUpdatedAtS: Int
   "Feedback from the developer"
   feedbackDev: String
+  "Time in epoch when the feedback was submitted by the applicant"
+  feedbackDevUpdatedAtS: Int
 }
 
 type PIIAnswer @entity {
