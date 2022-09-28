@@ -26,7 +26,7 @@ const I32_MAX_BIGINT = BigInt.fromI32(i32.MAX_VALUE)
 const I32_MIN_BIGINT = BigInt.fromI32(i32.MIN_VALUE)
 
 export function isPlausibleIPFSHash(str: string): boolean {
-	return str.length > 2
+	return str.length > 0
 }
 
 export function mapGrantFieldMap(grantId: string, map: GrantFieldMap): string[] {
