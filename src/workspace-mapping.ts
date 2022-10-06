@@ -6,6 +6,7 @@ import {
 	WorkspaceMembersUpdated,
 	WorkspaceMemberUpdated,
 	WorkspaceSafeUpdated,
+	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
@@ -47,6 +48,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.updatedAtS = entity.createdAtS
 	entity.socials = mapWorkspaceSocials(entityId, json.socials)
 	entity.metadataHash = event.params.metadataHash
+	entity.isVisible = true
 	entity.mostRecentGrantPostedAtS = 0
 	entity.totalGrantFundingCommittedUSD = 0
 	entity.numberOfApplications = 0
@@ -253,4 +255,21 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 	member.actorId = toWallet
 
 	member.save()
+}
+
+export function handleWorkspacesVisibleUpdated(event: WorkspacesVisibleUpdated): void {
+	const workspaceIds = event.params.workspaceId.map(w => w.toHex())
+	const isVisibleArr = event.params.isVisible
+
+	for(let idx = 0; idx <= workspaceIds.length; idx++) {
+		const workspaceId = workspaceIds[idx]
+		const workspace = Workspace.load(workspaceId)
+		if(!workspace) {
+			log.warning(`workspace [${workspaceId}] not found for visibility update`, [])
+			continue
+		}
+
+		workspace.isVisible = isVisibleArr[idx]
+		workspace.save()
+	}
 }
