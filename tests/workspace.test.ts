@@ -317,6 +317,8 @@ export function runTests(): void {
 		const event = new WorkspacesVisibleUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspacesVisibleUpdated(event)
 
+		log.info('after event', [])
+
 		for(let idx = 0; idx < workspaceIds.length; idx++) {
 			log.info(`idx ${idx} val ${workspaceIds[idx]} type ${typeof workspaceIds[idx]}`, [])
 
