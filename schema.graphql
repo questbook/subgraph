@@ -228,7 +228,7 @@ type WorkspaceMember @entity {
   fullName: String
   "Hash of profile picture on IPFS"
   profilePictureIpfsHash: String
-  
+
   email: String
   "What permissions the member has on the workspace"
   accessLevel: WorkspaceMemberAccessLevel!
@@ -262,6 +262,8 @@ type Workspace @entity {
   bio: String!
   "General info about the workspace"
   about: String!
+  "Whether the workspace is visible to users in the explore page"
+  isVisible: Boolean!
   "Hash to fetch the logo"
   logoIpfsHash: String!
   "Cover image for the workspace"

@@ -1495,6 +1495,15 @@ export class Workspace extends Entity {
     this.set("about", Value.fromString(value));
   }
 
+  get isVisible(): boolean {
+    let value = this.get("isVisible");
+    return value!.toBoolean();
+  }
+
+  set isVisible(value: boolean) {
+    this.set("isVisible", Value.fromBoolean(value));
+  }
+
   get logoIpfsHash(): string {
     let value = this.get("logoIpfsHash");
     return value!.toString();
