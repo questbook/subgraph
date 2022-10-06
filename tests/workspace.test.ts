@@ -304,13 +304,13 @@ export function runTests(): void {
 
 		assert.assertTrue(w.isVisible)
 
-		const workspaceIds = [BigInt.fromString(w.id)]
+		const workspaceIds = [MOCK_WORKSPACE_ID]
 		const isVisibleArr = [false]
 
 		const ev = newMockEvent()
 
 		ev.parameters = [
-			new ethereum.EventParam('workspaceId', ethereum.Value.fromUnsignedBigIntArray(workspaceIds)),
+			new ethereum.EventParam('workspaceId', ethereum.Value.fromArray(workspaceIds)),
 			new ethereum.EventParam('isVisible', ethereum.Value.fromBooleanArray(isVisibleArr)),
 		]
 
@@ -318,10 +318,9 @@ export function runTests(): void {
 		handleWorkspacesVisibleUpdated(event)
 
 		for(let idx = 0; idx <= workspaceIds.length; idx++) {
-			const workspaceId = workspaceIds[idx].toHex()
+			const workspaceId = workspaceIds[idx].toString()
 			const workspace = Workspace.load(workspaceId)
 			if(!workspace) {
-				log.warning(`workspace [${workspaceId}] not found for visibility update`, [])
 				continue
 			}
 
