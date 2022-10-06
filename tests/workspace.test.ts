@@ -300,16 +300,17 @@ export function runTests(): void {
 	})
 
 	test('should update dao\'s visibility state', () => {
-		const w1 = createWorkspace()!
-		const w2 = createWorkspace()!
+		const w = createWorkspace()!
 
-		const workspaceIds = [w1.id, w2.id]
-		const isVisibleArr = [true, false]
+		assert.assertTrue(w.isVisible)
+
+		const workspaceIds = [BigInt.fromString(w.id)]
+		const isVisibleArr = [false]
 
 		const ev = newMockEvent()
 
 		ev.parameters = [
-			new ethereum.EventParam('workspaceId', ethereum.Value.fromStringArray(workspaceIds)),
+			new ethereum.EventParam('workspaceId', ethereum.Value.fromUnsignedBigIntArray(workspaceIds)),
 			new ethereum.EventParam('isVisible', ethereum.Value.fromBooleanArray(isVisibleArr)),
 		]
 
@@ -317,7 +318,7 @@ export function runTests(): void {
 		handleWorkspacesVisibleUpdated(event)
 
 		for(let idx = 0; idx <= workspaceIds.length; idx++) {
-			const workspaceId = workspaceIds[idx]
+			const workspaceId = workspaceIds[idx].toHex()
 			const workspace = Workspace.load(workspaceId)
 			if(!workspace) {
 				log.warning(`workspace [${workspaceId}] not found for visibility update`, [])
