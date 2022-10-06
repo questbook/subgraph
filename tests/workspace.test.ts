@@ -1,4 +1,4 @@
-import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigInt, ByteArray, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
 import {
 	DisburseRewardFromSafe,
@@ -316,6 +316,8 @@ export function runTests(): void {
 
 		const event = new WorkspacesVisibleUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspacesVisibleUpdated(event)
+
+		log.info('i am here', [])
 
 		for(let idx = 0; idx < workspaceIds.length; idx++) {
 			const workspaceId = workspaceIds[idx].toString()
