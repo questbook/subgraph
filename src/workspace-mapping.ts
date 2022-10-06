@@ -258,11 +258,11 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 }
 
 export function handleWorkspacesVisibleUpdated(event: WorkspacesVisibleUpdated): void {
-	const workspaceIds = event.params.workspaceId.map(w => w.toHex())
+	const workspaceIds = event.params.workspaceId
 	const isVisibleArr = event.params.isVisible
 
 	for(let idx = 0; idx <= workspaceIds.length; idx++) {
-		const workspaceId = workspaceIds[idx]
+		const workspaceId = workspaceIds[idx].toHex()
 		const workspace = Workspace.load(workspaceId)
 		if(!workspace) {
 			log.warning(`workspace [${workspaceId}] not found for visibility update`, [])
