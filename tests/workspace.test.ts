@@ -318,6 +318,8 @@ export function runTests(): void {
 		handleWorkspacesVisibleUpdated(event)
 
 		for(let idx = 0; idx < workspaceIds.length; idx++) {
+			log.info(`idx ${idx} val ${workspaceIds[idx]} type ${typeof workspaceIds[idx]}`, [])
+
 			const workspaceId = workspaceIds[idx].toString()
 
 			log.info(`workspaceId ${workspaceId} type ${typeof workspaceId}`, [])
