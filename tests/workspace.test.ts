@@ -317,7 +317,7 @@ export function runTests(): void {
 		const event = new WorkspacesVisibleUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspacesVisibleUpdated(event)
 
-		for(let idx = 0; idx <= workspaceIds.length; idx++) {
+		for(let idx = 0; idx < workspaceIds.length; idx++) {
 			const workspaceId = workspaceIds[idx].toString()
 			const workspace = Workspace.load(workspaceId)
 			if(!workspace) {
