@@ -1,4 +1,4 @@
-import { Address, BigInt, ByteArray, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
+import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
 import {
 	DisburseRewardFromSafe,
