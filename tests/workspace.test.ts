@@ -1,9 +1,24 @@
-import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
+import { Address, BigInt, ByteArray, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
-import { DisburseRewardFromSafe, WorkspaceMembersUpdated, WorkspaceMemberUpdated, WorkspaceSafeUpdated, WorkspaceUpdated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
+import {
+	DisburseRewardFromSafe,
+	WorkspaceMembersUpdated,
+	WorkspaceMemberUpdated,
+	WorkspaceSafeUpdated,
+	WorkspacesVisibleUpdated,
+	WorkspaceUpdated
+} from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { ApplicationMilestone, FundsTransfer, Partner, Social, Token, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
-import { handleDisburseReward, handleDisburseRewardFromSafe, handleWorkspaceMembersUpdated, handleWorkspaceMemberUpdated, handleWorkspaceSafeUpdated, handleWorkspaceUpdated } from '../src/workspace-mapping'
+import {
+	handleDisburseReward,
+	handleDisburseRewardFromSafe,
+	handleWorkspaceMembersUpdated,
+	handleWorkspaceMemberUpdated,
+	handleWorkspaceSafeUpdated,
+	handleWorkspacesVisibleUpdated,
+	handleWorkspaceUpdated
+} from '../src/workspace-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createWorkspace, MOCK_APPLICATION_ID_ARRAY, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 import { MOCK_APPLICATION_ID } from './utils'
 
@@ -282,7 +297,35 @@ export function runTests(): void {
 		const applicationMilestone = ApplicationMilestone.load(fundTransfer!.milestone!)
 		assert.assertNotNull(applicationMilestone)
 		// console.log(`Application milestone --> ${applicationMilestone!.amount.toString()}`)
-		
+	})
+
+	test('should update dao\'s visibility state', () => {
+		const w1 = createWorkspace()!
+		const w2 = createWorkspace()!
+
+		const workspaceIds = [w1.id, w2.id]
+		const isVisibleArr = [true, false]
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('workspaceId', ethereum.Value.fromStringArray(workspaceIds)),
+			new ethereum.EventParam('isVisible', ethereum.Value.fromBooleanArray(isVisibleArr)),
+		]
+
+		const event = new WorkspacesVisibleUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleWorkspacesVisibleUpdated(event)
+
+		for(let idx = 0; idx <= workspaceIds.length; idx++) {
+			const workspaceId = workspaceIds[idx]
+			const workspace = Workspace.load(workspaceId)
+			if(!workspace) {
+				log.warning(`workspace [${workspaceId}] not found for visibility update`, [])
+				continue
+			}
+
+			assert.booleanEquals(workspace.isVisible, isVisibleArr[idx])
+		}
 	})
 }
 
