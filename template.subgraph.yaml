@@ -21,6 +21,7 @@ dataSources:
         - WorkspaceSafeUpdated
         - DisburseRewardFromSafe
         - WorkspaceMemberMigrate
+        - WorkspacesVisibleUpdated
       abis:
         - name: QBWorkspaceRegistryContract
           file: ./abis/QBWorkspaceRegistryContract.json
@@ -41,6 +42,8 @@ dataSources:
           handler: handleDisburseRewardFromSafe
         - event: WorkspaceMemberMigrate(uint96,address,address,uint256)
           handler: handleWorkspaceMemberMigrate
+        - event: WorkspacesVisibleUpdated(uint96[],bool[])
+          handler: handleWorkspacesVisibleUpdated
       file: ./src/workspace-mapping.ts
   - kind: ethereum
     name: QBApplicationsContract

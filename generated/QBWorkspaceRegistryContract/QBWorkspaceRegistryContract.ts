@@ -436,6 +436,28 @@ export class WorkspaceUpdated__Params {
   }
 }
 
+export class WorkspacesVisibleUpdated extends ethereum.Event {
+  get params(): WorkspacesVisibleUpdated__Params {
+    return new WorkspacesVisibleUpdated__Params(this);
+  }
+}
+
+export class WorkspacesVisibleUpdated__Params {
+  _event: WorkspacesVisibleUpdated;
+
+  constructor(event: WorkspacesVisibleUpdated) {
+    this._event = event;
+  }
+
+  get workspaceId(): Array<BigInt> {
+    return this._event.parameters[0].value.toBigIntArray();
+  }
+
+  get isVisible(): Array<boolean> {
+    return this._event.parameters[1].value.toBooleanArray();
+  }
+}
+
 export class QBWorkspaceRegistryContract__workspacesResultSafeStruct extends ethereum.Tuple {
   get _address(): Bytes {
     return this[0].toBytes();
@@ -554,6 +576,21 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  getQBAdmins(): Array<Address> {
+    let result = super.call("getQBAdmins", "getQBAdmins():(address[])", []);
+
+    return result[0].toAddressArray();
+  }
+
+  try_getQBAdmins(): ethereum.CallResult<Array<Address>> {
+    let result = super.tryCall("getQBAdmins", "getQBAdmins():(address[])", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddressArray());
   }
 
   isWorkspaceAdmin(_id: BigInt, _address: Address): boolean {
@@ -696,6 +733,25 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+
+  qbAdmins(param0: BigInt): Address {
+    let result = super.call("qbAdmins", "qbAdmins(uint256):(address)", [
+      ethereum.Value.fromUnsignedBigInt(param0)
+    ]);
+
+    return result[0].toAddress();
+  }
+
+  try_qbAdmins(param0: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall("qbAdmins", "qbAdmins(uint256):(address)", [
+      ethereum.Value.fromUnsignedBigInt(param0)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   workspaceCount(): BigInt {
@@ -1105,6 +1161,36 @@ export class RenounceOwnershipCall__Outputs {
   }
 }
 
+export class SetApplicationRegCall extends ethereum.Call {
+  get inputs(): SetApplicationRegCall__Inputs {
+    return new SetApplicationRegCall__Inputs(this);
+  }
+
+  get outputs(): SetApplicationRegCall__Outputs {
+    return new SetApplicationRegCall__Outputs(this);
+  }
+}
+
+export class SetApplicationRegCall__Inputs {
+  _call: SetApplicationRegCall;
+
+  constructor(call: SetApplicationRegCall) {
+    this._call = call;
+  }
+
+  get _applicationReg(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetApplicationRegCall__Outputs {
+  _call: SetApplicationRegCall;
+
+  constructor(call: SetApplicationRegCall) {
+    this._call = call;
+  }
+}
+
 export class TransferOwnershipCall extends ethereum.Call {
   get inputs(): TransferOwnershipCall__Inputs {
     return new TransferOwnershipCall__Inputs(this);
@@ -1309,6 +1395,40 @@ export class UpdateWorkspaceSafeCall__Outputs {
   _call: UpdateWorkspaceSafeCall;
 
   constructor(call: UpdateWorkspaceSafeCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateWorkspacesVisibleCall extends ethereum.Call {
+  get inputs(): UpdateWorkspacesVisibleCall__Inputs {
+    return new UpdateWorkspacesVisibleCall__Inputs(this);
+  }
+
+  get outputs(): UpdateWorkspacesVisibleCall__Outputs {
+    return new UpdateWorkspacesVisibleCall__Outputs(this);
+  }
+}
+
+export class UpdateWorkspacesVisibleCall__Inputs {
+  _call: UpdateWorkspacesVisibleCall;
+
+  constructor(call: UpdateWorkspacesVisibleCall) {
+    this._call = call;
+  }
+
+  get _workspaceIds(): Array<BigInt> {
+    return this._call.inputValues[0].value.toBigIntArray();
+  }
+
+  get _isVisible(): Array<boolean> {
+    return this._call.inputValues[1].value.toBooleanArray();
+  }
+}
+
+export class UpdateWorkspacesVisibleCall__Outputs {
+  _call: UpdateWorkspacesVisibleCall;
+
+  constructor(call: UpdateWorkspacesVisibleCall) {
     this._call = call;
   }
 }
