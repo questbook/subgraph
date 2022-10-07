@@ -262,11 +262,8 @@ export function handleWorkspacesVisibleUpdated(event: WorkspacesVisibleUpdated):
 	const isVisibleArr = event.params.isVisible
 
 	for(let idx = 0; idx < workspaceIds.length; idx++) {
-		log.info(`idx ${idx} val ${workspaceIds[idx]} type ${typeof workspaceIds[idx]}`, [])
 
 		const workspaceId = workspaceIds[idx].toHex()
-
-		log.info(`workspaceId ${workspaceId} type ${typeof workspaceId}`, [])
 
 		const workspace = Workspace.load(workspaceId)
 		if(!workspace) {

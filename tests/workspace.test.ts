@@ -19,7 +19,7 @@ import {
 	handleWorkspacesVisibleUpdated,
 	handleWorkspaceUpdated
 } from '../src/workspace-mapping'
-import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createWorkspace, MOCK_APPLICATION_ID_ARRAY, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
+import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createWorkspace, MOCK_APPLICATION_ID_ARRAY, MOCK_WORKSPACE_ID, MOCK_WORKSPACE_ID_ARRAY, WORKSPACE_CREATOR_ID } from './utils'
 import { MOCK_APPLICATION_ID } from './utils'
 
 export function runTests(): void {
@@ -304,13 +304,13 @@ export function runTests(): void {
 
 		assert.assertTrue(w.isVisible)
 
-		const workspaceIds = [MOCK_WORKSPACE_ID]
+		const workspaceIds = [w.id]
 		const isVisibleArr = [false]
 
 		const ev = newMockEvent()
 
 		ev.parameters = [
-			new ethereum.EventParam('workspaceId', ethereum.Value.fromArray(workspaceIds)),
+			new ethereum.EventParam('workspaceId', MOCK_WORKSPACE_ID_ARRAY),
 			new ethereum.EventParam('isVisible', ethereum.Value.fromBooleanArray(isVisibleArr)),
 		]
 
