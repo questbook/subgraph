@@ -262,7 +262,6 @@ export function handleWorkspacesVisibleUpdated(event: WorkspacesVisibleUpdated):
 	const isVisibleArr = event.params.isVisible
 
 	for(let idx = 0; idx < workspaceIds.length; idx++) {
-
 		const workspaceId = workspaceIds[idx].toHex()
 
 		const workspace = Workspace.load(workspaceId)
