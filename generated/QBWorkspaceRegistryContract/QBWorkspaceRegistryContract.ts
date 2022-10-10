@@ -815,6 +815,36 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
   }
 }
 
+export class AddQBAdminCall extends ethereum.Call {
+  get inputs(): AddQBAdminCall__Inputs {
+    return new AddQBAdminCall__Inputs(this);
+  }
+
+  get outputs(): AddQBAdminCall__Outputs {
+    return new AddQBAdminCall__Outputs(this);
+  }
+}
+
+export class AddQBAdminCall__Inputs {
+  _call: AddQBAdminCall;
+
+  constructor(call: AddQBAdminCall) {
+    this._call = call;
+  }
+
+  get _address(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class AddQBAdminCall__Outputs {
+  _call: AddQBAdminCall;
+
+  constructor(call: AddQBAdminCall) {
+    this._call = call;
+  }
+}
+
 export class CreateInviteLinkCall extends ethereum.Call {
   get inputs(): CreateInviteLinkCall__Inputs {
     return new CreateInviteLinkCall__Inputs(this);
