@@ -36,6 +36,7 @@ import {
 	createApplication,
 	createWorkspace,
 	MOCK_APPLICATION_ID_ARRAY,
+	MOCK_QB_ADMIN_ID,
 	MOCK_WORKSPACE_ID,
 	MOCK_WORKSPACE_ID_ARRAY,
 	WORKSPACE_CREATOR_ID
@@ -351,8 +352,7 @@ export function runTests(): void {
 	})
 
 	test('should add/remove a QB admin', () => {
-		const walletAddress = Address.fromString('w')
-		const walletAddresses = ethereum.Value.fromAddressArray([walletAddress])
+		const walletAddresses = ethereum.Value.fromAddressArray([MOCK_QB_ADMIN_ID])
 
 		const addEventMock = newMockEvent()
 
@@ -365,7 +365,7 @@ export function runTests(): void {
 		const addEvent = new QBAdminsUpdated(addEventMock.address, addEventMock.logIndex, addEventMock.transactionLogIndex, addEventMock.logType, addEventMock.block, addEventMock.transaction, addEventMock.parameters)
 		handleQBAdminsUpdated(addEvent)
 
-		const addedAdmin = QBAdmin.load(walletAddress.toString())
+		const addedAdmin = QBAdmin.load(MOCK_QB_ADMIN_ID.toString())
 		assert.assertNotNull(addedAdmin)
 
 		const removeEventMock = newMockEvent()
@@ -379,7 +379,7 @@ export function runTests(): void {
 		const removeEvent = new QBAdminsUpdated(removeEventMock.address, removeEventMock.logIndex, removeEventMock.transactionLogIndex, removeEventMock.logType, removeEventMock.block, removeEventMock.transaction, removeEventMock.parameters)
 		handleQBAdminsUpdated(removeEvent)
 
-		const removedAdmin = QBAdmin.load(walletAddress.toString())
+		const removedAdmin = QBAdmin.load(MOCK_QB_ADMIN_ID.toString())
 		assert.assertNull(removedAdmin)
 	})
 }
