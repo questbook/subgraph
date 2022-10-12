@@ -1,6 +1,7 @@
 import { BigInt, log, store } from '@graphprotocol/graph-ts'
 import {
 	DisburseRewardFromSafe,
+	QBAdminsUpdated,
 	WorkspaceCreated,
 	WorkspaceMemberMigrate,
 	WorkspaceMembersUpdated,
@@ -9,12 +10,23 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { QBAdmin, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
-import { mapWorkspaceMembersUpdate, mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks, mapWorkspaceTokens } from './utils/generics'
+import {
+	mapWorkspaceMembersUpdate,
+	mapWorkspacePartners,
+	mapWorkspaceSocials,
+	mapWorkspaceSupportedNetworks,
+	mapWorkspaceTokens
+} from './utils/generics'
 import { disburseReward } from './utils/handle-disburse-reward'
-import { validateWorkspaceCreateRequest, validateWorkspaceUpdateRequest, WorkspaceCreateRequest, WorkspaceUpdateRequest } from './json-schema'
+import {
+	validateWorkspaceCreateRequest,
+	validateWorkspaceUpdateRequest,
+	WorkspaceCreateRequest,
+	WorkspaceUpdateRequest
+} from './json-schema'
 
 export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	const entityId = event.params.id.toHex()
@@ -272,5 +284,36 @@ export function handleWorkspacesVisibleUpdated(event: WorkspacesVisibleUpdated):
 
 		workspace.isVisible = isVisibleArr[idx]
 		workspace.save()
+	}
+}
+
+export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
+	const walletAddresses = event.params.walletAddresses
+	const isAdded = event.params.isAdded
+
+	for(let i = 0; i < walletAddresses.length; i++) {
+		const walletAddress = walletAddresses[i].toString()
+		const adminExists = QBAdmin.load(walletAddress)
+
+		if(isAdded) {
+			if(adminExists) {
+				log.warning(`Admin ${walletAddress} already exists!`, [])
+				return
+			}
+
+			const entity = new QBAdmin(walletAddress)
+			entity.walletAddress = walletAddresses[i]
+			entity.addedAt = event.params.time.toI32()
+
+			entity.save()
+		} else {
+			if(!adminExists) {
+				log.warning(`Admin ${walletAddress} does not exist!`, [])
+				return
+			}
+
+			store.remove('QBAdmin', walletAddress)
+		}
+
 	}
 }
