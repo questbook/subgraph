@@ -344,7 +344,11 @@ export function mapWorkspaceMembersUpdate(
 			
 			member.updatedAt = entity.updatedAtS
 			if(role === 0) { // become an admin
-				member.accessLevel = 'admin'
+				if(member.accessLevel === 'owner') { // if already an owner
+					member.accessLevel = 'owner'
+				} else {
+					member.accessLevel = 'admin'
+				}
 			} else if(role === 1) { // become a reviewer
 				member.accessLevel = 'reviewer'
 			}
