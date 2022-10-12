@@ -200,6 +200,32 @@ export class Paused__Params {
   }
 }
 
+export class QBAdminsUpdated extends ethereum.Event {
+  get params(): QBAdminsUpdated__Params {
+    return new QBAdminsUpdated__Params(this);
+  }
+}
+
+export class QBAdminsUpdated__Params {
+  _event: QBAdminsUpdated;
+
+  constructor(event: QBAdminsUpdated) {
+    this._event = event;
+  }
+
+  get walletAddresses(): Array<Address> {
+    return this._event.parameters[0].value.toAddressArray();
+  }
+
+  get isAdded(): boolean {
+    return this._event.parameters[1].value.toBoolean();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class Unpaused extends ethereum.Event {
   get params(): Unpaused__Params {
     return new Unpaused__Params(this);
@@ -815,32 +841,32 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
   }
 }
 
-export class AddQBAdminCall extends ethereum.Call {
-  get inputs(): AddQBAdminCall__Inputs {
-    return new AddQBAdminCall__Inputs(this);
+export class AddQBAdminsCall extends ethereum.Call {
+  get inputs(): AddQBAdminsCall__Inputs {
+    return new AddQBAdminsCall__Inputs(this);
   }
 
-  get outputs(): AddQBAdminCall__Outputs {
-    return new AddQBAdminCall__Outputs(this);
+  get outputs(): AddQBAdminsCall__Outputs {
+    return new AddQBAdminsCall__Outputs(this);
   }
 }
 
-export class AddQBAdminCall__Inputs {
-  _call: AddQBAdminCall;
+export class AddQBAdminsCall__Inputs {
+  _call: AddQBAdminsCall;
 
-  constructor(call: AddQBAdminCall) {
+  constructor(call: AddQBAdminsCall) {
     this._call = call;
   }
 
-  get _address(): Address {
-    return this._call.inputValues[0].value.toAddress();
+  get _addresses(): Array<Address> {
+    return this._call.inputValues[0].value.toAddressArray();
   }
 }
 
-export class AddQBAdminCall__Outputs {
-  _call: AddQBAdminCall;
+export class AddQBAdminsCall__Outputs {
+  _call: AddQBAdminsCall;
 
-  constructor(call: AddQBAdminCall) {
+  constructor(call: AddQBAdminsCall) {
     this._call = call;
   }
 }
@@ -1165,6 +1191,36 @@ export class PauseCall__Outputs {
   }
 }
 
+export class RemoveQBAdminsCall extends ethereum.Call {
+  get inputs(): RemoveQBAdminsCall__Inputs {
+    return new RemoveQBAdminsCall__Inputs(this);
+  }
+
+  get outputs(): RemoveQBAdminsCall__Outputs {
+    return new RemoveQBAdminsCall__Outputs(this);
+  }
+}
+
+export class RemoveQBAdminsCall__Inputs {
+  _call: RemoveQBAdminsCall;
+
+  constructor(call: RemoveQBAdminsCall) {
+    this._call = call;
+  }
+
+  get _addresses(): Array<Address> {
+    return this._call.inputValues[0].value.toAddressArray();
+  }
+}
+
+export class RemoveQBAdminsCall__Outputs {
+  _call: RemoveQBAdminsCall;
+
+  constructor(call: RemoveQBAdminsCall) {
+    this._call = call;
+  }
+}
+
 export class RenounceOwnershipCall extends ethereum.Call {
   get inputs(): RenounceOwnershipCall__Inputs {
     return new RenounceOwnershipCall__Inputs(this);
@@ -1340,7 +1396,7 @@ export class UpdateWorkspaceMembersCall__Inputs {
     return this._call.inputValues[3].value.toBooleanArray();
   }
 
-  get _emails(): Array<string> {
+  get _metadataHashes(): Array<string> {
     return this._call.inputValues[4].value.toStringArray();
   }
 }
