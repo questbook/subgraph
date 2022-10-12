@@ -357,7 +357,7 @@ export function runTests(): void {
 
 		addEventMock.parameters = [
 			new ethereum.EventParam('isAdded', ethereum.Value.fromBoolean(true)),
-			new ethereum.EventParam('walletAddresses', ethereum.Value.fromBytesArray([walletAddress])),
+			new ethereum.EventParam('walletAddresses', ethereum.Value.fromAddressArray([walletAddress])),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123))
 		]
 
@@ -371,7 +371,7 @@ export function runTests(): void {
 
 		removeEventMock.parameters = [
 			new ethereum.EventParam('isAdded', ethereum.Value.fromBoolean(false)),
-			new ethereum.EventParam('walletAddresses', ethereum.Value.fromBytesArray([walletAddress])),
+			new ethereum.EventParam('walletAddresses', ethereum.Value.fromAddressArray([walletAddress])),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123))
 		]
 
