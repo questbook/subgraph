@@ -2,24 +2,44 @@ import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/grap
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
 import {
 	DisburseRewardFromSafe,
+	QBAdminsUpdated,
 	WorkspaceMembersUpdated,
 	WorkspaceMemberUpdated,
 	WorkspaceSafeUpdated,
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { ApplicationMilestone, FundsTransfer, Partner, Social, Token, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import {
+	ApplicationMilestone,
+	FundsTransfer,
+	Partner,
+	QBAdmin,
+	Social,
+	Token,
+	Workspace,
+	WorkspaceMember,
+	WorkspaceSafe
+} from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import {
 	handleDisburseReward,
-	handleDisburseRewardFromSafe,
+	handleDisburseRewardFromSafe, handleQBAdminsUpdated,
 	handleWorkspaceMembersUpdated,
 	handleWorkspaceMemberUpdated,
 	handleWorkspaceSafeUpdated,
 	handleWorkspacesVisibleUpdated,
 	handleWorkspaceUpdated
 } from '../src/workspace-mapping'
-import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createWorkspace, MOCK_APPLICATION_ID_ARRAY, MOCK_WORKSPACE_ID, MOCK_WORKSPACE_ID_ARRAY, WORKSPACE_CREATOR_ID } from './utils'
+import {
+	assertArrayNotEmpty,
+	assertStringNotEmpty,
+	createApplication,
+	createWorkspace,
+	MOCK_APPLICATION_ID_ARRAY,
+	MOCK_WORKSPACE_ID,
+	MOCK_WORKSPACE_ID_ARRAY,
+	WORKSPACE_CREATOR_ID
+} from './utils'
 import { MOCK_APPLICATION_ID } from './utils'
 
 export function runTests(): void {
@@ -328,6 +348,38 @@ export function runTests(): void {
 
 			assert.booleanEquals(workspace.isVisible, isVisibleArr[idx])
 		}
+	})
+
+	test('should add/remove a QB admin', () => {
+		const walletAddress = Address.fromByteArray(Address.fromI32(2))
+
+		const addEventMock = newMockEvent()
+
+		addEventMock.parameters = [
+			new ethereum.EventParam('isAdded', ethereum.Value.fromBoolean(true)),
+			new ethereum.EventParam('walletAddresses', ethereum.Value.fromBytesArray([walletAddress])),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(123))
+		]
+
+		const addEvent = new QBAdminsUpdated(addEventMock.address, addEventMock.logIndex, addEventMock.transactionLogIndex, addEventMock.logType, addEventMock.block, addEventMock.transaction, addEventMock.parameters)
+		handleQBAdminsUpdated(addEvent)
+
+		const addedAdmin = QBAdmin.load(walletAddress.toString())
+		assert.assertNotNull(addedAdmin)
+
+		const removeEventMock = newMockEvent()
+
+		removeEventMock.parameters = [
+			new ethereum.EventParam('isAdded', ethereum.Value.fromBoolean(false)),
+			new ethereum.EventParam('walletAddresses', ethereum.Value.fromBytesArray([walletAddress])),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(123))
+		]
+
+		const removeEvent = new QBAdminsUpdated(removeEventMock.address, removeEventMock.logIndex, removeEventMock.transactionLogIndex, removeEventMock.logType, removeEventMock.block, removeEventMock.transaction, removeEventMock.parameters)
+		handleQBAdminsUpdated(removeEvent)
+
+		const removedAdmin = QBAdmin.load(walletAddress.toString())
+		assert.assertNull(removedAdmin)
 	})
 }
 
