@@ -118,9 +118,9 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 
 		if(json.feedback) {
 			// when state moves to resubmit or reject -- that's when DAO adds feedback
-			if(entity.state === 'resubmit' || entity.state === 'rejected') {
+			if(entity.state == 'resubmit' || entity.state == 'rejected') {
 				entity.feedbackDao = json.feedback!
-			} else if(entity.state === 'submitted') { // when dev moves app to submitted
+			} else if(entity.state == 'submitted') { // when dev moves app to submitted
 				entity.feedbackDev = json.feedback!
 			}
 		}
@@ -179,10 +179,10 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 		}
 
 		const json = jsonResult.value!
-		if(entity.state === 'requested') {
+		if(entity.state == 'requested') {
 			entity.feedbackDev = json.text
 			entity.feedbackDevUpdatedAtS = event.params.time.toI32()
-		} else if(entity.state === 'approved' || entity.state === 'submitted') {
+		} else if(entity.state == 'approved' || entity.state == 'submitted') {
 			entity.feedbackDao = json.text
 			entity.feedbackDaoUpdatedAtS = event.params.time.toI32()
 		}

@@ -230,6 +230,64 @@ export function runTests(): void {
 		}
 	})
 
+	test('should update owner\'s name without changing the access level', () => {
+		const w = createWorkspace()!
+
+		const adminAddress = Address.fromString('0xB16081F360e3847006dB660bae1c6d1b2e18fD2C')
+		const adminRole = 0x0
+		const adminEnabled = true
+		const adminMetadataHash = 'json:{"fullName":"Abcd1","profilePictureIpfsHash":"1234543222"}'
+
+		const adminEv = newMockEvent()
+		adminEv.parameters = [
+			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
+			new ethereum.EventParam('member', ethereum.Value.fromAddress(adminAddress)),
+			new ethereum.EventParam('role', ethereum.Value.fromI32(adminRole)),
+			new ethereum.EventParam('enabled', ethereum.Value.fromBoolean(adminEnabled)),
+			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(adminMetadataHash)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(130))
+		]
+
+		const adminAddEvent = new WorkspaceMemberUpdated(adminEv.address, adminEv.logIndex, adminEv.transactionLogIndex, adminEv.logType, adminEv.block, adminEv.transaction, adminEv.parameters)
+		handleWorkspaceMemberUpdated(adminAddEvent)
+
+		const adminAddedId = `${w.id}.${adminAddress.toHex()}`
+		const admin = WorkspaceMember.load(adminAddedId)
+
+		assert.assertNotNull(admin)
+		assert.stringEquals(admin!.accessLevel, 'admin')
+		assertStringNotEmpty(admin!.fullName, 'member.fullName')
+		assertStringNotEmpty(admin!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
+
+		const ownerAddress = Address.fromString(WORKSPACE_CREATOR_ID)
+		const ownerRole = 0x0
+		const ownerEnabled = true
+		const ownerMetadataHash = 'json:{"fullName":"Owner","profilePictureIpfsHash":"1234543222"}'
+
+		const ev = newMockEvent()
+		ev.parameters = [
+			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
+			new ethereum.EventParam('member', ethereum.Value.fromAddress(ownerAddress)),
+			new ethereum.EventParam('role', ethereum.Value.fromI32(ownerRole)),
+			new ethereum.EventParam('enabled', ethereum.Value.fromBoolean(ownerEnabled)),
+			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(ownerMetadataHash)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
+		]
+
+		const event = new WorkspaceMemberUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleWorkspaceMemberUpdated(event)
+
+		const ownerAddedId = `${w.id}.${ownerAddress.toHex()}`
+		const owner = WorkspaceMember.load(ownerAddedId)
+
+		// const newAccessLevel = member?.accessLevel ?? ''
+		// log.info(`member: ${newAccessLevel}`, [])
+		assert.assertNotNull(owner)
+		assert.stringEquals(owner!.accessLevel, 'owner')
+		assertStringNotEmpty(owner!.fullName, 'Owner')
+		assertStringNotEmpty(owner!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
+	})
+
 	test('update a safe', () => {
 		const w = createWorkspace()!
 
