@@ -337,6 +337,14 @@ type GrantApplicationReviewer @entity {
   assignedAtS: Int!
 }
 
+type QBAdmin @entity {
+  id: ID!
+  "Address of the admin"
+  walletAddress: Bytes!
+  "When the admin was added"
+  addedAt: Int!
+}
+
 type GrantApplication @entity {
   id: ID!
   "The grant for which the application is for"
