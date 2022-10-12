@@ -351,13 +351,14 @@ export function runTests(): void {
 	})
 
 	test('should add/remove a QB admin', () => {
-		const walletAddress = Address.fromByteArray(Address.fromI32(2))
+		const walletAddress = Address.fromString('w')
+		const walletAddresses = ethereum.Value.fromAddressArray([walletAddress])
 
 		const addEventMock = newMockEvent()
 
 		addEventMock.parameters = [
 			new ethereum.EventParam('isAdded', ethereum.Value.fromBoolean(true)),
-			new ethereum.EventParam('walletAddresses', ethereum.Value.fromAddressArray([walletAddress])),
+			new ethereum.EventParam('walletAddresses', walletAddresses),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123))
 		]
 
@@ -371,7 +372,7 @@ export function runTests(): void {
 
 		removeEventMock.parameters = [
 			new ethereum.EventParam('isAdded', ethereum.Value.fromBoolean(false)),
-			new ethereum.EventParam('walletAddresses', ethereum.Value.fromAddressArray([walletAddress])),
+			new ethereum.EventParam('walletAddresses', walletAddresses),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123))
 		]
 
