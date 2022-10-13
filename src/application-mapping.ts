@@ -129,7 +129,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	}
 
 	// increment number of applicants selected for workspace
-	if(strStateResult.value == 'completed') {
+	if(strStateResult.value == 'approved') {
 		const grant = Grant.load(entity.grant)
 		if(!grant) {
 			log.warning(`[${event.transaction.hash.toHex()}] grant (${entity.grant}) not found for application completed (${applicationId})`, [])
