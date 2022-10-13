@@ -85,7 +85,7 @@ export function runTests(): void {
 			new ethereum.EventParam('owner', ethereum.Value.fromAddress(Address.fromString('0xB25191F360e3847006dB660bae1c6d1b2e17eC2B'))),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(UPDATE_JSON)),
-			new ethereum.EventParam('state', ethereum.Value.fromI32(0x04)), // "completed"
+			new ethereum.EventParam('state', ethereum.Value.fromI32(0x02)), // "approved"
 			new ethereum.EventParam('milestoneCount', ethereum.Value.fromI32(0x00)),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
 		]
@@ -95,7 +95,7 @@ export function runTests(): void {
 
 		const gUpdate = GrantApplication.load(g!.id)
 		assert.i32Equals(gUpdate!.updatedAtS, 125)
-		assert.stringEquals(gUpdate!.state, 'completed')
+		assert.stringEquals(gUpdate!.state, 'approved')
 		assert.assertTrue(gUpdate!.version > 1)
 		// project details were updated, check value changed
 		const projectDetailsFieldUpdate = GrantFieldAnswerItem.load(`${g!.id}.projectDetails.0`)!
