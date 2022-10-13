@@ -292,7 +292,12 @@ export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
 	const isAdded = event.params.isAdded
 
 	for(let i = 0; i < walletAddresses.length; i++) {
-		const walletAddress = walletAddresses[i].toString()
+		const walletAddress = walletAddresses[i].toHex()
+
+		log.info(walletAddresses[i].toHex(), [])
+		log.info(walletAddresses[i].toString(), [])
+		log.info(walletAddresses[i].toHexString(), [])
+		
 		const adminExists = QBAdmin.load(walletAddress)
 
 		if(isAdded) {
