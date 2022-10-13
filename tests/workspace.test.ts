@@ -423,7 +423,7 @@ export function runTests(): void {
 		const addEvent = new QBAdminsUpdated(addEventMock.address, addEventMock.logIndex, addEventMock.transactionLogIndex, addEventMock.logType, addEventMock.block, addEventMock.transaction, addEventMock.parameters)
 		handleQBAdminsUpdated(addEvent)
 
-		const addedAdmin = QBAdmin.load(MOCK_QB_ADMIN_ID.toString())
+		const addedAdmin = QBAdmin.load(MOCK_QB_ADMIN_ID.toHex())
 		assert.assertNotNull(addedAdmin)
 
 		const removeEventMock = newMockEvent()
@@ -437,7 +437,7 @@ export function runTests(): void {
 		const removeEvent = new QBAdminsUpdated(removeEventMock.address, removeEventMock.logIndex, removeEventMock.transactionLogIndex, removeEventMock.logType, removeEventMock.block, removeEventMock.transaction, removeEventMock.parameters)
 		handleQBAdminsUpdated(removeEvent)
 
-		const removedAdmin = QBAdmin.load(MOCK_QB_ADMIN_ID.toString())
+		const removedAdmin = QBAdmin.load(MOCK_QB_ADMIN_ID.toHex())
 		assert.assertNull(removedAdmin)
 	})
 }
