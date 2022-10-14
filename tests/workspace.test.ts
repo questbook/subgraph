@@ -156,7 +156,7 @@ export function runTests(): void {
 		assert.assertNotNull(wUpdate)
 		assert.i32Equals(wUpdate!.updatedAtS, 125)
 
-		for (let i = 0; i < addresses.length; i++) {
+		for(let i = 0; i < addresses.length; i++) {
 			const memberAddedId = `${wUpdate!.id}.${addresses[i].toHex()}`
 			const member = WorkspaceMember.load(memberAddedId)
 
@@ -224,7 +224,7 @@ export function runTests(): void {
 		assert.assertNotNull(wUpdate)
 		assert.i32Equals(wUpdate!.updatedAtS, 126)
 
-		for (let i = 0; i < addresses.length; i++) {
+		for(let i = 0; i < addresses.length; i++) {
 			const memberAddedId = `${wUpdate!.id}.${addresses[i].toHex()}`
 			const member = WorkspaceMember.load(memberAddedId)!
 			assert.assertNotNull(member)
@@ -385,8 +385,8 @@ export function runTests(): void {
 
 		ev.parameters = [
 			new ethereum.EventParam('transactionHash', ethereum.Value.fromString('0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')),
-			new ethereum.EventParam('status', ethereum.Value.fromString("executed")),
-			new ethereum.EventParam('tokenName', ethereum.Value.fromString("MATIC")),
+			new ethereum.EventParam('status', ethereum.Value.fromString('executed')),
+			new ethereum.EventParam('tokenName', ethereum.Value.fromString('MATIC')),
 			new ethereum.EventParam('tokenUSDValue', ethereum.Value.fromI32(10)),
 			new ethereum.EventParam('executionTimestamp', ethereum.Value.fromI32(1665726957))
 		]
@@ -394,7 +394,7 @@ export function runTests(): void {
 		const event = new FundsTransferStatusUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleFundsTransferStatusUpdated(event)
 		const fundsTransferStatusEntity = FundsTransferStatus.load('0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')
-		if (fundsTransferStatusEntity != null) {
+		if(fundsTransferStatusEntity != null) {
 			assert.assertNotNull(fundsTransferStatusEntity)
 			assert.stringEquals(fundsTransferStatusEntity!.status, 'executed')
 			assert.stringEquals(fundsTransferStatusEntity!.tokenName, 'MATIC')
@@ -422,12 +422,12 @@ export function runTests(): void {
 		const event = new WorkspacesVisibleUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspacesVisibleUpdated(event)
 
-		for (let idx = 0; idx < workspaceIds.length; idx++) {
+		for(let idx = 0; idx < workspaceIds.length; idx++) {
 			const workspaceId = workspaceIds[idx].toString()
 
 			const workspace = Workspace.load(workspaceId)
 
-			if (!workspace) {
+			if(!workspace) {
 				continue
 			}
 
@@ -472,12 +472,12 @@ function workspaceWithAdditionalMembers(addresses: Address[], emails: string[]):
 	const w = createWorkspace()!
 
 	const roles: i32[] = []
-	for (let i = 0; i < addresses.length; i++) {
+	for(let i = 0; i < addresses.length; i++) {
 		roles.push(0)
 	}
 
 	const enabled: boolean[] = []
-	for (let i = 0; i < addresses.length; i++) {
+	for(let i = 0; i < addresses.length; i++) {
 		enabled.push(true)
 	}
 

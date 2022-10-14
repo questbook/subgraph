@@ -320,7 +320,7 @@ export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
 	}
 }
 
-export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdated): void{
+export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdated): void {
 	const safeTxnHash = event.params.transactionHash
 
 	const transactionStatusEntity = new FundsTransferStatus(safeTxnHash)
