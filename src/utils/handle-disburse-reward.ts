@@ -35,13 +35,14 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	log.info(`[${rewardProps._txnHash}] recv disburse reward for application: ID="${applicationId}"`, [])
 
 	var disburseEntity: FundsTransfer 
-	if (txnHash != '') {
+	if(txnHash != '') {
 		disburseEntity = new FundsTransfer(`${rewardProps._txnHash}.${applicationId}`)
 		log.info(`[${rewardProps._txnHash}.${applicationId}] recv disburse reward for application: ID="${applicationId}"`, [])
 	} else {
 		disburseEntity = new FundsTransfer(`${rewardProps.event.transaction.hash.toHex()}.${applicationId}`)
 		log.info(`[${rewardProps._txnHash}] txnHash is empty`, [])
 	}
+
 	disburseEntity.createdAtS = eventTime
 	disburseEntity.amount = amountPaid
 	disburseEntity.sender = rewardProps._sender

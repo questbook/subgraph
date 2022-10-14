@@ -13,7 +13,6 @@ import {
 import {
 	ApplicationMilestone,
 	FundsTransfer,
-	FundsTransferStatus,
 	Partner,
 	QBAdmin,
 	Social,

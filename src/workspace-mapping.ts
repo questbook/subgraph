@@ -11,7 +11,7 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { FundsTransfer, FundsTransferStatus, QBAdmin, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { FundsTransfer, QBAdmin, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -329,7 +329,7 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 	const tokenUSDValues = event.params.tokenUSDValue
 	const executionTimestamps = event.params.executionTimestamp
 
-	for (let i=0; i<safeTxnHashes.length; i++){
+	for(let i=0; i<safeTxnHashes.length; i++) {
 		const fundsTransferEntity = FundsTransfer.load(`${safeTxnHashes[i]}.${applicationIds[i].toHexString()}`)
 		if(!fundsTransferEntity) {
 			log.warning(`[${event.transaction.hash.toHex()}] funds transfer not found for status update`, [])
