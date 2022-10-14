@@ -1,6 +1,7 @@
 import { BigInt, log, store } from '@graphprotocol/graph-ts'
 import {
 	DisburseRewardFromSafe,
+	FundsTransferStatusUpdated,
 	QBAdminsUpdated,
 	WorkspaceCreated,
 	WorkspaceMemberMigrate,
@@ -10,7 +11,7 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { QBAdmin, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { FundsTransferStatus, QBAdmin, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -317,4 +318,19 @@ export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
 		}
 
 	}
+}
+
+export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdated): void{
+	const safeTxnHash = event.params.transactionHash
+
+	const transactionStatusEntity = new FundsTransferStatus(safeTxnHash)
+
+	transactionStatusEntity.safeTxnHash = event.params.transactionHash
+	transactionStatusEntity.tokenName = event.params.tokenName
+	transactionStatusEntity.status = event.params.status
+	transactionStatusEntity.tokenUSDValue = event.params.tokenUSDValue
+	transactionStatusEntity.executionTimestamp = event.params.executionTimestamp.toI32()
+
+	transactionStatusEntity.save()
+	log.info(`[${event.params.transactionHash}] Funds transfer status updated with ${transactionStatusEntity.status} ${transactionStatusEntity.tokenName} }`, [])
 }

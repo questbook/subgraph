@@ -2536,6 +2536,91 @@ export class FundsTransfer extends Entity {
   }
 }
 
+export class FundsTransferStatus extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("safeTxnHash", Value.fromString(""));
+    this.set("status", Value.fromString(""));
+    this.set("tokenName", Value.fromString(""));
+    this.set("tokenUSDValue", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save FundsTransferStatus entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save FundsTransferStatus entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("FundsTransferStatus", id.toString(), this);
+    }
+  }
+
+  static load(id: string): FundsTransferStatus | null {
+    return changetype<FundsTransferStatus | null>(
+      store.get("FundsTransferStatus", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get safeTxnHash(): string {
+    let value = this.get("safeTxnHash");
+    return value!.toString();
+  }
+
+  set safeTxnHash(value: string) {
+    this.set("safeTxnHash", Value.fromString(value));
+  }
+
+  get status(): string {
+    let value = this.get("status");
+    return value!.toString();
+  }
+
+  set status(value: string) {
+    this.set("status", Value.fromString(value));
+  }
+
+  get tokenName(): string {
+    let value = this.get("tokenName");
+    return value!.toString();
+  }
+
+  set tokenName(value: string) {
+    this.set("tokenName", Value.fromString(value));
+  }
+
+  get tokenUSDValue(): BigInt {
+    let value = this.get("tokenUSDValue");
+    return value!.toBigInt();
+  }
+
+  set tokenUSDValue(value: BigInt) {
+    this.set("tokenUSDValue", Value.fromBigInt(value));
+  }
+
+  get executionTimestamp(): i32 {
+    let value = this.get("executionTimestamp");
+    return value!.toI32();
+  }
+
+  set executionTimestamp(value: i32) {
+    this.set("executionTimestamp", Value.fromI32(value));
+  }
+}
+
 export class Notification extends Entity {
   constructor(id: string) {
     super();
