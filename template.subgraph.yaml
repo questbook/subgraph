@@ -47,6 +47,8 @@ dataSources:
           handler: handleWorkspacesVisibleUpdated
         - event: QBAdminsUpdated(address[],bool,uint256)
           handler: handleQBAdminsUpdated
+        - event: FundsTransferStatusUpdated(string,string,string,uint256,uint256)
+          handler: handleFundsTransferStatusUpdated
       file: ./src/workspace-mapping.ts
   - kind: ethereum
     name: QBApplicationsContract
