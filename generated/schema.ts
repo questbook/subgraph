@@ -2359,6 +2359,7 @@ export class FundsTransfer extends Entity {
     this.set("to", Value.fromBytes(Bytes.empty()));
     this.set("type", Value.fromString(""));
     this.set("asset", Value.fromBytes(Bytes.empty()));
+    this.set("status", Value.fromString(""));
   }
 
   save(): void {
@@ -2534,55 +2535,6 @@ export class FundsTransfer extends Entity {
       this.set("transactionHash", Value.fromString(<string>value));
     }
   }
-}
-
-export class FundsTransferStatus extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-
-    this.set("safeTxnHash", Value.fromString(""));
-    this.set("status", Value.fromString(""));
-    this.set("tokenName", Value.fromString(""));
-    this.set("tokenUSDValue", Value.fromBigInt(BigInt.zero()));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save FundsTransferStatus entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        "Cannot save FundsTransferStatus entity with non-string ID. " +
-          'Considering using .toHex() to convert the "id" to a string.'
-      );
-      store.set("FundsTransferStatus", id.toString(), this);
-    }
-  }
-
-  static load(id: string): FundsTransferStatus | null {
-    return changetype<FundsTransferStatus | null>(
-      store.get("FundsTransferStatus", id)
-    );
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get safeTxnHash(): string {
-    let value = this.get("safeTxnHash");
-    return value!.toString();
-  }
-
-  set safeTxnHash(value: string) {
-    this.set("safeTxnHash", Value.fromString(value));
-  }
 
   get status(): string {
     let value = this.get("status");
@@ -2593,22 +2545,38 @@ export class FundsTransferStatus extends Entity {
     this.set("status", Value.fromString(value));
   }
 
-  get tokenName(): string {
+  get tokenName(): string | null {
     let value = this.get("tokenName");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set tokenName(value: string) {
-    this.set("tokenName", Value.fromString(value));
+  set tokenName(value: string | null) {
+    if (!value) {
+      this.unset("tokenName");
+    } else {
+      this.set("tokenName", Value.fromString(<string>value));
+    }
   }
 
-  get tokenUSDValue(): BigInt {
+  get tokenUSDValue(): BigInt | null {
     let value = this.get("tokenUSDValue");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set tokenUSDValue(value: BigInt) {
-    this.set("tokenUSDValue", Value.fromBigInt(value));
+  set tokenUSDValue(value: BigInt | null) {
+    if (!value) {
+      this.unset("tokenUSDValue");
+    } else {
+      this.set("tokenUSDValue", Value.fromBigInt(<BigInt>value));
+    }
   }
 
   get executionTimestamp(): i32 {

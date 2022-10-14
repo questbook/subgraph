@@ -436,17 +436,10 @@ type FundsTransfer @entity {
   nonEvmAsset: String
   "Hash/signature of the transaction"
   transactionHash: String
-}
-
-type FundsTransferStatus @entity {
-  id: ID!
-  "Safe transaction hash for funds transfer txn"
-  safeTxnHash: String!
-  "Status of the transaction"
   status: FundsTransferStatusType!
-  tokenName: String!
-  tokenUSDValue: BigInt!
-  executionTimestamp: Int!
+  tokenName: String
+  tokenUSDValue: BigInt
+  executionTimestamp: Int
 }
 
 type Notification @entity {

@@ -155,24 +155,28 @@ export class FundsTransferStatusUpdated__Params {
     this._event = event;
   }
 
-  get transactionHash(): string {
-    return this._event.parameters[0].value.toString();
+  get applicationId(): Array<BigInt> {
+    return this._event.parameters[0].value.toBigIntArray();
   }
 
-  get status(): string {
-    return this._event.parameters[1].value.toString();
+  get transactionHash(): Array<string> {
+    return this._event.parameters[1].value.toStringArray();
   }
 
-  get tokenName(): string {
-    return this._event.parameters[2].value.toString();
+  get status(): Array<string> {
+    return this._event.parameters[2].value.toStringArray();
   }
 
-  get tokenUSDValue(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
+  get tokenName(): Array<string> {
+    return this._event.parameters[3].value.toStringArray();
   }
 
-  get executionTimestamp(): BigInt {
-    return this._event.parameters[4].value.toBigInt();
+  get tokenUSDValue(): Array<BigInt> {
+    return this._event.parameters[4].value.toBigIntArray();
+  }
+
+  get executionTimestamp(): Array<BigInt> {
+    return this._event.parameters[5].value.toBigIntArray();
   }
 }
 
@@ -1414,24 +1418,28 @@ export class UpdateFundsTransferTransactionStatusCall__Inputs {
     this._call = call;
   }
 
-  get _transactionHash(): string {
-    return this._call.inputValues[0].value.toString();
+  get _applicationId(): Array<BigInt> {
+    return this._call.inputValues[0].value.toBigIntArray();
   }
 
-  get _status(): string {
-    return this._call.inputValues[1].value.toString();
+  get _transactionHash(): Array<string> {
+    return this._call.inputValues[1].value.toStringArray();
   }
 
-  get _tokenName(): string {
-    return this._call.inputValues[2].value.toString();
+  get _status(): Array<string> {
+    return this._call.inputValues[2].value.toStringArray();
   }
 
-  get _tokenUSDValue(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+  get _tokenName(): Array<string> {
+    return this._call.inputValues[3].value.toStringArray();
   }
 
-  get _executionTimestamp(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+  get _tokenUSDValue(): Array<BigInt> {
+    return this._call.inputValues[4].value.toBigIntArray();
+  }
+
+  get _executionTimestamp(): Array<BigInt> {
+    return this._call.inputValues[5].value.toBigIntArray();
   }
 }
 

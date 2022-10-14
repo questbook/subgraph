@@ -11,7 +11,7 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { FundsTransferStatus, QBAdmin, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { FundsTransfer, FundsTransferStatus, QBAdmin, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -321,16 +321,27 @@ export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
 }
 
 export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdated): void {
-	const safeTxnHash = event.params.transactionHash
+	
+	const safeTxnHashes = event.params.transactionHash
+	const applicationIds = event.params.applicationId
+	const statuses = event.params.status
+	const tokenNames = event.params.tokenName
+	const tokenUSDValues = event.params.tokenUSDValue
+	const executionTimestamps = event.params.executionTimestamp
 
-	const transactionStatusEntity = new FundsTransferStatus(safeTxnHash)
+	for (let i=0; i<safeTxnHashes.length; i++){
+		const fundsTransferEntity = FundsTransfer.load(`${safeTxnHashes[i]}.${applicationIds[i].toHexString()}`)
+		if(!fundsTransferEntity) {
+			log.warning(`[${event.transaction.hash.toHex()}] funds transfer not found for status update`, [])
+			return
+		} else {
+			fundsTransferEntity.status = statuses[i]
+			fundsTransferEntity.tokenName = tokenNames[i]
+			fundsTransferEntity.tokenUSDValue = tokenUSDValues[i]
+			fundsTransferEntity.executionTimestamp = executionTimestamps[i].toI32()
+			fundsTransferEntity.save()
 
-	transactionStatusEntity.safeTxnHash = event.params.transactionHash
-	transactionStatusEntity.tokenName = event.params.tokenName
-	transactionStatusEntity.status = event.params.status
-	transactionStatusEntity.tokenUSDValue = event.params.tokenUSDValue
-	transactionStatusEntity.executionTimestamp = event.params.executionTimestamp.toI32()
-
-	transactionStatusEntity.save()
-	log.info(`[${event.params.transactionHash}] Funds transfer status updated with ${transactionStatusEntity.status} ${transactionStatusEntity.tokenName} }`, [])
+			log.info(`[${event.params.transactionHash}] Funds transfer status updated with ${statuses[i]} for token - ${tokenNames[i]} }`, [])
+		}
+	}
 }
