@@ -2,6 +2,7 @@ import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/grap
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
 import {
 	DisburseRewardFromSafe,
+	FundsTransferStatusUpdated,
 	QBAdminsUpdated,
 	WorkspaceMembersUpdated,
 	WorkspaceMemberUpdated,
@@ -12,6 +13,7 @@ import {
 import {
 	ApplicationMilestone,
 	FundsTransfer,
+	FundsTransferStatus,
 	Partner,
 	QBAdmin,
 	Social,
@@ -23,7 +25,7 @@ import {
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import {
 	handleDisburseReward,
-	handleDisburseRewardFromSafe, handleQBAdminsUpdated,
+	handleDisburseRewardFromSafe, handleFundsTransferStatusUpdated, handleQBAdminsUpdated,
 	handleWorkspaceMembersUpdated,
 	handleWorkspaceMemberUpdated,
 	handleWorkspaceSafeUpdated,
@@ -376,6 +378,30 @@ export function runTests(): void {
 		const applicationMilestone = ApplicationMilestone.load(fundTransfer!.milestone!)
 		assert.assertNotNull(applicationMilestone)
 		// console.log(`Application milestone --> ${applicationMilestone!.amount.toString()}`)
+	})
+
+	test('should update transaction status', () => {
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('transactionHash', ethereum.Value.fromString('0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')),
+			new ethereum.EventParam('status', ethereum.Value.fromString('executed')),
+			new ethereum.EventParam('tokenName', ethereum.Value.fromString('MATIC')),
+			new ethereum.EventParam('tokenUSDValue', ethereum.Value.fromI32(10)),
+			new ethereum.EventParam('executionTimestamp', ethereum.Value.fromI32(1665726957))
+		]
+
+		const event = new FundsTransferStatusUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleFundsTransferStatusUpdated(event)
+		const fundsTransferStatusEntity = FundsTransferStatus.load('0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')
+		if(fundsTransferStatusEntity != null) {
+			assert.assertNotNull(fundsTransferStatusEntity)
+			assert.stringEquals(fundsTransferStatusEntity!.status, 'executed')
+			assert.stringEquals(fundsTransferStatusEntity!.tokenName, 'MATIC')
+			assert.i32Equals(fundsTransferStatusEntity!.tokenUSDValue.toI32(), 10)
+			assert.i32Equals(fundsTransferStatusEntity!.executionTimestamp, 1665726957)
+		}
+
 	})
 
 	test('should update dao\'s visibility state', () => {

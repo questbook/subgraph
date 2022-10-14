@@ -142,6 +142,40 @@ export class DisburseRewardFromSafe__Params {
   }
 }
 
+export class FundsTransferStatusUpdated extends ethereum.Event {
+  get params(): FundsTransferStatusUpdated__Params {
+    return new FundsTransferStatusUpdated__Params(this);
+  }
+}
+
+export class FundsTransferStatusUpdated__Params {
+  _event: FundsTransferStatusUpdated;
+
+  constructor(event: FundsTransferStatusUpdated) {
+    this._event = event;
+  }
+
+  get transactionHash(): string {
+    return this._event.parameters[0].value.toString();
+  }
+
+  get status(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get tokenName(): string {
+    return this._event.parameters[2].value.toString();
+  }
+
+  get tokenUSDValue(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get executionTimestamp(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -1359,6 +1393,52 @@ export class UpdateAnonAuthoriserAddressCall__Outputs {
   _call: UpdateAnonAuthoriserAddressCall;
 
   constructor(call: UpdateAnonAuthoriserAddressCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateFundsTransferTransactionStatusCall extends ethereum.Call {
+  get inputs(): UpdateFundsTransferTransactionStatusCall__Inputs {
+    return new UpdateFundsTransferTransactionStatusCall__Inputs(this);
+  }
+
+  get outputs(): UpdateFundsTransferTransactionStatusCall__Outputs {
+    return new UpdateFundsTransferTransactionStatusCall__Outputs(this);
+  }
+}
+
+export class UpdateFundsTransferTransactionStatusCall__Inputs {
+  _call: UpdateFundsTransferTransactionStatusCall;
+
+  constructor(call: UpdateFundsTransferTransactionStatusCall) {
+    this._call = call;
+  }
+
+  get _transactionHash(): string {
+    return this._call.inputValues[0].value.toString();
+  }
+
+  get _status(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _tokenName(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+
+  get _tokenUSDValue(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get _executionTimestamp(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
+  }
+}
+
+export class UpdateFundsTransferTransactionStatusCall__Outputs {
+  _call: UpdateFundsTransferTransactionStatusCall;
+
+  constructor(call: UpdateFundsTransferTransactionStatusCall) {
     this._call = call;
   }
 }

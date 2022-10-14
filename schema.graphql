@@ -49,6 +49,11 @@ enum FundsTransferType {
   review_payment_done,
 }
 
+enum FundsTransferStatusType {
+  queued,
+  executed
+}
+
 enum SupportedNetwork {
   chain_42220, # celo-mainnet
   chain_5, # goerli-testnet
@@ -428,9 +433,20 @@ type FundsTransfer @entity {
   type: FundsTransferType!
   "Asset that was used in the funds transfer"
   asset: Bytes!
-  "Hash/signature of the transaction"
   nonEvmAsset: String
+  "Hash/signature of the transaction"
   transactionHash: String
+}
+
+type FundsTransferStatus @entity {
+  id: ID!
+  "Safe transaction hash for funds transfer txn"
+  safeTxnHash: String!
+  "Status of the transaction"
+  status: FundsTransferStatusType!
+  tokenName: String!
+  tokenUSDValue: BigInt!
+  executionTimestamp: Int!
 }
 
 type Notification @entity {
