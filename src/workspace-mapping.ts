@@ -33,7 +33,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	const entityId = event.params.id.toHex()
 
 	const jsonResult = validatedJsonFromIpfs<WorkspaceCreateRequest>(event.params.metadataHash, validateWorkspaceCreateRequest)
-	if (jsonResult.error) {
+	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace create: "${jsonResult.error!}"`, [])
 		return
 	}
@@ -44,13 +44,13 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.ownerId = event.params.owner
 	entity.title = json.title
 	entity.about = json.about
-	if (json.bio) {
+	if(json.bio) {
 		entity.bio = json.bio!
 	}
 
 	entity.logoIpfsHash = json.logoIpfsHash
 	entity.coverImageIpfsHash = json.coverImageIpfsHash
-	if (json.partners) {
+	if(json.partners) {
 		entity.partners = mapWorkspacePartners(entityId, json.partners!)
 	} else {
 		entity.partners = []
@@ -88,7 +88,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 	const entityId = event.params.id.toHex()
 
 	const entity = Workspace.load(entityId)
-	if (!entity) {
+	if(!entity) {
 		log.warning(`recv workspace update without workspace existing, ID = ${entityId}`, [])
 		return
 	}
@@ -96,48 +96,48 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 	entity.updatedAtS = event.params.time.toI32()
 
 	const jsonResult = validatedJsonFromIpfs<WorkspaceUpdateRequest>(event.params.metadataHash, validateWorkspaceUpdateRequest)
-	if (jsonResult.error) {
+	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace update: "${jsonResult.error!}"`, [])
 		return
 	}
 
 	const json = jsonResult.value!
-	if (json.title) {
+	if(json.title) {
 		entity.title = json.title!
 	}
 
-	if (json.about) {
+	if(json.about) {
 		entity.about = json.about!
 	}
 
-	if (json.bio) {
+	if(json.bio) {
 		entity.bio = json.bio!
 	}
 
-	if (json.logoIpfsHash) {
+	if(json.logoIpfsHash) {
 		entity.logoIpfsHash = json.logoIpfsHash!
 	}
 
-	if (json.coverImageIpfsHash) {
+	if(json.coverImageIpfsHash) {
 		entity.coverImageIpfsHash = json.coverImageIpfsHash
 	}
 
-	if (json.partners) {
+	if(json.partners) {
 		entity.partners = mapWorkspacePartners(entityId, json.partners!)
 	}
 
-	if (json.socials) {
+	if(json.socials) {
 		entity.socials = mapWorkspaceSocials(entityId, json.socials!)
 	}
 
-	if (json.tokens) {
+	if(json.tokens) {
 		mapWorkspaceTokens(entity.id, json.tokens!)
 	}
 
-	if (json.publicKey) {
+	if(json.publicKey) {
 		const memberId = event.transaction.from.toHex()
 		const mem = WorkspaceMember.load(`${entityId}.${memberId}`)
-		if (mem) {
+		if(mem) {
 			mem.publicKey = json.publicKey
 			mem.updatedAt = entity.updatedAtS
 			mem.save()
@@ -151,7 +151,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 
 export function handleWorkspaceSafeUpdated(event: WorkspaceSafeUpdated): void {
 	const entityId = event.params.id.toHex()
-	if (event.params.safeChainId.gt(new BigInt(0))) {
+	if(event.params.safeChainId.gt(new BigInt(0))) {
 		const entity = new WorkspaceSafe(entityId)
 		entity.workspace = entityId
 		entity.chainId = event.params.safeChainId
@@ -175,7 +175,7 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 		event.transaction.from,
 		event.transaction.hash
 	)
-	if (result.error) {
+	if(result.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace member update: "${result.error!}"`, [])
 	}
 }
@@ -192,7 +192,7 @@ export function handleWorkspaceMemberUpdated(event: WorkspaceMemberUpdated): voi
 		event.transaction.from,
 		event.transaction.hash
 	)
-	if (result.error) {
+	if(result.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping single workspace member update: "${result.error!}"`, [])
 	}
 }
@@ -223,7 +223,7 @@ export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): voi
 	const amounts = event.params.amounts
 	const isP2P = event.params.isP2P
 
-	for (let i = 0; i < applicationIds.length; i++) {
+	for(let i = 0; i < applicationIds.length; i++) {
 		disburseReward({
 			event,
 			depositType,
@@ -247,18 +247,18 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 	const workspaceMemberId = `${workspaceId}.${fromWallet.toHex()}`
 
 	const workspace = Workspace.load(workspaceId)
-	if (!workspace) {
+	if(!workspace) {
 		log.warning(`[${event.transaction.hash.toHex()}] workspace not found for member migrate`, [])
 		return
 	}
 
 	const member = WorkspaceMember.load(workspaceMemberId)
-	if (!member) {
+	if(!member) {
 		log.warning(`[${event.transaction.hash.toHex()}] member not found for migrate`, [])
 		return
 	}
 
-	if (workspace.ownerId.toHex() == fromWallet.toHex()) {
+	if(workspace.ownerId.toHex() == fromWallet.toHex()) {
 		workspace.ownerId = toWallet
 		workspace.save()
 	}
@@ -274,11 +274,11 @@ export function handleWorkspacesVisibleUpdated(event: WorkspacesVisibleUpdated):
 	const workspaceIds = event.params.workspaceId
 	const isVisibleArr = event.params.isVisible
 
-	for (let idx = 0; idx < workspaceIds.length; idx++) {
+	for(let idx = 0; idx < workspaceIds.length; idx++) {
 		const workspaceId = workspaceIds[idx].toHex()
 
 		const workspace = Workspace.load(workspaceId)
-		if (!workspace) {
+		if(!workspace) {
 			log.warning(`workspace [${workspaceId}] not found for visibility update`, [])
 			continue
 		}
@@ -292,13 +292,13 @@ export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
 	const walletAddresses = event.params.walletAddresses
 	const isAdded = event.params.isAdded
 
-	for (let i = 0; i < walletAddresses.length; i++) {
+	for(let i = 0; i < walletAddresses.length; i++) {
 		const walletAddress = walletAddresses[i].toHex()
 
 		const adminExists = QBAdmin.load(walletAddress)
 
-		if (isAdded) {
-			if (adminExists) {
+		if(isAdded) {
+			if(adminExists) {
 				log.warning(`Admin ${walletAddress} already exists!`, [])
 				return
 			}
@@ -309,7 +309,7 @@ export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
 
 			entity.save()
 		} else {
-			if (!adminExists) {
+			if(!adminExists) {
 				log.warning(`Admin ${walletAddress} does not exist!`, [])
 				return
 			}
@@ -329,12 +329,13 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 	const tokenUSDValues = event.params.tokenUSDValue
 	const executionTimestamps = event.params.executionTimestamp
 
-	for (let i = 0; i < safeTxnHashes.length; i++) {
+	for(let i = 0; i < safeTxnHashes.length; i++) {
 		const fundsTransferEntity = FundsTransfer.load(`${safeTxnHashes[i]}.${applicationIds[i].toHexString()}`)
-		if (!fundsTransferEntity) {
+		if(!fundsTransferEntity) {
 			log.warning(`[${event.transaction.hash.toHex()}] funds transfer not found for status update`, [])
 			return
 		}
+
 		fundsTransferEntity.status = statuses[i]
 		fundsTransferEntity.tokenName = tokenNames[i]
 		fundsTransferEntity.tokenUSDValue = tokenUSDValues[i]
@@ -346,15 +347,16 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 		log.info(`[${event.params.transactionHash}] Application entity found for ${applicationIds[i].toHexString()}}`, [])
 		const grantEntity = Grant.load(applicationEntity!.grant!)
 
-		if (grantEntity) {
+		if(grantEntity) {
 			const workspace = Workspace.load(grantEntity.workspace)
-			if (workspace && fundsTransferEntity.type == 'funds_disbursed_from_safe') {
+			if(workspace && fundsTransferEntity.type == 'funds_disbursed_from_safe') {
 				workspace.totalGrantFundingDisbursedUSD = workspace.totalGrantFundingDisbursedUSD += tokenUSDValues[i].toI32()
 				workspace.save()
 			}
 		} else {
 			log.warning(`[${event.params.transactionHash}] Grant not found for status update`, [])
 		}
+
 		fundsTransferEntity.save()
 
 	}
