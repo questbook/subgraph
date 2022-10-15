@@ -13,6 +13,7 @@ import {
 import {
 	ApplicationMilestone,
 	FundsTransfer,
+	Grant,
 	Partner,
 	QBAdmin,
 	Social,
@@ -383,6 +384,9 @@ export function runTests(): void {
 	})
 
 	test('should update transaction status', () => {
+		const w = createWorkspace()
+		const a = createApplication()
+
 		const ev = newMockEvent()
 
 		ev.parameters = [
@@ -403,6 +407,11 @@ export function runTests(): void {
 			assert.stringEquals(fundsTransferStatusEntity!.tokenName!, 'MATIC')
 			assert.i32Equals(fundsTransferStatusEntity!.tokenUSDValue!.toI32(), 10)
 			assert.i32Equals(fundsTransferStatusEntity!.executionTimestamp, 1665726957)
+			
+			const grantEntity = Grant.load(a!.grant)
+			const workspace = Workspace.load(grantEntity!.workspace)
+
+			assert.i32Equals(workspace!.totalGrantFundingDisbursedUSD!, 10)
 		}
 
 	})

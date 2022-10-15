@@ -78,7 +78,7 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	const grantEntity = Grant.load(application.grant)
 	if(grantEntity) {
 		const workspace = Workspace.load(grantEntity.workspace)
-		if(workspace) {
+		if(workspace && disburseEntity.type != 'funds_disbursed_from_safe') {
 			const usd = getUSDReward(asset, amountPaid)
 			if(usd > 0) {
 				workspace.totalGrantFundingDisbursedUSD += usd
