@@ -88,6 +88,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	}
 
 	entity.updatedAtS = event.params.time.toI32()
+	const previousState = entity.state
 	entity.state = strStateResult.value!
 	// some valid IPFS hash
 	if(isPlausibleIPFSHash(metaHash)) {
@@ -129,7 +130,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	}
 
 	// increment number of applicants selected for workspace
-	if(strStateResult.value == 'approved') {
+	if(previousState == 'submitted' && (strStateResult.value == 'approved' || strStateResult.value == 'completed')) {
 		const grant = Grant.load(entity.grant)
 		if(!grant) {
 			log.warning(`[${event.transaction.hash.toHex()}] grant (${entity.grant}) not found for application completed (${applicationId})`, [])
