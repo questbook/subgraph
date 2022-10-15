@@ -13,7 +13,7 @@ import {
 import {
 	ApplicationMilestone,
 	FundsTransfer,
-	FundsTransferStatus,
+	Grant,
 	Partner,
 	QBAdmin,
 	Social,
@@ -371,35 +371,47 @@ export function runTests(): void {
 		const event = new DisburseRewardFromSafe(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseRewardFromSafe(event)
 
-		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${a!.id}`)
-		assert.assertNotNull(fundTransfer)
-		assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
-		assert.assertNotNull(fundTransfer!.milestone)
-		const applicationMilestone = ApplicationMilestone.load(fundTransfer!.milestone!)
-		assert.assertNotNull(applicationMilestone)
+		const fundTransfer = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x123}`)
+		if(fundTransfer) {
+			assert.assertNotNull(fundTransfer)
+			assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
+			assert.assertNotNull(fundTransfer!.milestone)
+			const applicationMilestone = ApplicationMilestone.load(fundTransfer!.milestone!)
+			assert.assertNotNull(applicationMilestone)
+		}
+		
 		// console.log(`Application milestone --> ${applicationMilestone!.amount.toString()}`)
 	})
 
 	test('should update transaction status', () => {
+		const w = createWorkspace()
+		const a = createApplication()
+
 		const ev = newMockEvent()
 
 		ev.parameters = [
-			new ethereum.EventParam('transactionHash', ethereum.Value.fromString('0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')),
-			new ethereum.EventParam('status', ethereum.Value.fromString('executed')),
-			new ethereum.EventParam('tokenName', ethereum.Value.fromString('MATIC')),
-			new ethereum.EventParam('tokenUSDValue', ethereum.Value.fromI32(10)),
-			new ethereum.EventParam('executionTimestamp', ethereum.Value.fromI32(1665726957))
+			new ethereum.EventParam('applicationId', ethereum.Value.fromI32Array([0x0123])),
+			new ethereum.EventParam('transactionHash', ethereum.Value.fromStringArray(['0xB17081F360e3847006dB660bae1c6d1b2e17eC2A'])),
+			new ethereum.EventParam('status', ethereum.Value.fromStringArray(['executed'])),
+			new ethereum.EventParam('tokenName', ethereum.Value.fromStringArray(['MATIC'])),
+			new ethereum.EventParam('tokenUSDValue', ethereum.Value.fromI32Array([10])),
+			new ethereum.EventParam('executionTimestamp', ethereum.Value.fromI32Array([1665726957]))
 		]
 
 		const event = new FundsTransferStatusUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleFundsTransferStatusUpdated(event)
-		const fundsTransferStatusEntity = FundsTransferStatus.load('0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')
+		const fundsTransferStatusEntity = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x0123}`)
 		if(fundsTransferStatusEntity != null) {
 			assert.assertNotNull(fundsTransferStatusEntity)
 			assert.stringEquals(fundsTransferStatusEntity!.status, 'executed')
-			assert.stringEquals(fundsTransferStatusEntity!.tokenName, 'MATIC')
-			assert.i32Equals(fundsTransferStatusEntity!.tokenUSDValue.toI32(), 10)
+			assert.stringEquals(fundsTransferStatusEntity!.tokenName!, 'MATIC')
+			assert.i32Equals(fundsTransferStatusEntity!.tokenUSDValue!.toI32(), 10)
 			assert.i32Equals(fundsTransferStatusEntity!.executionTimestamp, 1665726957)
+			
+			const grantEntity = Grant.load(a!.grant)
+			const workspace = Workspace.load(grantEntity!.workspace)
+
+			assert.i32Equals(workspace!.totalGrantFundingDisbursedUSD!, 10)
 		}
 
 	})

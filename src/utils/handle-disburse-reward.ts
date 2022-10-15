@@ -24,15 +24,25 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	const eventTime = rewardProps.event.block.timestamp.toI32()
 	const asset = rewardProps._asset
 	const nonEvmAssetAddress = rewardProps._nonEvmAsset
-	const txnhHash = rewardProps._txnHash
+	const txnHash = rewardProps._txnHash
 
 	const application = GrantApplication.load(applicationId)
 	if(!application) {
-		log.warning(`[${rewardProps.event.transaction.hash.toHex()}] recv disburse reward for unknown application: ID="${applicationId}"`, [])
+		log.warning(`[${rewardProps._txnHash}] recv disburse reward for unknown application: ID="${applicationId}"`, [])
 		return
 	}
 
-	const disburseEntity = new FundsTransfer(`${rewardProps.event.transaction.hash.toHex()}.${applicationId}`)
+	log.info(`[${rewardProps._txnHash}] recv disburse reward for application: ID="${applicationId}"`, [])
+
+	var disburseEntity: FundsTransfer 
+	if(txnHash != '') {
+		disburseEntity = new FundsTransfer(`${rewardProps._txnHash}.${applicationId}`)
+		log.info(`[${rewardProps._txnHash}.${applicationId}] recv disburse reward for application: ID="${applicationId}"`, [])
+	} else {
+		disburseEntity = new FundsTransfer(`${rewardProps.event.transaction.hash.toHex()}.${applicationId}`)
+		log.info(`[${rewardProps._txnHash}] txnHash is empty`, [])
+	}
+
 	disburseEntity.createdAtS = eventTime
 	disburseEntity.amount = amountPaid
 	disburseEntity.sender = rewardProps._sender
@@ -41,7 +51,8 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	disburseEntity.milestone = milestoneId
 	disburseEntity.type = rewardProps.depositType
 	disburseEntity.grant = application.grant
-	disburseEntity.transactionHash = txnhHash
+	disburseEntity.transactionHash = txnHash
+	disburseEntity.status = 'queued'
 
 	if(asset) {
 		disburseEntity.asset = asset
@@ -67,7 +78,7 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	const grantEntity = Grant.load(application.grant)
 	if(grantEntity) {
 		const workspace = Workspace.load(grantEntity.workspace)
-		if(workspace) {
+		if(workspace && disburseEntity.type != 'funds_disbursed_from_safe') {
 			const usd = getUSDReward(asset, amountPaid)
 			if(usd > 0) {
 				workspace.totalGrantFundingDisbursedUSD += usd
