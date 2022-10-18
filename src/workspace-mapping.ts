@@ -22,6 +22,7 @@ import {
 	mapWorkspaceTokens
 } from './utils/generics'
 import { disburseReward } from './utils/handle-disburse-reward'
+import { migrateGrant } from './utils/migrations'
 import {
 	validateWorkspaceCreateRequest,
 	validateWorkspaceUpdateRequest,
@@ -67,6 +68,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.numberOfApplications = 0
 	entity.numberOfApplicationsSelected = 0
 	entity.totalGrantFundingDisbursedUSD = 0
+	entity.grants = []
 
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
 	member.actorId = event.params.owner
@@ -259,6 +261,17 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 	if(!member) {
 		log.warning(`[${event.transaction.hash.toHex()}] member not found for migrate`, [])
 		return
+	}
+	
+	for(let i = 0; i < workspace.grants.length; ++i) {
+		const grantId = workspace.grants[i]
+		const grant = Grant.load(grantId)
+		if(!grant) {
+			log.warning(`[${event.transaction.hash.toHex()}] grant not found for member migrate`, [])
+			return
+		}
+
+		migrateGrant(grant, fromWallet, toWallet)
 	}
 
 	if(workspace.ownerId.toHex() == fromWallet.toHex()) {

@@ -1,13 +1,15 @@
 import { Address, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
 import { ApplicationMigrate } from '../generated/QBApplicationsContract/QBApplicationsContract'
+import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { ReviewersAssigned, ReviewMigrate } from '../generated/QBReviewsContract/QBReviewsContract'
 import { WorkspaceMemberMigrate } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Grant, GrantApplication, Review, Workspace, WorkspaceMember } from '../generated/schema'
+import { Grant, GrantApplication, GrantManager, Review, Workspace, WorkspaceMember } from '../generated/schema'
 import { handleApplicationMigrate } from '../src/application-mapping'
+import { handleGrantCreated } from '../src/grant-mapping'
 import { handleReviewersAssigned, handleReviewMigrate } from '../src/review-mapping'
 import { handleWorkspaceMemberMigrate } from '../src/workspace-mapping'
-import { createApplication, createReview, createWorkspace, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_REVIEWER_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
+import { CREATE_GRANT_JSON, createApplication, createReview, createWorkspace, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_REVIEWER_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
 
 export function runTests(): void {
 
@@ -44,6 +46,76 @@ export function runTests(): void {
 			Address.fromString(memNew!.actorId.toHex()),
 			MIGRATED_WALLET
 		)
+	})
+
+	test('should migrate a workspace member and update the grants that are a part of the workspace', () => {
+		const workspace = createWorkspace()
+
+		const grantCreateEv = newMockEvent()
+		grantCreateEv.parameters = [
+			new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
+			new ethereum.EventParam('workspaceId', MOCK_WORKSPACE_ID),
+			// the IPFS hash contains mock data for the workspace
+			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(CREATE_GRANT_JSON)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
+		]
+		grantCreateEv.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
+		
+		const grantCreateEvent = new GrantCreated(grantCreateEv.address, grantCreateEv.logIndex, grantCreateEv.transactionLogIndex, grantCreateEv.logType, grantCreateEv.block, grantCreateEv.transaction, grantCreateEv.parameters)
+		handleGrantCreated(grantCreateEvent)
+
+		let grant = Grant.load(MOCK_GRANT_ID.toHex())!
+		for(let i = 0; i < grant.managers.length; ++i) {
+			const manager = WorkspaceMember.load(`${workspace!.id}.${WORKSPACE_CREATOR_ID}`)!
+			assert.addressEquals(Address.fromString(manager.actorId.toHex()), Address.fromString(WORKSPACE_CREATOR_ID))
+		}
+
+		const ev = newMockEvent()
+		ev.parameters = [
+			new ethereum.EventParam('workspaceId', MOCK_WORKSPACE_ID),
+			new ethereum.EventParam('from', ethereum.Value.fromAddress(
+				Address.fromString(WORKSPACE_CREATOR_ID)
+			)),
+			new ethereum.EventParam('to', ethereum.Value.fromAddress(MIGRATED_WALLET)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
+		]
+
+		const event = new WorkspaceMemberMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleWorkspaceMemberMigrate(event)
+
+		// check the workspace owner has been changed
+		const w1 = Workspace.load(workspace!.id)!
+		assert.addressEquals(
+			Address.fromString(w1.ownerId.toHex()),
+			MIGRATED_WALLET
+		)
+		// check old member got deleted
+		const memOld = WorkspaceMember.load(`${workspace!.id}.${workspace!.ownerId.toHex()}`)
+		assert.assertNull(memOld)
+		// check new member got created
+		// and has the correct properties set
+		const memNew = WorkspaceMember.load(`${workspace!.id}.${MIGRATED_WALLET.toHex()}`)
+		assert.assertNotNull(memNew)
+		assert.addressEquals(
+			Address.fromString(memNew!.actorId.toHex()),
+			MIGRATED_WALLET
+		)
+		// check the grant managers have been updated
+		grant = Grant.load(MOCK_GRANT_ID.toHex())!
+		for(let i = 0; i < grant.managers.length; ++i) {
+			const manager = GrantManager.load(grant.managers[i])
+			assert.assertNotNull(manager)
+			assert.assertNotNull(manager!.member)
+			const workspaceMember = WorkspaceMember.load(manager!.member!)
+			assert.assertNotNull(workspaceMember)
+			assert.addressEquals(Address.fromString(workspaceMember!.actorId.toHex()), MIGRATED_WALLET)
+		}
+
+		// check if the old grant managers have been deleted
+		for(let i = 0; i < grant.managers.length; ++i) {
+			const manager = GrantManager.load(`${grant!.id}.${WORKSPACE_CREATOR_ID}`)
+			assert.assertNull(manager)
+		}
 	})
 
 	test('should migrate an application applicant', () => {

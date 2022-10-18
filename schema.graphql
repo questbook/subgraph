@@ -300,6 +300,8 @@ type Workspace @entity {
   tokens: [Token!]! @derivedFrom(field: "workspace")
   "Workpsace safe"
   safe: WorkspaceSafe @derivedFrom(field: "workspace")
+  "List of grant addresses in the workspace"
+  grants: [String!]!
 }
 
 "the milestone of a grant application"
