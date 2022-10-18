@@ -437,8 +437,11 @@ type FundsTransfer @entity {
   "Hash/signature of the transaction"
   transactionHash: String
   status: FundsTransferStatusType!
+  "Token name"
   tokenName: String
+  "Token amount transferred value in USD"
   tokenUSDValue: BigInt
+  "Funds transfer execution timestamp"
   executionTimestamp: Int
 }
 

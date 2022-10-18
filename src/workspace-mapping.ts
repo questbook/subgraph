@@ -208,7 +208,8 @@ export function handleDisburseReward(event: DisburseReward): void {
 		_isP2P: event.params.isP2P,
 		_asset: event.params.asset,
 		_nonEvmAsset: '',
-		_txnHash: ''
+		_txnHash: '',
+		_tokenName: ''
 	})
 }
 
@@ -217,6 +218,7 @@ export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): voi
 	const applicationIds = event.params.applicationIds
 	const milestoneIds = event.params.milestoneIds
 	const asset = event.params.asset
+	const tokenName = event.params.tokenName
 	const nonEvmAsset = event.params.nonEvmAssetAddress
 	const txnHash = event.params.transactionHash
 	const sender = event.params.sender
@@ -230,6 +232,7 @@ export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): voi
 			_applicationId: applicationIds[i].toHexString(),
 			_milestoneId: milestoneIds[i].toI32(),
 			_asset: asset,
+			_tokenName: tokenName,
 			_nonEvmAsset: nonEvmAsset,
 			_txnHash: txnHash,
 			_sender: sender,
@@ -325,7 +328,6 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 	const safeTxnHashes = event.params.transactionHash
 	const applicationIds = event.params.applicationId
 	const statuses = event.params.status
-	const tokenNames = event.params.tokenName
 	const tokenUSDValues = event.params.tokenUSDValue
 	const executionTimestamps = event.params.executionTimestamp
 
@@ -337,11 +339,10 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 		}
 
 		fundsTransferEntity.status = statuses[i]
-		fundsTransferEntity.tokenName = tokenNames[i]
 		fundsTransferEntity.tokenUSDValue = tokenUSDValues[i]
 		fundsTransferEntity.executionTimestamp = executionTimestamps[i].toI32()
 
-		log.info(`[${event.params.transactionHash}] Funds transfer status updated with ${statuses[i]} for token - ${tokenNames[i]} }`, [])
+		log.info(`[${event.params.transactionHash}] Funds transfer status updated with ${statuses[i]}}`, [])
 
 		const applicationEntity = GrantApplication.load(applicationIds[i].toHexString())
 		log.info(`[${event.params.transactionHash}] Application entity found for ${applicationIds[i].toHexString()}}`, [])
