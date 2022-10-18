@@ -359,6 +359,7 @@ export function runTests(): void {
 			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID_ARRAY),
 			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32Array([0, 1, 2])),
 			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xE3D997D569b5b03B577C6a2Edd1d2613FE776cb0'))),
+			new ethereum.EventParam('tokenName', ethereum.Value.fromString('MATIC')),
 			new ethereum.EventParam('nonEvmAssetAddress', ethereum.Value.fromString('bfnjr9489njrhHDFHg230fb4c4d462eEF9e6790337Cf57271E519bB697')),
 			new ethereum.EventParam('transactionHash', ethereum.Value.fromString('0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')),
 			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0x230fb4c4d462eEF9e6790337Cf57271E519bB697'))),
@@ -367,7 +368,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 		]
 
-		assert.stringEquals(ev.parameters[4].value.toString(), '0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')
+		assert.stringEquals(ev.parameters[5].value.toString(), '0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')
 		const event = new DisburseRewardFromSafe(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseRewardFromSafe(event)
 
@@ -375,6 +376,7 @@ export function runTests(): void {
 		if(fundTransfer) {
 			assert.assertNotNull(fundTransfer)
 			assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
+			assert.stringEquals(fundTransfer!.tokenName!, 'MATIC')
 			assert.assertNotNull(fundTransfer!.milestone)
 			const applicationMilestone = ApplicationMilestone.load(fundTransfer!.milestone!)
 			assert.assertNotNull(applicationMilestone)
@@ -393,7 +395,6 @@ export function runTests(): void {
 			new ethereum.EventParam('applicationId', ethereum.Value.fromI32Array([0x0123])),
 			new ethereum.EventParam('transactionHash', ethereum.Value.fromStringArray(['0xB17081F360e3847006dB660bae1c6d1b2e17eC2A'])),
 			new ethereum.EventParam('status', ethereum.Value.fromStringArray(['executed'])),
-			new ethereum.EventParam('tokenName', ethereum.Value.fromStringArray(['MATIC'])),
 			new ethereum.EventParam('tokenUSDValue', ethereum.Value.fromI32Array([10])),
 			new ethereum.EventParam('executionTimestamp', ethereum.Value.fromI32Array([1665726957]))
 		]
@@ -404,7 +405,6 @@ export function runTests(): void {
 		if(fundsTransferStatusEntity != null) {
 			assert.assertNotNull(fundsTransferStatusEntity)
 			assert.stringEquals(fundsTransferStatusEntity!.status, 'executed')
-			assert.stringEquals(fundsTransferStatusEntity!.tokenName!, 'MATIC')
 			assert.i32Equals(fundsTransferStatusEntity!.tokenUSDValue!.toI32(), 10)
 			assert.i32Equals(fundsTransferStatusEntity!.executionTimestamp, 1665726957)
 			

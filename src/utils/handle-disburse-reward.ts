@@ -9,6 +9,7 @@ class disburseRewardInterface {
 	_applicationId: string;
 	_milestoneId: i32;
 	_asset: Bytes;
+	_tokenName: string;
 	_nonEvmAsset: string;
 	_txnHash: string;
 	_sender: Bytes;
@@ -23,6 +24,7 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	const amountPaid = rewardProps._amount
 	const eventTime = rewardProps.event.block.timestamp.toI32()
 	const asset = rewardProps._asset
+	const tokenName = rewardProps._tokenName
 	const nonEvmAssetAddress = rewardProps._nonEvmAsset
 	const txnHash = rewardProps._txnHash
 
@@ -62,6 +64,10 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 
 	if(nonEvmAssetAddress) {
 		disburseEntity.nonEvmAsset = nonEvmAssetAddress
+	}
+
+	if(tokenName) {
+		disburseEntity.tokenName = tokenName
 	}
 
 	disburseEntity.save()

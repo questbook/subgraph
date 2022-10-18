@@ -84,7 +84,8 @@ export function handleDisburseReward(event: DisburseReward): void {
 		_isP2P: event.params.isP2P,
 		_asset: event.params.asset,
 		_nonEvmAsset: '',
-		_txnHash: ''
+		_txnHash: '',
+		_tokenName: ''
 	})
 }
 
