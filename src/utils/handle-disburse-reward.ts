@@ -39,9 +39,11 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	var disburseEntity: FundsTransfer 
 	if(txnHash != '') {
 		disburseEntity = new FundsTransfer(`${rewardProps._txnHash}.${applicationId}`)
+		disburseEntity.status = 'queued'
 		log.info(`[${rewardProps._txnHash}.${applicationId}] recv disburse reward for application: ID="${applicationId}"`, [])
 	} else {
 		disburseEntity = new FundsTransfer(`${rewardProps.event.transaction.hash.toHex()}.${applicationId}`)
+		disburseEntity.status = 'executed'
 		log.info(`[${rewardProps._txnHash}] txnHash is empty`, [])
 	}
 
@@ -54,7 +56,6 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	disburseEntity.type = rewardProps.depositType
 	disburseEntity.grant = application.grant
 	disburseEntity.transactionHash = txnHash
-	disburseEntity.status = 'queued'
 
 	if(asset) {
 		disburseEntity.asset = asset
