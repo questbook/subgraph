@@ -117,28 +117,32 @@ export class DisburseRewardFromSafe__Params {
     return this._event.parameters[2].value.toAddress();
   }
 
-  get nonEvmAssetAddress(): string {
+  get tokenName(): string {
     return this._event.parameters[3].value.toString();
   }
 
-  get transactionHash(): string {
+  get nonEvmAssetAddress(): string {
     return this._event.parameters[4].value.toString();
   }
 
+  get transactionHash(): string {
+    return this._event.parameters[5].value.toString();
+  }
+
   get sender(): Address {
-    return this._event.parameters[5].value.toAddress();
+    return this._event.parameters[6].value.toAddress();
   }
 
   get amounts(): Array<BigInt> {
-    return this._event.parameters[6].value.toBigIntArray();
+    return this._event.parameters[7].value.toBigIntArray();
   }
 
   get isP2P(): boolean {
-    return this._event.parameters[7].value.toBoolean();
+    return this._event.parameters[8].value.toBoolean();
   }
 
   get time(): BigInt {
-    return this._event.parameters[8].value.toBigInt();
+    return this._event.parameters[9].value.toBigInt();
   }
 }
 
@@ -167,16 +171,12 @@ export class FundsTransferStatusUpdated__Params {
     return this._event.parameters[2].value.toStringArray();
   }
 
-  get tokenName(): Array<string> {
-    return this._event.parameters[3].value.toStringArray();
-  }
-
   get tokenUSDValue(): Array<BigInt> {
-    return this._event.parameters[4].value.toBigIntArray();
+    return this._event.parameters[3].value.toBigIntArray();
   }
 
   get executionTimestamp(): Array<BigInt> {
-    return this._event.parameters[5].value.toBigIntArray();
+    return this._event.parameters[4].value.toBigIntArray();
   }
 }
 
@@ -1018,20 +1018,24 @@ export class DisburseRewardFromSafeCall__Inputs {
     return this._call.inputValues[2].value.toAddress();
   }
 
-  get nonEvmAssetAddress(): string {
+  get _tokenName(): string {
     return this._call.inputValues[3].value.toString();
   }
 
+  get nonEvmAssetAddress(): string {
+    return this._call.inputValues[4].value.toString();
+  }
+
   get _amounts(): Array<BigInt> {
-    return this._call.inputValues[4].value.toBigIntArray();
+    return this._call.inputValues[5].value.toBigIntArray();
   }
 
   get _workspaceId(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[6].value.toBigInt();
   }
 
   get transactionHash(): string {
-    return this._call.inputValues[6].value.toString();
+    return this._call.inputValues[7].value.toString();
   }
 }
 
@@ -1430,16 +1434,12 @@ export class UpdateFundsTransferTransactionStatusCall__Inputs {
     return this._call.inputValues[2].value.toStringArray();
   }
 
-  get _tokenName(): Array<string> {
-    return this._call.inputValues[3].value.toStringArray();
-  }
-
   get _tokenUSDValue(): Array<BigInt> {
-    return this._call.inputValues[4].value.toBigIntArray();
+    return this._call.inputValues[3].value.toBigIntArray();
   }
 
   get _executionTimestamp(): Array<BigInt> {
-    return this._call.inputValues[5].value.toBigIntArray();
+    return this._call.inputValues[4].value.toBigIntArray();
   }
 }
 
