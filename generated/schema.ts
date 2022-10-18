@@ -2369,7 +2369,6 @@ export class FundsTransfer extends Entity {
     this.set("to", Value.fromBytes(Bytes.empty()));
     this.set("type", Value.fromString(""));
     this.set("asset", Value.fromBytes(Bytes.empty()));
-    this.set("status", Value.fromString(""));
   }
 
   save(): void {
@@ -2546,13 +2545,21 @@ export class FundsTransfer extends Entity {
     }
   }
 
-  get status(): string {
+  get status(): string | null {
     let value = this.get("status");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set status(value: string) {
-    this.set("status", Value.fromString(value));
+  set status(value: string | null) {
+    if (!value) {
+      this.unset("status");
+    } else {
+      this.set("status", Value.fromString(<string>value));
+    }
   }
 
   get tokenName(): string | null {

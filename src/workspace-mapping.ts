@@ -337,7 +337,6 @@ export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
 }
 
 export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdated): void {
-
 	const safeTxnHashes = event.params.transactionHash
 	const applicationIds = event.params.applicationId
 	const statuses = event.params.status
@@ -359,7 +358,7 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 
 		const applicationEntity = GrantApplication.load(applicationIds[i].toHexString())
 		log.info(`[${event.params.transactionHash}] Application entity found for ${applicationIds[i].toHexString()}}`, [])
-		const grantEntity = Grant.load(applicationEntity!.grant!)
+		const grantEntity = Grant.load(applicationEntity!.grant)
 
 		if(grantEntity) {
 			const workspace = Workspace.load(grantEntity.workspace)
