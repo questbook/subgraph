@@ -438,7 +438,7 @@ type FundsTransfer @entity {
   nonEvmAsset: String
   "Hash/signature of the transaction"
   transactionHash: String
-  status: FundsTransferStatusType
+  status: FundsTransferStatusType!
   "Token name"
   tokenName: String
   "Token amount transferred value in USD"

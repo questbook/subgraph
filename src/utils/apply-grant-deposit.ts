@@ -42,6 +42,8 @@ export function applyGrantFundUpdate(
 		entity.funding = entity.funding.minus(amount)
 	}
 
+	fundEntity.status = 'executed'
+
 	fundEntity.save()
 
 	entity.updatedAtS = eventTime

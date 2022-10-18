@@ -295,6 +295,7 @@ export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): v
 		fundEntity.to = reviewer
 		fundEntity.createdAtS = event.params.time.toI32()
 		fundEntity.type = 'review_payment_done'
+		fundEntity.status = 'executed'
 		fundEntity.asset = event.params._asset
 
 		fundEntity.save()

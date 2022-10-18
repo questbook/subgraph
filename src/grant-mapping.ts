@@ -111,6 +111,7 @@ export function handleTransactionRecord(event: TransactionRecord): void {
 	disburseEntity.application = applicationId
 	disburseEntity.milestone = milestoneId
 	disburseEntity.type = 'funds_disbursed'
+	disburseEntity.status = 'executed'
 	disburseEntity.grant = application.grant
 	disburseEntity.transactionHash = event.params.transactionHash.toHexString()
 
