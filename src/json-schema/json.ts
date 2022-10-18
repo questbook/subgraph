@@ -27,7 +27,7 @@ function validateStringNumber(decimalString: string, isDecimal: boolean): Result
 	for(let i = 0;i < decimalString.length;i++) {
 		const char = decimalString.charAt(i)
 		if(!NUMBER_SET.has(char)) {
-			if(!isDecimal || char == '.') {
+			if(!isDecimal || char === '.') {
 				return { value: null, error: `unexpected character '${char}' in ${isDecimal ? 'floating point' : 'integer'}` }
 			}
 		}
