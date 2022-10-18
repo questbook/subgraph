@@ -57,11 +57,10 @@ export function handleGrantCreated(event: GrantCreated): void {
 
 	entity.save()
 
-	if(workspace.grants == null) {
-		workspace.grants = []
-	}
+	const grants: string[] = workspace.grants
+	grants.push(entity.id)
+	workspace.grants = grants
 
-	workspace.grants.push(entity.id)
 	workspace.mostRecentGrantPostedAtS = time
 
 	const usdReward = getUSDReward(reward.asset, reward.committed)

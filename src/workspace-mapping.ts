@@ -68,6 +68,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.numberOfApplications = 0
 	entity.numberOfApplicationsSelected = 0
 	entity.totalGrantFundingDisbursedUSD = 0
+	entity.grants = []
 
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
 	member.actorId = event.params.owner
@@ -269,7 +270,6 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 
 		migrateGrant(grant, fromWallet, toWallet)
 	}
-	
 
 	if(workspace.ownerId.toHex() == fromWallet.toHex()) {
 		workspace.ownerId = toWallet
