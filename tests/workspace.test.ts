@@ -404,7 +404,7 @@ export function runTests(): void {
 		const fundsTransferStatusEntity = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x0123}`)
 		if(fundsTransferStatusEntity != null) {
 			assert.assertNotNull(fundsTransferStatusEntity)
-			assert.stringEquals(fundsTransferStatusEntity!.status!, 'executed')
+			assert.stringEquals(fundsTransferStatusEntity!.status, 'executed')
 			assert.i32Equals(fundsTransferStatusEntity!.tokenUSDValue!.toI32(), 10)
 			assert.i32Equals(fundsTransferStatusEntity!.executionTimestamp, 1665726957)
 			
