@@ -22,6 +22,7 @@ import {
 	mapWorkspaceTokens
 } from './utils/generics'
 import { disburseReward } from './utils/handle-disburse-reward'
+import { migrateGrant } from './utils/migrations'
 import {
 	validateWorkspaceCreateRequest,
 	validateWorkspaceUpdateRequest,
@@ -257,6 +258,18 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 		log.warning(`[${event.transaction.hash.toHex()}] member not found for migrate`, [])
 		return
 	}
+	
+	for(let i = 0; i < workspace.grants.length; ++i) {
+		const grantId = workspace.grants[i]
+		const grant = Grant.load(grantId)
+		if(!grant) {
+			log.warning(`[${event.transaction.hash.toHex()}] grant not found for member migrate`, [])
+			return
+		}
+
+		migrateGrant(grant, fromWallet, toWallet)
+	}
+	
 
 	if(workspace.ownerId.toHex() == fromWallet.toHex()) {
 		workspace.ownerId = toWallet

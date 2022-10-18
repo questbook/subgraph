@@ -1431,6 +1431,7 @@ export class Workspace extends Entity {
     this.set("supportedNetworks", Value.fromStringArray(new Array(0)));
     this.set("socials", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
+    this.set("grants", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
@@ -1662,6 +1663,15 @@ export class Workspace extends Entity {
     } else {
       this.set("safe", Value.fromString(<string>value));
     }
+  }
+
+  get grants(): Array<string> {
+    let value = this.get("grants");
+    return value!.toStringArray();
+  }
+
+  set grants(value: Array<string>) {
+    this.set("grants", Value.fromStringArray(value));
   }
 }
 
