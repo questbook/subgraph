@@ -15,6 +15,7 @@ import { FundsTransfer, Grant, GrantApplication, QBAdmin, Workspace, WorkspaceMe
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
+	ALLOWED_FUND_TRANSFER_VALUES,
 	mapWorkspaceMembersUpdate,
 	mapWorkspacePartners,
 	mapWorkspaceSocials,
@@ -343,9 +344,6 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 	const tokenUSDValues = event.params.tokenUSDValue
 	const executionTimestamps = event.params.executionTimestamp
 
-	const ALLOWED_FUND_TRANSFER_VALUES = new Set<string>()
-	ALLOWED_FUND_TRANSFER_VALUES.add('queued')
-	ALLOWED_FUND_TRANSFER_VALUES.add('executed')
 	for(let i = 0; i < safeTxnHashes.length; i++) {
 		const fundsTransferEntity = FundsTransfer.load(`${safeTxnHashes[i]}.${applicationIds[i].toHexString()}`)
 		if(!fundsTransferEntity) {
