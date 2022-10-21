@@ -347,7 +347,12 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 		const fundsTransferEntity = FundsTransfer.load(`${safeTxnHashes[i]}.${applicationIds[i].toHexString()}`)
 		if(!fundsTransferEntity) {
 			log.warning(`[${event.transaction.hash.toHex()}] funds transfer not found for status update`, [])
-			return
+			continue
+		}
+
+		if(statuses[i] !== 'queued' || statuses[i] !== 'executed') {
+			log.warning(`[${event.transaction.hash.toHex()}] incorrect value for enum ${statuses[i]}`, [])
+			continue
 		}
 
 		fundsTransferEntity.status = statuses[i]
@@ -360,17 +365,17 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 		log.info(`[${event.params.transactionHash}] Application entity found for ${applicationIds[i].toHexString()}}`, [])
 		const grantEntity = Grant.load(applicationEntity!.grant)
 
-		if(grantEntity) {
-			const workspace = Workspace.load(grantEntity.workspace)
-			if(workspace && fundsTransferEntity.type == 'funds_disbursed_from_safe') {
-				workspace.totalGrantFundingDisbursedUSD = workspace.totalGrantFundingDisbursedUSD += tokenUSDValues[i].toI32()
-				workspace.save()
-			}
-		} else {
+		if(!grantEntity) {
 			log.warning(`[${event.params.transactionHash}] Grant not found for status update`, [])
+			continue
+		}
+
+		const workspace = Workspace.load(grantEntity.workspace)
+		if(workspace && fundsTransferEntity.type == 'funds_disbursed_from_safe') {
+			workspace.totalGrantFundingDisbursedUSD = workspace.totalGrantFundingDisbursedUSD += tokenUSDValues[i].toI32()
+			workspace.save()
 		}
 
 		fundsTransferEntity.save()
-
 	}
 }

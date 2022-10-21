@@ -51,7 +51,7 @@ enum FundsTransferType {
 
 enum FundsTransferStatusType {
   queued,
-  completed
+  executed
 }
 
 enum SupportedNetwork {
