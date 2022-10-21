@@ -343,6 +343,9 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 	const tokenUSDValues = event.params.tokenUSDValue
 	const executionTimestamps = event.params.executionTimestamp
 
+	const ALLOWED_FUND_TRANSFER_VALUES = new Set<string>()
+	ALLOWED_FUND_TRANSFER_VALUES.add('queued')
+	ALLOWED_FUND_TRANSFER_VALUES.add('executed')
 	for(let i = 0; i < safeTxnHashes.length; i++) {
 		const fundsTransferEntity = FundsTransfer.load(`${safeTxnHashes[i]}.${applicationIds[i].toHexString()}`)
 		if(!fundsTransferEntity) {
@@ -350,9 +353,6 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 			continue
 		}
 
-		const ALLOWED_FUND_TRANSFER_VALUES = new Set<string>()
-		ALLOWED_FUND_TRANSFER_VALUES.add('queued')
-		ALLOWED_FUND_TRANSFER_VALUES.add('executed')
 		if(!ALLOWED_FUND_TRANSFER_VALUES.has(statuses[i])) {
 			log.warning(`[${event.transaction.hash.toHex()}] incorrect value for enum ${statuses[i]}`, [])
 			continue
