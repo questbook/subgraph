@@ -350,7 +350,7 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 			continue
 		}
 
-		if(statuses[i] != 'queued' || statuses[i] != 'executed') {
+		if(statuses[i] != 'queued' && statuses[i] != 'executed') {
 			log.warning(`[${event.transaction.hash.toHex()}] incorrect value for enum ${statuses[i]}`, [])
 			continue
 		}
