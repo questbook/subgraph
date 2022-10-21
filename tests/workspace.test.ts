@@ -416,6 +416,37 @@ export function runTests(): void {
 
 	})
 
+	test('should not update transaction status', () => {
+		const w = createWorkspace()
+		const a = createApplication()
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('applicationId', ethereum.Value.fromI32Array([0x0123])),
+			new ethereum.EventParam('transactionHash', ethereum.Value.fromStringArray(['0xB17081F360e3847006dB660bae1c6d1b2e17eC2A'])),
+			new ethereum.EventParam('status', ethereum.Value.fromStringArray(['completed'])),
+			new ethereum.EventParam('tokenUSDValue', ethereum.Value.fromI32Array([10])),
+			new ethereum.EventParam('executionTimestamp', ethereum.Value.fromI32Array([1665726957]))
+		]
+
+		const event = new FundsTransferStatusUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleFundsTransferStatusUpdated(event)
+		const fundsTransferStatusEntity = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x0123}`)
+		if(fundsTransferStatusEntity != null) {
+			assert.assertNotNull(fundsTransferStatusEntity)
+			assert.stringEquals(fundsTransferStatusEntity!.status, 'queued')
+			assert.i32Equals(fundsTransferStatusEntity!.tokenUSDValue!.toI32(), 10)
+			assert.i32Equals(fundsTransferStatusEntity!.executionTimestamp, 1665726957)
+			
+			const grantEntity = Grant.load(a!.grant)
+			const workspace = Workspace.load(grantEntity!.workspace)
+
+			assert.i32Equals(workspace!.totalGrantFundingDisbursedUSD!, 10)
+		}
+
+	})
+
 	test('should update dao\'s visibility state', () => {
 		const w = createWorkspace()!
 
