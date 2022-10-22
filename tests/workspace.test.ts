@@ -1,7 +1,7 @@
 import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
 import {
-	DisburseRewardFromSafe,
+	DisburseRewardFromSafe1,
 	FundsTransferStatusUpdated,
 	QBAdminsUpdated,
 	WorkspaceMembersUpdated,
@@ -24,8 +24,7 @@ import {
 } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import {
-	handleDisburseReward,
-	handleDisburseRewardFromSafe, handleFundsTransferStatusUpdated, handleQBAdminsUpdated,
+	handleDisburseReward, handleDisburseRewardFromSafe1, handleFundsTransferStatusUpdated, handleQBAdminsUpdated,
 	handleWorkspaceMembersUpdated,
 	handleWorkspaceMemberUpdated,
 	handleWorkspaceSafeUpdated,
@@ -369,8 +368,8 @@ export function runTests(): void {
 		]
 
 		assert.stringEquals(ev.parameters[5].value.toString(), '0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')
-		const event = new DisburseRewardFromSafe(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleDisburseRewardFromSafe(event)
+		const event = new DisburseRewardFromSafe1(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleDisburseRewardFromSafe1(event)
 
 		const fundTransfer = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x123}`)
 		if(fundTransfer) {
