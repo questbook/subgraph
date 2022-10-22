@@ -117,6 +117,56 @@ export class DisburseRewardFromSafe__Params {
     return this._event.parameters[2].value.toAddress();
   }
 
+  get nonEvmAssetAddress(): string {
+    return this._event.parameters[3].value.toString();
+  }
+
+  get transactionHash(): string {
+    return this._event.parameters[4].value.toString();
+  }
+
+  get sender(): Address {
+    return this._event.parameters[5].value.toAddress();
+  }
+
+  get amounts(): Array<BigInt> {
+    return this._event.parameters[6].value.toBigIntArray();
+  }
+
+  get isP2P(): boolean {
+    return this._event.parameters[7].value.toBoolean();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[8].value.toBigInt();
+  }
+}
+
+export class DisburseRewardFromSafe1 extends ethereum.Event {
+  get params(): DisburseRewardFromSafe1__Params {
+    return new DisburseRewardFromSafe1__Params(this);
+  }
+}
+
+export class DisburseRewardFromSafe1__Params {
+  _event: DisburseRewardFromSafe1;
+
+  constructor(event: DisburseRewardFromSafe1) {
+    this._event = event;
+  }
+
+  get applicationIds(): Array<BigInt> {
+    return this._event.parameters[0].value.toBigIntArray();
+  }
+
+  get milestoneIds(): Array<BigInt> {
+    return this._event.parameters[1].value.toBigIntArray();
+  }
+
+  get asset(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
   get tokenName(): string {
     return this._event.parameters[3].value.toString();
   }

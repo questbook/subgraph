@@ -37,8 +37,8 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	log.info(`[${rewardProps._txnHash}] recv disburse reward for application: ID="${applicationId}"`, [])
 
 	var disburseEntity: FundsTransfer 
-	if(txnHash != '') {
-		disburseEntity = new FundsTransfer(`${rewardProps._txnHash}.${applicationId}`)
+	if(rewardProps.depositType == 'funds_disbursed_from_safe') {
+		disburseEntity = new FundsTransfer(`${txnHash}.${applicationId}`)
 		disburseEntity.status = 'queued'
 		log.info(`[${rewardProps._txnHash}.${applicationId}] recv disburse reward for application: ID="${applicationId}"`, [])
 	} else {
@@ -63,11 +63,12 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 		disburseEntity.asset = Address.fromString('0x0')
 	}
 
+
 	if(nonEvmAssetAddress) {
 		disburseEntity.nonEvmAsset = nonEvmAssetAddress
 	}
 
-	if(tokenName) {
+	if(tokenName && tokenName != '') {
 		disburseEntity.tokenName = tokenName
 	}
 
@@ -85,13 +86,17 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	const grantEntity = Grant.load(application.grant)
 	if(grantEntity) {
 		const workspace = Workspace.load(grantEntity.workspace)
-		if(workspace && disburseEntity.type != 'funds_disbursed_from_safe') {
-			const usd = getUSDReward(asset, amountPaid)
-			if(usd > 0) {
-				workspace.totalGrantFundingDisbursedUSD += usd
-			}
+		if(workspace) {
+			if(disburseEntity.type != 'funds_disbursed_from_safe') {
+				const usd = getUSDReward(asset, amountPaid)
+				if(usd > 0) {
+					workspace.totalGrantFundingDisbursedUSD += usd
+				}
 
-			workspace.save()
+				workspace.save()
+			}
+		} else {
+			log.warning(`[${rewardProps.event.transaction.hash.toHex()}] workspace not found for grant: ${grantEntity.id}`, [])
 		}
 
 		// find grant and reduce the amount of the funding
@@ -100,6 +105,9 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 			grantEntity.funding = grantEntity.funding.minus(amountPaid)
 			grantEntity.save()
 		}
+	} else {
+		log.warning(`[${rewardProps.event.transaction.hash.toHex()}] recv disburse reward for unknown grant: ID="${application.grant}"`, [])
+		return
 	}
 
 	entity.save()

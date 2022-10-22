@@ -39,8 +39,10 @@ dataSources:
           handler: handleWorkspaceSafeUpdated
         - event: DisburseReward(indexed uint96,uint96,address,address,uint256,bool,uint256)
           handler: handleDisburseReward
-        - event: DisburseRewardFromSafe(uint96[],uint96[],address,string,string,string,address,uint256[],bool,uint256)
+        - event: DisburseRewardFromSafe(uint96[],uint96[],address,string,string,address,uint256[],bool,uint256)
           handler: handleDisburseRewardFromSafe
+        - event: DisburseRewardFromSafe(uint96[],uint96[],address,string,string,string,address,uint256[],bool,uint256)
+          handler: handleDisburseRewardFromSafe1
         - event: WorkspaceMemberMigrate(uint96,address,address,uint256)
           handler: handleWorkspaceMemberMigrate
         - event: WorkspacesVisibleUpdated(uint96[],bool[])

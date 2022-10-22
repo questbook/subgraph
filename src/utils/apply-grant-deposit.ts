@@ -24,6 +24,7 @@ export function applyGrantFundUpdate(
 	fundEntity.to = recipient
 	fundEntity.grant = grantId
 	fundEntity.amount = amount
+	fundEntity.transactionHash = transactionId
 
 	const reward = Reward.load(entity.reward)
 	if(!reward) {

@@ -1,6 +1,7 @@
 import { BigInt, log, store } from '@graphprotocol/graph-ts'
 import {
 	DisburseRewardFromSafe,
+	DisburseRewardFromSafe1,
 	FundsTransferStatusUpdated,
 	QBAdminsUpdated,
 	WorkspaceCreated,
@@ -221,6 +222,35 @@ export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): voi
 	const applicationIds = event.params.applicationIds
 	const milestoneIds = event.params.milestoneIds
 	const asset = event.params.asset
+	// const tokenName = event.params.tokenName
+	const nonEvmAsset = event.params.nonEvmAssetAddress
+	const txnHash = event.params.transactionHash
+	const sender = event.params.sender
+	const amounts = event.params.amounts
+	const isP2P = event.params.isP2P
+
+	for(let i = 0; i < applicationIds.length; i++) {
+		disburseReward({
+			event,
+			depositType,
+			_applicationId: applicationIds[i].toHexString(),
+			_milestoneId: milestoneIds[i].toI32(),
+			_asset: asset,
+			_tokenName: '',
+			_nonEvmAsset: nonEvmAsset,
+			_txnHash: txnHash,
+			_sender: sender,
+			_amount: amounts[i],
+			_isP2P: isP2P
+		})
+	}
+}
+
+export function handleDisburseRewardFromSafe1(event: DisburseRewardFromSafe1): void {
+	const depositType = 'funds_disbursed_from_safe'
+	const applicationIds = event.params.applicationIds
+	const milestoneIds = event.params.milestoneIds
+	const asset = event.params.asset
 	const tokenName = event.params.tokenName
 	const nonEvmAsset = event.params.nonEvmAssetAddress
 	const txnHash = event.params.transactionHash
@@ -243,7 +273,6 @@ export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): voi
 			_isP2P: isP2P
 		})
 	}
-
 }
 
 export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): void {
