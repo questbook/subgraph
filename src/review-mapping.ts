@@ -297,6 +297,7 @@ export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): v
 		fundEntity.type = 'review_payment_done'
 		fundEntity.status = 'executed'
 		fundEntity.asset = event.params._asset
+		fundEntity.transactionHash = transactionId
 
 		fundEntity.save()
 	}
