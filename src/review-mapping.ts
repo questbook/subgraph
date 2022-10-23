@@ -1,6 +1,6 @@
 import { Bytes, log, store } from '@graphprotocol/graph-ts'
 import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
-import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
+import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { migrateApplicationReviewer, migrateGrant, migrateRubric } from './utils/migrations'
 import { ReviewSetRequest, RubricSetRequest, validateReviewSetRequest, validateRubricSetRequest } from './json-schema'
@@ -336,4 +336,14 @@ export function handleReviewMigrate(event: ReviewMigrate): void {
 
 		review.save()
 	}
+
+	const migration = new Migration(`${appId}.${reviewId}.${fromWallet}.${toWallet}`)
+	migration.fromWallet = fromWallet
+	migration.toWallet = toWallet
+	migration.application = appId
+	migration.review = reviewId
+	migration.type = 'Review'
+	migration.transactionHash = event.transaction.hash.toHex()
+	migration.timestamp = event.params.time.toI32()
+	migration.save()
 }

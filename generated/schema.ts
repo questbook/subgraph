@@ -2709,3 +2709,137 @@ export class Notification extends Entity {
     this.set("cursor", Value.fromString(value));
   }
 }
+
+export class Migration extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("fromWallet", Value.fromBytes(Bytes.empty()));
+    this.set("toWallet", Value.fromBytes(Bytes.empty()));
+    this.set("type", Value.fromString(""));
+    this.set("transactionHash", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Migration entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Migration entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Migration", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Migration | null {
+    return changetype<Migration | null>(store.get("Migration", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get fromWallet(): Bytes {
+    let value = this.get("fromWallet");
+    return value!.toBytes();
+  }
+
+  set fromWallet(value: Bytes) {
+    this.set("fromWallet", Value.fromBytes(value));
+  }
+
+  get toWallet(): Bytes {
+    let value = this.get("toWallet");
+    return value!.toBytes();
+  }
+
+  set toWallet(value: Bytes) {
+    this.set("toWallet", Value.fromBytes(value));
+  }
+
+  get type(): string {
+    let value = this.get("type");
+    return value!.toString();
+  }
+
+  set type(value: string) {
+    this.set("type", Value.fromString(value));
+  }
+
+  get workspace(): string | null {
+    let value = this.get("workspace");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set workspace(value: string | null) {
+    if (!value) {
+      this.unset("workspace");
+    } else {
+      this.set("workspace", Value.fromString(<string>value));
+    }
+  }
+
+  get application(): string | null {
+    let value = this.get("application");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set application(value: string | null) {
+    if (!value) {
+      this.unset("application");
+    } else {
+      this.set("application", Value.fromString(<string>value));
+    }
+  }
+
+  get review(): string | null {
+    let value = this.get("review");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set review(value: string | null) {
+    if (!value) {
+      this.unset("review");
+    } else {
+      this.set("review", Value.fromString(<string>value));
+    }
+  }
+
+  get transactionHash(): string {
+    let value = this.get("transactionHash");
+    return value!.toString();
+  }
+
+  set transactionHash(value: string) {
+    this.set("transactionHash", Value.fromString(value));
+  }
+
+  get timestamp(): i32 {
+    let value = this.get("timestamp");
+    return value!.toI32();
+  }
+
+  set timestamp(value: i32) {
+    this.set("timestamp", Value.fromI32(value));
+  }
+}

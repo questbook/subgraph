@@ -12,7 +12,7 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { FundsTransfer, Grant, GrantApplication, QBAdmin, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -314,6 +314,15 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 	member.actorId = toWallet
 
 	member.save()
+
+	const migration = new Migration(`${workspaceId}.${fromWallet}.${toWallet}`)
+	migration.fromWallet = fromWallet
+	migration.toWallet = toWallet
+	migration.workspace = workspaceId
+	migration.type = 'WorkspaceMember'
+	migration.transactionHash = event.transaction.hash.toHex()
+	migration.timestamp = event.params.time.toI32()
+	migration.save()
 }
 
 export function handleWorkspacesVisibleUpdated(event: WorkspacesVisibleUpdated): void {

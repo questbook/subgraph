@@ -1,6 +1,6 @@
 import { log } from '@graphprotocol/graph-ts'
 import { ApplicationMigrate, ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationMilestone, Grant, GrantApplication, Workspace } from '../generated/schema'
+import { ApplicationMilestone, Grant, GrantApplication, Migration, Workspace } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
 import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
@@ -203,6 +203,16 @@ export function handleApplicationMigrate(event: ApplicationMigrate): void {
 		return
 	}
 
+	const fromWallet = entity.applicantId
 	entity.applicantId = event.params.newApplicantAddress
 	entity.save()
+
+	const migration = new Migration(`${applicationId}.${fromWallet}.${event.params.newApplicantAddress}`)
+	migration.fromWallet = fromWallet
+	migration.toWallet = event.params.newApplicantAddress
+	migration.application = applicationId
+	migration.type = 'Application'
+	migration.transactionHash = event.transaction.hash.toHex()
+	migration.timestamp = event.params.time.toI32()
+	migration.save()
 }

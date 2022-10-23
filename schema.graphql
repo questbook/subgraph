@@ -54,6 +54,12 @@ enum FundsTransferStatusType {
   executed
 }
 
+enum MigrationType {
+  WorkspaceMember,
+  Review,
+  Application
+}
+
 enum SupportedNetwork {
   chain_42220, # celo-mainnet
   chain_5, # goerli-testnet
@@ -463,4 +469,24 @@ type Notification @entity {
   actorId: Bytes
   "Descending order of cursor"
   cursor: String!
+}
+
+type Migration @entity {
+  id: ID!
+  "The wallet that initiated the migration"
+  fromWallet: Bytes!
+  "The wallet to which the migration was done"
+  toWallet: Bytes!
+  "The type of migration that took place"
+  type: MigrationType!
+  "This is null if type !== WorkspaceMemberMigrate"
+  workspace: Workspace
+  "This is null if type !== ApplicationMigrate"
+  application: GrantApplication
+  "This is null if type !== ReviewrMigrate"
+  review: Review
+  "The hash of the transaction that caused the migration"
+  transactionHash: String!
+  "in seconds since epoch"
+  timestamp: Int!
 }

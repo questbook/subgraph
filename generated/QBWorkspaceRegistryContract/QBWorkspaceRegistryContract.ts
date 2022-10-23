@@ -1257,6 +1257,40 @@ export class MigrateWalletCall__Outputs {
   }
 }
 
+export class MigrateWalletBatchCall extends ethereum.Call {
+  get inputs(): MigrateWalletBatchCall__Inputs {
+    return new MigrateWalletBatchCall__Inputs(this);
+  }
+
+  get outputs(): MigrateWalletBatchCall__Outputs {
+    return new MigrateWalletBatchCall__Outputs(this);
+  }
+}
+
+export class MigrateWalletBatchCall__Inputs {
+  _call: MigrateWalletBatchCall;
+
+  constructor(call: MigrateWalletBatchCall) {
+    this._call = call;
+  }
+
+  get fromWallets(): Array<Address> {
+    return this._call.inputValues[0].value.toAddressArray();
+  }
+
+  get toWallets(): Array<Address> {
+    return this._call.inputValues[1].value.toAddressArray();
+  }
+}
+
+export class MigrateWalletBatchCall__Outputs {
+  _call: MigrateWalletBatchCall;
+
+  constructor(call: MigrateWalletBatchCall) {
+    this._call = call;
+  }
+}
+
 export class PauseCall extends ethereum.Call {
   get inputs(): PauseCall__Inputs {
     return new PauseCall__Inputs(this);
