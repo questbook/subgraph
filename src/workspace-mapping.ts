@@ -315,7 +315,7 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 
 	member.save()
 
-	const migration = new Migration(`${workspaceId}.${fromWallet}.${toWallet}`)
+	const migration = new Migration(`${workspaceId}.${fromWallet.toHexString()}.${toWallet.toHexString()}`)
 	migration.fromWallet = fromWallet
 	migration.toWallet = toWallet
 	migration.workspace = workspaceId
