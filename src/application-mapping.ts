@@ -207,7 +207,7 @@ export function handleApplicationMigrate(event: ApplicationMigrate): void {
 	entity.applicantId = event.params.newApplicantAddress
 	entity.save()
 
-	const migration = new Migration(`${applicationId}.${fromWallet}.${event.params.newApplicantAddress}`)
+	const migration = new Migration(`${applicationId}.${fromWallet.toHexString()}.${event.params.newApplicantAddress.toHexString()}`)
 	migration.fromWallet = fromWallet
 	migration.toWallet = event.params.newApplicantAddress
 	migration.application = applicationId

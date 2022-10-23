@@ -32,10 +32,10 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	if(!review) {
 		review = new Review(reviewId)
 		review.createdAtS = event.params.time.toI32()
-		review.reviewer = memberId
 		review.application = event.params._applicationId.toHex()
 	}
 
+	review.reviewer = memberId
 	review.publicReviewDataHash = json.publicReviewDataHash
 
 	const items: string[] = []
@@ -327,6 +327,8 @@ export function handleReviewMigrate(event: ReviewMigrate): void {
 	const rubric = Rubric.load(grant.id)
 	if(rubric) {
 		migrateRubric(rubric, fromWallet, toWallet)
+	} else {
+		log.warning(`[${event.transaction.hash.toHex()}] error in migrating review: "rubric (${grant.id}) not found"`, [])
 	}
 
 	const review = Review.load(reviewId)
@@ -335,9 +337,11 @@ export function handleReviewMigrate(event: ReviewMigrate): void {
 		review.reviewer = reviewerId
 
 		review.save()
+	} else {
+		log.warning(`[${event.transaction.hash.toHex()}] error in migrating review: "review (${reviewId}) not found"`, [])
 	}
 
-	const migration = new Migration(`${appId}.${reviewId}.${fromWallet}.${toWallet}`)
+	const migration = new Migration(`${appId}.${reviewId}.${fromWallet.toHexString()}.${toWallet.toHexString()}`)
 	migration.fromWallet = fromWallet
 	migration.toWallet = toWallet
 	migration.application = appId
