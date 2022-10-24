@@ -382,7 +382,21 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 	const tokenUSDValues = event.params.tokenUSDValue
 	const executionTimestamps = event.params.executionTimestamp
 
+	for(let i = 0; i < safeTxnHashes.length; ++i) {
+		const safeTxnHash = safeTxnHashes[i]
+		const applicationId = applicationIds[i].toString()
+		const status = statuses[i]
+		const tokenUSDValue = tokenUSDValues[i].toString()
+
+		log.info(`(Funds Transfer Status Update) - Received: ${safeTxnHash}, ${applicationId}, ${status}, ${tokenUSDValue}, ${executionTimestamps[i].toString()}`, [])
+	}
+
 	for(let i = 0; i < safeTxnHashes.length; i++) {
+		if(executionTimestamps[i].toString().length != 10) {
+			log.warning(`(Funds Transfer Status Update) - Invalid execution timestamp: ${executionTimestamps[i].toString()}`, [])
+			continue
+		}
+
 		const fundsTransferEntity = FundsTransfer.load(`${safeTxnHashes[i]}.${applicationIds[i].toHexString()}`)
 		if(!fundsTransferEntity) {
 			log.warning(`[${event.transaction.hash.toHex()}] funds transfer not found for status update`, [])
