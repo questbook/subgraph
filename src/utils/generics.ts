@@ -321,6 +321,7 @@ export function mapWorkspaceMembersUpdate(
 				member.outstandingReviewIds = []
 			}
 
+			member.enabled = true
 			member.actorId = memberId
 			member.lastKnownTxHash = txHash
 			if(emails) {
@@ -364,6 +365,7 @@ export function mapWorkspaceMembersUpdate(
 			member.save()
 		} else if(member) {
 			member.removedAt = entity.updatedAtS
+			member.enabled = false
 			member.save()
 		} else {
 			log.warning(`[${txHash.toHex()}] recv member remove but member not found`, [])

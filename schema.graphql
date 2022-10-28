@@ -249,6 +249,8 @@ type WorkspaceMember @entity {
   addedAt: Int!
   "Last update on member"
   updatedAt: Int!
+  "An indicator if the person is an active part of the workspace or not"
+  enabled: Boolean!
   "If the member was removed, when"
   removedAt: Int
   "Timestamp of when the last review was done"
