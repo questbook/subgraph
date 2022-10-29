@@ -1354,6 +1354,15 @@ export class WorkspaceMember extends Entity {
     this.set("updatedAt", Value.fromI32(value));
   }
 
+  get enabled(): boolean {
+    let value = this.get("enabled");
+    return value!.toBoolean();
+  }
+
+  set enabled(value: boolean) {
+    this.set("enabled", Value.fromBoolean(value));
+  }
+
   get removedAt(): i32 {
     let value = this.get("removedAt");
     return value!.toI32();
