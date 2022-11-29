@@ -1,9 +1,10 @@
 import { Bytes, log, store } from '@graphprotocol/graph-ts'
-import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
+import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet, RubricsSetV2 } from '../generated/QBReviewsContract/QBReviewsContract'
 import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { migrateApplicationReviewer, migrateGrant, migrateRubric } from './utils/migrations'
 import { ReviewSetRequest, RubricSetRequest, validateReviewSetRequest, validateRubricSetRequest } from './json-schema'
+import { rubricSetHandler } from './utils/rubricSetHandler'
 
 export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	const reviewId = event.params._reviewId.toHex()
@@ -192,6 +193,13 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 }
 
 export function handleRubricsSet(event: RubricsSet): void {
+	// const grantId = event.params._grantAddress.toHex()
+	// const workspaceId = event.params._workspaceId.toHex()
+	// const numberOfReviewersPerApplication = 0
+	// const metadataHash = event.params._metadataHash
+	// const time = event.params.time.toI32()
+
+	// rubricSetHandler(event, grantId, workspaceId, numberOfReviewersPerApplication,  metadataHash, time)
 	const grantId = event.params._grantAddress.toHex()
 	const workspaceId = event.params._workspaceId.toHex()
 
@@ -247,6 +255,19 @@ export function handleRubricsSet(event: RubricsSet): void {
 	grant.rubric = rubric.id
 
 	grant.save()
+
+}
+
+export function handleRubricsSetV2(event: RubricsSetV2): void {
+	const grantId = event.params._grantAddress.toHex()
+	const workspaceId = event.params._workspaceId.toHex()
+	const numberOfReviewersPerApplication = event.params._numberOfReviewersPerApplication
+
+	const metadataHash = event.params._metadataHash
+	const time = event.params.time
+	
+
+	rubricSetHandler(event, grantId, workspaceId, numberOfReviewersPerApplication, metadataHash, time)
 }
 
 export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): void {

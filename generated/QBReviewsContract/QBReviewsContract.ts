@@ -314,6 +314,40 @@ export class RubricsSet__Params {
   }
 }
 
+export class RubricsSetV2 extends ethereum.Event {
+  get params(): RubricsSetV2__Params {
+    return new RubricsSetV2__Params(this);
+  }
+}
+
+export class RubricsSetV2__Params {
+  _event: RubricsSetV2;
+
+  constructor(event: RubricsSetV2) {
+    this._event = event;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get _numberOfReviewersPerApplication(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get _metadataHash(): string {
+    return this._event.parameters[3].value.toString();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+}
+
 export class Upgraded extends ethereum.Event {
   get params(): Upgraded__Params {
     return new Upgraded__Params(this);
@@ -1179,8 +1213,12 @@ export class SetRubricsCall__Inputs {
     return this._call.inputValues[1].value.toAddress();
   }
 
+  get _numberOfReviewersPerApplication(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
   get _metadataHash(): string {
-    return this._call.inputValues[2].value.toString();
+    return this._call.inputValues[3].value.toString();
   }
 }
 

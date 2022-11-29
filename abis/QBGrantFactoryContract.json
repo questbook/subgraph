@@ -231,6 +231,11 @@
         "type": "string"
       },
       {
+        "internalType": "uint96",
+        "name": "_numberOfReviewersPerApplication",
+        "type": "uint96"
+      },
+      {
         "internalType": "contract IWorkspaceRegistry",
         "name": "_workspaceReg",
         "type": "address"

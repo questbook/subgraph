@@ -951,6 +951,23 @@ export class Grant extends Entity {
     }
   }
 
+  get startDateS(): string | null {
+    let value = this.get("startDateS");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set startDateS(value: string | null) {
+    if (!value) {
+      this.unset("startDateS");
+    } else {
+      this.set("startDateS", Value.fromString(<string>value));
+    }
+  }
+
   get deadlineS(): i32 {
     let value = this.get("deadlineS");
     return value!.toI32();
@@ -958,6 +975,49 @@ export class Grant extends Entity {
 
   set deadlineS(value: i32) {
     this.set("deadlineS", Value.fromI32(value));
+  }
+
+  get payoutType(): string | null {
+    let value = this.get("payoutType");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set payoutType(value: string | null) {
+    if (!value) {
+      this.unset("payoutType");
+    } else {
+      this.set("payoutType", Value.fromString(<string>value));
+    }
+  }
+
+  get reviewType(): string | null {
+    let value = this.get("reviewType");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set reviewType(value: string | null) {
+    if (!value) {
+      this.unset("reviewType");
+    } else {
+      this.set("reviewType", Value.fromString(<string>value));
+    }
+  }
+
+  get numberOfReviewersPerApplication(): i32 {
+    let value = this.get("numberOfReviewersPerApplication");
+    return value!.toI32();
+  }
+
+  set numberOfReviewersPerApplication(value: i32) {
+    this.set("numberOfReviewersPerApplication", Value.fromI32(value));
   }
 
   get fields(): Array<string> {
