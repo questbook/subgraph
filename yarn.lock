@@ -137,7 +137,7 @@
 
 "@questbook/graph-json-validator@git+https://github.com/questbook/graph-json-validator":
   version "0.0.1"
-  resolved "git+https://github.com/questbook/graph-json-validator#84b071ede2d86463279f54db49cf1895f3f09c4d"
+  resolved "git+https://github.com/questbook/graph-json-validator#b1e33ee78ea65f71fd093c466300a5490fc6f275"
   dependencies:
     axios "^0.26.0"
     js-yaml "^4.1.0"
