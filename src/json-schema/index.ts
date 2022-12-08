@@ -7,17 +7,10 @@ import { Boolean, Result, toSet, validateObject, validateNumber, validateInteger
 const SupportedNetworkEnumSet = toSet(['42220', '5', '10', '137'])
 const GrantField_inputTypeEnumSet = toSet(['short-form', 'long-form', 'numeric', 'array'])
 const GrantFieldMapPropertiesSet = toSet(['applicantName', 'applicantEmail', 'projectName', 'projectDetails', 'fundingBreakdown'])
-
-export class Error {
-	statusCode: BigInt = new BigInt(0)
-	error: string = ''
-	message: string = ''
-	data: Error_data | null = null
-}
-
-export class Error_data {
-
-}
+const GrantCreateRequest_payoutTypeEnumSet = toSet(['in one go', 'milestone'])
+const GrantCreateRequest_reviewTypeEnumSet = toSet(['voting', 'rubric'])
+const GrantUpdateRequest_payoutTypeEnumSet = toSet(['in-one-go', 'milestones'])
+const GrantUpdateRequest_reviewTypeEnumSet = toSet(['voting', 'rubrics'])
 
 export class Partner {
 	name: string = ''
@@ -176,10 +169,14 @@ export class RubricSetRequest {
 
 export class GrantCreateRequest {
 	title: string = ''
-	summary: string = ''
+	startDate: Date = new Date(0)
+	endDate: Date = new Date(0)
 	details: string = ''
-	deadline: Date | null = null
-	reward: GrantReward = new GrantReward()
+	link: string | null = null
+	docIpfsHash: string | null = null
+	reward: BigInt = new BigInt(0)
+	payoutType: string = ''
+	reviewType: string = ''
 	creatorId: string = ''
 	workspaceId: string = ''
 	fields: GrantFieldMap = new GrantFieldMap()
@@ -188,75 +185,16 @@ export class GrantCreateRequest {
 
 export class GrantUpdateRequest {
 	title: string | null = null
-	summary: string | null = null
+	startDate: Date | null = null
+	endDate: Date | null = null
 	details: string | null = null
-	deadline: Date | null = null
-	reward: GrantReward | null = null
+	reward: BigInt | null = null
+	payoutType: string | null = null
+	reviewType: string | null = null
+	creatorId: string | null = null
+	workspaceId: string | null = null
 	fields: GrantFieldMap | null = null
 	grantManagers: Bytes[] | null = null
-}
-
-export function validateError(json: JSONValue): Result<Error> {
-const value = new Error()
-const objResult = validateObject(json)
-if(objResult.error) {
-	return { value: null, error: objResult.error }
-}
-const obj = objResult.value!
-const statusCodeJson = obj.get('statusCode')
-if(!statusCodeJson) return { value: null, error: "Expected 'statusCode' to be present in Error" }
-if(statusCodeJson) {
-	const statusCodeResult = validateInteger(statusCodeJson, null, BigInt.fromString('505'))
-	if(statusCodeResult.error) {
-		return { value: null, error: ["Error in mapping 'statusCode': ", statusCodeResult.error!].join('') }
-	}
-	if(statusCodeResult.value) {
-		value.statusCode = statusCodeResult.value!
-	}
-}
-const errorJson = obj.get('error')
-if(!errorJson) return { value: null, error: "Expected 'error' to be present in Error" }
-if(errorJson) {
-	const errorResult = validateString(errorJson, -1, -1, null)
-	if(errorResult.error) {
-		return { value: null, error: ["Error in mapping 'error': ", errorResult.error!].join('') }
-	}
-	if(errorResult.value) {
-		value.error = errorResult.value!
-	}
-}
-const messageJson = obj.get('message')
-if(!messageJson) return { value: null, error: "Expected 'message' to be present in Error" }
-if(messageJson) {
-	const messageResult = validateString(messageJson, -1, -1, null)
-	if(messageResult.error) {
-		return { value: null, error: ["Error in mapping 'message': ", messageResult.error!].join('') }
-	}
-	if(messageResult.value) {
-		value.message = messageResult.value!
-	}
-}
-const dataJson = obj.get('data')
-if(dataJson) {
-	const dataResult = validateError_data(dataJson)
-	if(dataResult.error) {
-		return { value: null, error: ["Error in mapping 'data': ", dataResult.error!].join('') }
-	}
-	if(dataResult.value) {
-		value.data = dataResult.value!
-	}
-}
-return { value, error: null }
-}
-
-export function validateError_data(json: JSONValue): Result<Error_data> {
-const value = new Error_data()
-const objResult = validateObject(json)
-if(objResult.error) {
-	return { value: null, error: objResult.error }
-}
-const obj = objResult.value!
-return { value, error: null }
 }
 
 export function validateAddress(json: JSONValue): Result<Bytes> {
@@ -1415,15 +1353,26 @@ if(titleJson) {
 		value.title = titleResult.value!
 	}
 }
-const summaryJson = obj.get('summary')
-if(!summaryJson) return { value: null, error: "Expected 'summary' to be present in GrantCreateRequest" }
-if(summaryJson) {
-	const summaryResult = validateString(summaryJson, -1, 1024, null)
-	if(summaryResult.error) {
-		return { value: null, error: ["Error in mapping 'summary': ", summaryResult.error!].join('') }
+const startDateJson = obj.get('startDate')
+if(!startDateJson) return { value: null, error: "Expected 'startDate' to be present in GrantCreateRequest" }
+if(startDateJson) {
+	const startDateResult = validateDateTimeFromStringResult(validateString(startDateJson, -1, -1, null))
+	if(startDateResult.error) {
+		return { value: null, error: ["Error in mapping 'startDate': ", startDateResult.error!].join('') }
 	}
-	if(summaryResult.value) {
-		value.summary = summaryResult.value!
+	if(startDateResult.value) {
+		value.startDate = startDateResult.value!
+	}
+}
+const endDateJson = obj.get('endDate')
+if(!endDateJson) return { value: null, error: "Expected 'endDate' to be present in GrantCreateRequest" }
+if(endDateJson) {
+	const endDateResult = validateDateTimeFromStringResult(validateString(endDateJson, -1, -1, null))
+	if(endDateResult.error) {
+		return { value: null, error: ["Error in mapping 'endDate': ", endDateResult.error!].join('') }
+	}
+	if(endDateResult.value) {
+		value.endDate = endDateResult.value!
 	}
 }
 const detailsJson = obj.get('details')
@@ -1437,25 +1386,57 @@ if(detailsJson) {
 		value.details = detailsResult.value!
 	}
 }
-const deadlineJson = obj.get('deadline')
-if(deadlineJson) {
-	const deadlineResult = validateDateTimeFromStringResult(validateString(deadlineJson, -1, 128, null))
-	if(deadlineResult.error) {
-		return { value: null, error: ["Error in mapping 'deadline': ", deadlineResult.error!].join('') }
+const linkJson = obj.get('link')
+if(linkJson) {
+	const linkResult = validateString(linkJson, -1, -1, null)
+	if(linkResult.error) {
+		return { value: null, error: ["Error in mapping 'link': ", linkResult.error!].join('') }
 	}
-	if(deadlineResult.value) {
-		value.deadline = deadlineResult.value!
+	if(linkResult.value) {
+		value.link = linkResult.value!
+	}
+}
+const docIpfsHashJson = obj.get('docIpfsHash')
+if(docIpfsHashJson) {
+	const docIpfsHashResult = validateString(docIpfsHashJson, -1, 128, null)
+	if(docIpfsHashResult.error) {
+		return { value: null, error: ["Error in mapping 'docIpfsHash': ", docIpfsHashResult.error!].join('') }
+	}
+	if(docIpfsHashResult.value) {
+		value.docIpfsHash = docIpfsHashResult.value!
 	}
 }
 const rewardJson = obj.get('reward')
 if(!rewardJson) return { value: null, error: "Expected 'reward' to be present in GrantCreateRequest" }
 if(rewardJson) {
-	const rewardResult = validateGrantReward(rewardJson)
+	const rewardResult = validateAmount(rewardJson)
 	if(rewardResult.error) {
 		return { value: null, error: ["Error in mapping 'reward': ", rewardResult.error!].join('') }
 	}
 	if(rewardResult.value) {
 		value.reward = rewardResult.value!
+	}
+}
+const payoutTypeJson = obj.get('payoutType')
+if(!payoutTypeJson) return { value: null, error: "Expected 'payoutType' to be present in GrantCreateRequest" }
+if(payoutTypeJson) {
+	const payoutTypeResult = validateString(payoutTypeJson, -1, 128, GrantCreateRequest_payoutTypeEnumSet)
+	if(payoutTypeResult.error) {
+		return { value: null, error: ["Error in mapping 'payoutType': ", payoutTypeResult.error!].join('') }
+	}
+	if(payoutTypeResult.value) {
+		value.payoutType = payoutTypeResult.value!
+	}
+}
+const reviewTypeJson = obj.get('reviewType')
+if(!reviewTypeJson) return { value: null, error: "Expected 'reviewType' to be present in GrantCreateRequest" }
+if(reviewTypeJson) {
+	const reviewTypeResult = validateString(reviewTypeJson, -1, 128, GrantCreateRequest_reviewTypeEnumSet)
+	if(reviewTypeResult.error) {
+		return { value: null, error: ["Error in mapping 'reviewType': ", reviewTypeResult.error!].join('') }
+	}
+	if(reviewTypeResult.value) {
+		value.reviewType = reviewTypeResult.value!
 	}
 }
 const creatorIdJson = obj.get('creatorId')
@@ -1525,14 +1506,24 @@ if(titleJson) {
 		value.title = titleResult.value!
 	}
 }
-const summaryJson = obj.get('summary')
-if(summaryJson) {
-	const summaryResult = validateString(summaryJson, -1, 1024, null)
-	if(summaryResult.error) {
-		return { value: null, error: ["Error in mapping 'summary': ", summaryResult.error!].join('') }
+const startDateJson = obj.get('startDate')
+if(startDateJson) {
+	const startDateResult = validateDateTimeFromStringResult(validateString(startDateJson, -1, -1, null))
+	if(startDateResult.error) {
+		return { value: null, error: ["Error in mapping 'startDate': ", startDateResult.error!].join('') }
 	}
-	if(summaryResult.value) {
-		value.summary = summaryResult.value!
+	if(startDateResult.value) {
+		value.startDate = startDateResult.value!
+	}
+}
+const endDateJson = obj.get('endDate')
+if(endDateJson) {
+	const endDateResult = validateDateTimeFromStringResult(validateString(endDateJson, -1, -1, null))
+	if(endDateResult.error) {
+		return { value: null, error: ["Error in mapping 'endDate': ", endDateResult.error!].join('') }
+	}
+	if(endDateResult.value) {
+		value.endDate = endDateResult.value!
 	}
 }
 const detailsJson = obj.get('details')
@@ -1545,24 +1536,54 @@ if(detailsJson) {
 		value.details = detailsResult.value!
 	}
 }
-const deadlineJson = obj.get('deadline')
-if(deadlineJson) {
-	const deadlineResult = validateDateTimeFromStringResult(validateString(deadlineJson, -1, 128, null))
-	if(deadlineResult.error) {
-		return { value: null, error: ["Error in mapping 'deadline': ", deadlineResult.error!].join('') }
-	}
-	if(deadlineResult.value) {
-		value.deadline = deadlineResult.value!
-	}
-}
 const rewardJson = obj.get('reward')
 if(rewardJson) {
-	const rewardResult = validateGrantReward(rewardJson)
+	const rewardResult = validateAmount(rewardJson)
 	if(rewardResult.error) {
 		return { value: null, error: ["Error in mapping 'reward': ", rewardResult.error!].join('') }
 	}
 	if(rewardResult.value) {
 		value.reward = rewardResult.value!
+	}
+}
+const payoutTypeJson = obj.get('payoutType')
+if(payoutTypeJson) {
+	const payoutTypeResult = validateString(payoutTypeJson, -1, -1, GrantUpdateRequest_payoutTypeEnumSet)
+	if(payoutTypeResult.error) {
+		return { value: null, error: ["Error in mapping 'payoutType': ", payoutTypeResult.error!].join('') }
+	}
+	if(payoutTypeResult.value) {
+		value.payoutType = payoutTypeResult.value!
+	}
+}
+const reviewTypeJson = obj.get('reviewType')
+if(reviewTypeJson) {
+	const reviewTypeResult = validateString(reviewTypeJson, -1, 128, GrantUpdateRequest_reviewTypeEnumSet)
+	if(reviewTypeResult.error) {
+		return { value: null, error: ["Error in mapping 'reviewType': ", reviewTypeResult.error!].join('') }
+	}
+	if(reviewTypeResult.value) {
+		value.reviewType = reviewTypeResult.value!
+	}
+}
+const creatorIdJson = obj.get('creatorId')
+if(creatorIdJson) {
+	const creatorIdResult = validateOwnerID(creatorIdJson)
+	if(creatorIdResult.error) {
+		return { value: null, error: ["Error in mapping 'creatorId': ", creatorIdResult.error!].join('') }
+	}
+	if(creatorIdResult.value) {
+		value.creatorId = creatorIdResult.value!
+	}
+}
+const workspaceIdJson = obj.get('workspaceId')
+if(workspaceIdJson) {
+	const workspaceIdResult = validateString(workspaceIdJson, -1, 128, null)
+	if(workspaceIdResult.error) {
+		return { value: null, error: ["Error in mapping 'workspaceId': ", workspaceIdResult.error!].join('') }
+	}
+	if(workspaceIdResult.value) {
+		value.workspaceId = workspaceIdResult.value!
 	}
 }
 const fieldsJson = obj.get('fields')
