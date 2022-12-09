@@ -169,12 +169,13 @@ export class RubricSetRequest {
 
 export class GrantCreateRequest {
 	title: string = ''
+	summary: string | null = null
 	startDate: Date = new Date(0)
 	endDate: Date = new Date(0)
 	details: string = ''
 	link: string | null = null
 	docIpfsHash: string | null = null
-	reward: BigInt = new BigInt(0)
+	reward: GrantReward = new GrantReward()
 	payoutType: string = ''
 	reviewType: string = ''
 	creatorId: string = ''
@@ -1353,6 +1354,16 @@ if(titleJson) {
 		value.title = titleResult.value!
 	}
 }
+const summaryJson = obj.get('summary')
+if(summaryJson) {
+	const summaryResult = validateString(summaryJson, -1, 1024, null)
+	if(summaryResult.error) {
+		return { value: null, error: ["Error in mapping 'summary': ", summaryResult.error!].join('') }
+	}
+	if(summaryResult.value) {
+		value.summary = summaryResult.value!
+	}
+}
 const startDateJson = obj.get('startDate')
 if(!startDateJson) return { value: null, error: "Expected 'startDate' to be present in GrantCreateRequest" }
 if(startDateJson) {
@@ -1409,7 +1420,7 @@ if(docIpfsHashJson) {
 const rewardJson = obj.get('reward')
 if(!rewardJson) return { value: null, error: "Expected 'reward' to be present in GrantCreateRequest" }
 if(rewardJson) {
-	const rewardResult = validateAmount(rewardJson)
+	const rewardResult = validateGrantReward(rewardJson)
 	if(rewardResult.error) {
 		return { value: null, error: ["Error in mapping 'reward': ", rewardResult.error!].join('') }
 	}
