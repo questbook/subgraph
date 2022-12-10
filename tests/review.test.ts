@@ -1,8 +1,8 @@
 import { Address, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
-import { ReviewersAssigned, ReviewPaymentMarkedDone, RubricsSet, RubricsSetV2 } from '../generated/QBReviewsContract/QBReviewsContract'
+import { ReviewersAssigned, ReviewPaymentMarkedDone, RubricsSetV2 } from '../generated/QBReviewsContract/QBReviewsContract'
 import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, PIIAnswer, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
-import { handleReviewersAssigned, handleReviewPaymentMarkedDone, handleRubricsSet, handleRubricsSetV2 } from '../src/review-mapping'
+import { handleReviewersAssigned, handleReviewPaymentMarkedDone, handleRubricsSetV2 } from '../src/review-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createGrant, createReview, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
 
 export function runTests(): void {
