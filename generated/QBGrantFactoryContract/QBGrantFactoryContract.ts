@@ -80,6 +80,40 @@ export class GrantCreated__Params {
   }
 }
 
+export class GrantCreated1 extends ethereum.Event {
+  get params(): GrantCreated1__Params {
+    return new GrantCreated1__Params(this);
+  }
+}
+
+export class GrantCreated1__Params {
+  _event: GrantCreated1;
+
+  constructor(event: GrantCreated1) {
+    this._event = event;
+  }
+
+  get grantAddress(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get workspaceId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get metadataHash(): string {
+    return this._event.parameters[2].value.toString();
+  }
+
+  get numberOfReviewersPerApplication(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+}
+
 export class GrantImplementationUpdated extends ethereum.Event {
   get params(): GrantImplementationUpdated__Params {
     return new GrantImplementationUpdated__Params(this);

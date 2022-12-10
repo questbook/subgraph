@@ -190,9 +190,11 @@ type Grant @entity {
   "Workspace which created the grant"
   workspace: Workspace!
   "ISO formatted date string"
+  startDate: String #v2
+  "ISO formatted date string"
   deadline: String
   "Start time for accepting applications, in seconds since epoch"
-  startDateS: String #v2
+  startDateS: Int #v2
   "Deadlint for the grant, in seconds since epoch"
   deadlineS: Int!
   "type of payout"

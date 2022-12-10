@@ -934,6 +934,23 @@ export class Grant extends Entity {
     this.set("workspace", Value.fromString(value));
   }
 
+  get startDate(): string | null {
+    let value = this.get("startDate");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set startDate(value: string | null) {
+    if (!value) {
+      this.unset("startDate");
+    } else {
+      this.set("startDate", Value.fromString(<string>value));
+    }
+  }
+
   get deadline(): string | null {
     let value = this.get("deadline");
     if (!value || value.kind == ValueKind.NULL) {
@@ -951,21 +968,13 @@ export class Grant extends Entity {
     }
   }
 
-  get startDateS(): string | null {
+  get startDateS(): i32 {
     let value = this.get("startDateS");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
+    return value!.toI32();
   }
 
-  set startDateS(value: string | null) {
-    if (!value) {
-      this.unset("startDateS");
-    } else {
-      this.set("startDateS", Value.fromString(<string>value));
-    }
+  set startDateS(value: i32) {
+    this.set("startDateS", Value.fromI32(value));
   }
 
   get deadlineS(): i32 {
