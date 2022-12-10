@@ -121,6 +121,14 @@ export function handleGrantCreatedV2(event: GrantCreated1): void {
 		entity.reviewType = json.reviewType
 	}
 
+	if(json.link) {
+		entity.link = json.link
+	}
+
+	if(json.docIpfsHash) {
+		entity.docIpfsHash = json.docIpfsHash
+	}
+
 	const reward = mapGrantRewardAndListen(entity.id, workspaceId, json.reward)
 
 	entity.reward = reward.id

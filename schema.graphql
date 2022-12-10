@@ -203,6 +203,10 @@ type Grant @entity {
   reviewType: ReviewType #v2
   "Number of Reviewers per application for the grant"
   numberOfReviewersPerApplication: Int #v2
+  "External link to any other website"
+  link: String #v2
+  "IPFS hash of the documnet uploaded"
+  docIpfsHash: String
   "Expected fields from the applicants of the grant"
   fields: [GrantField!]!
   "Whether the grant is currently accepting applications or not"

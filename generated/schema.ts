@@ -1029,6 +1029,40 @@ export class Grant extends Entity {
     this.set("numberOfReviewersPerApplication", Value.fromI32(value));
   }
 
+  get link(): string | null {
+    let value = this.get("link");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set link(value: string | null) {
+    if (!value) {
+      this.unset("link");
+    } else {
+      this.set("link", Value.fromString(<string>value));
+    }
+  }
+
+  get docIpfsHash(): string | null {
+    let value = this.get("docIpfsHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set docIpfsHash(value: string | null) {
+    if (!value) {
+      this.unset("docIpfsHash");
+    } else {
+      this.set("docIpfsHash", Value.fromString(<string>value));
+    }
+  }
+
   get fields(): Array<string> {
     let value = this.get("fields");
     return value!.toStringArray();

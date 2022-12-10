@@ -46,9 +46,22 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 			entity.details = json.details!
 		}
 
+		if(json.startDate) {
+			entity.startDate = json.startDate!.toISOString()
+		}
+
+
 		if(json.endDate) {
 			entity.deadline = json.endDate!.toISOString()
 			entity.deadlineS = dateToUnixTimestamp(json.endDate!)
+		}
+
+		if(json.link) {
+			entity.link = json.link!
+		}
+
+		if(json.docIpfsHash) {
+			entity.docIpfsHash = json.docIpfsHash!
 		}
 
 		if(json.reward) {
