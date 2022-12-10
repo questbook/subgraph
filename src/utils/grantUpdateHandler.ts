@@ -5,12 +5,12 @@ import { validatedJsonFromIpfs } from '../json-schema/json'
 import { dateToUnixTimestamp, getUSDReward, isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from './generics'
 
 class GrantUpdateParams {
-    transactionHash: string
-    grantId: string
-    time: i32
-    workspace: string
-    acceptingApplications: boolean
-    hash: string
+	transactionHash: string
+	grantId: string
+	time: i32
+	workspace: string
+	acceptingApplications: boolean
+	hash: string
 }
 
 export function grantUpdateHandler(params: GrantUpdateParams): void {
@@ -46,9 +46,22 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 			entity.details = json.details!
 		}
 
-		if(json.deadline) {
-			entity.deadline = json.deadline!.toISOString()
-			entity.deadlineS = dateToUnixTimestamp(json.deadline!)
+		if(json.startDate) {
+			entity.startDate = json.startDate!.toISOString()
+		}
+
+
+		if(json.endDate) {
+			entity.deadline = json.endDate!.toISOString()
+			entity.deadlineS = dateToUnixTimestamp(json.endDate!)
+		}
+
+		if(json.link) {
+			entity.link = json.link!
+		}
+
+		if(json.docIpfsHash) {
+			entity.docIpfsHash = json.docIpfsHash!
 		}
 
 		if(json.reward) {

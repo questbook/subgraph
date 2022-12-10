@@ -67,6 +67,16 @@ enum SupportedNetwork {
   chain_137, # polygon-mainnet
 }
 
+enum PayoutType {
+  in_one_go,
+  milestones
+}
+
+enum ReviewType {
+  voting,
+  rubrics
+}
+
 type WorkspaceSafe @entity {
   id: ID!
   "Workspace of the space"
@@ -174,14 +184,29 @@ type Grant @entity {
   summary: String!
   "Expectations & other details of the grant"
   details: String!
+  
   "Proposed reward for the grant"
   reward: Reward!
   "Workspace which created the grant"
   workspace: Workspace!
   "ISO formatted date string"
+  startDate: String #v2
+  "ISO formatted date string"
   deadline: String
+  "Start time for accepting applications, in seconds since epoch"
+  startDateS: Int #v2
   "Deadlint for the grant, in seconds since epoch"
   deadlineS: Int!
+  "type of payout"
+  payoutType: PayoutType #v2
+  "Review type"
+  reviewType: ReviewType #v2
+  "Number of Reviewers per application for the grant"
+  numberOfReviewersPerApplication: Int #v2
+  "External link to any other website"
+  link: String #v2
+  "IPFS hash of the documnet uploaded"
+  docIpfsHash: String
   "Expected fields from the applicants of the grant"
   fields: [GrantField!]!
   "Whether the grant is currently accepting applications or not"

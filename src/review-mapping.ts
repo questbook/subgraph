@@ -1,9 +1,10 @@
-import { Bytes, log, store } from '@graphprotocol/graph-ts'
-import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
-import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
+import { BigInt, Bytes, log, store } from '@graphprotocol/graph-ts'
+import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet, RubricsSetV2 } from '../generated/QBReviewsContract/QBReviewsContract'
+import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { migrateApplicationReviewer, migrateGrant, migrateRubric } from './utils/migrations'
-import { ReviewSetRequest, RubricSetRequest, validateReviewSetRequest, validateRubricSetRequest } from './json-schema'
+import { rubricSetHandler } from './utils/rubricSetHandler'
+import { ReviewSetRequest, validateReviewSetRequest } from './json-schema'
 
 export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	const reviewId = event.params._reviewId.toHex()
@@ -195,58 +196,23 @@ export function handleRubricsSet(event: RubricsSet): void {
 	const grantId = event.params._grantAddress.toHex()
 	const workspaceId = event.params._workspaceId.toHex()
 
-	const jsonResult = validatedJsonFromIpfs<RubricSetRequest>(event.params._metadataHash, validateRubricSetRequest)
-	if(jsonResult.error) {
-	  log.warning(`[${event.transaction.hash.toHex()}] error in mapping application: "${jsonResult.error!}"`, [])
-	  return
-	}
+	const metadataHash = event.params._metadataHash
+	const time = event.params.time
 
-	const json = jsonResult.value!
+	const numberOfReviewersPerApplication = new BigInt(0)
+	rubricSetHandler(event, grantId, workspaceId, numberOfReviewersPerApplication,  metadataHash, time)
+}
 
-	const grant = Grant.load(grantId)
-	if(!grant) {
-		log.warning(`[${event.transaction.hash.toHex()}] error in setting rubric: "grant '${grantId}' not found"`, [])
-		return
-	}
+export function handleRubricsSetV2(event: RubricsSetV2): void {
+	const grantId = event.params._grantAddress.toHex()
+	const workspaceId = event.params._workspaceId.toHex()
+	const numberOfReviewersPerApplication = event.params._numberOfReviewersPerApplication
 
-	let rubric = Rubric.load(grantId)
-	if(!rubric) {
-		rubric = new Rubric(grantId)
-		rubric.createdAtS = event.params.time.toI32()
-	}
+	const metadataHash = event.params._metadataHash
+	const time = event.params.time
+	
 
-	rubric.updatedAtS = event.params.time.toI32()
-	rubric.addedBy = `${workspaceId}.${event.transaction.from.toHex()}`
-	rubric.isPrivate = json.rubric.isPrivate.isTrue
-
-	const items: string[] = []
-
-	const rubricItems = json.rubric.rubric.additionalProperties
-
-	for(let i = 0;i < rubricItems.entries.length;i++) {
-		const entry = rubricItems.entries[i]
-
-		const item = new RubricItem(`${grantId}.${entry.key}`)
-		let details = entry.value.details
-		if(!details) {
-			details = ''
-		}
-
-		item.title = entry.value.title
-		item.details = details!
-		item.maximumPoints = entry.value.maximumPoints.toI32()
-		item.save()
-
-		items.push(item.id)
-	}
-
-	rubric.items = items
-	rubric.save()
-
-	grant.updatedAtS = event.params.time.toI32()
-	grant.rubric = rubric.id
-
-	grant.save()
+	rubricSetHandler(event, grantId, workspaceId, numberOfReviewersPerApplication, metadataHash, time)
 }
 
 export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): void {

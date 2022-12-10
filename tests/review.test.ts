@@ -1,8 +1,8 @@
 import { Address, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
-import { ReviewersAssigned, ReviewPaymentMarkedDone, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
+import { ReviewersAssigned, ReviewPaymentMarkedDone, RubricsSetV2 } from '../generated/QBReviewsContract/QBReviewsContract'
 import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, PIIAnswer, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
-import { handleReviewersAssigned, handleReviewPaymentMarkedDone, handleRubricsSet } from '../src/review-mapping'
+import { handleReviewersAssigned, handleReviewPaymentMarkedDone, handleRubricsSetV2 } from '../src/review-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createGrant, createReview, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
 
 export function runTests(): void {
@@ -110,17 +110,19 @@ export function runTests(): void {
 		ev.parameters = [
 			new ethereum.EventParam('_workspaceId', MOCK_WORKSPACE_ID),
 			new ethereum.EventParam('_grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
+			new ethereum.EventParam('_numberOfReviewersPerApplication', ethereum.Value.fromI32(4)),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('_metadataHash', ethereum.Value.fromString(RUBRIC_JSON)),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 		]
 		ev.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
 
-		const event = new RubricsSet(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleRubricsSet(event)
+		const event = new RubricsSetV2(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleRubricsSetV2(event)
 
 		const g2 = Grant.load(MOCK_GRANT_ID.toHex())
 		assert.assertNotNull(g2!.rubric)
+		assert.i32Equals(g2!.numberOfReviewersPerApplication, 4)
 
 		const rubr = Rubric.load(MOCK_GRANT_ID.toHex())
 		assert.assertNotNull(rubr)

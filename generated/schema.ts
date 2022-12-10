@@ -934,6 +934,23 @@ export class Grant extends Entity {
     this.set("workspace", Value.fromString(value));
   }
 
+  get startDate(): string | null {
+    let value = this.get("startDate");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set startDate(value: string | null) {
+    if (!value) {
+      this.unset("startDate");
+    } else {
+      this.set("startDate", Value.fromString(<string>value));
+    }
+  }
+
   get deadline(): string | null {
     let value = this.get("deadline");
     if (!value || value.kind == ValueKind.NULL) {
@@ -951,6 +968,15 @@ export class Grant extends Entity {
     }
   }
 
+  get startDateS(): i32 {
+    let value = this.get("startDateS");
+    return value!.toI32();
+  }
+
+  set startDateS(value: i32) {
+    this.set("startDateS", Value.fromI32(value));
+  }
+
   get deadlineS(): i32 {
     let value = this.get("deadlineS");
     return value!.toI32();
@@ -958,6 +984,83 @@ export class Grant extends Entity {
 
   set deadlineS(value: i32) {
     this.set("deadlineS", Value.fromI32(value));
+  }
+
+  get payoutType(): string | null {
+    let value = this.get("payoutType");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set payoutType(value: string | null) {
+    if (!value) {
+      this.unset("payoutType");
+    } else {
+      this.set("payoutType", Value.fromString(<string>value));
+    }
+  }
+
+  get reviewType(): string | null {
+    let value = this.get("reviewType");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set reviewType(value: string | null) {
+    if (!value) {
+      this.unset("reviewType");
+    } else {
+      this.set("reviewType", Value.fromString(<string>value));
+    }
+  }
+
+  get numberOfReviewersPerApplication(): i32 {
+    let value = this.get("numberOfReviewersPerApplication");
+    return value!.toI32();
+  }
+
+  set numberOfReviewersPerApplication(value: i32) {
+    this.set("numberOfReviewersPerApplication", Value.fromI32(value));
+  }
+
+  get link(): string | null {
+    let value = this.get("link");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set link(value: string | null) {
+    if (!value) {
+      this.unset("link");
+    } else {
+      this.set("link", Value.fromString(<string>value));
+    }
+  }
+
+  get docIpfsHash(): string | null {
+    let value = this.get("docIpfsHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set docIpfsHash(value: string | null) {
+    if (!value) {
+      this.unset("docIpfsHash");
+    } else {
+      this.set("docIpfsHash", Value.fromString(<string>value));
+    }
   }
 
   get fields(): Array<string> {
