@@ -102,6 +102,8 @@ dataSources:
           handler: handleGrantCreated
         - event: GrantUpdatedFromFactory(indexed address,indexed uint96,string,bool,uint256)
           handler: handleGrantUpdatedFromFactory
+        - event: GrantCreated(address, uint96, string, uint256, uint96)
+          handler: handleGrantCreatedV2
       file: ./src/grant-mapping.ts
   - kind: ethereum
     name: QBReviewsContract
