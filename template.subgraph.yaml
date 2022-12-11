@@ -102,7 +102,7 @@ dataSources:
           handler: handleGrantCreated
         - event: GrantUpdatedFromFactory(indexed address,indexed uint96,string,bool,uint256)
           handler: handleGrantUpdatedFromFactory
-        - event: GrantCreated(address, uint96, string, uint256, uint96)
+        - event: GrantCreated(address,uint96,string,uint256,uint96)
           handler: handleGrantCreatedV2
       file: ./src/grant-mapping.ts
   - kind: ethereum
@@ -132,7 +132,7 @@ dataSources:
           handler: handleReviewersAssigned
         - event: RubricsSet(uint96,indexed address,string,uint256)
           handler: handleRubricsSet
-        - event: RubricsSetV2(uint96,indexed address, uint96, string,uint256)
+        - event: RubricsSetV2(uint96,indexed address,uint96,string,uint256)
           handler: handleRubricsSetV2()
         - event: ReviewPaymentMarkedDone(uint96[],address,address,uint256,string,uint256)
           handler: handleReviewPaymentMarkedDone
