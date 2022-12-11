@@ -132,6 +132,8 @@ dataSources:
           handler: handleReviewersAssigned
         - event: RubricsSet(uint96,indexed address,string,uint256)
           handler: handleRubricsSet
+        - event: RubricsSetV2(uint96,indexed address, uint96, string,uint256)
+          handler: handleRubricsSetV2()
         - event: ReviewPaymentMarkedDone(uint96[],address,address,uint256,string,uint256)
           handler: handleReviewPaymentMarkedDone
         - event: ReviewMigrate(indexed uint96,uint96,address,address,uint256)
