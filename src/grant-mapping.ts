@@ -33,7 +33,7 @@ export function handleGrantCreated(event: GrantCreated): void {
 	entity.creatorId = event.transaction.from
 	entity.title = json.title
 	entity.summary = json.summary!
-	entity.details = json.details
+	// entity.details = json.details
 
 	const reward = mapGrantRewardAndListen(entity.id, workspaceId, json.reward)
 
@@ -44,6 +44,10 @@ export function handleGrantCreated(event: GrantCreated): void {
 		entity.deadlineS = dateToUnixTimestamp(json.endDate!)
 	} else {
 		entity.deadlineS = 0
+	}
+
+	if(json.details) {
+		entity.details = json.details!
 	}
 
 	entity.fields = mapGrantFieldMap(entity.id, json.fields)
@@ -96,7 +100,7 @@ export function handleGrantCreatedV2(event: GrantCreated1): void {
 	entity.creatorId = event.transaction.from
 	entity.title = json.title
 	// entity.summary = json.summary 
-	entity.details = json.details
+	// entity.details = json.details
 	entity.numberOfReviewersPerApplication = numberOfReviewersPerApplication
 
 	if(json.startDate) {
@@ -119,6 +123,10 @@ export function handleGrantCreatedV2(event: GrantCreated1): void {
 
 	if(json.reviewType) {
 		entity.reviewType = json.reviewType
+	}
+
+	if(json.details) {
+		entity.details = json.details!
 	}
 
 	if(json.link) {

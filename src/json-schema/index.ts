@@ -26,7 +26,9 @@ export class Token {
 }
 
 export class GrantField {
+	id: string | null = null
 	title: string = ''
+	required: Boolean | null = null
 	inputType: string = ''
 	enum: string[] | null = null
 	pii: Boolean | null = null
@@ -170,7 +172,7 @@ export class GrantCreateRequest {
 	summary: string | null = null
 	startDate: Date | null = null
 	endDate: Date | null = null
-	details: string = ''
+	details: string | null = null
 	link: string | null = null
 	docIpfsHash: string | null = null
 	reward: GrantReward = new GrantReward()
@@ -342,6 +344,16 @@ if(objResult.error) {
 	return { value: null, error: objResult.error }
 }
 const obj = objResult.value!
+const idJson = obj.get('id')
+if(idJson) {
+	const idResult = validateString(idJson, -1, -1, null)
+	if(idResult.error) {
+		return { value: null, error: ["Error in mapping 'id': ", idResult.error!].join('') }
+	}
+	if(idResult.value) {
+		value.id = idResult.value!
+	}
+}
 const titleJson = obj.get('title')
 if(!titleJson) return { value: null, error: "Expected 'title' to be present in GrantField" }
 if(titleJson) {
@@ -351,6 +363,16 @@ if(titleJson) {
 	}
 	if(titleResult.value) {
 		value.title = titleResult.value!
+	}
+}
+const requiredJson = obj.get('required')
+if(requiredJson) {
+	const requiredResult = validateBoolean(requiredJson)
+	if(requiredResult.error) {
+		return { value: null, error: ["Error in mapping 'required': ", requiredResult.error!].join('') }
+	}
+	if(requiredResult.value) {
+		value.required = requiredResult.value!
 	}
 }
 const inputTypeJson = obj.get('inputType')
@@ -1394,7 +1416,6 @@ if(endDateJson) {
 	}
 }
 const detailsJson = obj.get('details')
-if(!detailsJson) return { value: null, error: "Expected 'details' to be present in GrantCreateRequest" }
 if(detailsJson) {
 	const detailsResult = validateString(detailsJson, -1, 4096, null)
 	if(detailsResult.error) {
