@@ -5,7 +5,7 @@ import { TypedMap, BigInt, BigDecimal, Bytes, JSONValue } from '@graphprotocol/g
 import { Boolean, Result, toSet, validateObject, validateNumber, validateInteger, validateArray, validateBoolean, validateString, validateTypedMap, validateBytesFromStringResult, validateStringResultInteger, validateStringResultNumber, validateDateTimeFromStringResult } from './json'
 
 const SupportedNetworkEnumSet = toSet(['42220', '5', '10', '137'])
-const PayoutTypeEnumSet = toSet(['in-one-go', 'milestones'])
+const PayoutTypeEnumSet = toSet(['in_one_go', 'milestones'])
 const ReviewTypeEnumSet = toSet(['voting', 'rubrics'])
 const GrantField_inputTypeEnumSet = toSet(['short-form', 'long-form', 'numeric', 'array'])
 const GrantFieldMapPropertiesSet = toSet(['applicantName', 'applicantEmail', 'projectName', 'projectDetails', 'fundingBreakdown'])
