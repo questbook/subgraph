@@ -255,6 +255,12 @@ type GrantManager @entity {
   member: WorkspaceMember
 }
 
+type MemberPiiAnswer @entity {
+  id: ID!
+  "The encrypted data"
+  data: String!
+}
+
 type WorkspaceMember @entity {
   "Globally unique ID of the member"
   id: ID!
@@ -264,6 +270,8 @@ type WorkspaceMember @entity {
   fullName: String
   "Hash of profile picture on IPFS"
   profilePictureIpfsHash: String
+  "PII data of the member"
+  pii: [MemberPiiAnswer!]!
   "Encrypted email"
   emailId: String
 
