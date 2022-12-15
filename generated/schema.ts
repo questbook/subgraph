@@ -1315,12 +1315,57 @@ export class GrantManager extends Entity {
   }
 }
 
+export class MemberPiiAnswer extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("data", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save MemberPiiAnswer entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save MemberPiiAnswer entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("MemberPiiAnswer", id.toString(), this);
+    }
+  }
+
+  static load(id: string): MemberPiiAnswer | null {
+    return changetype<MemberPiiAnswer | null>(store.get("MemberPiiAnswer", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get data(): string {
+    let value = this.get("data");
+    return value!.toString();
+  }
+
+  set data(value: string) {
+    this.set("data", Value.fromString(value));
+  }
+}
+
 export class WorkspaceMember extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
 
     this.set("actorId", Value.fromBytes(Bytes.empty()));
+    this.set("pii", Value.fromStringArray(new Array(0)));
     this.set("accessLevel", Value.fromString(""));
     this.set("outstandingReviewIds", Value.fromStringArray(new Array(0)));
     this.set("workspace", Value.fromString(""));
@@ -1394,6 +1439,15 @@ export class WorkspaceMember extends Entity {
     } else {
       this.set("profilePictureIpfsHash", Value.fromString(<string>value));
     }
+  }
+
+  get pii(): Array<string> {
+    let value = this.get("pii");
+    return value!.toStringArray();
+  }
+
+  set pii(value: Array<string>) {
+    this.set("pii", Value.fromStringArray(value));
   }
 
   get email(): string | null {

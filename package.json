@@ -4,7 +4,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
-    "codegen:validators": "graph-json-validator --file https://raw.githubusercontent.com/questbook/grants-frontend/v2/request-proposal/src/libraries/validator/schema.yaml  --outDirectory src/json-schema --ignoreSchema Validations",
+    "codegen:validators": "graph-json-validator --file https://raw.githubusercontent.com/questbook/grants-frontend/v2/beta/src/libraries/validator/schema.yaml  --outDirectory src/json-schema --ignoreSchema Validations",
     "build": "graph build",
     "test": "graph test",
     "prepare-subgraph": "mustache config/$NETWORK.json template.subgraph.yaml > subgraph.yaml",

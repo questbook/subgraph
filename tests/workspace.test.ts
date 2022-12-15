@@ -172,7 +172,7 @@ export function runTests(): void {
 		const address = Address.fromString('0xB16081F360e3847006dB660bae1c6d1b2e18fD2C')
 		const role = 0x0
 		const enabled = true
-		const metadataHash = 'json:{"fullName":"Abcd1","profilePictureIpfsHash":"1234543222"}'
+		const metadataHash = 'json:{"fullName":"Admin","profilePictureIpfsHash":"Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3","publicKey":"0x04a120072b809dcf68b34ff4b0d514b2dab4bd0e2262944e6ea3863688a5e09ee0e54371570f52e97d8fa6f20a9f8fa69c43af9f0ecc644bc3543c0deab83a8ab6","email":"email@gmail.com","pii":{"0x471e82e77bc5d751411863a21cee3d88e49f0699":"gtTp4gUA7jaVdlDZYNE9c/5OzADvQYfxrm0wpA9Qfotp/7mZfjHD7q+5+uNZ8ui6","0xa966d94c61695bd5458aba908f5f85c8c6f0c068":"82ixL3vay5zklc47w49Y60udq0oW1+vwagHQBApjNIXccAZrI+fHDFCWJaSQ+SP/","0xcc9ee1b3a10675f60282abc71fc745f30830e2a4":"jnjSUTLQZ8KfCG8zm4nRb83Q7MBDy1FrdnHZRdX5ipUR0u4ygbI8DRJWR17uuesF","0xd1bfd92ab161983e007aade98312b83eeca14f9a":"q9QThK5z/7OG6QJg+ufE+t57a31pQo2uX26wdmtoMPYw4c5FLUFcXVCzu6EFESny"}}'
 
 		const ev = newMockEvent()
 		ev.parameters = [
@@ -189,10 +189,46 @@ export function runTests(): void {
 
 		const memberAddedId = `${w.id}.${address.toHex()}`
 		const member = WorkspaceMember.load(memberAddedId)
-
+		// log.info(`member: ${member?.pii}`, [])
+		
 		assert.assertNotNull(member)
 		assert.stringEquals(member!.accessLevel, 'admin')
-		assertStringNotEmpty(member!.fullName, 'member.fullName')
+		assertStringNotEmpty(member!.fullName, 'Admin')
+		assertStringNotEmpty(member!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
+	})
+
+	test('should update member without pii', () => {
+		const w = createWorkspace()!
+
+		const address = Address.fromString('0x4e35fF1872A720695a741B00f2fA4D1883440baC')
+		const role = 0x0
+		const enabled = true
+		const metadataHash = 'json:{"fullName":"Admin","profilePictureIpfsHash":"Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3","publicKey":"0x04a120072b809dcf68b34ff4b0d514b2dab4bd0e2262944e6ea3863688a5e09ee0e54371570f52e97d8fa6f20a9f8fa69c43af9f0ecc644bc3543c0deab83a8ab6"}'
+
+		const ev = newMockEvent()
+		ev.parameters = [
+			new ethereum.EventParam('id', MOCK_WORKSPACE_ID),
+			new ethereum.EventParam('member', ethereum.Value.fromAddress(address)),
+			new ethereum.EventParam('role', ethereum.Value.fromI32(role)),
+			new ethereum.EventParam('enabled', ethereum.Value.fromBoolean(enabled)),
+			new ethereum.EventParam('metadataHash', ethereum.Value.fromString(metadataHash)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
+		]
+
+		const event = new WorkspaceMemberUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleWorkspaceMemberUpdated(event)
+
+		const memberAddedId = `${w.id}.${address.toHex()}`
+		const member = WorkspaceMember.load(memberAddedId)
+		// log.info(`member: ${member?.pii}`, [])
+		
+		assert.assertNotNull(member)
+		assert.stringEquals(member!.accessLevel, 'admin')
+		if(member) {
+			assert.i32Equals(member.pii.length, 0)
+		}
+
+		assertStringNotEmpty(member!.fullName, 'Admin')
 		assertStringNotEmpty(member!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
 	})
 
@@ -237,7 +273,7 @@ export function runTests(): void {
 		const adminAddress = Address.fromString('0xB16081F360e3847006dB660bae1c6d1b2e18fD2C')
 		const adminRole = 0x0
 		const adminEnabled = true
-		const adminMetadataHash = 'json:{"fullName":"Abcd1","profilePictureIpfsHash":"1234543222"}'
+		const adminMetadataHash = 'json:{"fullName":"Admin","profilePictureIpfsHash":"Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3","publicKey":"0x04a120072b809dcf68b34ff4b0d514b2dab4bd0e2262944e6ea3863688a5e09ee0e54371570f52e97d8fa6f20a9f8fa69c43af9f0ecc644bc3543c0deab83a8ab6","email":"email@gmail.com","pii":{"0x471e82e77bc5d751411863a21cee3d88e49f0699":"gtTp4gUA7jaVdlDZYNE9c/5OzADvQYfxrm0wpA9Qfotp/7mZfjHD7q+5+uNZ8ui6","0xa966d94c61695bd5458aba908f5f85c8c6f0c068":"82ixL3vay5zklc47w49Y60udq0oW1+vwagHQBApjNIXccAZrI+fHDFCWJaSQ+SP/","0xcc9ee1b3a10675f60282abc71fc745f30830e2a4":"jnjSUTLQZ8KfCG8zm4nRb83Q7MBDy1FrdnHZRdX5ipUR0u4ygbI8DRJWR17uuesF","0xd1bfd92ab161983e007aade98312b83eeca14f9a":"q9QThK5z/7OG6QJg+ufE+t57a31pQo2uX26wdmtoMPYw4c5FLUFcXVCzu6EFESny"}}'
 
 		const adminEv = newMockEvent()
 		adminEv.parameters = [
@@ -257,13 +293,13 @@ export function runTests(): void {
 
 		assert.assertNotNull(admin)
 		assert.stringEquals(admin!.accessLevel, 'admin')
-		assertStringNotEmpty(admin!.fullName, 'member.fullName')
+		assertStringNotEmpty(admin!.fullName, 'Admin')
 		assertStringNotEmpty(admin!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
 
 		const ownerAddress = Address.fromString(WORKSPACE_CREATOR_ID)
 		const ownerRole = 0x0
 		const ownerEnabled = true
-		const ownerMetadataHash = 'json:{"fullName":"Owner","profilePictureIpfsHash":"1234543222"}'
+		const ownerMetadataHash = 'json:{"fullName":"Owner","profilePictureIpfsHash":"Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3","publicKey":"0x04a120072b809dcf68b34ff4b0d514b2dab4bd0e2262944e6ea3863688a5e09ee0e54371570f52e97d8fa6f20a9f8fa69c43af9f0ecc644bc3543c0deab83a8ab6","email":"email@gmail.com","pii":{"0x471e82e77bc5d751411863a21cee3d88e49f0699":"gtTp4gUA7jaVdlDZYNE9c/5OzADvQYfxrm0wpA9Qfotp/7mZfjHD7q+5+uNZ8ui6","0xa966d94c61695bd5458aba908f5f85c8c6f0c068":"82ixL3vay5zklc47w49Y60udq0oW1+vwagHQBApjNIXccAZrI+fHDFCWJaSQ+SP/","0xcc9ee1b3a10675f60282abc71fc745f30830e2a4":"jnjSUTLQZ8KfCG8zm4nRb83Q7MBDy1FrdnHZRdX5ipUR0u4ygbI8DRJWR17uuesF","0xd1bfd92ab161983e007aade98312b83eeca14f9a":"q9QThK5z/7OG6QJg+ufE+t57a31pQo2uX26wdmtoMPYw4c5FLUFcXVCzu6EFESny"}}'
 
 		const ev = newMockEvent()
 		ev.parameters = [
