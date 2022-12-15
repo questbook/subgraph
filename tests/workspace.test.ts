@@ -172,7 +172,7 @@ export function runTests(): void {
 		const address = Address.fromString('0xB16081F360e3847006dB660bae1c6d1b2e18fD2C')
 		const role = 0x0
 		const enabled = true
-		const metadataHash = 'json:{"fullName":"Admin","profilePictureIpfsHash":"Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3","publicKey":"0x04a120072b809dcf68b34ff4b0d514b2dab4bd0e2262944e6ea3863688a5e09ee0e54371570f52e97d8fa6f20a9f8fa69c43af9f0ecc644bc3543c0deab83a8ab6","email":"email@gmail.com","pii":{"0x471e82e77bc5d751411863a21cee3d88e49f0699":"gtTp4gUA7jaVdlDZYNE9c/5OzADvQYfxrm0wpA9Qfotp/7mZfjHD7q+5+uNZ8ui6","0xa966d94c61695bd5458aba908f5f85c8c6f0c068":"82ixL3vay5zklc47w49Y60udq0oW1+vwagHQBApjNIXccAZrI+fHDFCWJaSQ+SP/","0xcc9ee1b3a10675f60282abc71fc745f30830e2a4":"jnjSUTLQZ8KfCG8zm4nRb83Q7MBDy1FrdnHZRdX5ipUR0u4ygbI8DRJWR17uuesF","0xd1bfd92ab161983e007aade98312b83eeca14f9a":"q9QThK5z/7OG6QJg+ufE+t57a31pQo2uX26wdmtoMPYw4c5FLUFcXVCzu6EFESny"}}'
+		const metadataHash = 'json:{"fullName":"Admin","profilePictureIpfsHash":"Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3","publicKey":"0x04951bd483d83aba17353610a320004c60a8ba4878fb3fb484420ca18d203c4a9edd9d785865527d9f8b6a2b3dca20ed7f8b262427d46437fd7af67221c42e668f","pii":{"0xd1bfd92ab161983e007aade98312b83eeca14f9a":"1sPFneE9KZ1BVM3U8Sh9RsRqKqz4UKZNn7prTGsNAWyO2JDubY1jGXWfpEIEa6lG","0xd4939c70ce56c2b0ecef57060b321f0ffb168b08":"QR8A/Uk7cDTtTdaXktOyWDtvIzozTk/eEbArSm8kkMZpqavnpVI8ChTRY4WAsuk9"}}'
 
 		const ev = newMockEvent()
 		ev.parameters = [
@@ -189,7 +189,6 @@ export function runTests(): void {
 
 		const memberAddedId = `${w.id}.${address.toHex()}`
 		const member = WorkspaceMember.load(memberAddedId)
-		// log.info(`member: ${member?.pii}`, [])
 		
 		assert.assertNotNull(member)
 		assert.stringEquals(member!.accessLevel, 'admin')
