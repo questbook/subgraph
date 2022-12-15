@@ -64,6 +64,7 @@ export class WorkspaceMemberUpdate {
 	fullName: string | null = null
 	profilePictureIpfsHash: string | null = null
 	publicKey: string | null = null
+	pii: PIIAnswers | null = null
 }
 
 export class GrantApplicationUpdate {
@@ -627,6 +628,16 @@ if(publicKeyJson) {
 	}
 	if(publicKeyResult.value) {
 		value.publicKey = publicKeyResult.value!
+	}
+}
+const piiJson = obj.get('pii')
+if(piiJson) {
+	const piiResult = validatePIIAnswers(piiJson)
+	if(piiResult.error) {
+		return { value: null, error: ["Error in mapping 'pii': ", piiResult.error!].join('') }
+	}
+	if(piiResult.value) {
+		value.pii = piiResult.value!
 	}
 }
 return { value, error: null }

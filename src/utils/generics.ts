@@ -80,6 +80,22 @@ export function mapGrantPII(applicationId: string, grantId: string, map: PIIAnsw
 	return items
 }
 
+export function mapMemberPII(memberId: string, map: PIIAnswers): string[] {
+	const items: string[] = []
+
+	const entryList = map.additionalProperties.entries
+	for(let i = 0; i < entryList.length; i++) {
+		const entry = entryList[i]
+		const item = new PIIAnswer(`${memberId}.${entry.key}`)
+		item.data = entry.value
+		item.save()
+
+		items.push(item.id)
+	}
+
+	return items
+}
+
 export function mapMilestones(applicationId: string, milestoneList: GrantProposedMilestone[]): string[] {
 	const milestones: string[] = []
 	for(let i = 0; i < milestoneList.length; i++) {
@@ -345,6 +361,10 @@ export function mapWorkspaceMembersUpdate(
 				
 				if(update.publicKey) {
 					member.publicKey = update.publicKey
+				}
+
+				if(update.pii) {
+					member.pii = mapMemberPII(id, update.pii!)
 				}
 			}
 			
