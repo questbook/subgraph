@@ -139,6 +139,29 @@ dataSources:
         - event: ReviewMigrate(indexed uint96,uint96,address,address,uint256)
           handler: handleReviewMigrate
       file: ./src/review-mapping.ts
+  - kind: ethereum
+    name: QBCommunicationContract
+    network: {{network}}
+    source:
+      address: "{{communication.address}}"
+      abi: QBCommunicationContract
+      startBlock: {{communication.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - EmailAdded
+        - CommentAdded
+      abis:
+        - name: QBCommunicationContract
+          file: ./abis/QBCommunicationContract.json
+      eventHandlers:
+        - event: WorkspaceCreated(indexed uint96,indexed address,string,uint256)
+          handler: handleWorkspaceCreated
+        - event: WorkspaceUpdated(indexed uint96,indexed address,string,uint256)
+          handler: handleWorkspaceUpdated
+      file: ./src/communication-mapping.ts
 templates:
   - kind: ethereum
     name: QBGrantsContract
