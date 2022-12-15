@@ -264,6 +264,8 @@ type WorkspaceMember @entity {
   fullName: String
   "Hash of profile picture on IPFS"
   profilePictureIpfsHash: String
+  "Encrypted email"
+  emailId: String
 
   email: String
   "What permissions the member has on the workspace"
@@ -419,6 +421,8 @@ type GrantApplication @entity {
   doneReviewerAddresses: [Bytes!]!
   "People who will review this grant application"
   applicationReviewers: [GrantApplicationReviewer!]!
+  "IPFS hash of the comments on the appliction"
+  commentsHash: String
   "Version of the application, incremented on resubmission"
   version: Int!
 }
