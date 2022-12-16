@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes, log, store, Value } from '@graphprotocol/graph-ts'
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, MemberPiiAnswer, Partner, PIIAnswer, Reward, Social, Token, Workspace, WorkspaceMember } from '../../generated/schema'
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, PIIData, Reward, Social, Token, Workspace, WorkspaceMember } from '../../generated/schema'
 import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem, validateWorkspaceMemberUpdate, WorkspaceMemberUpdate } from '../json-schema'
 import { Result, validatedJsonFromIpfs } from '../json-schema/json'
 
@@ -86,7 +86,7 @@ export function mapMemberPII(memberId: string, map: PIIAnswers): string[] {
 	const entryList = map.additionalProperties.entries
 	for(let i = 0; i < entryList.length; i++) {
 		const entry = entryList[i]
-		const item = new MemberPiiAnswer(`${memberId}.${entry.key}`)
+		const item = new PIIData(`${memberId}.${entry.key}`)
 		item.data = entry.value
 		item.save()
 
