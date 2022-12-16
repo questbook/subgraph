@@ -129,6 +129,125 @@ export class Social extends Entity {
   }
 }
 
+export class Comment extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("workspace", Value.fromString(""));
+    this.set("grant", Value.fromString(""));
+    this.set("application", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Comment entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Comment entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Comment", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Comment | null {
+    return changetype<Comment | null>(store.get("Comment", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get commentsPublicHash(): string | null {
+    let value = this.get("commentsPublicHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set commentsPublicHash(value: string | null) {
+    if (!value) {
+      this.unset("commentsPublicHash");
+    } else {
+      this.set("commentsPublicHash", Value.fromString(<string>value));
+    }
+  }
+
+  get commentsEncryptedData(): Array<string> | null {
+    let value = this.get("commentsEncryptedData");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set commentsEncryptedData(value: Array<string> | null) {
+    if (!value) {
+      this.unset("commentsEncryptedData");
+    } else {
+      this.set(
+        "commentsEncryptedData",
+        Value.fromStringArray(<Array<string>>value)
+      );
+    }
+  }
+
+  get workspace(): string {
+    let value = this.get("workspace");
+    return value!.toString();
+  }
+
+  set workspace(value: string) {
+    this.set("workspace", Value.fromString(value));
+  }
+
+  get grant(): string {
+    let value = this.get("grant");
+    return value!.toString();
+  }
+
+  set grant(value: string) {
+    this.set("grant", Value.fromString(value));
+  }
+
+  get application(): string {
+    let value = this.get("application");
+    return value!.toString();
+  }
+
+  set application(value: string) {
+    this.set("application", Value.fromString(value));
+  }
+
+  get isPrivate(): boolean {
+    let value = this.get("isPrivate");
+    return value!.toBoolean();
+  }
+
+  set isPrivate(value: boolean) {
+    this.set("isPrivate", Value.fromBoolean(value));
+  }
+
+  get createdAt(): i32 {
+    let value = this.get("createdAt");
+    return value!.toI32();
+  }
+
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
+  }
+}
+
 export class Partner extends Entity {
   constructor(id: string) {
     super();
@@ -1315,7 +1434,7 @@ export class GrantManager extends Entity {
   }
 }
 
-export class MemberPiiAnswer extends Entity {
+export class PIIData extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -1325,19 +1444,19 @@ export class MemberPiiAnswer extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save MemberPiiAnswer entity without an ID");
+    assert(id != null, "Cannot save PIIData entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save MemberPiiAnswer entity with non-string ID. " +
+        "Cannot save PIIData entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("MemberPiiAnswer", id.toString(), this);
+      store.set("PIIData", id.toString(), this);
     }
   }
 
-  static load(id: string): MemberPiiAnswer | null {
-    return changetype<MemberPiiAnswer | null>(store.get("MemberPiiAnswer", id));
+  static load(id: string): PIIData | null {
+    return changetype<PIIData | null>(store.get("PIIData", id));
   }
 
   get id(): string {
@@ -1448,6 +1567,23 @@ export class WorkspaceMember extends Entity {
 
   set pii(value: Array<string>) {
     this.set("pii", Value.fromStringArray(value));
+  }
+
+  get emailId(): string | null {
+    let value = this.get("emailId");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set emailId(value: string | null) {
+    if (!value) {
+      this.unset("emailId");
+    } else {
+      this.set("emailId", Value.fromString(<string>value));
+    }
   }
 
   get email(): string | null {
@@ -2371,6 +2507,23 @@ export class GrantApplication extends Entity {
 
   set applicationReviewers(value: Array<string>) {
     this.set("applicationReviewers", Value.fromStringArray(value));
+  }
+
+  get comments(): Array<string> | null {
+    let value = this.get("comments");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set comments(value: Array<string> | null) {
+    if (!value) {
+      this.unset("comments");
+    } else {
+      this.set("comments", Value.fromStringArray(<Array<string>>value));
+    }
   }
 
   get version(): i32 {

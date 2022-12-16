@@ -80,6 +80,10 @@ export class GrantApplicationUpdate {
 	feedback: string | null = null
 }
 
+export class PrivateCommentAddRequest {
+	pii: PIIAnswers = new PIIAnswers()
+}
+
 export class SocialItem {
 	name: string = ''
 	value: string = ''
@@ -714,6 +718,27 @@ return { value, error: null }
 
 export function validateGrantApplicationUpdate_milestones(json: JSONValue): Result<GrantProposedMilestone[]> {
 return validateArray(json, -1, 100, validateGrantProposedMilestone)
+}
+
+export function validatePrivateCommentAddRequest(json: JSONValue): Result<PrivateCommentAddRequest> {
+const value = new PrivateCommentAddRequest()
+const objResult = validateObject(json)
+if(objResult.error) {
+	return { value: null, error: objResult.error }
+}
+const obj = objResult.value!
+const piiJson = obj.get('pii')
+if(!piiJson) return { value: null, error: "Expected 'pii' to be present in PrivateCommentAddRequest" }
+if(piiJson) {
+	const piiResult = validatePIIAnswers(piiJson)
+	if(piiResult.error) {
+		return { value: null, error: ["Error in mapping 'pii': ", piiResult.error!].join('') }
+	}
+	if(piiResult.value) {
+		value.pii = piiResult.value!
+	}
+}
+return { value, error: null }
 }
 
 export function validateSocialItem(json: JSONValue): Result<SocialItem> {
