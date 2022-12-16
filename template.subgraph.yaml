@@ -157,10 +157,10 @@ dataSources:
         - name: QBCommunicationContract
           file: ./abis/QBCommunicationContract.json
       eventHandlers:
-        - event: WorkspaceCreated(indexed uint96,indexed address,string,uint256)
-          handler: handleWorkspaceCreated
-        - event: WorkspaceUpdated(indexed uint96,indexed address,string,uint256)
-          handler: handleWorkspaceUpdated
+        - event: EmailAdded(uint256,string,string,address,uint256)
+          handler: handleEmailAdded
+        - event: CommentAdded(uint96,address,uint96,bool,string,address,uint256)
+          handler: handleCommentAdded
       file: ./src/communication-mapping.ts
 templates:
   - kind: ethereum

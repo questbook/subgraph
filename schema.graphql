@@ -95,6 +95,24 @@ type Social @entity {
   value: String!
 }
 
+type Comment @entity {
+  id: ID!
+  "comment public metadata hash"
+  commentsPublicHash: String
+  "comments encrypted data"
+  commentsEncryptedData: [PIIData!]
+  "Workspace that the application belongs to"
+  workspace: Workspace!
+  "Grant the application was submitted to"
+  grant: Grant!
+  "Application where the comment was added"
+  application: GrantApplication!
+  "Denotes if the comment should be private or public"
+  isPrivate: Boolean!
+  "Last comment added date and time in epochs"
+  createdAt: Int!
+}
+
 type Partner @entity {
   id: ID!
   name: String!
@@ -255,7 +273,7 @@ type GrantManager @entity {
   member: WorkspaceMember
 }
 
-type MemberPiiAnswer @entity {
+type PIIData @entity {
   id: ID!
   "The encrypted data"
   data: String!
@@ -271,7 +289,7 @@ type WorkspaceMember @entity {
   "Hash of profile picture on IPFS"
   profilePictureIpfsHash: String
   "PII data of the member"
-  pii: [MemberPiiAnswer!]!
+  pii: [PIIData!]!
   "Encrypted email"
   emailId: String
 
@@ -429,8 +447,8 @@ type GrantApplication @entity {
   doneReviewerAddresses: [Bytes!]!
   "People who will review this grant application"
   applicationReviewers: [GrantApplicationReviewer!]!
-  "IPFS hash of the comments on the appliction"
-  commentsHash: String
+  "IPFS hash of the comments on the application"
+  comments: [Comment!] @derivedFrom(field: "application")
   "Version of the application, incremented on resubmission"
   version: Int!
 }
