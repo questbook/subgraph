@@ -41,9 +41,10 @@ export function runTests(): void {
 		assert.booleanEquals(g!.acceptingApplications, true)
 		assert.assertNotNull(g!.reward)
 		assert.assertTrue(g!.deadlineS > 0)
-		assert.stringEquals(g!.payoutType!, 'in_one_go')
+		assert.stringEquals(g!.payoutType!, 'milestones')
 		assert.assertNotNull(g!.link)
 		assert.assertNotNull(g!.docIpfsHash)
+		assert.assertNotNull(g!.milestones)
 
 		assertArrayNotEmpty(g!.fields)
 

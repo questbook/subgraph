@@ -202,7 +202,6 @@ type Grant @entity {
   summary: String!
   "Expectations & other details of the grant"
   details: String!
-  
   "Proposed reward for the grant"
   reward: Reward!
   "Workspace which created the grant"
@@ -225,6 +224,8 @@ type Grant @entity {
   link: String #v2
   "IPFS hash of the documnet uploaded"
   docIpfsHash: String
+  "milestones required"
+  milestones: [String!]
   "Expected fields from the applicants of the grant"
   fields: [GrantField!]!
   "Whether the grant is currently accepting applications or not"

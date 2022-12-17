@@ -121,6 +121,10 @@ export function handleGrantCreatedV2(event: GrantCreated1): void {
 		entity.payoutType = json.payoutType
 	}
 
+	if(json.payoutType == 'milestones' && json.milestones) {
+		entity.milestones = json.milestones
+	}
+
 	if(json.reviewType) {
 		entity.reviewType = json.reviewType
 	}

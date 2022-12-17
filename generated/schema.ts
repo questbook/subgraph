@@ -1182,6 +1182,23 @@ export class Grant extends Entity {
     }
   }
 
+  get milestones(): Array<string> | null {
+    let value = this.get("milestones");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set milestones(value: Array<string> | null) {
+    if (!value) {
+      this.unset("milestones");
+    } else {
+      this.set("milestones", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
   get fields(): Array<string> {
     let value = this.get("fields");
     return value!.toStringArray();

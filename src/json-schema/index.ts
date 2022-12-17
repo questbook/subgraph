@@ -186,6 +186,7 @@ export class GrantCreateRequest {
 	creatorId: string = ''
 	workspaceId: string = ''
 	fields: GrantFieldMap = new GrantFieldMap()
+	milestones: string[] | null = null
 	grantManagers: Bytes[] | null = null
 }
 
@@ -1545,6 +1546,16 @@ if(fieldsJson) {
 		value.fields = fieldsResult.value!
 	}
 }
+const milestonesJson = obj.get('milestones')
+if(milestonesJson) {
+	const milestonesResult = validateGrantCreateRequest_milestones(milestonesJson)
+	if(milestonesResult.error) {
+		return { value: null, error: ["Error in mapping 'milestones': ", milestonesResult.error!].join('') }
+	}
+	if(milestonesResult.value) {
+		value.milestones = milestonesResult.value!
+	}
+}
 const grantManagersJson = obj.get('grantManagers')
 if(grantManagersJson) {
 	const grantManagersResult = validateGrantCreateRequest_grantManagers(grantManagersJson)
@@ -1556,6 +1567,14 @@ if(grantManagersJson) {
 	}
 }
 return { value, error: null }
+}
+
+export function validateGrantCreateRequest_milestones(json: JSONValue): Result<string[]> {
+return validateArray(json, -1, 20, validateGrantCreateRequest_milestonesItem)
+}
+
+export function validateGrantCreateRequest_milestonesItem(json: JSONValue): Result<string> {
+return validateString(json, -1, 1024, null)
 }
 
 export function validateGrantCreateRequest_grantManagers(json: JSONValue): Result<Bytes[]> {
