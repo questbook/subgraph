@@ -223,7 +223,7 @@ type Grant @entity {
   "Number of Reviewers per application for the grant"
   numberOfReviewersPerApplication: Int #v2
   "Reviewers who would be auto assigned"
-  autoAssignReviewers: [WorkspaceMember!] #v2
+  autoAssignReviewers: [WorkspaceMember!]! #v2
   "External link to any other website"
   link: String #v2
   "IPFS hash of the documnet uploaded"
