@@ -32,6 +32,48 @@ export class AdminChanged__Params {
   }
 }
 
+export class AutoAssignmentUpdated extends ethereum.Event {
+  get params(): AutoAssignmentUpdated__Params {
+    return new AutoAssignmentUpdated__Params(this);
+  }
+}
+
+export class AutoAssignmentUpdated__Params {
+  _event: AutoAssignmentUpdated;
+
+  constructor(event: AutoAssignmentUpdated) {
+    this._event = event;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get _reviewers(): Array<Address> {
+    return this._event.parameters[2].value.toAddressArray();
+  }
+
+  get _numberOfReviewersPerApplication(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get _enabled(): boolean {
+    return this._event.parameters[4].value.toBoolean();
+  }
+
+  get _updatedBy(): Address {
+    return this._event.parameters[5].value.toAddress();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+}
+
 export class BeaconUpgraded extends ethereum.Event {
   get params(): BeaconUpgraded__Params {
     return new BeaconUpgraded__Params(this);
@@ -239,6 +281,36 @@ export class ReviewSubmitted__Params {
 
   get time(): BigInt {
     return this._event.parameters[6].value.toBigInt();
+  }
+}
+
+export class ReviewerDataReset extends ethereum.Event {
+  get params(): ReviewerDataReset__Params {
+    return new ReviewerDataReset__Params(this);
+  }
+}
+
+export class ReviewerDataReset__Params {
+  _event: ReviewerDataReset;
+
+  constructor(event: ReviewerDataReset) {
+    this._event = event;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get _resetBy(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
   }
 }
 
@@ -934,6 +1006,40 @@ export class AssignReviewersRoundRobinCall__Outputs {
   }
 }
 
+export class DisableAutoAssignmentCall extends ethereum.Call {
+  get inputs(): DisableAutoAssignmentCall__Inputs {
+    return new DisableAutoAssignmentCall__Inputs(this);
+  }
+
+  get outputs(): DisableAutoAssignmentCall__Outputs {
+    return new DisableAutoAssignmentCall__Outputs(this);
+  }
+}
+
+export class DisableAutoAssignmentCall__Inputs {
+  _call: DisableAutoAssignmentCall;
+
+  constructor(call: DisableAutoAssignmentCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class DisableAutoAssignmentCall__Outputs {
+  _call: DisableAutoAssignmentCall;
+
+  constructor(call: DisableAutoAssignmentCall) {
+    this._call = call;
+  }
+}
+
 export class FulfillPaymentCall extends ethereum.Call {
   get inputs(): FulfillPaymentCall__Inputs {
     return new FulfillPaymentCall__Inputs(this);
@@ -1259,16 +1365,12 @@ export class SetRubricsAndEnableAutoAssignCall__Inputs {
     return this._call.inputValues[2].value.toAddressArray();
   }
 
-  get _active(): Array<boolean> {
-    return this._call.inputValues[3].value.toBooleanArray();
-  }
-
   get _numOfReviewersPerApplication(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 
   get _rubricMetadataHash(): string {
-    return this._call.inputValues[5].value.toString();
+    return this._call.inputValues[4].value.toString();
   }
 }
 
@@ -1382,6 +1484,48 @@ export class TransferOwnershipCall__Outputs {
   _call: TransferOwnershipCall;
 
   constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateAutoAssignmentOfReviewersCall extends ethereum.Call {
+  get inputs(): UpdateAutoAssignmentOfReviewersCall__Inputs {
+    return new UpdateAutoAssignmentOfReviewersCall__Inputs(this);
+  }
+
+  get outputs(): UpdateAutoAssignmentOfReviewersCall__Outputs {
+    return new UpdateAutoAssignmentOfReviewersCall__Outputs(this);
+  }
+}
+
+export class UpdateAutoAssignmentOfReviewersCall__Inputs {
+  _call: UpdateAutoAssignmentOfReviewersCall;
+
+  constructor(call: UpdateAutoAssignmentOfReviewersCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _reviewers(): Array<Address> {
+    return this._call.inputValues[2].value.toAddressArray();
+  }
+
+  get _numOfReviewersPerApplication(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+}
+
+export class UpdateAutoAssignmentOfReviewersCall__Outputs {
+  _call: UpdateAutoAssignmentOfReviewersCall;
+
+  constructor(call: UpdateAutoAssignmentOfReviewersCall) {
     this._call = call;
   }
 }

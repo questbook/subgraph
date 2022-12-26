@@ -372,6 +372,11 @@
 		  "internalType": "uint96",
 		  "name": "_workspaceId",
 		  "type": "uint96"
+		},
+		{
+		  "internalType": "string[]",
+		  "name": "feedbackHashes",
+		  "type": "string[]"
 		}
 	  ],
 	  "name": "batchUpdateApplicationState",
@@ -445,6 +450,25 @@
 	  "name": "initialize",
 	  "outputs": [],
 	  "stateMutability": "nonpayable",
+	  "type": "function"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "uint96",
+		  "name": "_applicationId",
+		  "type": "uint96"
+		}
+	  ],
+	  "name": "isSubmittedApplication",
+	  "outputs": [
+		{
+		  "internalType": "bool",
+		  "name": "",
+		  "type": "bool"
+		}
+	  ],
+	  "stateMutability": "view",
 	  "type": "function"
 	},
 	{

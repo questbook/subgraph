@@ -1139,6 +1139,15 @@ export class Grant extends Entity {
     }
   }
 
+  get shouldAutoAssignReviewers(): boolean {
+    let value = this.get("shouldAutoAssignReviewers");
+    return value!.toBoolean();
+  }
+
+  set shouldAutoAssignReviewers(value: boolean) {
+    this.set("shouldAutoAssignReviewers", Value.fromBoolean(value));
+  }
+
   get numberOfReviewersPerApplication(): i32 {
     let value = this.get("numberOfReviewersPerApplication");
     return value!.toI32();
@@ -1146,6 +1155,26 @@ export class Grant extends Entity {
 
   set numberOfReviewersPerApplication(value: i32) {
     this.set("numberOfReviewersPerApplication", Value.fromI32(value));
+  }
+
+  get autoAssignReviewers(): Array<string> | null {
+    let value = this.get("autoAssignReviewers");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set autoAssignReviewers(value: Array<string> | null) {
+    if (!value) {
+      this.unset("autoAssignReviewers");
+    } else {
+      this.set(
+        "autoAssignReviewers",
+        Value.fromStringArray(<Array<string>>value)
+      );
+    }
   }
 
   get link(): string | null {

@@ -55,6 +55,11 @@ export function rubricSetHandler(
 		item.title = entry.value.title
 		item.details = details!
 		item.maximumPoints = entry.value.maximumPoints.toI32()
+
+		if(item.maximumPoints > 1 && grant.reviewType == 'voting') {
+			log.warning(`[${event.transaction.hash.toHex()}] warning in setting rubric: "maximumPoints must be 1 for voting grants"`, [])
+		}
+
 		item.save()
 
 		items.push(item.id)
