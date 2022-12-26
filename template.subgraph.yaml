@@ -122,6 +122,7 @@ dataSources:
         - RubricsSet
         - ReviewPaymentMarkedDone
         - ReviewMigrate
+        - AutoAssignmentUpdated
       abis:
         - name: QBReviewsContract
           file: ./abis/QBReviewsContract.json
@@ -138,6 +139,8 @@ dataSources:
           handler: handleReviewPaymentMarkedDone
         - event: ReviewMigrate(indexed uint96,uint96,address,address,uint256)
           handler: handleReviewMigrate
+        - event: AutoAssignmentUpdated(uint96,address,address[],uint96,bool,address,uint256)
+          handler: handleAutoAssignmentUpdated
       file: ./src/review-mapping.ts
   - kind: ethereum
     name: QBCommunicationContract
