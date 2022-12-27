@@ -469,6 +469,31 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  isSubmittedApplication(_applicationId: BigInt): boolean {
+    let result = super.call(
+      "isSubmittedApplication",
+      "isSubmittedApplication(uint96):(bool)",
+      [ethereum.Value.fromUnsignedBigInt(_applicationId)]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_isSubmittedApplication(
+    _applicationId: BigInt
+  ): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "isSubmittedApplication",
+      "isSubmittedApplication(uint96):(bool)",
+      [ethereum.Value.fromUnsignedBigInt(_applicationId)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
   owner(): Address {
     let result = super.call("owner", "owner():(address)", []);
 
@@ -588,6 +613,10 @@ export class BatchUpdateApplicationStateCall__Inputs {
 
   get _workspaceId(): BigInt {
     return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get feedbackHashes(): Array<string> {
+    return this._call.inputValues[3].value.toStringArray();
   }
 }
 

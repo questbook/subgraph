@@ -1,6 +1,6 @@
 import { BigInt, Bytes, log, store } from '@graphprotocol/graph-ts'
-import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet, RubricsSetV2 } from '../generated/QBReviewsContract/QBReviewsContract'
-import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, WorkspaceMember } from '../generated/schema'
+import { AutoAssignmentUpdated, ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet, RubricsSetV2 } from '../generated/QBReviewsContract/QBReviewsContract'
+import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, Workspace, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { migrateApplicationReviewer, migrateGrant, migrateRubric } from './utils/migrations'
 import { rubricSetHandler } from './utils/rubricSetHandler'
@@ -316,4 +316,47 @@ export function handleReviewMigrate(event: ReviewMigrate): void {
 	migration.transactionHash = event.transaction.hash.toHex()
 	migration.timestamp = event.params.time.toI32()
 	migration.save()
+}
+
+export function handleAutoAssignmentUpdated(event: AutoAssignmentUpdated): void {
+	const workspaceId = event.params._workspaceId.toHex()
+	const grantAddress = event.params._grantAddress.toHex()
+	const reviewerAddresses = event.params._reviewers
+	const numberOfReviewersPerApplication = event.params._numberOfReviewersPerApplication.toI32()
+	const enabled = event.params._enabled
+	const time = event.params.time.toI32()
+
+	const workspace = Workspace.load(workspaceId)
+	if(!workspace) {
+		log.warning(`[${event.transaction.hash.toHex()}] error in mapping auto assignment updated: "workspace (${workspaceId}) not found"`, [])
+		return
+	}
+
+	const grant = Grant.load(grantAddress)
+	if(!grant) {
+		log.warning(`[${event.transaction.hash.toHex()}] grant (${grantAddress}) not found for auto assignment updated!`, [])
+		return
+	}
+
+
+	const reviewers: string[] = []
+	for(let i = 0; i < reviewerAddresses.length; ++i) {
+		const workspaceMember = WorkspaceMember.load(`${workspaceId}.${reviewerAddresses[i].toHex()}`)
+		if(!workspaceMember) {
+			log.warning(`[${event.transaction.hash.toHex()}] member (${reviewerAddresses[i].toHex()}) not found for auto assignment updated!`, [])
+			return
+		}
+
+		reviewers.push(workspaceMember.id)
+	}
+
+	grant.autoAssignReviewers = reviewers
+	if(!grant.numberOfReviewersPerApplication) {
+		grant.numberOfReviewersPerApplication = numberOfReviewersPerApplication
+	}
+
+	grant.shouldAutoAssignReviewers = enabled
+	grant.updatedAtS = time
+
+	grant.save()
 }
