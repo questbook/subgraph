@@ -784,6 +784,7 @@ export class Rubric extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("items", Value.fromStringArray(new Array(0)));
+    this.set("metadataHash", Value.fromString(""));
   }
 
   save(): void {
@@ -863,6 +864,15 @@ export class Rubric extends Entity {
     } else {
       this.set("addedBy", Value.fromString(<string>value));
     }
+  }
+
+  get metadataHash(): string {
+    let value = this.get("metadataHash");
+    return value!.toString();
+  }
+
+  set metadataHash(value: string) {
+    this.set("metadataHash", Value.fromString(value));
   }
 }
 

@@ -66,10 +66,17 @@ export function rubricSetHandler(
 	}
 
 	rubric.items = items
+	rubric.metadataHash = _metadataHash
 	rubric.save()
 
 	if(_numberOfReviewersPerApplication.toI32() > 0) {
 		grant.numberOfReviewersPerApplication = _numberOfReviewersPerApplication.toI32()
+	}
+
+	if(rubric.entries.length > 1) {
+		grant.reviewType = 'voting'
+	} else {
+		grant.reviewType = 'rubrics'
 	}
 
 	grant.updatedAtS = _time.toI32()

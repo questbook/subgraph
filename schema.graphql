@@ -177,6 +177,8 @@ type Rubric @entity {
   updatedAtS: Int!
   "Who added this rubric"
   addedBy: WorkspaceMember
+  "Metadata hash of the rubric data"
+  metadataHash: String!
 }
 
 type Review @entity {
