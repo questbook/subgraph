@@ -41,6 +41,10 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 		disburseEntity = new FundsTransfer(`${txnHash}.${applicationId}`)
 		disburseEntity.status = 'queued'
 		log.info(`[${rewardProps._txnHash}.${applicationId}] recv disburse reward for application: ID="${applicationId}"`, [])
+	} else if(rewardProps.depositType == 'funds_disbursed_from_wallet') {
+		disburseEntity = new FundsTransfer(`${txnHash}.${applicationId}`)
+		disburseEntity.status = 'executed'
+		log.info(`[${rewardProps._txnHash}.${applicationId}] recv disburse reward for application: ID="${applicationId}"`, [])
 	} else {
 		disburseEntity = new FundsTransfer(`${rewardProps.event.transaction.hash.toHex()}.${applicationId}`)
 		disburseEntity.status = 'executed'
@@ -87,7 +91,7 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 	if(grantEntity) {
 		const workspace = Workspace.load(grantEntity.workspace)
 		if(workspace) {
-			if(disburseEntity.type != 'funds_disbursed_from_safe') {
+			if(disburseEntity.type != 'funds_disbursed_from_safe' && disburseEntity.type != 'funds_disbursed_from_wallet') {
 				const usd = getUSDReward(asset, amountPaid)
 				if(usd > 0) {
 					workspace.totalGrantFundingDisbursedUSD += usd

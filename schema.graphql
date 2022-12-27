@@ -38,12 +38,14 @@ enum NotificationType {
   funds_deposited,
   funds_withdrawn,
   funds_disbursed_from_safe,
+  funds_disbursed_from_wallet,
   application_completed
 }
 
 enum FundsTransferType {
   funds_disbursed,
   funds_disbursed_from_safe,
+  funds_disbursed_from_wallet,
   funds_deposited,
   funds_withdrawn,
   review_payment_done,

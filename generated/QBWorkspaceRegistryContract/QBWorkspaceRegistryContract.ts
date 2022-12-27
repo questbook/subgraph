@@ -196,6 +196,60 @@ export class DisburseRewardFromSafe1__Params {
   }
 }
 
+export class DisburseRewardFromWallet extends ethereum.Event {
+  get params(): DisburseRewardFromWallet__Params {
+    return new DisburseRewardFromWallet__Params(this);
+  }
+}
+
+export class DisburseRewardFromWallet__Params {
+  _event: DisburseRewardFromWallet;
+
+  constructor(event: DisburseRewardFromWallet) {
+    this._event = event;
+  }
+
+  get applicationIds(): Array<BigInt> {
+    return this._event.parameters[0].value.toBigIntArray();
+  }
+
+  get milestoneIds(): Array<BigInt> {
+    return this._event.parameters[1].value.toBigIntArray();
+  }
+
+  get asset(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get tokenName(): string {
+    return this._event.parameters[3].value.toString();
+  }
+
+  get nonEvmAssetAddress(): string {
+    return this._event.parameters[4].value.toString();
+  }
+
+  get transactionHash(): string {
+    return this._event.parameters[5].value.toString();
+  }
+
+  get sender(): Address {
+    return this._event.parameters[6].value.toAddress();
+  }
+
+  get amounts(): Array<BigInt> {
+    return this._event.parameters[7].value.toBigIntArray();
+  }
+
+  get isP2P(): boolean {
+    return this._event.parameters[8].value.toBoolean();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[9].value.toBigInt();
+  }
+}
+
 export class FundsTransferStatusUpdated extends ethereum.Event {
   get params(): FundsTransferStatusUpdated__Params {
     return new FundsTransferStatusUpdated__Params(this);
@@ -1093,6 +1147,64 @@ export class DisburseRewardFromSafeCall__Outputs {
   _call: DisburseRewardFromSafeCall;
 
   constructor(call: DisburseRewardFromSafeCall) {
+    this._call = call;
+  }
+}
+
+export class DisburseRewardFromWalletCall extends ethereum.Call {
+  get inputs(): DisburseRewardFromWalletCall__Inputs {
+    return new DisburseRewardFromWalletCall__Inputs(this);
+  }
+
+  get outputs(): DisburseRewardFromWalletCall__Outputs {
+    return new DisburseRewardFromWalletCall__Outputs(this);
+  }
+}
+
+export class DisburseRewardFromWalletCall__Inputs {
+  _call: DisburseRewardFromWalletCall;
+
+  constructor(call: DisburseRewardFromWalletCall) {
+    this._call = call;
+  }
+
+  get _applicationIds(): Array<BigInt> {
+    return this._call.inputValues[0].value.toBigIntArray();
+  }
+
+  get _milestoneIds(): Array<BigInt> {
+    return this._call.inputValues[1].value.toBigIntArray();
+  }
+
+  get _erc20Interface(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
+  get _tokenName(): string {
+    return this._call.inputValues[3].value.toString();
+  }
+
+  get nonEvmAssetAddress(): string {
+    return this._call.inputValues[4].value.toString();
+  }
+
+  get _amounts(): Array<BigInt> {
+    return this._call.inputValues[5].value.toBigIntArray();
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[6].value.toBigInt();
+  }
+
+  get transactionHash(): string {
+    return this._call.inputValues[7].value.toString();
+  }
+}
+
+export class DisburseRewardFromWalletCall__Outputs {
+  _call: DisburseRewardFromWalletCall;
+
+  constructor(call: DisburseRewardFromWalletCall) {
     this._call = call;
   }
 }
