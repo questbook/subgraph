@@ -28,8 +28,14 @@ export function handleCommentAdded(event: CommentAdded): void {
 	commentEntity.createdAt = timestamp
 
 	if(isPrivate) {
-		const result  = validatedJsonFromIpfs<PrivateCommentAddRequest>(commentMetadataHash, validatePrivateCommentAddRequest)
+		const result = validatedJsonFromIpfs<PrivateCommentAddRequest>(commentMetadataHash, validatePrivateCommentAddRequest)
+
 		if(result) {
+			if(result.value == null) {
+				log.warning(`[${event.transaction.hash.toHex()}] No PII data found in private comment`, [])
+				return
+			}
+
 			const encryptedCommentPiiDataList = result.value!.pii.additionalProperties.entries
 			const items: string[] = []
 			if(encryptedCommentPiiDataList) {
@@ -50,5 +56,5 @@ export function handleCommentAdded(event: CommentAdded): void {
 	}
 
 	commentEntity.save()
-	log.info(`[${event.transaction.hash.toHex()}] [${isPrivate? 'PIVATE': 'PUBLIC'}] Comment added to application ${applicationId} by ${sender}`, [])
+	log.info(`[${event.transaction.hash.toHex()}] [${isPrivate? 'PRIVATE': 'PUBLIC'}] Comment added to application ${applicationId} by ${sender}`, [])
 }

@@ -70,6 +70,28 @@ function runTests(): void {
 			}
 		}
 	})
+
+	test('should not add a private comment', () => {
+		const a = createApplication()
+        
+		const ev = newMockEvent()
+		const metadataHash = 'json:{"sender":"0xD1bfd92aB161983E007aAde98312B83eecA14f9A","message":"Qmdbk53Z8FDABvxBEDSLKmZDWdHUd8JJXxsgW6AnXCwcJ9","timestamp":1672247844,"tags":[],"role":"admin"}'
+		ev.parameters = [
+			new ethereum.EventParam('workspaceId', MOCK_WORKSPACE_ID),
+			new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
+			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
+			new ethereum.EventParam('isPrivate', ethereum.Value.fromBoolean(true)),
+			new ethereum.EventParam('commentMetadataHash', ethereum.Value.fromString(metadataHash)),
+			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0xD1bfd92aB161983E007aAde98312B83eecA14f9A'))),
+			new ethereum.EventParam('timestamp', ethereum.Value.fromI32(1665726957)),
+
+		]
+		const event = new CommentAdded(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleCommentAdded(event)
+
+		const commentEntity = Comment.load(`${ev.transaction.hash.toHex()}-${Address.fromString('0xD1bfd92aB161983E007aAde98312B83eecA14f9A').toHex()}`)
+		assert.assertNull(commentEntity)
+	})
 }
 
 runTests()
