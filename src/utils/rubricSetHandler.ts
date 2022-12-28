@@ -74,9 +74,9 @@ export function rubricSetHandler(
 	}
 
 	if(rubric.entries.length > 1) {
-		grant.reviewType = 'voting'
-	} else {
 		grant.reviewType = 'rubrics'
+	} else {
+		grant.reviewType = 'voting'
 	}
 
 	grant.updatedAtS = _time.toI32()
