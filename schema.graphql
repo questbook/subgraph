@@ -221,7 +221,7 @@ type Grant @entity {
   "Whether reviewers should be auto assigned to applications or not"
   shouldAutoAssignReviewers: Boolean! #v2
   "Number of Reviewers per application for the grant"
-  numberOfReviewersPerApplication: Int #v2
+  numberOfReviewersPerApplication: Int! #v2
   "Reviewers who would be auto assigned"
   autoAssignReviewers: [WorkspaceMember!]! #v2
   "External link to any other website"
