@@ -351,10 +351,7 @@ export function handleAutoAssignmentUpdated(event: AutoAssignmentUpdated): void 
 	}
 
 	grant.autoAssignReviewers = reviewers
-	if(!grant.numberOfReviewersPerApplication) {
-		grant.numberOfReviewersPerApplication = numberOfReviewersPerApplication
-	}
-
+	grant.numberOfReviewersPerApplication = numberOfReviewersPerApplication
 	grant.shouldAutoAssignReviewers = enabled
 	grant.updatedAtS = time
 
