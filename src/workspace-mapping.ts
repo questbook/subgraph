@@ -2,6 +2,7 @@ import { BigInt, log, store } from '@graphprotocol/graph-ts'
 import {
 	DisburseRewardFromSafe,
 	DisburseRewardFromSafe1,
+	DisburseRewardFromWallet,
 	FundsTransferStatusUpdated,
 	QBAdminsUpdated,
 	WorkspaceCreated,
@@ -276,6 +277,35 @@ export function handleDisburseRewardFromSafe1(event: DisburseRewardFromSafe1): v
 	}
 }
 
+export function handleDisburseRewardFromWallet(event: DisburseRewardFromWallet): void {
+	const depositType = 'funds_disbursed_from_wallet'
+	const applicationIds = event.params.applicationIds
+	const milestoneIds = event.params.milestoneIds
+	const asset = event.params.asset
+	const tokenName = event.params.tokenName
+	const nonEvmAsset = event.params.nonEvmAssetAddress
+	const txnHash = event.params.transactionHash
+	const sender = event.params.sender
+	const amounts = event.params.amounts
+	const isP2P = event.params.isP2P
+
+	for(let i = 0; i < applicationIds.length; i++) {
+		disburseReward({
+			event,
+			depositType,
+			_applicationId: applicationIds[i].toHexString(),
+			_milestoneId: milestoneIds[i].toI32(),
+			_asset: asset,
+			_tokenName: tokenName,
+			_nonEvmAsset: nonEvmAsset,
+			_txnHash: txnHash,
+			_sender: sender,
+			_amount: amounts[i],
+			_isP2P: isP2P
+		})
+	}
+}
+
 export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): void {
 	const fromWallet = event.params.from
 	const toWallet = event.params.to
@@ -425,7 +455,7 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 		}
 
 		const workspace = Workspace.load(grantEntity.workspace)
-		if(workspace && fundsTransferEntity.type == 'funds_disbursed_from_safe') {
+		if(workspace && (fundsTransferEntity.type == 'funds_disbursed_from_safe' || fundsTransferEntity.type == 'funds_disbursed_from_wallet')) {
 			workspace.totalGrantFundingDisbursedUSD = workspace.totalGrantFundingDisbursedUSD += tokenUSDValues[i].toI32()
 			workspace.save()
 		}

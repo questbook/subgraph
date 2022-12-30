@@ -2,6 +2,7 @@ import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/grap
 import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
 import {
 	DisburseRewardFromSafe1,
+	DisburseRewardFromWallet,
 	FundsTransferStatusUpdated,
 	QBAdminsUpdated,
 	WorkspaceMembersUpdated,
@@ -24,7 +25,7 @@ import {
 } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import {
-	handleDisburseReward, handleDisburseRewardFromSafe1, handleFundsTransferStatusUpdated, handleQBAdminsUpdated,
+	handleDisburseReward, handleDisburseRewardFromSafe1, handleDisburseRewardFromWallet, handleFundsTransferStatusUpdated, handleQBAdminsUpdated,
 	handleWorkspaceMembersUpdated,
 	handleWorkspaceMemberUpdated,
 	handleWorkspaceSafeUpdated,
@@ -410,6 +411,43 @@ export function runTests(): void {
 		if(fundTransfer) {
 			assert.assertNotNull(fundTransfer)
 			assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
+			assert.stringEquals(fundTransfer!.tokenName!, 'MATIC')
+			assert.assertNotNull(fundTransfer!.milestone)
+			const applicationMilestone = ApplicationMilestone.load(fundTransfer!.milestone!)
+			assert.assertNotNull(applicationMilestone)
+		}
+		
+		// console.log(`Application milestone --> ${applicationMilestone!.amount.toString()}`)
+	})
+
+	test('should disburse reward from wallet', () => {
+		const w = createWorkspace()
+		const a = createApplication()
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID_ARRAY),
+			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32Array([0, 1, 2])),
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xE3D997D569b5b03B577C6a2Edd1d2613FE776cb0'))),
+			new ethereum.EventParam('tokenName', ethereum.Value.fromString('MATIC')),
+			new ethereum.EventParam('nonEvmAssetAddress', ethereum.Value.fromString('bfnjr9489njrhHDFHg230fb4c4d462eEF9e6790337Cf57271E519bB697')),
+			new ethereum.EventParam('transactionHash', ethereum.Value.fromString('0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')),
+			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0x230fb4c4d462eEF9e6790337Cf57271E519bB697'))),
+			new ethereum.EventParam('amount', ethereum.Value.fromI32Array([10, 20, 30])),
+			new ethereum.EventParam('isP2P', ethereum.Value.fromBoolean(true)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
+		]
+
+		assert.stringEquals(ev.parameters[5].value.toString(), '0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')
+		const event = new DisburseRewardFromWallet(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleDisburseRewardFromWallet(event)
+
+		const fundTransfer = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x123}`)
+		if(fundTransfer) {
+			assert.assertNotNull(fundTransfer)
+			assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_wallet')
+			assert.stringEquals(fundTransfer!.status, 'executed')
 			assert.stringEquals(fundTransfer!.tokenName!, 'MATIC')
 			assert.assertNotNull(fundTransfer!.milestone)
 			const applicationMilestone = ApplicationMilestone.load(fundTransfer!.milestone!)
