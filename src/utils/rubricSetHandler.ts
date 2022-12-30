@@ -39,6 +39,10 @@ export function rubricSetHandler(
 	rubric.addedBy = `${workspaceId}.${event.transaction.from.toHex()}`
 	rubric.isPrivate = json.rubric.isPrivate.isTrue
 
+	if(json.rubric.reviewType) {
+		grant.reviewType = json.rubric.reviewType
+	}
+
 	const items: string[] = []
 
 	const rubricItems = json.rubric.rubric.additionalProperties

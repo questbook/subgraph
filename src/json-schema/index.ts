@@ -160,6 +160,7 @@ export class RubricItem {
 }
 
 export class Rubric {
+	reviewType: string | null = null
 	isPrivate: Boolean = new Boolean()
 	rubric: Rubric_rubric = new Rubric_rubric()
 }
@@ -1342,6 +1343,16 @@ if(objResult.error) {
 	return { value: null, error: objResult.error }
 }
 const obj = objResult.value!
+const reviewTypeJson = obj.get('reviewType')
+if(reviewTypeJson) {
+	const reviewTypeResult = validateReviewType(reviewTypeJson)
+	if(reviewTypeResult.error) {
+		return { value: null, error: ["Error in mapping 'reviewType': ", reviewTypeResult.error!].join('') }
+	}
+	if(reviewTypeResult.value) {
+		value.reviewType = reviewTypeResult.value!
+	}
+}
 const isPrivateJson = obj.get('isPrivate')
 if(!isPrivateJson) return { value: null, error: "Expected 'isPrivate' to be present in Rubric" }
 if(isPrivateJson) {
