@@ -38,10 +38,6 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 			entity.title = json.title!
 		}
 
-		if(json.summary) {
-			entity.summary = json.summary!
-		}
-
 		if(json.details) {
 			entity.details = json.details!
 		}

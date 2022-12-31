@@ -160,7 +160,6 @@ export class RubricItem {
 }
 
 export class Rubric {
-	reviewType: string | null = null
 	isPrivate: Boolean = new Boolean()
 	rubric: Rubric_rubric = new Rubric_rubric()
 }
@@ -170,6 +169,7 @@ export class Rubric_rubric {
 }
 
 export class RubricSetRequest {
+	reviewType: string | null = null
 	rubric: Rubric = new Rubric()
 }
 
@@ -193,7 +193,6 @@ export class GrantCreateRequest {
 
 export class GrantUpdateRequest {
 	title: string | null = null
-	summary: string | null = null
 	startDate: Date | null = null
 	endDate: Date | null = null
 	details: string | null = null
@@ -205,6 +204,7 @@ export class GrantUpdateRequest {
 	creatorId: string | null = null
 	workspaceId: string | null = null
 	fields: GrantFieldMap | null = null
+	milestones: string[] | null = null
 	grantManagers: Bytes[] | null = null
 }
 
@@ -1343,16 +1343,6 @@ if(objResult.error) {
 	return { value: null, error: objResult.error }
 }
 const obj = objResult.value!
-const reviewTypeJson = obj.get('reviewType')
-if(reviewTypeJson) {
-	const reviewTypeResult = validateReviewType(reviewTypeJson)
-	if(reviewTypeResult.error) {
-		return { value: null, error: ["Error in mapping 'reviewType': ", reviewTypeResult.error!].join('') }
-	}
-	if(reviewTypeResult.value) {
-		value.reviewType = reviewTypeResult.value!
-	}
-}
 const isPrivateJson = obj.get('isPrivate')
 if(!isPrivateJson) return { value: null, error: "Expected 'isPrivate' to be present in Rubric" }
 if(isPrivateJson) {
@@ -1401,6 +1391,16 @@ if(objResult.error) {
 	return { value: null, error: objResult.error }
 }
 const obj = objResult.value!
+const reviewTypeJson = obj.get('reviewType')
+if(reviewTypeJson) {
+	const reviewTypeResult = validateReviewType(reviewTypeJson)
+	if(reviewTypeResult.error) {
+		return { value: null, error: ["Error in mapping 'reviewType': ", reviewTypeResult.error!].join('') }
+	}
+	if(reviewTypeResult.value) {
+		value.reviewType = reviewTypeResult.value!
+	}
+}
 const rubricJson = obj.get('rubric')
 if(!rubricJson) return { value: null, error: "Expected 'rubric' to be present in RubricSetRequest" }
 if(rubricJson) {
@@ -1609,16 +1609,6 @@ if(titleJson) {
 		value.title = titleResult.value!
 	}
 }
-const summaryJson = obj.get('summary')
-if(summaryJson) {
-	const summaryResult = validateString(summaryJson, -1, 1024, null)
-	if(summaryResult.error) {
-		return { value: null, error: ["Error in mapping 'summary': ", summaryResult.error!].join('') }
-	}
-	if(summaryResult.value) {
-		value.summary = summaryResult.value!
-	}
-}
 const startDateJson = obj.get('startDate')
 if(startDateJson) {
 	const startDateResult = validateDateTimeFromStringResult(validateString(startDateJson, -1, -1, null))
@@ -1729,6 +1719,16 @@ if(fieldsJson) {
 		value.fields = fieldsResult.value!
 	}
 }
+const milestonesJson = obj.get('milestones')
+if(milestonesJson) {
+	const milestonesResult = validateGrantUpdateRequest_milestones(milestonesJson)
+	if(milestonesResult.error) {
+		return { value: null, error: ["Error in mapping 'milestones': ", milestonesResult.error!].join('') }
+	}
+	if(milestonesResult.value) {
+		value.milestones = milestonesResult.value!
+	}
+}
 const grantManagersJson = obj.get('grantManagers')
 if(grantManagersJson) {
 	const grantManagersResult = validateGrantUpdateRequest_grantManagers(grantManagersJson)
@@ -1740,6 +1740,14 @@ if(grantManagersJson) {
 	}
 }
 return { value, error: null }
+}
+
+export function validateGrantUpdateRequest_milestones(json: JSONValue): Result<string[]> {
+return validateArray(json, -1, 20, validateGrantUpdateRequest_milestonesItem)
+}
+
+export function validateGrantUpdateRequest_milestonesItem(json: JSONValue): Result<string> {
+return validateString(json, -1, 1024, null)
 }
 
 export function validateGrantUpdateRequest_grantManagers(json: JSONValue): Result<Bytes[]> {
