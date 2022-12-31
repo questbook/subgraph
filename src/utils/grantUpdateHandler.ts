@@ -38,10 +38,6 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 			entity.title = json.title!
 		}
 
-		if(json.summary) {
-			entity.summary = json.summary!
-		}
-
 		if(json.details) {
 			entity.details = json.details!
 		}
@@ -62,6 +58,10 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 
 		if(json.docIpfsHash) {
 			entity.docIpfsHash = json.docIpfsHash!
+		}
+		
+		if(json.milestones) {
+			entity.milestones = json.milestones!
 		}
 
 		if(json.reward) {
