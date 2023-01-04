@@ -304,6 +304,52 @@ export class AddCommentCall__Outputs {
   }
 }
 
+export class AddCommentsCall extends ethereum.Call {
+  get inputs(): AddCommentsCall__Inputs {
+    return new AddCommentsCall__Inputs(this);
+  }
+
+  get outputs(): AddCommentsCall__Outputs {
+    return new AddCommentsCall__Outputs(this);
+  }
+}
+
+export class AddCommentsCall__Inputs {
+  _call: AddCommentsCall;
+
+  constructor(call: AddCommentsCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _applicationIds(): Array<BigInt> {
+    return this._call.inputValues[2].value.toBigIntArray();
+  }
+
+  get _isPrivate(): boolean {
+    return this._call.inputValues[3].value.toBoolean();
+  }
+
+  get _commentMetadataHashes(): Array<string> {
+    return this._call.inputValues[4].value.toStringArray();
+  }
+}
+
+export class AddCommentsCall__Outputs {
+  _call: AddCommentsCall;
+
+  constructor(call: AddCommentsCall) {
+    this._call = call;
+  }
+}
+
 export class CreateLinkCall extends ethereum.Call {
   get inputs(): CreateLinkCall__Inputs {
     return new CreateLinkCall__Inputs(this);

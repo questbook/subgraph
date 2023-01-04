@@ -19,7 +19,7 @@ export function handleCommentAdded(event: CommentAdded): void {
 		return
 	}
 
-	const commentEntity = new Comment(`${event.transaction.hash.toHex()}-${sender}`)
+	const commentEntity = new Comment(`${event.transaction.hash.toHex()}.${sender}.${applicationId}`)
 	
 	commentEntity.workspace = workspaceId
 	commentEntity.grant = grantAddress
@@ -41,7 +41,7 @@ export function handleCommentAdded(event: CommentAdded): void {
 			if(encryptedCommentPiiDataList) {
 				log.info(`[${event.transaction.hash.toHex()}] Found {} encrypted comment PII data`, [encryptedCommentPiiDataList.length.toString()])
 				for(let i=0; i<encryptedCommentPiiDataList.length; i++) {
-					const encryptedCommentEntity = new PIIData(`${event.transaction.hash.toHex()}-${encryptedCommentPiiDataList[i].key}`)
+					const encryptedCommentEntity = new PIIData(`${event.transaction.hash.toHex()}.${encryptedCommentPiiDataList[i].key}.${applicationId}`)
 
 					encryptedCommentEntity.data = encryptedCommentPiiDataList[i].value
 					encryptedCommentEntity.save()

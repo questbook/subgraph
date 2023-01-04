@@ -670,6 +670,31 @@ export class QBReviewsContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
+  lastAssignedApplicationIndices(param0: Address): BigInt {
+    let result = super.call(
+      "lastAssignedApplicationIndices",
+      "lastAssignedApplicationIndices(address):(uint256)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_lastAssignedApplicationIndices(
+    param0: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "lastAssignedApplicationIndices",
+      "lastAssignedApplicationIndices(address):(uint256)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   lastAssignedReviewerIndices(param0: Address): BigInt {
     let result = super.call(
       "lastAssignedReviewerIndices",
@@ -968,6 +993,52 @@ export class AssignReviewersCall__Outputs {
   }
 }
 
+export class AssignReviewersBatchCall extends ethereum.Call {
+  get inputs(): AssignReviewersBatchCall__Inputs {
+    return new AssignReviewersBatchCall__Inputs(this);
+  }
+
+  get outputs(): AssignReviewersBatchCall__Outputs {
+    return new AssignReviewersBatchCall__Outputs(this);
+  }
+}
+
+export class AssignReviewersBatchCall__Inputs {
+  _call: AssignReviewersBatchCall;
+
+  constructor(call: AssignReviewersBatchCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _applicationIds(): Array<BigInt> {
+    return this._call.inputValues[2].value.toBigIntArray();
+  }
+
+  get _reviewers(): Array<Address> {
+    return this._call.inputValues[3].value.toAddressArray();
+  }
+
+  get _active(): Array<boolean> {
+    return this._call.inputValues[4].value.toBooleanArray();
+  }
+}
+
+export class AssignReviewersBatchCall__Outputs {
+  _call: AssignReviewersBatchCall;
+
+  constructor(call: AssignReviewersBatchCall) {
+    this._call = call;
+  }
+}
+
 export class AssignReviewersRoundRobinCall extends ethereum.Call {
   get inputs(): AssignReviewersRoundRobinCall__Inputs {
     return new AssignReviewersRoundRobinCall__Inputs(this);
@@ -1036,6 +1107,48 @@ export class DisableAutoAssignmentCall__Outputs {
   _call: DisableAutoAssignmentCall;
 
   constructor(call: DisableAutoAssignmentCall) {
+    this._call = call;
+  }
+}
+
+export class EnableAutoAssignmentOfReviewersCall extends ethereum.Call {
+  get inputs(): EnableAutoAssignmentOfReviewersCall__Inputs {
+    return new EnableAutoAssignmentOfReviewersCall__Inputs(this);
+  }
+
+  get outputs(): EnableAutoAssignmentOfReviewersCall__Outputs {
+    return new EnableAutoAssignmentOfReviewersCall__Outputs(this);
+  }
+}
+
+export class EnableAutoAssignmentOfReviewersCall__Inputs {
+  _call: EnableAutoAssignmentOfReviewersCall;
+
+  constructor(call: EnableAutoAssignmentOfReviewersCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _reviewers(): Array<Address> {
+    return this._call.inputValues[2].value.toAddressArray();
+  }
+
+  get _numOfReviewersPerApplication(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
+}
+
+export class EnableAutoAssignmentOfReviewersCall__Outputs {
+  _call: EnableAutoAssignmentOfReviewersCall;
+
+  constructor(call: EnableAutoAssignmentOfReviewersCall) {
     this._call = call;
   }
 }
@@ -1234,6 +1347,40 @@ export class RenounceOwnershipCall__Outputs {
   }
 }
 
+export class ResetAllRubricsCall extends ethereum.Call {
+  get inputs(): ResetAllRubricsCall__Inputs {
+    return new ResetAllRubricsCall__Inputs(this);
+  }
+
+  get outputs(): ResetAllRubricsCall__Outputs {
+    return new ResetAllRubricsCall__Outputs(this);
+  }
+}
+
+export class ResetAllRubricsCall__Inputs {
+  _call: ResetAllRubricsCall;
+
+  constructor(call: ResetAllRubricsCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class ResetAllRubricsCall__Outputs {
+  _call: ResetAllRubricsCall;
+
+  constructor(call: ResetAllRubricsCall) {
+    this._call = call;
+  }
+}
+
 export class SetApplicationRegCall extends ethereum.Call {
   get inputs(): SetApplicationRegCall__Inputs {
     return new SetApplicationRegCall__Inputs(this);
@@ -1332,52 +1479,6 @@ export class SetRubricsCall__Outputs {
   _call: SetRubricsCall;
 
   constructor(call: SetRubricsCall) {
-    this._call = call;
-  }
-}
-
-export class SetRubricsAndEnableAutoAssignCall extends ethereum.Call {
-  get inputs(): SetRubricsAndEnableAutoAssignCall__Inputs {
-    return new SetRubricsAndEnableAutoAssignCall__Inputs(this);
-  }
-
-  get outputs(): SetRubricsAndEnableAutoAssignCall__Outputs {
-    return new SetRubricsAndEnableAutoAssignCall__Outputs(this);
-  }
-}
-
-export class SetRubricsAndEnableAutoAssignCall__Inputs {
-  _call: SetRubricsAndEnableAutoAssignCall;
-
-  constructor(call: SetRubricsAndEnableAutoAssignCall) {
-    this._call = call;
-  }
-
-  get _workspaceId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
-  get _reviewers(): Array<Address> {
-    return this._call.inputValues[2].value.toAddressArray();
-  }
-
-  get _numOfReviewersPerApplication(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
-  }
-
-  get _rubricMetadataHash(): string {
-    return this._call.inputValues[4].value.toString();
-  }
-}
-
-export class SetRubricsAndEnableAutoAssignCall__Outputs {
-  _call: SetRubricsAndEnableAutoAssignCall;
-
-  constructor(call: SetRubricsAndEnableAutoAssignCall) {
     this._call = call;
   }
 }
@@ -1519,6 +1620,10 @@ export class UpdateAutoAssignmentOfReviewersCall__Inputs {
 
   get _numOfReviewersPerApplication(): BigInt {
     return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get _isMock(): boolean {
+    return this._call.inputValues[4].value.toBoolean();
   }
 }
 
