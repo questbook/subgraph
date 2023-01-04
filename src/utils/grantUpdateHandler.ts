@@ -59,6 +59,10 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 		if(json.docIpfsHash) {
 			entity.docIpfsHash = json.docIpfsHash!
 		}
+
+		if(json.payoutType) {
+			entity.payoutType = json.payoutType!
+		}
 		
 		if(json.milestones) {
 			entity.milestones = json.milestones!
