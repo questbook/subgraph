@@ -1,4 +1,4 @@
-import { BigInt, Bytes, log, store } from '@graphprotocol/graph-ts'
+import { Bytes, log, store } from '@graphprotocol/graph-ts'
 import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
 import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
@@ -199,8 +199,7 @@ export function handleRubricsSet(event: RubricsSet): void {
 	const metadataHash = event.params._metadataHash
 	const time = event.params.time
 
-	const numberOfReviewersPerApplication = new BigInt(0)
-	rubricSetHandler(event, grantId, workspaceId, numberOfReviewersPerApplication,  metadataHash, time)
+	rubricSetHandler(event, grantId, workspaceId, metadataHash, time)
 }
 
 export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): void {

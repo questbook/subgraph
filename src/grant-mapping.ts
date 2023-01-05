@@ -57,8 +57,6 @@ export function handleGrantCreated(event: GrantCreated): void {
 	entity.createdAtS = time
 	entity.funding = new BigInt(0)
 	entity.numberOfApplications = 0
-	entity.shouldAutoAssignReviewers = false
-	entity.numberOfReviewersPerApplication = 0
 	entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
 
 	entity.save()

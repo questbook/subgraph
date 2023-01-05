@@ -7,7 +7,6 @@ export function rubricSetHandler(
 	event: ethereum.Event,
 	_grantId: string,
 	_workspaceId: string,
-	_numberOfReviewersPerApplication: BigInt,
 	_metadataHash: string,
 	_time: BigInt
 ): void {
@@ -71,10 +70,6 @@ export function rubricSetHandler(
 
 	rubric.items = items
 	rubric.save()
-
-	if(_numberOfReviewersPerApplication.toI32() > 0) {
-		grant.numberOfReviewersPerApplication = _numberOfReviewersPerApplication.toI32()
-	}
 
 	grant.updatedAtS = _time.toI32()
 	grant.rubric = rubric.id
