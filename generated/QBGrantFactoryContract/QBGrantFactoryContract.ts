@@ -80,40 +80,6 @@ export class GrantCreated__Params {
   }
 }
 
-export class GrantCreated1 extends ethereum.Event {
-  get params(): GrantCreated1__Params {
-    return new GrantCreated1__Params(this);
-  }
-}
-
-export class GrantCreated1__Params {
-  _event: GrantCreated1;
-
-  constructor(event: GrantCreated1) {
-    this._event = event;
-  }
-
-  get grantAddress(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get workspaceId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get metadataHash(): string {
-    return this._event.parameters[2].value.toString();
-  }
-
-  get numberOfReviewersPerApplication(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
-  }
-
-  get time(): BigInt {
-    return this._event.parameters[4].value.toBigInt();
-  }
-}
-
 export class GrantImplementationUpdated extends ethereum.Event {
   get params(): GrantImplementationUpdated__Params {
     return new GrantImplementationUpdated__Params(this);
@@ -300,18 +266,16 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
     _workspaceId: BigInt,
     _metadataHash: string,
     _rubricsMetadataHash: string,
-    _numberOfReviewersPerApplication: BigInt,
     _workspaceReg: Address,
     _applicationReg: Address
   ): Address {
     let result = super.call(
       "createGrant",
-      "createGrant(uint96,string,string,uint96,address,address):(address)",
+      "createGrant(uint96,string,string,address,address):(address)",
       [
         ethereum.Value.fromUnsignedBigInt(_workspaceId),
         ethereum.Value.fromString(_metadataHash),
         ethereum.Value.fromString(_rubricsMetadataHash),
-        ethereum.Value.fromUnsignedBigInt(_numberOfReviewersPerApplication),
         ethereum.Value.fromAddress(_workspaceReg),
         ethereum.Value.fromAddress(_applicationReg)
       ]
@@ -324,18 +288,16 @@ export class QBGrantFactoryContract extends ethereum.SmartContract {
     _workspaceId: BigInt,
     _metadataHash: string,
     _rubricsMetadataHash: string,
-    _numberOfReviewersPerApplication: BigInt,
     _workspaceReg: Address,
     _applicationReg: Address
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       "createGrant",
-      "createGrant(uint96,string,string,uint96,address,address):(address)",
+      "createGrant(uint96,string,string,address,address):(address)",
       [
         ethereum.Value.fromUnsignedBigInt(_workspaceId),
         ethereum.Value.fromString(_metadataHash),
         ethereum.Value.fromString(_rubricsMetadataHash),
-        ethereum.Value.fromUnsignedBigInt(_numberOfReviewersPerApplication),
         ethereum.Value.fromAddress(_workspaceReg),
         ethereum.Value.fromAddress(_applicationReg)
       ]
@@ -475,16 +437,12 @@ export class CreateGrantCall__Inputs {
     return this._call.inputValues[2].value.toString();
   }
 
-  get _numberOfReviewersPerApplication(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
-  }
-
   get _workspaceReg(): Address {
-    return this._call.inputValues[4].value.toAddress();
+    return this._call.inputValues[3].value.toAddress();
   }
 
   get _applicationReg(): Address {
-    return this._call.inputValues[5].value.toAddress();
+    return this._call.inputValues[4].value.toAddress();
   }
 }
 
@@ -681,7 +639,7 @@ export class UpdateGrantCall__Inputs {
     this._call = call;
   }
 
-  get grantAddress(): Address {
+  get _grantAddress(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
@@ -689,12 +647,16 @@ export class UpdateGrantCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
-  get _workspaceReg(): Address {
-    return this._call.inputValues[2].value.toAddress();
+  get _metadataHash(): string {
+    return this._call.inputValues[2].value.toString();
   }
 
-  get _metadataHash(): string {
+  get _rubricsMetadataHash(): string {
     return this._call.inputValues[3].value.toString();
+  }
+
+  get _workspaceReg(): Address {
+    return this._call.inputValues[4].value.toAddress();
   }
 }
 

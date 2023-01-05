@@ -5,7 +5,7 @@ import { GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBG
 import { FundsTransfer, Grant, GrantManager, Notification, Reward, Workspace, WorkspaceMember } from '../generated/schema'
 import { FundsWithdrawn } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdatedFromFactory } from '../src/grant-mapping'
-import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, createGrantv2, CUSTOM_TOKEN_ADDRESS_GRANT, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
+import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, CUSTOM_TOKEN_ADDRESS_GRANT, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 
 export function runTests(): void {
 
@@ -17,34 +17,6 @@ export function runTests(): void {
 		assert.booleanEquals(g!.acceptingApplications, true)
 		assert.assertNotNull(g!.reward)
 		assert.assertTrue(g!.deadlineS > 0)
-
-		assertArrayNotEmpty(g!.fields)
-
-		const memId = `${g!.id}.${WORKSPACE_CREATOR_ID}`
-		const mem = GrantManager.load(memId)
-		assert.assertNotNull(mem)
-		assert.assertNotNull(mem!.member)
-
-		assert.assertNotNull(WorkspaceMember.load(mem!.member!))
-
-		const w = Workspace.load(g!.workspace)
-		assert.assertNotNull(w)
-		assert.i32Equals(w!.mostRecentGrantPostedAtS, g!.createdAtS)
-		assert.i32Equals(w!.totalGrantFundingCommittedUSD, 5000)
-	})
-
-	test('should create a grant with v2 validations', () => {
-		const g = createGrantv2()
-		assert.i32Equals(g!.createdAtS, 123)
-		assert.assertTrue(g!.title.length > 0)
-		// assert.assertTrue(g!.summary.length > 0)
-		assert.booleanEquals(g!.acceptingApplications, true)
-		assert.assertNotNull(g!.reward)
-		assert.assertTrue(g!.deadlineS > 0)
-		assert.stringEquals(g!.payoutType!, 'milestones')
-		assert.assertNotNull(g!.link)
-		assert.assertNotNull(g!.docIpfsHash)
-		assert.assertNotNull(g!.milestones)
 
 		assertArrayNotEmpty(g!.fields)
 

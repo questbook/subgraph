@@ -1,8 +1,8 @@
 import { Address, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
-import { AutoAssignmentUpdated, ReviewersAssigned, ReviewPaymentMarkedDone, RubricsSetV2 } from '../generated/QBReviewsContract/QBReviewsContract'
+import { ReviewersAssigned, ReviewPaymentMarkedDone, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
 import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, PIIAnswer, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
-import { handleAutoAssignmentUpdated, handleReviewersAssigned, handleReviewPaymentMarkedDone, handleRubricsSetV2 } from '../src/review-mapping'
+import { handleReviewersAssigned, handleReviewPaymentMarkedDone, handleRubricsSet } from '../src/review-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createGrant, createReview, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
 
 export function runTests(): void {
@@ -110,19 +110,17 @@ export function runTests(): void {
 		ev.parameters = [
 			new ethereum.EventParam('_workspaceId', MOCK_WORKSPACE_ID),
 			new ethereum.EventParam('_grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
-			new ethereum.EventParam('_numberOfReviewersPerApplication', ethereum.Value.fromI32(4)),
 			// the IPFS hash contains mock data for the workspace
 			new ethereum.EventParam('_metadataHash', ethereum.Value.fromString(RUBRIC_JSON)),
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 		]
 		ev.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
 
-		const event = new RubricsSetV2(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleRubricsSetV2(event)
+		const event = new RubricsSet(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleRubricsSet(event)
 
 		const g2 = Grant.load(MOCK_GRANT_ID.toHex())
 		assert.assertNotNull(g2!.rubric)
-		assert.i32Equals(g2!.numberOfReviewersPerApplication, 4)
 
 		const rubr = Rubric.load(MOCK_GRANT_ID.toHex())
 		assert.assertNotNull(rubr)
@@ -164,31 +162,6 @@ export function runTests(): void {
 		const transfer = FundsTransfer.load(transferId)
 		assert.assertNotNull(transfer!)
 		assert.stringEquals(transfer!.type, 'review_payment_done')
-	})
-
-	test('should update auto assignment config for a grant', () => {
-		createGrant()
-
-		const ev = newMockEvent()
-
-		ev.parameters = [
-			new ethereum.EventParam('_workspaceId', MOCK_WORKSPACE_ID),
-			new ethereum.EventParam('_grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
-			new ethereum.EventParam('_reviewers', ethereum.Value.fromAddressArray([Address.fromString(WORKSPACE_CREATOR_ID)])),
-			new ethereum.EventParam('_numberOfReviewersPerApplication', ethereum.Value.fromI32(2)),
-			new ethereum.EventParam('_enabled', ethereum.Value.fromBoolean(true)),
-			new ethereum.EventParam('_updatedBy', ethereum.Value.fromAddress(Address.fromString(WORKSPACE_CREATOR_ID))),
-			new ethereum.EventParam('_time', ethereum.Value.fromI32(1672331400)),
-		]
-		ev.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
-
-		const event = new AutoAssignmentUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleAutoAssignmentUpdated(event)
-
-		const g = Grant.load(MOCK_GRANT_ID.toHex())
-		assert.i32Equals(g!.numberOfReviewersPerApplication, 2)
-		assert.booleanEquals(g!.shouldAutoAssignReviewers, true)
-		assert.stringEquals(g!.autoAssignReviewers.length.toString(), '1')
 	})
 }
 

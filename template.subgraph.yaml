@@ -102,8 +102,6 @@ dataSources:
           handler: handleGrantCreated
         - event: GrantUpdatedFromFactory(indexed address,indexed uint96,string,bool,uint256)
           handler: handleGrantUpdatedFromFactory
-        - event: GrantCreated(address,uint96,string,uint96,uint256)
-          handler: handleGrantCreatedV2
       file: ./src/grant-mapping.ts
   - kind: ethereum
     name: QBReviewsContract
@@ -133,14 +131,10 @@ dataSources:
           handler: handleReviewersAssigned
         - event: RubricsSet(uint96,indexed address,string,uint256)
           handler: handleRubricsSet
-        - event: RubricsSetV2(uint96,indexed address,uint96,string,uint256)
-          handler: handleRubricsSetV2
         - event: ReviewPaymentMarkedDone(uint96[],address,address,uint256,string,uint256)
           handler: handleReviewPaymentMarkedDone
         - event: ReviewMigrate(indexed uint96,uint96,address,address,uint256)
           handler: handleReviewMigrate
-        - event: AutoAssignmentUpdated(uint96,address,address[],uint96,bool,address,uint256)
-          handler: handleAutoAssignmentUpdated
       file: ./src/review-mapping.ts
   - kind: ethereum
     name: QBCommunicationContract

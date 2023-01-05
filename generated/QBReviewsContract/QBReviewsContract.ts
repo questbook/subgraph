@@ -32,48 +32,6 @@ export class AdminChanged__Params {
   }
 }
 
-export class AutoAssignmentUpdated extends ethereum.Event {
-  get params(): AutoAssignmentUpdated__Params {
-    return new AutoAssignmentUpdated__Params(this);
-  }
-}
-
-export class AutoAssignmentUpdated__Params {
-  _event: AutoAssignmentUpdated;
-
-  constructor(event: AutoAssignmentUpdated) {
-    this._event = event;
-  }
-
-  get _workspaceId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get _reviewers(): Array<Address> {
-    return this._event.parameters[2].value.toAddressArray();
-  }
-
-  get _numberOfReviewersPerApplication(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
-  }
-
-  get _enabled(): boolean {
-    return this._event.parameters[4].value.toBoolean();
-  }
-
-  get _updatedBy(): Address {
-    return this._event.parameters[5].value.toAddress();
-  }
-
-  get time(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
-  }
-}
-
 export class BeaconUpgraded extends ethereum.Event {
   get params(): BeaconUpgraded__Params {
     return new BeaconUpgraded__Params(this);
@@ -284,36 +242,6 @@ export class ReviewSubmitted__Params {
   }
 }
 
-export class ReviewerDataReset extends ethereum.Event {
-  get params(): ReviewerDataReset__Params {
-    return new ReviewerDataReset__Params(this);
-  }
-}
-
-export class ReviewerDataReset__Params {
-  _event: ReviewerDataReset;
-
-  constructor(event: ReviewerDataReset) {
-    this._event = event;
-  }
-
-  get _workspaceId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get _resetBy(): Address {
-    return this._event.parameters[2].value.toAddress();
-  }
-
-  get time(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
-  }
-}
-
 export class ReviewersAssigned extends ethereum.Event {
   get params(): ReviewersAssigned__Params {
     return new ReviewersAssigned__Params(this);
@@ -383,40 +311,6 @@ export class RubricsSet__Params {
 
   get time(): BigInt {
     return this._event.parameters[3].value.toBigInt();
-  }
-}
-
-export class RubricsSetV2 extends ethereum.Event {
-  get params(): RubricsSetV2__Params {
-    return new RubricsSetV2__Params(this);
-  }
-}
-
-export class RubricsSetV2__Params {
-  _event: RubricsSetV2;
-
-  constructor(event: RubricsSetV2) {
-    this._event = event;
-  }
-
-  get _workspaceId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get _numberOfReviewersPerApplication(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
-  get _metadataHash(): string {
-    return this._event.parameters[3].value.toString();
-  }
-
-  get time(): BigInt {
-    return this._event.parameters[4].value.toBigInt();
   }
 }
 
@@ -620,31 +514,6 @@ export class QBReviewsContract extends ethereum.SmartContract {
         value[4].toBigInt()
       )
     );
-  }
-
-  hasAutoAssigningEnabled(_grantAddress: Address): boolean {
-    let result = super.call(
-      "hasAutoAssigningEnabled",
-      "hasAutoAssigningEnabled(address):(bool)",
-      [ethereum.Value.fromAddress(_grantAddress)]
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_hasAutoAssigningEnabled(
-    _grantAddress: Address
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "hasAutoAssigningEnabled",
-      "hasAutoAssigningEnabled(address):(bool)",
-      [ethereum.Value.fromAddress(_grantAddress)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   isAutoAssigningEnabled(param0: Address): boolean {
@@ -913,40 +782,6 @@ export class QBReviewsContract extends ethereum.SmartContract {
   }
 }
 
-export class AppendToApplicationListCall extends ethereum.Call {
-  get inputs(): AppendToApplicationListCall__Inputs {
-    return new AppendToApplicationListCall__Inputs(this);
-  }
-
-  get outputs(): AppendToApplicationListCall__Outputs {
-    return new AppendToApplicationListCall__Outputs(this);
-  }
-}
-
-export class AppendToApplicationListCall__Inputs {
-  _call: AppendToApplicationListCall;
-
-  constructor(call: AppendToApplicationListCall) {
-    this._call = call;
-  }
-
-  get _applicationId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-}
-
-export class AppendToApplicationListCall__Outputs {
-  _call: AppendToApplicationListCall;
-
-  constructor(call: AppendToApplicationListCall) {
-    this._call = call;
-  }
-}
-
 export class AssignReviewersCall extends ethereum.Call {
   get inputs(): AssignReviewersCall__Inputs {
     return new AssignReviewersCall__Inputs(this);
@@ -1035,120 +870,6 @@ export class AssignReviewersBatchCall__Outputs {
   _call: AssignReviewersBatchCall;
 
   constructor(call: AssignReviewersBatchCall) {
-    this._call = call;
-  }
-}
-
-export class AssignReviewersRoundRobinCall extends ethereum.Call {
-  get inputs(): AssignReviewersRoundRobinCall__Inputs {
-    return new AssignReviewersRoundRobinCall__Inputs(this);
-  }
-
-  get outputs(): AssignReviewersRoundRobinCall__Outputs {
-    return new AssignReviewersRoundRobinCall__Outputs(this);
-  }
-}
-
-export class AssignReviewersRoundRobinCall__Inputs {
-  _call: AssignReviewersRoundRobinCall;
-
-  constructor(call: AssignReviewersRoundRobinCall) {
-    this._call = call;
-  }
-
-  get _workspaceId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _applicationId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._call.inputValues[2].value.toAddress();
-  }
-}
-
-export class AssignReviewersRoundRobinCall__Outputs {
-  _call: AssignReviewersRoundRobinCall;
-
-  constructor(call: AssignReviewersRoundRobinCall) {
-    this._call = call;
-  }
-}
-
-export class DisableAutoAssignmentCall extends ethereum.Call {
-  get inputs(): DisableAutoAssignmentCall__Inputs {
-    return new DisableAutoAssignmentCall__Inputs(this);
-  }
-
-  get outputs(): DisableAutoAssignmentCall__Outputs {
-    return new DisableAutoAssignmentCall__Outputs(this);
-  }
-}
-
-export class DisableAutoAssignmentCall__Inputs {
-  _call: DisableAutoAssignmentCall;
-
-  constructor(call: DisableAutoAssignmentCall) {
-    this._call = call;
-  }
-
-  get _workspaceId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-}
-
-export class DisableAutoAssignmentCall__Outputs {
-  _call: DisableAutoAssignmentCall;
-
-  constructor(call: DisableAutoAssignmentCall) {
-    this._call = call;
-  }
-}
-
-export class EnableAutoAssignmentOfReviewersCall extends ethereum.Call {
-  get inputs(): EnableAutoAssignmentOfReviewersCall__Inputs {
-    return new EnableAutoAssignmentOfReviewersCall__Inputs(this);
-  }
-
-  get outputs(): EnableAutoAssignmentOfReviewersCall__Outputs {
-    return new EnableAutoAssignmentOfReviewersCall__Outputs(this);
-  }
-}
-
-export class EnableAutoAssignmentOfReviewersCall__Inputs {
-  _call: EnableAutoAssignmentOfReviewersCall;
-
-  constructor(call: EnableAutoAssignmentOfReviewersCall) {
-    this._call = call;
-  }
-
-  get _workspaceId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
-  get _reviewers(): Array<Address> {
-    return this._call.inputValues[2].value.toAddressArray();
-  }
-
-  get _numOfReviewersPerApplication(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
-  }
-}
-
-export class EnableAutoAssignmentOfReviewersCall__Outputs {
-  _call: EnableAutoAssignmentOfReviewersCall;
-
-  constructor(call: EnableAutoAssignmentOfReviewersCall) {
     this._call = call;
   }
 }
@@ -1466,12 +1187,8 @@ export class SetRubricsCall__Inputs {
     return this._call.inputValues[1].value.toAddress();
   }
 
-  get _numberOfReviewersPerApplication(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
-
   get _metadataHash(): string {
-    return this._call.inputValues[3].value.toString();
+    return this._call.inputValues[2].value.toString();
   }
 }
 
@@ -1585,52 +1302,6 @@ export class TransferOwnershipCall__Outputs {
   _call: TransferOwnershipCall;
 
   constructor(call: TransferOwnershipCall) {
-    this._call = call;
-  }
-}
-
-export class UpdateAutoAssignmentOfReviewersCall extends ethereum.Call {
-  get inputs(): UpdateAutoAssignmentOfReviewersCall__Inputs {
-    return new UpdateAutoAssignmentOfReviewersCall__Inputs(this);
-  }
-
-  get outputs(): UpdateAutoAssignmentOfReviewersCall__Outputs {
-    return new UpdateAutoAssignmentOfReviewersCall__Outputs(this);
-  }
-}
-
-export class UpdateAutoAssignmentOfReviewersCall__Inputs {
-  _call: UpdateAutoAssignmentOfReviewersCall;
-
-  constructor(call: UpdateAutoAssignmentOfReviewersCall) {
-    this._call = call;
-  }
-
-  get _workspaceId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
-  get _reviewers(): Array<Address> {
-    return this._call.inputValues[2].value.toAddressArray();
-  }
-
-  get _numOfReviewersPerApplication(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
-  }
-
-  get _isMock(): boolean {
-    return this._call.inputValues[4].value.toBoolean();
-  }
-}
-
-export class UpdateAutoAssignmentOfReviewersCall__Outputs {
-  _call: UpdateAutoAssignmentOfReviewersCall;
-
-  constructor(call: UpdateAutoAssignmentOfReviewersCall) {
     this._call = call;
   }
 }
