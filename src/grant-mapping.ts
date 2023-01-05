@@ -32,13 +32,23 @@ export function handleGrantCreated(event: GrantCreated): void {
 	const entity = new Grant(grantAddress.toHex())
 	entity.creatorId = event.transaction.from
 	entity.title = json.title
-	entity.summary = json.summary!
-	// entity.details = json.details
+
+	if(json.summary) {
+		entity.summary = json.summary!
+	}
 
 	const reward = mapGrantRewardAndListen(entity.id, workspaceId, json.reward)
 
 	entity.reward = reward.id
 	entity.workspace = workspaceId
+
+	if(json.startDate) {
+		entity.startDate = json.startDate!.toISOString()
+		entity.startDateS = dateToUnixTimestamp(json.startDate!)
+	} else {
+		entity.startDateS = 0
+	}
+
 	if(json.endDate) {
 		entity.deadline = json.endDate!.toISOString()
 		entity.deadlineS = dateToUnixTimestamp(json.endDate!)
@@ -49,6 +59,27 @@ export function handleGrantCreated(event: GrantCreated): void {
 	if(json.details) {
 		entity.details = json.details!
 	}
+
+	if(json.link) {
+		entity.link = json.link
+	}
+
+	if(json.reviewType) {
+		entity.reviewType = json.reviewType
+	}
+
+	if(json.payoutType) {
+		entity.payoutType = json.payoutType
+
+		if(json.payoutType == 'milestones' && json.milestones) {
+			entity.milestones = json.milestones
+		}
+	}
+
+	if(json.docIpfsHash) {
+		entity.docIpfsHash = json.docIpfsHash
+	}
+
 
 	entity.fields = mapGrantFieldMap(entity.id, json.fields)
 

@@ -13,7 +13,6 @@ export function runTests(): void {
 		const g = createGrant()
 		assert.i32Equals(g!.createdAtS, 123)
 		assert.assertTrue(g!.title.length > 0)
-		assert.assertTrue(g!.summary.length > 0)
 		assert.booleanEquals(g!.acceptingApplications, true)
 		assert.assertNotNull(g!.reward)
 		assert.assertTrue(g!.deadlineS > 0)
@@ -135,7 +134,6 @@ export function runTests(): void {
 		assert.stringEquals(gUpdate!.workspace, BigInt.fromI32(0x03).toHex())
 
 		assertStringNotEmpty(gUpdate!.title)
-		assertStringNotEmpty(gUpdate!.summary)
 
 		// assert.assertTrue(gUpdate!.summary != g!.summary)
 		assert.assertTrue(gUpdate!.title != g!.title)
@@ -170,7 +168,6 @@ export function runTests(): void {
 		assert.stringEquals(gUpdate!.workspace, BigInt.fromI32(0x03).toHex())
 
 		assertStringNotEmpty(gUpdate!.title)
-		assertStringNotEmpty(gUpdate!.summary)
 
 		// assert.assertTrue(gUpdate!.summary != g!.summary)
 		assert.assertTrue(gUpdate!.title != g!.title)
