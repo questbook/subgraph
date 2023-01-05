@@ -1,5 +1,5 @@
 import { BigInt, log } from '@graphprotocol/graph-ts'
-import { GrantCreated, GrantCreated1, GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
+import { GrantCreated, GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from '../generated/schema'
 import { QBGrantsContract } from '../generated/templates'
 import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
@@ -57,8 +57,6 @@ export function handleGrantCreated(event: GrantCreated): void {
 	entity.createdAtS = time
 	entity.funding = new BigInt(0)
 	entity.numberOfApplications = 0
-	entity.shouldAutoAssignReviewers = false
-	entity.numberOfReviewersPerApplication = 0
 	entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
 
 	entity.save()
@@ -77,104 +75,6 @@ export function handleGrantCreated(event: GrantCreated): void {
 	workspace.save()
 
 	QBGrantsContract.create(grantAddress)
-}
-
-export function handleGrantCreatedV2(event: GrantCreated1): void {
-	const workspaceId = event.params.workspaceId.toHex()
-	const grantAddress = event.params.grantAddress
-	const time = event.params.time.toI32()
-	const numberOfReviewersPerApplication = event.params.numberOfReviewersPerApplication.toI32()
-
-	const workspace = Workspace.load(workspaceId)
-	if(!workspace) {
-		log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant: "workspace (${workspaceId}) not found"`, [])
-		return
-	}
-
-	const entityResult = validatedJsonFromIpfs<GrantCreateRequest>(event.params.metadataHash, validateGrantCreateRequest)
-	if(entityResult.error) {
-		log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant with metadata hash "${entityResult.error!}"`, [])
-		return
-	}
-
-	const json = entityResult.value!
-	const entity = new Grant(grantAddress.toHex())
-	entity.creatorId = event.transaction.from
-	entity.title = json.title
-	// entity.summary = json.summary 
-	// entity.details = json.details
-	entity.numberOfReviewersPerApplication = numberOfReviewersPerApplication
-
-	if(json.startDate) {
-		entity.startDate = json.startDate!.toISOString()
-		entity.startDateS = dateToUnixTimestamp(json.startDate!)
-	} else {
-		entity.startDateS = 0
-	}
-
-	if(json.endDate) {
-		entity.deadline = json.endDate!.toISOString()
-		entity.deadlineS = dateToUnixTimestamp(json.endDate!)
-	} else {
-		entity.deadlineS = 0
-	}
-
-	if(json.payoutType) {
-		entity.payoutType = json.payoutType
-	}
-
-	if(json.payoutType == 'milestones' && json.milestones) {
-		entity.milestones = json.milestones
-	}
-
-	if(json.reviewType) {
-		entity.reviewType = json.reviewType
-	}
-
-	if(json.details) {
-		entity.details = json.details!
-	}
-
-	if(json.link) {
-		entity.link = json.link
-	}
-
-	if(json.docIpfsHash) {
-		entity.docIpfsHash = json.docIpfsHash
-	}
-
-	const reward = mapGrantRewardAndListen(entity.id, workspaceId, json.reward)
-
-	entity.reward = reward.id
-	entity.workspace = workspaceId
-
-	entity.fields = mapGrantFieldMap(entity.id, json.fields)
-
-	entity.metadataHash = event.params.metadataHash
-	entity.acceptingApplications = true
-	entity.createdAtS = time
-	entity.funding = new BigInt(0)
-	entity.numberOfApplications = 0
-	entity.shouldAutoAssignReviewers = false
-	entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
-
-	entity.save()
-
-	const grants: string[] = workspace.grants
-	grants.push(entity.id)
-	workspace.grants = grants
-
-	workspace.mostRecentGrantPostedAtS = time
-
-	const usdReward = getUSDReward(reward.asset, reward.committed)
-	if(usdReward > 0) {
-		workspace.totalGrantFundingCommittedUSD += usdReward
-	}
-
-	workspace.save()
-
-	QBGrantsContract.create(grantAddress)
-
 }
 
 export function handleDisburseReward(event: DisburseReward): void {

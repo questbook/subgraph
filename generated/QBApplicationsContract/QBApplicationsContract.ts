@@ -419,6 +419,31 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     );
   }
 
+  getApplicationGrant(_applicationId: BigInt): Address {
+    let result = super.call(
+      "getApplicationGrant",
+      "getApplicationGrant(uint96):(address)",
+      [ethereum.Value.fromUnsignedBigInt(_applicationId)]
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_getApplicationGrant(
+    _applicationId: BigInt
+  ): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "getApplicationGrant",
+      "getApplicationGrant(uint96):(address)",
+      [ethereum.Value.fromUnsignedBigInt(_applicationId)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   getApplicationOwner(_applicationId: BigInt): Address {
     let result = super.call(
       "getApplicationOwner",

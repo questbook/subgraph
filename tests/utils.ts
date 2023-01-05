@@ -1,12 +1,12 @@
 import { Address, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { newMockEvent } from 'matchstick-as'
 import { ApplicationSubmitted } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { GrantCreated, GrantCreated1 } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
+import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { ReviewSubmitted } from '../generated/QBReviewsContract/QBReviewsContract'
 import { WorkspaceCreated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Grant, GrantApplication, Review, Workspace } from '../generated/schema'
 import { handleApplicationSubmitted } from '../src/application-mapping'
-import { handleGrantCreated, handleGrantCreatedV2 } from '../src/grant-mapping'
+import { handleGrantCreated } from '../src/grant-mapping'
 import { handleReviewSubmitted } from '../src/review-mapping'
 import { handleWorkspaceCreated } from '../src/workspace-mapping'
 
@@ -61,27 +61,6 @@ export function createGrant(): Grant | null {
 
 	const event = new GrantCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 	handleGrantCreated(event)
-
-	const testId = MOCK_GRANT_ID.toHex()
-	return Grant.load(testId)
-}
-
-export function createGrantv2(): Grant | null {
-	const w = createWorkspace()
-	const ev = newMockEvent()
-
-	ev.parameters = [
-		new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
-		new ethereum.EventParam('workspaceId', MOCK_WORKSPACE_ID),
-		// the IPFS hash contains mock data for the workspace
-		new ethereum.EventParam('metadataHash', ethereum.Value.fromString(CREATE_GRANT_JSON)),
-		new ethereum.EventParam('numberOfReviewersPerApplication', ethereum.Value.fromI32(4)),
-		new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
-	]
-	ev.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
-
-	const event = new GrantCreated1(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-	handleGrantCreatedV2(event)
 
 	const testId = MOCK_GRANT_ID.toHex()
 	return Grant.load(testId)
