@@ -46,6 +46,10 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 			entity.startDate = json.startDate!.toISOString()
 		}
 
+		if(json.reviewType) {
+			entity.reviewType = json.reviewType!
+		}
+
 
 		if(json.endDate) {
 			entity.deadline = json.endDate!.toISOString()
