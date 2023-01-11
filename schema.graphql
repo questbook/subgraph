@@ -414,6 +414,15 @@ type QBAdmin @entity {
   addedAt: Int!
 }
 
+type ApplicationAction @entity {
+  id: ID!
+  updatedAtS: Int!
+  updatedBy: WorkspaceMember! 
+  application: GrantApplication!
+  state: ApplicationState!
+  feedback: String
+}
+
 type GrantApplication @entity {
   id: ID!
   "The grant for which the application is for"
@@ -432,6 +441,8 @@ type GrantApplication @entity {
   createdAtS: Int!
   "in seconds since epoch"
   updatedAtS: Int!
+  "Actions taken on an application"
+  actions: [ApplicationAction!] @derivedFrom(field: "application")
   "Milestones of the application"
   milestones: [ApplicationMilestone!]!
   "Feedback from the grant DAO manager/applicant"

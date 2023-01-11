@@ -1,6 +1,6 @@
 import { log } from '@graphprotocol/graph-ts'
 import { ApplicationMigrate, ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationMilestone, Grant, GrantApplication, Migration, Workspace } from '../generated/schema'
+import { ApplicationAction, ApplicationMilestone, Grant, GrantApplication, Migration, Workspace } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
 import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
@@ -87,6 +87,19 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		return
 	}
 
+	const grant = Grant.load(entity.grant)
+
+	if(!grant) {
+		log.warning(`[${event.transaction.hash.toHex()}] grant (${entity.grant}) not found for application completed (${applicationId})`, [])
+		return
+	}
+
+	const workspace = Workspace.load(grant.workspace)
+	if(!workspace) {
+		log.warning(`[${event.transaction.hash.toHex()}] workspace (${grant.workspace}) not found for application completed (${applicationId})`, [])
+		return
+	}
+
 	entity.updatedAtS = event.params.time.toI32()
 	const previousState = entity.state
 	entity.state = strStateResult.value!
@@ -126,25 +139,36 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 			}
 		}
 
+		if(json.applicantPublicKey) {
+			entity.applicantPublicKey = json.applicantPublicKey
+		}
+
+		const actionEntity = new ApplicationAction(`${applicationId}.${event.params.owner.toHex()}.${entity.version}`)
+
+		log.info(`entity version ${actionEntity.id}`, [])
+
+		actionEntity.application = applicationId
+		actionEntity.updatedAtS = event.params.time.toI32()
+
+		actionEntity.updatedBy = `${workspace.id}.${event.params.owner.toHex()}`
+		actionEntity.state = strStateResult.value!
+
+		if(json.feedback) {
+			actionEntity.feedback = json.feedback
+		}
+
+		actionEntity.save()
+		
 		entity.version += 1
 	}
+	
 
 	// increment number of applicants selected for workspace
 	if(previousState == 'submitted' && (strStateResult.value == 'approved' || strStateResult.value == 'completed')) {
-		const grant = Grant.load(entity.grant)
-		if(!grant) {
-			log.warning(`[${event.transaction.hash.toHex()}] grant (${entity.grant}) not found for application completed (${applicationId})`, [])
-			return
-		}
-
-		const workspace = Workspace.load(grant.workspace)
-		if(!workspace) {
-			log.warning(`[${event.transaction.hash.toHex()}] workspace (${grant.workspace}) not found for application completed (${applicationId})`, [])
-			return
-		}
 
 		workspace.numberOfApplicationsSelected += 1
 		workspace.save()
+
 	}
 
 	entity.save()

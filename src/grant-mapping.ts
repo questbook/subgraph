@@ -52,9 +52,13 @@ export function handleGrantCreated(event: GrantCreated): void {
 	if(json.endDate) {
 		entity.deadline = json.endDate!.toISOString()
 		entity.deadlineS = dateToUnixTimestamp(json.endDate!)
+	} else if(json.deadline) {
+		entity.deadline = json.deadline!.toISOString()
+		entity.deadlineS = dateToUnixTimestamp(json.deadline!)
 	} else {
 		entity.deadlineS = 0
 	}
+
 
 	if(json.details) {
 		entity.details = json.details!
