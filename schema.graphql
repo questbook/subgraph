@@ -113,6 +113,8 @@ type Comment @entity {
   isPrivate: Boolean!
   "Last comment added date and time in epochs"
   createdAt: Int!
+  "Denotes who added the comment"
+  createdBy: Bytes!
 }
 
 type Partner @entity {
@@ -417,7 +419,7 @@ type QBAdmin @entity {
 type ApplicationAction @entity {
   id: ID!
   updatedAtS: Int!
-  updatedBy: WorkspaceMember! 
+  updatedBy: Bytes!
   application: GrantApplication!
   state: ApplicationState!
   feedback: String
