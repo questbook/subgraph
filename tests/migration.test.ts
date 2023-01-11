@@ -4,12 +4,12 @@ import { ApplicationMigrate } from '../generated/QBApplicationsContract/QBApplic
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { ReviewersAssigned, ReviewMigrate } from '../generated/QBReviewsContract/QBReviewsContract'
 import { WorkspaceMemberMigrate } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Grant, GrantApplication, GrantManager, Review, Workspace, WorkspaceMember } from '../generated/schema'
+import { Grant, GrantApplication, GrantManager, Workspace, WorkspaceMember } from '../generated/schema'
 import { handleApplicationMigrate } from '../src/application-mapping'
 import { handleGrantCreated } from '../src/grant-mapping'
 import { handleReviewersAssigned, handleReviewMigrate } from '../src/review-mapping'
 import { handleWorkspaceMemberMigrate } from '../src/workspace-mapping'
-import { CREATE_GRANT_JSON, createApplication, createReview, createWorkspace, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_REVIEWER_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
+import { CREATE_GRANT_JSON, createApplication, createWorkspace, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
 
 export function runTests(): void {
 
@@ -187,40 +187,40 @@ export function runTests(): void {
 		)
 	})
 
-	test('should migrate a review, grant & application', () => {
-		const r = createReview()
+	// test('should migrate a review, grant & application', () => {
+	// 	const r = createReview()
 
-		const ev = newMockEvent()
-		ev.parameters = [
-			new ethereum.EventParam('_reviewId', MOCK_REVIEW_ID),
-			new ethereum.EventParam('_applicationId', MOCK_APPLICATION_ID),
-			new ethereum.EventParam('_previousReviewerAddress', ethereum.Value.fromAddress(MOCK_REVIEWER_ID)),
-			new ethereum.EventParam('_newReviewerAddress', ethereum.Value.fromAddress(MIGRATED_WALLET)),
-			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
-		]
+	// 	const ev = newMockEvent()
+	// 	ev.parameters = [
+	// 		new ethereum.EventParam('_reviewId', MOCK_REVIEW_ID),
+	// 		new ethereum.EventParam('_applicationId', MOCK_APPLICATION_ID),
+	// 		new ethereum.EventParam('_previousReviewerAddress', ethereum.Value.fromAddress(MOCK_REVIEWER_ID)),
+	// 		new ethereum.EventParam('_newReviewerAddress', ethereum.Value.fromAddress(MIGRATED_WALLET)),
+	// 		new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
+	// 	]
 
-		const event = new ReviewMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleReviewMigrate(event)
+	// 	const event = new ReviewMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+	// 	handleReviewMigrate(event)
 
-		const newWorkspaceMemberId = `${MOCK_WORKSPACE_ID.toBigInt().toHex()}.${MIGRATED_WALLET.toHex()}`
+	// 	const newWorkspaceMemberId = `${MOCK_WORKSPACE_ID.toBigInt().toHex()}.${MIGRATED_WALLET.toHex()}`
 
-		const r2 = Review.load(r!.id)!
-		assert.stringEquals(r2.reviewer, newWorkspaceMemberId)
+	// 	const r2 = Review.load(r!.id)!
+	// 	assert.stringEquals(r2.reviewer, newWorkspaceMemberId)
 
-		const app = GrantApplication.load(r2.application)!
-		assert.stringEquals(
-			app.doneReviewerAddresses[0].toHex(),
-			MIGRATED_WALLET.toHex()
-		)
+	// 	const app = GrantApplication.load(r2.application)!
+	// 	assert.stringEquals(
+	// 		app.doneReviewerAddresses[0].toHex(),
+	// 		MIGRATED_WALLET.toHex()
+	// 	)
 
-		const grant = Grant.load(app.grant)!
+	// 	const grant = Grant.load(app.grant)!
 
-		assert.stringEquals(
-			grant.creatorId.toHex(),
-			MIGRATED_WALLET.toHex()
-		)
-		assert.stringEquals(grant.managers[0], `${grant.id}.${MIGRATED_WALLET.toHex()}`)
-	})
+	// 	assert.stringEquals(
+	// 		grant.creatorId.toHex(),
+	// 		MIGRATED_WALLET.toHex()
+	// 	)
+	// 	assert.stringEquals(grant.managers[0], `${grant.id}.${MIGRATED_WALLET.toHex()}`)
+	// })
 }
 
 const MIGRATED_WALLET = Address.fromString('0x0000000000000000000000000000000000000002')

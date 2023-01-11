@@ -30,7 +30,7 @@ export function handleGrantCreated(event: GrantCreated): void {
 
 	const json = entityResult.value!
 	const entity = new Grant(grantAddress.toHex())
-	entity.creatorId = event.transaction.from
+	entity.creatorId = event.transaction.to!
 	entity.title = json.title
 
 	if(json.summary) {
