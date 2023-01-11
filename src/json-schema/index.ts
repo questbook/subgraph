@@ -72,6 +72,7 @@ export class GrantApplicationUpdate {
 	pii: PIIAnswers | null = null
 	milestones: GrantProposedMilestone[] | null = null
 	feedback: string | null = null
+	applicantPublicKey: string | null = null
 }
 
 export class PrivateCommentAddRequest {
@@ -178,6 +179,7 @@ export class GrantCreateRequest {
 	summary: string | null = null
 	startDate: Date | null = null
 	endDate: Date | null = null
+	deadline: Date | null = null
 	details: string | null = null
 	link: string | null = null
 	docIpfsHash: string | null = null
@@ -694,6 +696,16 @@ if(feedbackJson) {
 	}
 	if(feedbackResult.value) {
 		value.feedback = feedbackResult.value!
+	}
+}
+const applicantPublicKeyJson = obj.get('applicantPublicKey')
+if(applicantPublicKeyJson) {
+	const applicantPublicKeyResult = validatePublicKey(applicantPublicKeyJson)
+	if(applicantPublicKeyResult.error) {
+		return { value: null, error: ["Error in mapping 'applicantPublicKey': ", applicantPublicKeyResult.error!].join('') }
+	}
+	if(applicantPublicKeyResult.value) {
+		value.applicantPublicKey = applicantPublicKeyResult.value!
 	}
 }
 return { value, error: null }
@@ -1461,6 +1473,16 @@ if(endDateJson) {
 	}
 	if(endDateResult.value) {
 		value.endDate = endDateResult.value!
+	}
+}
+const deadlineJson = obj.get('deadline')
+if(deadlineJson) {
+	const deadlineResult = validateDateTimeFromStringResult(validateString(deadlineJson, -1, -1, null))
+	if(deadlineResult.error) {
+		return { value: null, error: ["Error in mapping 'deadline': ", deadlineResult.error!].join('') }
+	}
+	if(deadlineResult.value) {
+		value.deadline = deadlineResult.value!
 	}
 }
 const detailsJson = obj.get('details')

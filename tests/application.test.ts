@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
 import { ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer, Workspace } from '../generated/schema'
+import { ApplicationAction, ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer, Workspace } from '../generated/schema'
 import { DisburseReward, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
 import { handleDisburseReward, handleTransactionRecord } from '../src/grant-mapping'
@@ -115,6 +115,9 @@ export function runTests(): void {
 
 		const grant = Grant.load(g!.grant)
 		const workspace = Workspace.load(grant!.workspace)
+		const actionItem = ApplicationAction.load(`${g!.id}.${event.params.owner.toHex()}.${g!.version}`)
+
+		assert.assertNotNull(actionItem)
 
 		// check workspace application submitted count increased
 		assert.i32Equals(workspace!.numberOfApplicationsSelected, 1)

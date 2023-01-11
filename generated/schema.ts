@@ -2304,6 +2304,98 @@ export class QBAdmin extends Entity {
   }
 }
 
+export class ApplicationAction extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("updatedBy", Value.fromString(""));
+    this.set("application", Value.fromString(""));
+    this.set("state", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ApplicationAction entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save ApplicationAction entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("ApplicationAction", id.toString(), this);
+    }
+  }
+
+  static load(id: string): ApplicationAction | null {
+    return changetype<ApplicationAction | null>(
+      store.get("ApplicationAction", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get updatedAtS(): i32 {
+    let value = this.get("updatedAtS");
+    return value!.toI32();
+  }
+
+  set updatedAtS(value: i32) {
+    this.set("updatedAtS", Value.fromI32(value));
+  }
+
+  get updatedBy(): string {
+    let value = this.get("updatedBy");
+    return value!.toString();
+  }
+
+  set updatedBy(value: string) {
+    this.set("updatedBy", Value.fromString(value));
+  }
+
+  get application(): string {
+    let value = this.get("application");
+    return value!.toString();
+  }
+
+  set application(value: string) {
+    this.set("application", Value.fromString(value));
+  }
+
+  get state(): string {
+    let value = this.get("state");
+    return value!.toString();
+  }
+
+  set state(value: string) {
+    this.set("state", Value.fromString(value));
+  }
+
+  get feedback(): string | null {
+    let value = this.get("feedback");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set feedback(value: string | null) {
+    if (!value) {
+      this.unset("feedback");
+    } else {
+      this.set("feedback", Value.fromString(<string>value));
+    }
+  }
+}
+
 export class GrantApplication extends Entity {
   constructor(id: string) {
     super();
@@ -2427,6 +2519,23 @@ export class GrantApplication extends Entity {
 
   set updatedAtS(value: i32) {
     this.set("updatedAtS", Value.fromI32(value));
+  }
+
+  get actions(): Array<string> | null {
+    let value = this.get("actions");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set actions(value: Array<string> | null) {
+    if (!value) {
+      this.unset("actions");
+    } else {
+      this.set("actions", Value.fromStringArray(<Array<string>>value));
+    }
   }
 
   get milestones(): Array<string> {
