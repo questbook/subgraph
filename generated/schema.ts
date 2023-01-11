@@ -137,6 +137,7 @@ export class Comment extends Entity {
     this.set("workspace", Value.fromString(""));
     this.set("grant", Value.fromString(""));
     this.set("application", Value.fromString(""));
+    this.set("createdBy", Value.fromBytes(Bytes.empty()));
   }
 
   save(): void {
@@ -245,6 +246,15 @@ export class Comment extends Entity {
 
   set createdAt(value: i32) {
     this.set("createdAt", Value.fromI32(value));
+  }
+
+  get createdBy(): Bytes {
+    let value = this.get("createdBy");
+    return value!.toBytes();
+  }
+
+  set createdBy(value: Bytes) {
+    this.set("createdBy", Value.fromBytes(value));
   }
 }
 
@@ -2309,7 +2319,7 @@ export class ApplicationAction extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("updatedBy", Value.fromString(""));
+    this.set("updatedBy", Value.fromBytes(Bytes.empty()));
     this.set("application", Value.fromString(""));
     this.set("state", Value.fromString(""));
   }
@@ -2351,13 +2361,13 @@ export class ApplicationAction extends Entity {
     this.set("updatedAtS", Value.fromI32(value));
   }
 
-  get updatedBy(): string {
+  get updatedBy(): Bytes {
     let value = this.get("updatedBy");
-    return value!.toString();
+    return value!.toBytes();
   }
 
-  set updatedBy(value: string) {
-    this.set("updatedBy", Value.fromString(value));
+  set updatedBy(value: Bytes) {
+    this.set("updatedBy", Value.fromBytes(value));
   }
 
   get application(): string {

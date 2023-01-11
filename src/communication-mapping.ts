@@ -6,7 +6,7 @@ import { PrivateCommentAddRequest, validatePrivateCommentAddRequest } from './js
 
 export function handleCommentAdded(event: CommentAdded): void {
 	const workspaceId = event.params.workspaceId.toHex()
-	const  grantAddress = event.params.grantAddress.toHex()
+	const grantAddress = event.params.grantAddress.toHex()
 	const applicationId = event.params.applicationId.toHex()
 	const isPrivate = event.params.isPrivate
 	const commentMetadataHash = event.params.commentMetadataHash
@@ -24,6 +24,7 @@ export function handleCommentAdded(event: CommentAdded): void {
 	commentEntity.workspace = workspaceId
 	commentEntity.grant = grantAddress
 	commentEntity.application = applicationId
+	commentEntity.createdBy = event.params.sender
 	commentEntity.isPrivate = isPrivate
 	commentEntity.createdAt = timestamp
 
