@@ -103,7 +103,7 @@ export function runTests(): void {
 	})
 
 	test('should add a rubric to a grant', () => {
-		createGrant()
+		createGrant(MOCK_GRANT_ID)
 
 		const ev = newMockEvent()
 

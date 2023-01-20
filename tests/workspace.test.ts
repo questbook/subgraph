@@ -4,6 +4,7 @@ import {
 	DisburseRewardFromSafe1,
 	DisburseRewardFromWallet,
 	FundsTransferStatusUpdated,
+	GrantsSectionUpdated,
 	QBAdminsUpdated,
 	WorkspaceMembersUpdated,
 	WorkspaceMemberUpdated,
@@ -17,6 +18,7 @@ import {
 	Grant,
 	Partner,
 	QBAdmin,
+	Section,
 	Social,
 	Token,
 	Workspace,
@@ -25,7 +27,7 @@ import {
 } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import {
-	handleDisburseReward, handleDisburseRewardFromSafe1, handleDisburseRewardFromWallet, handleFundsTransferStatusUpdated, handleQBAdminsUpdated,
+	handleDisburseReward, handleDisburseRewardFromSafe1, handleDisburseRewardFromWallet, handleFundsTransferStatusUpdated, handleGrantsSectionUpdate, handleQBAdminsUpdated,
 	handleWorkspaceMembersUpdated,
 	handleWorkspaceMemberUpdated,
 	handleWorkspaceSafeUpdated,
@@ -36,8 +38,13 @@ import {
 	assertArrayNotEmpty,
 	assertStringNotEmpty,
 	createApplication,
+	createGrant,
 	createWorkspace,
 	MOCK_APPLICATION_ID_ARRAY,
+	MOCK_GRANT_ID,
+	MOCK_GRANT_ID_2,
+	MOCK_GRANT_ID_3,
+	MOCK_GRANT_ID_ARRAY,
 	MOCK_QB_ADMIN_ID,
 	MOCK_WORKSPACE_ID,
 	MOCK_WORKSPACE_ID_ARRAY,
@@ -507,9 +514,9 @@ export function runTests(): void {
 		const fundsTransferStatusEntity = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x0123}`)
 		if(fundsTransferStatusEntity != null) {
 			assert.assertNotNull(fundsTransferStatusEntity)
-			assert.stringEquals(fundsTransferStatusEntity!.status, 'queued')
+			assert.stringEquals(fundsTransferStatusEntity.status, 'queued')
 			assert.i32Equals(fundsTransferStatusEntity!.tokenUSDValue!.toI32(), 10)
-			assert.i32Equals(fundsTransferStatusEntity!.executionTimestamp, 1665726957)
+			assert.i32Equals(fundsTransferStatusEntity.executionTimestamp, 1665726957)
 			
 			const grantEntity = Grant.load(a!.grant)
 			const workspace = Workspace.load(grantEntity!.workspace)
@@ -581,6 +588,72 @@ export function runTests(): void {
 		const removedAdmin = QBAdmin.load(MOCK_QB_ADMIN_ID.toHex())
 		assert.assertNull(removedAdmin)
 	})
+
+	test('should create new section', () => {
+		
+		const grant2 = createGrant(MOCK_GRANT_ID_2)!
+		const grant3 = createGrant(MOCK_GRANT_ID_3)!
+		// const grant1 = createGrant(MOCK_GRANT_ID)!
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('grantIds', ethereum.Value.fromAddressArray([MOCK_GRANT_ID_2, MOCK_GRANT_ID_3])),
+			new ethereum.EventParam('sectionName', ethereum.Value.fromString('Section 1')),
+			new ethereum.EventParam('sectionLogoIpfsHash', ethereum.Value.fromString('Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3')),
+		]
+		const event = new GrantsSectionUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleGrantsSectionUpdate(event)
+
+		const sectionEntity = Section.load('Section 1')
+		assert.assertNotNull(sectionEntity)
+		assert.stringEquals(sectionEntity!.sectionName, 'Section 1')
+		assert.stringEquals(sectionEntity!.sectionLogoIpfsHash, 'Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3')
+		assert.assertNotNull(sectionEntity!.grants)
+		assert.i32Equals(sectionEntity!.grants.length, 2)
+	})
+
+	test('should update existing section with new grant', () => {
+		
+		const grant2 = createGrant(MOCK_GRANT_ID_2)!
+		const grant3 = createGrant(MOCK_GRANT_ID_3)!
+		const grant1 = createGrant(MOCK_GRANT_ID)!
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('grantIds', MOCK_GRANT_ID_ARRAY),
+			new ethereum.EventParam('sectionName', ethereum.Value.fromString('Section 1')),
+			new ethereum.EventParam('sectionLogoIpfsHash', ethereum.Value.fromString('Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3')),
+		]
+		const event = new GrantsSectionUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleGrantsSectionUpdate(event)
+
+		const sectionEntity = Section.load('Section 1')
+		assert.assertNotNull(sectionEntity)
+		assert.stringEquals(sectionEntity!.sectionName, 'Section 1')
+		assert.stringEquals(sectionEntity!.sectionLogoIpfsHash, 'Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3')
+		assert.assertNotNull(sectionEntity!.grants)
+		assert.i32Equals(sectionEntity!.grants.length, 3)
+	})
+
+	test('delete section if no grants passed', () => {
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('grantIds', ethereum.Value.fromAddressArray([])),
+			new ethereum.EventParam('sectionName', ethereum.Value.fromString('Section 1')),
+			new ethereum.EventParam('sectionLogoIpfsHash', ethereum.Value.fromString('Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3')),
+		]
+		const event = new GrantsSectionUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleGrantsSectionUpdate(event)
+
+		const sectionEntity = Section.load('Section 1')
+		assert.assertNull(sectionEntity)
+	})
+
+	
 }
 
 function workspaceWithAdditionalMembers(addresses: Address[], emails: string[]): Workspace | null {
@@ -611,6 +684,7 @@ function workspaceWithAdditionalMembers(addresses: Address[], emails: string[]):
 
 	return Workspace.load(w.id)
 }
+
 
 const CUSTOM_TOKEN_ADDRESS = ByteArray.fromHexString('0x95b58a6bff3d14b7db2f5cb5f0ad413dc2940658')
 const UPDATE_JSON = 'json:{"title":"Zakoj zihuut behkeeve haluz ipu numaf aluba beobucu zodac itomevo lajbipih hafnoded asogamga wuip ufogzac kup ze.","bio": "lorem ipsum", "about":"Badikdo lem wop tav wa wam fah voveili zab letrifhi murmukun sutgisod kide wa hiwwowi doj. Ovociodu lamanuf kotuhe nezote ol pela ud owirowewa nukjug lajutfed cil ekhuc hu. Zifa adiguul zuchagmel rub acze buloggob minre nauh pon ozanoti pab safudu. Felsah ar hiakimir ketga roganmen poblo muznitag sudil hi hecruib mikma limtukfik guubale gegolu. Zi ozihun gekfoafa soce kicnujnoh aroruc fudcuhu wetlalduz duezpe tokeha ihhivoz he latid doasilof busej eco unipofu. Ni lin deppalos neap kiseklam lol reb guvogti ke futdujso boj se ov docabem.","logoIpfsHash":"10762a04-0da6-5e17-8886-ca2b0227601b","coverImageIpfsHash":"2527d562-1736-54ba-b930-64abba4c4b6c", "partners": [{"name": "lorem1", "industry": "ipsum2", "website": "https://www.lipsum.com/", "partnerImageHash": "815983c5-3ce7-50a5-b1bf-6c591af3be49"}], "socials":[{"name":"twitter","value":"http://ro.uk/cos"},{"name":"discord","value":"http://ewbaj.ao/povit"}],"createdAt":"2022-01-28T18:00:09.267Z", "tokens": [{"label": "WMATIC", "address": "0x95b58a6bff3d14b7db2f5cb5f0ad413dc2940658", "decimal": "18", "iconHash": "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco"}]}'

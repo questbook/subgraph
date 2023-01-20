@@ -46,12 +46,12 @@ export function createWorkspace(): Workspace | null {
 	return w
 }
 
-export function createGrant(): Grant | null {
+export function createGrant(grantId: Address): Grant | null {
 	const w = createWorkspace()
 	const ev = newMockEvent()
 
 	ev.parameters = [
-		new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
+		new ethereum.EventParam('grantAddress', ethereum.Value.fromAddress(grantId)),
 		new ethereum.EventParam('workspaceId', MOCK_WORKSPACE_ID),
 		// the IPFS hash contains mock data for the workspace
 		new ethereum.EventParam('metadataHash', ethereum.Value.fromString(CREATE_GRANT_JSON)),
@@ -67,7 +67,7 @@ export function createGrant(): Grant | null {
 }
 
 export function createApplication(): GrantApplication | null {
-	const g = createGrant()
+	const g = createGrant(MOCK_GRANT_ID)
 	const ev = newMockEvent()
 
 	ev.parameters = [
@@ -90,7 +90,7 @@ export function createApplication(): GrantApplication | null {
 }
 
 export function createGrantApplication(applicationId: ethereum.Value): GrantApplication | null {
-	const g = createGrant()
+	const g = createGrant(MOCK_GRANT_ID)
 	const ev = newMockEvent()
 
 	ev.parameters = [
@@ -153,5 +153,8 @@ const CREATE_APPLICATION_JSON = `json:{"grantId":"8d4d6f78-3f38-5b6f-a64d-6510c9
 export const CUSTOM_TOKEN_ADDRESS_GRANT = ByteArray.fromHexString('0x95b58a6bff3d14b7db2f5cb5f0ad413dc2941234')
 export const CREATE_GRANT_JSON = `json:{"grantManagers":["${WORKSPACE_CREATOR_ID}"],"title":"Kukgi kahni johfod sas juhalnoj kuc un umimedibi veojuula fid ekmoivo petajaha.","startDate":"2022-05-25","deadline":"2022-05-25","details":"Pafnor cosbiv togdactuv joz za dalepcuv wohor duhub obi kupnar kolgogo luc. Ur sipuome ole nu jotcob kuk epdinuz ifuha vodkehruw lo uhioze riud arumovok ukulevih gi rewiv. Bo ko fiiz sohofnaf guphuih bu etu inoodiuho ihebeaz muhfa ceta bohav zojebhu. Oguka ger falmelen hodugih fi tad pupokinu tafvirim fu ga sohu hi kenba povwujut jidege. Kaenuv cu hoz epeci bab ju ite ludgot ategiw vogil maniwut nej ifnugga pelitu volnuuti ejeb miskav.","link":"www.google.com","docIpfsHash":"QmPK1s3pNYLi9ERiq3BDxKa4XosgWwFRQUydHUtz4YgpqB","payoutType":"milestones","reviewType":"voting","milestones": ["testnet", "mainnet"],"reward":{"committed":"5000000000","asset":"0x2791bca1f2de4661ed88a30c99a7a9449aa84174"},"creatorId":"529b3343-9af5-5e72-9f7e-d9167c7aaf48","workspaceId":"2642d8ec-3ce8-56e0-8aed-7eba137410ec","fields":{"applicantName":{"title":"Uhpu ru mopuh vahkag ju kusihod lug cu cafle ravibara juebufa ap ta.","inputType":"long-form","pii":true},"applicantEmail":{"title":"Heojba binli zepah maposunur pa mateveib dofeh rutafudug cuwil ol ina jafrak.","inputType":"long-form"},"projectName":{"title":"Pawiv zarmep ilautebe uza gemele aluzamo agvici di sop itoam nudiwli liiracid kar okuidu nenejni dag uw mijceuf.","inputType":"long-form"},"projectDetails":{"title":"Tekaiz konam lararu kaovuota jib logruewu fevu owe zi tuzze guw ficaler.","inputType":"short-form"},"fundingBreakdown":{"title":"Nuni jaslaf jenunis nusrej doc ize rirma azraphe tovovugu ze ku sogijvem mop suctewno.","inputType":"short-form"},"83256fb1-dcee-5d24-ba91-d85136348931":{"title":"Sukok honok nagfa ubazabu udado zu fedok supitmi dades gok gisti jihwow lage iwa ze izegaju eridom.","inputType":"long-form"}}}`
 export const MOCK_GRANT_ID = Address.fromString('0xB23081F360e3847006dB660bae1c6d1b2e17eC2B')
-
+export const MOCK_GRANT_ID_2 = Address.fromString('0xB23081F360e3847006dB660bae1c6d1b2e17eC9C')
+export const MOCK_GRANT_ID_3 = Address.fromString('0xB23081F360e3847006dB660bae1c6d1b2e17fC9D')
 export const MOCK_QB_ADMIN_ID = Address.fromString('0xB23081F360e3847006dB660bae1c6d1b2e17eC2C')
+
+export const MOCK_GRANT_ID_ARRAY = ethereum.Value.fromAddressArray([MOCK_GRANT_ID, MOCK_GRANT_ID_2, MOCK_GRANT_ID_3])

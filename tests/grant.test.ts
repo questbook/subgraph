@@ -10,7 +10,7 @@ import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, CUSTOM_TOKEN_AD
 export function runTests(): void {
 
 	test('should create a grant', () => {
-		const g = createGrant()
+		const g = createGrant(MOCK_GRANT_ID)
 		assert.i32Equals(g!.createdAtS, 123)
 		assert.assertTrue(g!.title.length > 0)
 		assert.booleanEquals(g!.acceptingApplications, true)
@@ -73,7 +73,7 @@ export function runTests(): void {
 	})
 
 	test('should withdraw funds from a grant', () => {
-		const g = createGrant()
+		const g = createGrant(MOCK_GRANT_ID)
 
 		const ev = newMockEvent()
 
@@ -111,7 +111,7 @@ export function runTests(): void {
 	})
 
 	test('should update grant reward without token', () => {
-		const g = createGrant()
+		const g = createGrant(MOCK_GRANT_ID)
 
 		const ev = newMockEvent()
 
@@ -145,7 +145,7 @@ export function runTests(): void {
 	})
 
 	test('should update grant reward with token', () => {
-		const g = createGrant()
+		const g = createGrant(MOCK_GRANT_ID)
 
 		const ev = newMockEvent()
 
@@ -179,7 +179,7 @@ export function runTests(): void {
 	})
 	
 	test('should update a grant with no crashes', () => {
-		const g = createGrant()
+		const g = createGrant(MOCK_GRANT_ID)
 
 		const ev = newMockEvent()
 
