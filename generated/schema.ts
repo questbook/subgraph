@@ -129,6 +129,70 @@ export class Social extends Entity {
   }
 }
 
+export class Section extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("grants", Value.fromStringArray(new Array(0)));
+    this.set("sectionName", Value.fromString(""));
+    this.set("sectionLogoIpfsHash", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Section entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Section entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Section", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Section | null {
+    return changetype<Section | null>(store.get("Section", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get grants(): Array<string> {
+    let value = this.get("grants");
+    return value!.toStringArray();
+  }
+
+  set grants(value: Array<string>) {
+    this.set("grants", Value.fromStringArray(value));
+  }
+
+  get sectionName(): string {
+    let value = this.get("sectionName");
+    return value!.toString();
+  }
+
+  set sectionName(value: string) {
+    this.set("sectionName", Value.fromString(value));
+  }
+
+  get sectionLogoIpfsHash(): string {
+    let value = this.get("sectionLogoIpfsHash");
+    return value!.toString();
+  }
+
+  set sectionLogoIpfsHash(value: string) {
+    this.set("sectionLogoIpfsHash", Value.fromString(value));
+  }
+}
+
 export class Comment extends Entity {
   constructor(id: string) {
     super();

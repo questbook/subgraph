@@ -97,6 +97,16 @@ type Social @entity {
   value: String!
 }
 
+type Section @entity {
+  id: ID!
+  "grants under this section"
+  grants: [Grant!]!
+  "Name of the section"
+  sectionName: String!
+  "IPFS hash of the section logo"
+  sectionLogoIpfsHash: String!
+}
+
 type Comment @entity {
   id: ID!
   "comment public metadata hash"
