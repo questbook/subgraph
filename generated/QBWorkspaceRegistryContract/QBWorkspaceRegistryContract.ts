@@ -284,6 +284,32 @@ export class FundsTransferStatusUpdated__Params {
   }
 }
 
+export class GrantsSectionUpdated extends ethereum.Event {
+  get params(): GrantsSectionUpdated__Params {
+    return new GrantsSectionUpdated__Params(this);
+  }
+}
+
+export class GrantsSectionUpdated__Params {
+  _event: GrantsSectionUpdated;
+
+  constructor(event: GrantsSectionUpdated) {
+    this._event = event;
+  }
+
+  get grantIds(): Array<Address> {
+    return this._event.parameters[0].value.toAddressArray();
+  }
+
+  get sectionName(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get sectionLogoIpfsHash(): string {
+    return this._event.parameters[2].value.toString();
+  }
+}
+
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -1643,6 +1669,44 @@ export class UpdateFundsTransferTransactionStatusCall__Outputs {
   _call: UpdateFundsTransferTransactionStatusCall;
 
   constructor(call: UpdateFundsTransferTransactionStatusCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateGrantsSectionCall extends ethereum.Call {
+  get inputs(): UpdateGrantsSectionCall__Inputs {
+    return new UpdateGrantsSectionCall__Inputs(this);
+  }
+
+  get outputs(): UpdateGrantsSectionCall__Outputs {
+    return new UpdateGrantsSectionCall__Outputs(this);
+  }
+}
+
+export class UpdateGrantsSectionCall__Inputs {
+  _call: UpdateGrantsSectionCall;
+
+  constructor(call: UpdateGrantsSectionCall) {
+    this._call = call;
+  }
+
+  get _grantIds(): Array<Address> {
+    return this._call.inputValues[0].value.toAddressArray();
+  }
+
+  get _sectionName(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _sectionLogoIpfsHash(): string {
+    return this._call.inputValues[2].value.toString();
+  }
+}
+
+export class UpdateGrantsSectionCall__Outputs {
+  _call: UpdateGrantsSectionCall;
+
+  constructor(call: UpdateGrantsSectionCall) {
     this._call = call;
   }
 }
