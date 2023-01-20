@@ -4,6 +4,7 @@ import {
 	DisburseRewardFromSafe1,
 	DisburseRewardFromWallet,
 	FundsTransferStatusUpdated,
+	GrantsSectionUpdated,
 	QBAdminsUpdated,
 	WorkspaceCreated,
 	WorkspaceMemberMigrate,
@@ -13,7 +14,7 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -84,7 +85,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	member.lastReviewSubmittedAt = 0
 	member.addedBy = member.id
 	member.lastKnownTxHash = event.transaction.hash
-	member.enabled = true 
+	member.enabled = true
 
 	member.save()
 	entity.save()
@@ -323,7 +324,7 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 		log.warning(`[${event.transaction.hash.toHex()}] member not found for migrate`, [])
 		return
 	}
-	
+
 	for(let i = 0; i < workspace.grants.length; ++i) {
 		const grantId = workspace.grants[i]
 		const grant = Grant.load(grantId)
@@ -463,3 +464,51 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 		fundsTransferEntity.save()
 	}
 }
+
+export function handleGrantsSectionUpdate(event: GrantsSectionUpdated): void {
+	const grantIds = event.params.grantIds
+	const sectionName = event.params.sectionName
+	const sectionLogoIpfsHash = event.params.sectionLogoIpfsHash
+
+	const grants: string[] = []
+	// first check if all grants exist
+	for(let i = 0; i < grantIds.length; i++) {
+		const grantId = grantIds[i].toHexString()
+		const grant = Grant.load(grantId)
+		if(!grant) {
+			log.warning(`[${event.transaction.hash.toHex()}] Grant not found for section update`, [])
+			return
+		} else {
+			grants.push(grantId)
+		}
+	}
+
+	const sectionEntity = Section.load(`${sectionName}`)
+
+	// if grantIds is empty, remove the section
+	if(grantIds.length == 0) {
+		if(sectionEntity) {
+			store.remove('Section', `${sectionName}`)
+		}
+
+		return
+	}
+	
+	// if section does not exist, create it
+	if(!sectionEntity) {
+		const newSectionEntity = new Section(`${sectionName}`)
+		newSectionEntity.sectionName = sectionName
+		newSectionEntity.sectionLogoIpfsHash = sectionLogoIpfsHash
+		newSectionEntity.grants = grants
+		newSectionEntity.save()
+	} else { // if section exists, update it
+		sectionEntity.grants = grants
+		if(sectionEntity.sectionLogoIpfsHash) {
+			sectionEntity.sectionLogoIpfsHash = sectionLogoIpfsHash
+			sectionEntity.save()
+		}
+
+		return
+	}
+}
+
