@@ -53,7 +53,7 @@ dataSources:
         - event: FundsTransferStatusUpdated(uint96[],string[],string[],uint256[],uint256[])
           handler: handleFundsTransferStatusUpdated
         - event: GrantsSectionUpdated(address[],string,string)
-          handler: handleGrantsSectionUpdate()
+          handler: handleGrantsSectionUpdate
       file: ./src/workspace-mapping.ts
   - kind: ethereum
     name: QBApplicationsContract
