@@ -488,9 +488,7 @@ export function runTests(): void {
 			assert.i32Equals(fundsTransferStatusEntity!.executionTimestamp, 1665726957)
 			
 			const grantEntity = Grant.load(a!.grant)
-			const workspace = Workspace.load(grantEntity!.workspace)
-
-			assert.i32Equals(workspace!.totalGrantFundingDisbursedUSD!, 10)
+			assert.i32Equals(grantEntity!.totalGrantFundingDisbursedUSD!, 10)
 		}
 
 	})
@@ -519,9 +517,7 @@ export function runTests(): void {
 			assert.i32Equals(fundsTransferStatusEntity.executionTimestamp, 1665726957)
 			
 			const grantEntity = Grant.load(a!.grant)
-			const workspace = Workspace.load(grantEntity!.workspace)
-
-			assert.i32Equals(workspace!.totalGrantFundingDisbursedUSD!, 10)
+			assert.i32Equals(grantEntity!.totalGrantFundingDisbursedUSD!, 10)
 		}
 
 	})

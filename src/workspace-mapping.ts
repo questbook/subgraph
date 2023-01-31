@@ -68,10 +68,8 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.metadataHash = event.params.metadataHash
 	entity.isVisible = true
 	entity.mostRecentGrantPostedAtS = 0
-	entity.totalGrantFundingCommittedUSD = 0
 	entity.numberOfApplications = 0
 	entity.numberOfApplicationsSelected = 0
-	entity.totalGrantFundingDisbursedUSD = 0
 	entity.grants = []
 
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
@@ -440,6 +438,7 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 			continue
 		}
 
+		const oldStatus = fundsTransferEntity.status
 		fundsTransferEntity.status = statuses[i]
 		fundsTransferEntity.tokenUSDValue = tokenUSDValues[i]
 		fundsTransferEntity.executionTimestamp = executionTimestamps[i].toI32()
@@ -455,10 +454,10 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 			continue
 		}
 
-		const workspace = Workspace.load(grantEntity.workspace)
-		if(workspace && (fundsTransferEntity.type == 'funds_disbursed_from_safe' || fundsTransferEntity.type == 'funds_disbursed_from_wallet')) {
-			workspace.totalGrantFundingDisbursedUSD = workspace.totalGrantFundingDisbursedUSD += tokenUSDValues[i].toI32()
-			workspace.save()
+		if(oldStatus == 'queued' && statuses[i] == 'executed' && (fundsTransferEntity.type == 'funds_disbursed_from_safe' || fundsTransferEntity.type == 'funds_disbursed_from_wallet')) {
+			// update grant balance
+			grantEntity.totalGrantFundingDisbursedUSD = grantEntity.totalGrantFundingDisbursedUSD += tokenUSDValues[i].toI32()
+			grantEntity.save()
 		}
 
 		fundsTransferEntity.save()

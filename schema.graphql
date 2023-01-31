@@ -218,6 +218,10 @@ type Grant @entity {
   details: String!
   "Proposed reward for the grant"
   reward: Reward!
+  "total grant funding committed in USD"
+  totalGrantFundingCommittedUSD: Int!
+  "total grant funding committed in USD"
+  totalGrantFundingDisbursedUSD: Int!
   "Workspace which created the grant"
   workspace: Workspace!
   "ISO formatted date string"
@@ -360,10 +364,6 @@ type Workspace @entity {
   numberOfApplications: Int!
   "total number of applications the DAO has accepted"
   numberOfApplicationsSelected: Int!
-  "total grant funding committed in USD"
-  totalGrantFundingCommittedUSD: Int!
-  "total grant funding committed in USD"
-  totalGrantFundingDisbursedUSD: Int!
   "Members of the workspace"
   members: [WorkspaceMember!]! @derivedFrom(field: "workspace")
   "List of social media handles of the workspace"
@@ -542,8 +542,8 @@ type Notification @entity {
   content: String!
 
   type: NotificationType!
-  "The ID of the entity being affected"
-  entityId: String!
+  "The IDs of the entity being affected"
+  entityIds: [String!]!
   "Who all should recv the notification"
   recipientIds: [Bytes!]!
   "Who caused the notification to be sent"

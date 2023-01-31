@@ -1118,6 +1118,24 @@ export class Grant extends Entity {
     this.set("reward", Value.fromString(value));
   }
 
+  get totalGrantFundingCommittedUSD(): i32 {
+    let value = this.get("totalGrantFundingCommittedUSD");
+    return value!.toI32();
+  }
+
+  set totalGrantFundingCommittedUSD(value: i32) {
+    this.set("totalGrantFundingCommittedUSD", Value.fromI32(value));
+  }
+
+  get totalGrantFundingDisbursedUSD(): i32 {
+    let value = this.get("totalGrantFundingDisbursedUSD");
+    return value!.toI32();
+  }
+
+  set totalGrantFundingDisbursedUSD(value: i32) {
+    this.set("totalGrantFundingDisbursedUSD", Value.fromI32(value));
+  }
+
   get workspace(): string {
     let value = this.get("workspace");
     return value!.toString();
@@ -1976,24 +1994,6 @@ export class Workspace extends Entity {
 
   set numberOfApplicationsSelected(value: i32) {
     this.set("numberOfApplicationsSelected", Value.fromI32(value));
-  }
-
-  get totalGrantFundingCommittedUSD(): i32 {
-    let value = this.get("totalGrantFundingCommittedUSD");
-    return value!.toI32();
-  }
-
-  set totalGrantFundingCommittedUSD(value: i32) {
-    this.set("totalGrantFundingCommittedUSD", Value.fromI32(value));
-  }
-
-  get totalGrantFundingDisbursedUSD(): i32 {
-    let value = this.get("totalGrantFundingDisbursedUSD");
-    return value!.toI32();
-  }
-
-  set totalGrantFundingDisbursedUSD(value: i32) {
-    this.set("totalGrantFundingDisbursedUSD", Value.fromI32(value));
   }
 
   get members(): Array<string> {
@@ -3117,7 +3117,7 @@ export class Notification extends Entity {
     this.set("title", Value.fromString(""));
     this.set("content", Value.fromString(""));
     this.set("type", Value.fromString(""));
-    this.set("entityId", Value.fromString(""));
+    this.set("entityIds", Value.fromStringArray(new Array(0)));
     this.set("recipientIds", Value.fromBytesArray(new Array(0)));
     this.set("cursor", Value.fromString(""));
   }
@@ -3175,13 +3175,13 @@ export class Notification extends Entity {
     this.set("type", Value.fromString(value));
   }
 
-  get entityId(): string {
-    let value = this.get("entityId");
-    return value!.toString();
+  get entityIds(): Array<string> {
+    let value = this.get("entityIds");
+    return value!.toStringArray();
   }
 
-  set entityId(value: string) {
-    this.set("entityId", Value.fromString(value));
+  set entityIds(value: Array<string>) {
+    this.set("entityIds", Value.fromStringArray(value));
   }
 
   get recipientIds(): Array<Bytes> {

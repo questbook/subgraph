@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from '../../generated/schema'
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication } from '../../generated/schema'
 import { getUSDReward } from './generics'
 import { addFundsTransferNotification } from './notifications'
 
@@ -89,18 +89,13 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 
 	const grantEntity = Grant.load(application.grant)
 	if(grantEntity) {
-		const workspace = Workspace.load(grantEntity.workspace)
-		if(workspace) {
-			if(disburseEntity.type != 'funds_disbursed_from_safe' && disburseEntity.type != 'funds_disbursed_from_wallet') {
-				const usd = getUSDReward(asset, amountPaid)
-				if(usd > 0) {
-					workspace.totalGrantFundingDisbursedUSD += usd
-				}
-
-				workspace.save()
+		if(disburseEntity.type != 'funds_disbursed_from_safe' && disburseEntity.type != 'funds_disbursed_from_wallet') {
+			const usd = getUSDReward(asset, amountPaid)
+			if(usd > 0) {
+				grantEntity.totalGrantFundingDisbursedUSD += usd
 			}
-		} else {
-			log.warning(`[${rewardProps.event.transaction.hash.toHex()}] workspace not found for grant: ${grantEntity.id}`, [])
+
+			grantEntity.save()
 		}
 
 		// find grant and reduce the amount of the funding

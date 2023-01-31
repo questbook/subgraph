@@ -29,7 +29,7 @@ export function runTests(): void {
 		const w = Workspace.load(g!.workspace)
 		assert.assertNotNull(w)
 		assert.i32Equals(w!.mostRecentGrantPostedAtS, g!.createdAtS)
-		assert.i32Equals(w!.totalGrantFundingCommittedUSD, 5000)
+		assert.i32Equals(g!.totalGrantFundingCommittedUSD, 5000)
 	})
 
 	test('should fail to create a grant due to invalid reward', () => {
@@ -107,7 +107,7 @@ export function runTests(): void {
 
 		assert.assertNotNull(notificationEntity)
 		assert.stringEquals(notificationEntity!.type, 'funds_withdrawn')
-		assert.stringEquals(notificationEntity!.entityId, g!.id)
+		assert.stringEquals(notificationEntity!.entityIds[0], g!.id)
 	})
 
 	test('should update grant reward without token', () => {

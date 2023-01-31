@@ -1,5 +1,5 @@
 import { log } from '@graphprotocol/graph-ts'
-import { Grant, Reward, Workspace } from '../../generated/schema'
+import { Grant, Reward } from '../../generated/schema'
 import { GrantUpdateRequest, validateGrantUpdateRequest } from '../json-schema'
 import { validatedJsonFromIpfs } from '../json-schema/json'
 import { dateToUnixTimestamp, getUSDReward, isPlausibleIPFSHash, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen, removeEntityCollection } from './generics'
@@ -80,24 +80,17 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 			const newUSDReward = getUSDReward(newReward.asset, newReward.committed)
 
 			if(oldUSDReward > 0 || newUSDReward > 0) {
-				const workspace = Workspace.load(entity.workspace)!
-				if(!workspace) {
-					log.warning(`[${params.transactionHash}] error in updating grant reward: "workspace (${entity.workspace}) not found"`, [])
-					return
-				}
-
 				// if it was USD, remove the old amount
 				if(oldUSDReward > 0) {
-					workspace.totalGrantFundingCommittedUSD -= oldUSDReward
+					entity.totalGrantFundingCommittedUSD -= oldUSDReward
 				}
 
 				// if it is USD, add the new amount
 				if(newUSDReward > 0) {
-					workspace.totalGrantFundingCommittedUSD += newUSDReward
+					entity.totalGrantFundingCommittedUSD += newUSDReward
 				}
 
-				workspace.save()
-				log.debug(`updated workspace ${workspace.id}`, [])
+				log.debug(`updated reward disbursed ${entity.id}`, [])
 			}
 
 		}

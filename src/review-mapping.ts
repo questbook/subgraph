@@ -3,6 +3,7 @@ import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmit
 import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { migrateApplicationReviewer, migrateGrant, migrateRubric } from './utils/migrations'
+import { reviewSubmittedNotification } from './utils/notifications'
 import { rubricSetHandler } from './utils/rubricSetHandler'
 import { ReviewSetRequest, validateReviewSetRequest } from './json-schema'
 
@@ -108,6 +109,8 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	application.pendingReviewerAddresses = pendingReviewerAddresses
 	application.doneReviewerAddresses = doneReviewerAddresses
 	application.save()
+
+	reviewSubmittedNotification(review, event.transaction.hash.toHex(), event.params._reviewerAddress)
 }
 
 export function handleReviewersAssigned(event: ReviewersAssigned): void {
