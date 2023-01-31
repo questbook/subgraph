@@ -454,7 +454,7 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 			continue
 		}
 
-		if(oldStatus === 'queued' && statuses[i] === 'executed' && (fundsTransferEntity.type == 'funds_disbursed_from_safe' || fundsTransferEntity.type == 'funds_disbursed_from_wallet')) {
+		if(oldStatus == 'queued' && statuses[i] == 'executed' && (fundsTransferEntity.type == 'funds_disbursed_from_safe' || fundsTransferEntity.type == 'funds_disbursed_from_wallet')) {
 			// update grant balance
 			grantEntity.totalGrantFundingDisbursedUSD = grantEntity.totalGrantFundingDisbursedUSD += tokenUSDValues[i].toI32()
 			grantEntity.save()

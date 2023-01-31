@@ -18,7 +18,7 @@ export function addFundsTransferNotification(transfer: FundsTransfer): void {
 				}
 
 				notif.recipientIds = [app.applicantId]
-				notif.entityIds = [app.id]
+				notif.entityIds = [grant.id, app.id]
 			} else if(transfer.type == 'funds_deposited') {
 				notif.title = 'Funds Deposited!'
 				notif.content = ''
@@ -157,7 +157,7 @@ export function addMilestoneUpdateNotification(milestone: ApplicationMilestone, 
 					notif.recipientIds = [application.applicantId]
 				}
 
-				notif.entityIds = [milestone.id]
+				notif.entityIds = [milestone.id, grant.id, application.id]
 				notif.actorId = actorId
 				notif.cursor = milestone.updatedAtS.toString(16)
 				notif.save()
