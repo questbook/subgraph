@@ -213,9 +213,8 @@ export function runTests(): void {
 		assert.stringEquals(n!.type, 'funds_disbursed')
 
 		const grant = Grant.load(g!.grant)
-		const workspace = Workspace.load(grant!.workspace)
 
-		assert.i32Equals(workspace!.totalGrantFundingDisbursedUSD, 30000)
+		assert.i32Equals(grant!.totalGrantFundingDisbursedUSD, 30000)
 	})
 
 	test('record a transaction', () => {

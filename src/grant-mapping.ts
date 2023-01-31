@@ -94,6 +94,10 @@ export function handleGrantCreated(event: GrantCreated): void {
 	entity.numberOfApplications = 0
 	entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
 
+	const usdReward = getUSDReward(reward.asset, reward.committed)
+	entity.totalGrantFundingCommittedUSD = usdReward
+	entity.totalGrantFundingDisbursedUSD = 0
+	
 	entity.save()
 
 	const grants: string[] = workspace.grants
@@ -101,11 +105,9 @@ export function handleGrantCreated(event: GrantCreated): void {
 	workspace.grants = grants
 
 	workspace.mostRecentGrantPostedAtS = time
-
-	const usdReward = getUSDReward(reward.asset, reward.committed)
-	if(usdReward > 0) {
-		workspace.totalGrantFundingCommittedUSD += usdReward
-	}
+	// if(usdReward > 0) {
+	// 	workspace.totalGrantFundingCommittedUSD += usdReward
+	// }
 
 	workspace.save()
 

@@ -1118,6 +1118,24 @@ export class Grant extends Entity {
     this.set("reward", Value.fromString(value));
   }
 
+  get totalGrantFundingCommittedUSD(): i32 {
+    let value = this.get("totalGrantFundingCommittedUSD");
+    return value!.toI32();
+  }
+
+  set totalGrantFundingCommittedUSD(value: i32) {
+    this.set("totalGrantFundingCommittedUSD", Value.fromI32(value));
+  }
+
+  get totalGrantFundingDisbursedUSD(): i32 {
+    let value = this.get("totalGrantFundingDisbursedUSD");
+    return value!.toI32();
+  }
+
+  set totalGrantFundingDisbursedUSD(value: i32) {
+    this.set("totalGrantFundingDisbursedUSD", Value.fromI32(value));
+  }
+
   get workspace(): string {
     let value = this.get("workspace");
     return value!.toString();
@@ -1976,24 +1994,6 @@ export class Workspace extends Entity {
 
   set numberOfApplicationsSelected(value: i32) {
     this.set("numberOfApplicationsSelected", Value.fromI32(value));
-  }
-
-  get totalGrantFundingCommittedUSD(): i32 {
-    let value = this.get("totalGrantFundingCommittedUSD");
-    return value!.toI32();
-  }
-
-  set totalGrantFundingCommittedUSD(value: i32) {
-    this.set("totalGrantFundingCommittedUSD", Value.fromI32(value));
-  }
-
-  get totalGrantFundingDisbursedUSD(): i32 {
-    let value = this.get("totalGrantFundingDisbursedUSD");
-    return value!.toI32();
-  }
-
-  set totalGrantFundingDisbursedUSD(value: i32) {
-    this.set("totalGrantFundingDisbursedUSD", Value.fromI32(value));
   }
 
   get members(): Array<string> {
