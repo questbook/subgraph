@@ -551,7 +551,7 @@ type Notification @entity {
   "Who caused the notification to be sent"
   actorId: Bytes
   "Descending order of cursor"
-  cursor: String!
+  cursor: Int!
 }
 
 type Migration @entity {

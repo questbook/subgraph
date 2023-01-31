@@ -27,6 +27,7 @@ import {
 } from './utils/generics'
 import { disburseReward } from './utils/handle-disburse-reward'
 import { migrateGrant } from './utils/migrations'
+import { addFundsTransferNotification } from './utils/notifications'
 import {
 	validateWorkspaceCreateRequest,
 	validateWorkspaceUpdateRequest,
@@ -461,6 +462,8 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 		}
 
 		fundsTransferEntity.save()
+
+		addFundsTransferNotification(fundsTransferEntity)
 	}
 }
 

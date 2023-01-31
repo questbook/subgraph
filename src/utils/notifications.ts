@@ -54,7 +54,7 @@ export function addFundsTransferNotification(transfer: FundsTransfer): void {
 			}
 
 			notif.actorId = transfer.sender
-			notif.cursor = transfer.createdAtS.toString(16)
+			notif.cursor = transfer.createdAtS
 			notif.type = transfer.type
 			notif.save()
 		} else {
@@ -117,7 +117,7 @@ export function addApplicationUpdateNotification(application: GrantApplication, 
 
 		notif.entityIds = [application.id, grant.id]
 		notif.actorId = actorId
-		notif.cursor = application.updatedAtS.toString(16)
+		notif.cursor = application.updatedAtS
 		notif.save()
 	} else {
 		log.warning('grant not found for application update', [])
@@ -159,7 +159,7 @@ export function addMilestoneUpdateNotification(milestone: ApplicationMilestone, 
 
 				notif.entityIds = [milestone.id, grant.id, application.id]
 				notif.actorId = actorId
-				notif.cursor = milestone.updatedAtS.toString(16)
+				notif.cursor = milestone.updatedAtS
 				notif.save()
 			} else {
 				log.warning(`workspace absent for milestone update, ID=${eventId}`, [])
@@ -191,9 +191,9 @@ export function addCommentAddedNotification(comment: Comment, actorId: Address):
 
 	notif.content = `${actorId.toHex()} has commented on the application to ${grant.title} by ${app.applicantId.toHex()}`
 	notif.recipientIds = [actorId, app.applicantId]
-	notif.entityIds = [grant.id, app.id]
+	notif.entityIds = [app.id, grant.id]
 	notif.actorId = actorId
-	notif.cursor = comment.createdAt.toString(16)
+	notif.cursor = comment.createdAt
 	notif.save()
 }
 
@@ -216,9 +216,9 @@ export function reviewSubmittedNotification(review: Review, eventId: string, rev
 
 	notif.content = `${reviewer.toHex()} has submitted a review for the application to ${grant.title} by ${app.applicantId.toHex()}`
 	notif.recipientIds = [reviewer, app.applicantId]
-	notif.entityIds = [grant.id, app.id]
+	notif.entityIds = [app.id, grant.id]
 	notif.actorId = reviewer
-	notif.cursor = review.createdAtS.toString(16)
+	notif.cursor = review.createdAtS
 	notif.save()
 }
 

@@ -3119,7 +3119,6 @@ export class Notification extends Entity {
     this.set("type", Value.fromString(""));
     this.set("entityIds", Value.fromStringArray(new Array(0)));
     this.set("recipientIds", Value.fromBytesArray(new Array(0)));
-    this.set("cursor", Value.fromString(""));
   }
 
   save(): void {
@@ -3210,13 +3209,13 @@ export class Notification extends Entity {
     }
   }
 
-  get cursor(): string {
+  get cursor(): i32 {
     let value = this.get("cursor");
-    return value!.toString();
+    return value!.toI32();
   }
 
-  set cursor(value: string) {
-    this.set("cursor", Value.fromString(value));
+  set cursor(value: i32) {
+    this.set("cursor", Value.fromI32(value));
   }
 }
 
