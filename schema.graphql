@@ -39,7 +39,9 @@ enum NotificationType {
   funds_withdrawn,
   funds_disbursed_from_safe,
   funds_disbursed_from_wallet,
-  application_completed
+  application_completed,
+  comment_added,
+  review_submitted
 }
 
 enum FundsTransferType {
