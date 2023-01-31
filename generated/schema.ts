@@ -3117,7 +3117,7 @@ export class Notification extends Entity {
     this.set("title", Value.fromString(""));
     this.set("content", Value.fromString(""));
     this.set("type", Value.fromString(""));
-    this.set("entityId", Value.fromString(""));
+    this.set("entityIds", Value.fromStringArray(new Array(0)));
     this.set("recipientIds", Value.fromBytesArray(new Array(0)));
     this.set("cursor", Value.fromString(""));
   }
@@ -3175,13 +3175,13 @@ export class Notification extends Entity {
     this.set("type", Value.fromString(value));
   }
 
-  get entityId(): string {
-    let value = this.get("entityId");
-    return value!.toString();
+  get entityIds(): Array<string> {
+    let value = this.get("entityIds");
+    return value!.toStringArray();
   }
 
-  set entityId(value: string) {
-    this.set("entityId", Value.fromString(value));
+  set entityIds(value: Array<string>) {
+    this.set("entityIds", Value.fromStringArray(value));
   }
 
   get recipientIds(): Array<Bytes> {

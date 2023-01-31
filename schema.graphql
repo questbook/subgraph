@@ -542,8 +542,8 @@ type Notification @entity {
   content: String!
 
   type: NotificationType!
-  "The ID of the entity being affected"
-  entityId: String!
+  "The IDs of the entity being affected"
+  entityIds: [String!]!
   "Who all should recv the notification"
   recipientIds: [Bytes!]!
   "Who caused the notification to be sent"

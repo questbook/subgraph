@@ -2,6 +2,7 @@ import { log } from '@graphprotocol/graph-ts'
 import { CommentAdded } from '../generated/QBCommunicationContract/QBCommunicationContract'
 import { Comment, GrantApplication, PIIData } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
+import { addCommentAddedNotification } from './utils/notifications'
 import { PrivateCommentAddRequest, validatePrivateCommentAddRequest } from './json-schema'
 
 export function handleCommentAdded(event: CommentAdded): void {
@@ -58,4 +59,6 @@ export function handleCommentAdded(event: CommentAdded): void {
 
 	commentEntity.save()
 	log.info(`[${event.transaction.hash.toHex()}] [${isPrivate? 'PRIVATE': 'PUBLIC'}] Comment added to application ${applicationId} by ${sender}`, [])
+
+	addCommentAddedNotification(commentEntity, event.params.sender)
 }

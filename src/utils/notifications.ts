@@ -1,5 +1,5 @@
 import { Address, log } from '@graphprotocol/graph-ts'
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Notification, Workspace } from '../../generated/schema'
+import { ApplicationMilestone, Comment, FundsTransfer, Grant, GrantApplication, Notification, Review, Workspace } from '../../generated/schema'
 
 export function addFundsTransferNotification(transfer: FundsTransfer): void {
 	const grant = Grant.load(transfer.grant)
@@ -7,7 +7,7 @@ export function addFundsTransferNotification(transfer: FundsTransfer): void {
 		const workspace = Workspace.load(grant.workspace)
 		if(workspace) {
 			const notif = new Notification(`n.${transfer.id}`)
-			if(transfer.type == 'funds_disburse') {
+			if(transfer.type == 'funds_disbursed') {
 				notif.title = 'Funds Released!'
 				notif.content = `'${workspace.title}' just released ${transfer.amount.toString()} to your wallet for your application to '${grant.title}'`
 
@@ -18,19 +18,39 @@ export function addFundsTransferNotification(transfer: FundsTransfer): void {
 				}
 
 				notif.recipientIds = [app.applicantId]
-				notif.entityId = app.id
+				notif.entityIds = [app.id]
 			} else if(transfer.type == 'funds_deposited') {
 				notif.title = 'Funds Deposited!'
 				notif.content = ''
 
 				notif.recipientIds = [grant.creatorId]
-				notif.entityId = grant.id
+				notif.entityIds = [grant.id]
 			} else if(transfer.type == 'funds_withdrawn') {
 				notif.title = 'Funds Withdrawn!'
 				notif.content = ''
 
 				notif.recipientIds = [grant.creatorId]
-				notif.entityId = grant.id
+				notif.entityIds = [grant.id]
+			} else if(transfer.type == 'funds_disbursed_from_safe' || transfer.type == 'funds_disbursed_from_wallet') {
+				if(transfer.status == 'queued') {
+					notif.title = 'Payout initiated for your proposal!'
+				} else if(transfer.status == 'executed') {
+					notif.title = 'Payout executed for your proposal!'
+				}
+
+				const app = GrantApplication.load(transfer.application!)
+				if(!app) {
+					log.warning(`application absent for funds disburse, ID=${transfer.id}`, [])
+					return
+				}
+
+				notif.content = ''
+
+				notif.recipientIds = [grant.creatorId, app.applicantId]
+				notif.entityIds = [grant.id, app.id]
+			} else {
+				log.warning(`unknown funds transfer type, ID=${transfer.id}`, [])
+				return
 			}
 
 			notif.actorId = transfer.sender
@@ -59,7 +79,7 @@ export function addApplicationUpdateNotification(application: GrantApplication, 
 			notif.content = `${application.applicantId.toHex()} just submitted an application for your grant '${grant.title}'`
 			notif.type = 'application_submitted'
 
-			notif.recipientIds = [grant.creatorId]
+			notif.recipientIds = [grant.creatorId, application.applicantId]
 		} else if(application.state == 'resubmit') {
 			notif.title = 'Application Resubmission Required'
 			const workspace = Workspace.load(grant.workspace)
@@ -71,31 +91,31 @@ export function addApplicationUpdateNotification(application: GrantApplication, 
 			notif.content = `${workspace.title} has requested you make changes & resubmit your application to the grant '${grant.title}'\n\n--\n\n${feedbackDao!}`
 			notif.type = 'application_resubmitted'
 
-			notif.recipientIds = [application.applicantId]
+			notif.recipientIds = [grant.creatorId, application.applicantId]
 		} else if(application.state == 'approved') {
 			notif.title = 'Application Approved!'
 			notif.content = `Your application to '${grant.title}' was just approved. Congratulations!`
 			notif.type = 'application_accepted'
 
-			notif.recipientIds = [application.applicantId]
+			notif.recipientIds = [grant.creatorId, application.applicantId]
 		} else if(application.state == 'rejected') {
 			notif.title = 'Application Rejected'
 			notif.content = `We regret to inform you that your application to '${grant.title}' was rejected.\n\n--\n\n${feedbackDao!}`
 			notif.type = 'application_rejected'
 
-			notif.recipientIds = [application.applicantId]
+			notif.recipientIds = [grant.creatorId, application.applicantId]
 		} else if(application.state == 'completed') {
 			notif.title = 'Application Completed'
 			notif.content = `Your application to '${grant.title}' was marked completed. Congratulations!`
 			notif.type = 'application_completed'
 
-			notif.recipientIds = [application.applicantId]
+			notif.recipientIds = [grant.creatorId, application.applicantId]
 		} else {
 			log.warning(`invalid state for notification on '${application.id}' (${application.state})`, [])
 			return
 		}
 
-		notif.entityId = application.id
+		notif.entityIds = [application.id, grant.id]
 		notif.actorId = actorId
 		notif.cursor = application.updatedAtS.toString(16)
 		notif.save()
@@ -137,7 +157,7 @@ export function addMilestoneUpdateNotification(milestone: ApplicationMilestone, 
 					notif.recipientIds = [application.applicantId]
 				}
 
-				notif.entityId = milestone.id
+				notif.entityIds = [milestone.id]
 				notif.actorId = actorId
 				notif.cursor = milestone.updatedAtS.toString(16)
 				notif.save()
@@ -151,3 +171,54 @@ export function addMilestoneUpdateNotification(milestone: ApplicationMilestone, 
 		log.warning(`application absent for milestone update, ID=${eventId}`, [])
 	}
 }
+
+export function addCommentAddedNotification(comment: Comment, actorId: Address): void {
+	const notif = new Notification(`n.${comment.id}`)
+	notif.title = 'New Comment Added'
+	notif.type = 'comment_added'
+
+	const app = GrantApplication.load(comment.application)
+	if(!app) {
+		log.warning(`application absent for comment, ID=${comment.application}`, [])
+		return
+	}
+
+	const grant = Grant.load(app.grant)
+	if(!grant) {
+		log.warning(`grant absent for comment, ID=${app.grant}`, [])
+		return
+	}
+
+	notif.content = `${actorId.toHex()} has commented on the application to ${grant.title} by ${app.applicantId.toHex()}`
+	notif.recipientIds = [actorId, app.applicantId]
+	notif.entityIds = [grant.id, app.id]
+	notif.actorId = actorId
+	notif.cursor = comment.createdAt.toString(16)
+	notif.save()
+}
+
+export function reviewSubmittedNotification(review: Review, eventId: string, reviewer: Address): void {
+	const notif = new Notification(`n.${eventId}`)
+	notif.title = 'New Review Submitted'
+	notif.type = 'review_submitted'
+
+	const app = GrantApplication.load(review.application)
+	if(!app) {
+		log.warning(`application absent for review, ID=${review.application}`, [])
+		return
+	}
+
+	const grant = Grant.load(app.grant)
+	if(!grant) {
+		log.warning(`grant absent for review, ID=${app.grant}`, [])
+		return
+	}
+
+	notif.content = `${reviewer.toHex()} has submitted a review for the application to ${grant.title} by ${app.applicantId.toHex()}`
+	notif.recipientIds = [reviewer, app.applicantId]
+	notif.entityIds = [grant.id, app.id]
+	notif.actorId = reviewer
+	notif.cursor = review.createdAtS.toString(16)
+	notif.save()
+}
+
