@@ -107,7 +107,7 @@ export function runTests(): void {
 
 		assert.assertNotNull(notificationEntity)
 		assert.stringEquals(notificationEntity!.type, 'funds_withdrawn')
-		assert.stringEquals(notificationEntity!.entityIds[0], g!.id)
+		assert.stringEquals(notificationEntity!.entityIds[0], `grant-${g!.id}`)
 	})
 
 	test('should update grant reward without token', () => {
