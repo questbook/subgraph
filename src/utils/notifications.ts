@@ -18,19 +18,19 @@ export function addFundsTransferNotification(transfer: FundsTransfer): void {
 				}
 
 				notif.recipientIds = [app.applicantId]
-				notif.entityIds = [grant.id, app.id]
+				notif.entityIds = [`application-${app.id}`, `grant-${grant.id}`]
 			} else if(transfer.type == 'funds_deposited') {
 				notif.title = 'Funds Deposited!'
 				notif.content = ''
 
 				notif.recipientIds = [grant.creatorId]
-				notif.entityIds = [grant.id]
+				notif.entityIds = [`grant-${grant.id}`]
 			} else if(transfer.type == 'funds_withdrawn') {
 				notif.title = 'Funds Withdrawn!'
 				notif.content = ''
 
 				notif.recipientIds = [grant.creatorId]
-				notif.entityIds = [grant.id]
+				notif.entityIds = [`grant-${grant.id}`]
 			} else if(transfer.type == 'funds_disbursed_from_safe' || transfer.type == 'funds_disbursed_from_wallet') {
 				if(transfer.status == 'queued') {
 					notif.title = 'Payout initiated for your proposal!'
@@ -47,7 +47,7 @@ export function addFundsTransferNotification(transfer: FundsTransfer): void {
 				notif.content = ''
 
 				notif.recipientIds = [grant.creatorId, app.applicantId]
-				notif.entityIds = [grant.id, app.id]
+				notif.entityIds = [`application-${app.id}`, `grant-${grant.id}`]
 			} else {
 				log.warning(`unknown funds transfer type, ID=${transfer.id}`, [])
 				return
@@ -115,7 +115,7 @@ export function addApplicationUpdateNotification(application: GrantApplication, 
 			return
 		}
 
-		notif.entityIds = [application.id, grant.id]
+		notif.entityIds = [`application-${application.id}`, `grant-${grant.id}`]
 		notif.actorId = actorId
 		notif.cursor = application.updatedAtS
 		notif.save()
@@ -157,7 +157,7 @@ export function addMilestoneUpdateNotification(milestone: ApplicationMilestone, 
 					notif.recipientIds = [application.applicantId]
 				}
 
-				notif.entityIds = [milestone.id, grant.id, application.id]
+				notif.entityIds = [`application-${application.id}`, `grant-${grant.id}`, `milestone-${milestone.id}`]
 				notif.actorId = actorId
 				notif.cursor = milestone.updatedAtS
 				notif.save()
@@ -191,7 +191,7 @@ export function addCommentAddedNotification(comment: Comment, actorId: Address):
 
 	notif.content = `${actorId.toHex()} has commented on the application to ${grant.title} by ${app.applicantId.toHex()}`
 	notif.recipientIds = [actorId, app.applicantId]
-	notif.entityIds = [app.id, grant.id]
+	notif.entityIds = [`application-${app.id}`, `grant-${grant.id}`]
 	notif.actorId = actorId
 	notif.cursor = comment.createdAt
 	notif.save()
@@ -216,7 +216,7 @@ export function reviewSubmittedNotification(review: Review, eventId: string, rev
 
 	notif.content = `${reviewer.toHex()} has submitted a review for the application to ${grant.title} by ${app.applicantId.toHex()}`
 	notif.recipientIds = [reviewer, app.applicantId]
-	notif.entityIds = [app.id, grant.id]
+	notif.entityIds = [`application-${app.id}`, `grant-${grant.id}`]
 	notif.actorId = reviewer
 	notif.cursor = review.createdAtS
 	notif.save()
