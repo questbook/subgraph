@@ -1,5 +1,5 @@
 import { Address, BigInt, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
-import { assert, newMockEvent, test } from 'matchstick-as/assembly/index'
+import { assert, log, newMockEvent, test } from 'matchstick-as/assembly/index'
 import {
 	DisburseRewardFromSafe1,
 	DisburseRewardFromWallet,
@@ -491,6 +491,65 @@ export function runTests(): void {
 			assert.i32Equals(grantEntity!.totalGrantFundingDisbursedUSD!, 10)
 		}
 
+	})
+
+	test('should add the executed fund value to existing total grant funding disbursed', () => {
+		const w = createWorkspace()
+		const a = createApplication()
+
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('applicationId', ethereum.Value.fromI32Array([0x0123])),
+			new ethereum.EventParam('milestoneId', ethereum.Value.fromI32Array([0])),
+			new ethereum.EventParam('asset', ethereum.Value.fromAddress(Address.fromString('0xE3D997D569b5b03B577C6a2Edd1d2613FE776cb0'))),
+			new ethereum.EventParam('tokenName', ethereum.Value.fromString('MATIC')),
+			new ethereum.EventParam('nonEvmAssetAddress', ethereum.Value.fromString('bfnjr9489njrhHDFHg230fb4c4d462eEF9e6790337Cf57271E519bB697')),
+			new ethereum.EventParam('transactionHash', ethereum.Value.fromString('0x5a0218acbc835d99aea9a6c4dd2868952463a3d4f0a204653cc68ba97eb90563')),
+			new ethereum.EventParam('sender', ethereum.Value.fromAddress(Address.fromString('0x230fb4c4d462eEF9e6790337Cf57271E519bB697'))),
+			new ethereum.EventParam('amount', ethereum.Value.fromI32Array([10])),
+			new ethereum.EventParam('isP2P', ethereum.Value.fromBoolean(true)),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
+		]
+
+		assert.stringEquals(ev.parameters[5].value.toString(), '0x5a0218acbc835d99aea9a6c4dd2868952463a3d4f0a204653cc68ba97eb90563')
+		const event = new DisburseRewardFromSafe1(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleDisburseRewardFromSafe1(event)
+
+		const fundTransfer = FundsTransfer.load(`0x5a0218acbc835d99aea9a6c4dd2868952463a3d4f0a204653cc68ba97eb90563.${0x123}`)
+		if(fundTransfer) {
+			assert.assertNotNull(fundTransfer)
+			assert.stringEquals(fundTransfer!.type, 'funds_disbursed_from_safe')
+			assert.stringEquals(fundTransfer!.tokenName!, 'MATIC')
+			assert.assertNotNull(fundTransfer!.milestone)
+			const applicationMilestone = ApplicationMilestone.load(fundTransfer!.milestone!)
+			assert.assertNotNull(applicationMilestone)
+		}
+
+		const ev2 = newMockEvent()
+
+		ev2.parameters = [
+			new ethereum.EventParam('applicationId', ethereum.Value.fromI32Array([0x0123])),
+			new ethereum.EventParam('transactionHash', ethereum.Value.fromStringArray(['0x5a0218acbc835d99aea9a6c4dd2868952463a3d4f0a204653cc68ba97eb90563'])),
+			new ethereum.EventParam('status', ethereum.Value.fromStringArray(['executed'])),
+			new ethereum.EventParam('tokenUSDValue', ethereum.Value.fromI32Array([20])),
+			new ethereum.EventParam('executionTimestamp', ethereum.Value.fromI32Array([1665726957]))
+		]
+
+		const event2 = new FundsTransferStatusUpdated(ev2.address, ev2.logIndex, ev2.transactionLogIndex, ev2.logType, ev2.block, ev2.transaction, ev2.parameters)
+		handleFundsTransferStatusUpdated(event2)
+
+		const fundsTransferStatusEntity = FundsTransfer.load(`0x5a0218acbc835d99aea9a6c4dd2868952463a3d4f0a204653cc68ba97eb90563.${0x0123}`)
+		if(fundsTransferStatusEntity != null) {
+			assert.assertNotNull(fundsTransferStatusEntity)
+			assert.stringEquals(fundsTransferStatusEntity!.status, 'executed')
+			assert.i32Equals(fundsTransferStatusEntity!.tokenUSDValue!.toI32(), 20)
+			assert.i32Equals(fundsTransferStatusEntity!.executionTimestamp, 1665726957)
+			
+			const grantEntity = Grant.load(a!.grant)
+			log.info(`grantEntity.totalGrantFundingDisbursedUSD: , ${grantEntity!.totalGrantFundingDisbursedUSD!.toString()}`, [])
+			assert.i32Equals(grantEntity!.totalGrantFundingDisbursedUSD!, 20)
+		}	
 	})
 
 	test('should not update transaction status', () => {

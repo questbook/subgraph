@@ -84,7 +84,10 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 		return
 	}
 
-	entity.amountPaid = entity.amountPaid.plus(amountPaid)
+	if(disburseEntity.type != 'funds_disbursed_from_safe' && disburseEntity.type != 'funds_disbursed_from_wallet') {
+		entity.amountPaid = entity.amountPaid.plus(amountPaid)
+	}
+
 	entity.updatedAtS = eventTime
 
 	const grantEntity = Grant.load(application.grant)

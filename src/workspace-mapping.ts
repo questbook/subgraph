@@ -14,7 +14,7 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -447,18 +447,36 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 		log.info(`[${event.params.transactionHash}] Funds transfer status updated with ${statuses[i]}}`, [])
 
 		const applicationEntity = GrantApplication.load(applicationIds[i].toHexString())
-		log.info(`[${event.params.transactionHash}] Application entity found for ${applicationIds[i].toHexString()}}`, [])
-		const grantEntity = Grant.load(applicationEntity!.grant)
-
-		if(!grantEntity) {
-			log.warning(`[${event.params.transactionHash}] Grant not found for status update`, [])
+		if(!applicationEntity) {
+			log.warning(`[${event.params.transactionHash}] Application entity not found for ${applicationIds[i].toHexString()}}`, [])
 			continue
 		}
 
+		log.info(`[${event.params.transactionHash}] Application entity found for ${applicationIds[i].toHexString()}}`, [])
+
 		if(oldStatus == 'queued' && statuses[i] == 'executed' && (fundsTransferEntity.type == 'funds_disbursed_from_safe' || fundsTransferEntity.type == 'funds_disbursed_from_wallet')) {
 			// update grant balance
-			grantEntity.totalGrantFundingDisbursedUSD = grantEntity.totalGrantFundingDisbursedUSD += tokenUSDValues[i].toI32()
+			const grantEntity = Grant.load(applicationEntity!.grant)
+
+			if(!grantEntity) {
+				log.warning(`[${event.params.transactionHash}] Grant not found for status update`, [])
+				continue
+			}
+
+			grantEntity.totalGrantFundingDisbursedUSD += fundsTransferEntity.amount.toI32()
+			
+
+			// update milestone amount paid value
+			const milestoneEntity = ApplicationMilestone.load(fundsTransferEntity.milestone!)
+			if(!milestoneEntity) {
+				log.warning(`[${event.params.transactionHash}] Milestone not found for status update`, [])
+				continue
+			}
+
+			milestoneEntity.amountPaid = milestoneEntity.amountPaid.plus(fundsTransferEntity.amount)
+
 			grantEntity.save()
+			milestoneEntity.save()
 		}
 
 		fundsTransferEntity.save()
