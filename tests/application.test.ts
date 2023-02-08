@@ -214,7 +214,7 @@ export function runTests(): void {
 
 		const grant = Grant.load(g!.grant)
 
-		assert.i32Equals(grant!.totalGrantFundingDisbursedUSD, 30000)
+		assert.bigIntEquals(grant!.totalGrantFundingDisbursedUSD, BigInt.fromI32(30000))
 	})
 
 	test('record a transaction', () => {

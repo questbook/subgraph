@@ -95,8 +95,8 @@ export function handleGrantCreated(event: GrantCreated): void {
 	entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
 
 	const usdReward = getUSDReward(reward.asset, reward.committed)
-	entity.totalGrantFundingCommittedUSD = usdReward
-	entity.totalGrantFundingDisbursedUSD = 0
+	entity.totalGrantFundingCommittedUSD = BigInt.fromI32(usdReward)
+	entity.totalGrantFundingDisbursedUSD = new BigInt(0)
 	
 	entity.save()
 

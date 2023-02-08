@@ -463,7 +463,7 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 				continue
 			}
 
-			grantEntity.totalGrantFundingDisbursedUSD += fundsTransferEntity.amount.toI32()
+			grantEntity.totalGrantFundingDisbursedUSD = grantEntity.totalGrantFundingDisbursedUSD.plus(fundsTransferEntity.amount)
 			
 
 			// update milestone amount paid value

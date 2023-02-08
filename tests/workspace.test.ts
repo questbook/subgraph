@@ -488,7 +488,7 @@ export function runTests(): void {
 			assert.i32Equals(fundsTransferStatusEntity!.executionTimestamp, 1665726957)
 			
 			const grantEntity = Grant.load(a!.grant)
-			assert.i32Equals(grantEntity!.totalGrantFundingDisbursedUSD!, 10)
+			assert.bigIntEquals(grantEntity!.totalGrantFundingDisbursedUSD!, BigInt.fromI32(10))
 		}
 
 	})
@@ -548,7 +548,7 @@ export function runTests(): void {
 			
 			const grantEntity = Grant.load(a!.grant)
 			log.info(`grantEntity.totalGrantFundingDisbursedUSD: , ${grantEntity!.totalGrantFundingDisbursedUSD!.toString()}`, [])
-			assert.i32Equals(grantEntity!.totalGrantFundingDisbursedUSD!, 20)
+			assert.bigIntEquals(grantEntity!.totalGrantFundingDisbursedUSD!, BigInt.fromI32(20))
 		}	
 	})
 
@@ -576,7 +576,7 @@ export function runTests(): void {
 			assert.i32Equals(fundsTransferStatusEntity.executionTimestamp, 1665726957)
 			
 			const grantEntity = Grant.load(a!.grant)
-			assert.i32Equals(grantEntity!.totalGrantFundingDisbursedUSD!, 10)
+			assert.bigIntEquals(grantEntity!.totalGrantFundingDisbursedUSD!, BigInt.fromI32(10))
 		}
 
 	})
