@@ -1040,6 +1040,8 @@ export class Grant extends Entity {
     this.set("summary", Value.fromString(""));
     this.set("details", Value.fromString(""));
     this.set("reward", Value.fromString(""));
+    this.set("totalGrantFundingCommittedUSD", Value.fromBigInt(BigInt.zero()));
+    this.set("totalGrantFundingDisbursedUSD", Value.fromBigInt(BigInt.zero()));
     this.set("workspace", Value.fromString(""));
     this.set("fields", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
@@ -1118,22 +1120,22 @@ export class Grant extends Entity {
     this.set("reward", Value.fromString(value));
   }
 
-  get totalGrantFundingCommittedUSD(): i32 {
+  get totalGrantFundingCommittedUSD(): BigInt {
     let value = this.get("totalGrantFundingCommittedUSD");
-    return value!.toI32();
+    return value!.toBigInt();
   }
 
-  set totalGrantFundingCommittedUSD(value: i32) {
-    this.set("totalGrantFundingCommittedUSD", Value.fromI32(value));
+  set totalGrantFundingCommittedUSD(value: BigInt) {
+    this.set("totalGrantFundingCommittedUSD", Value.fromBigInt(value));
   }
 
-  get totalGrantFundingDisbursedUSD(): i32 {
+  get totalGrantFundingDisbursedUSD(): BigInt {
     let value = this.get("totalGrantFundingDisbursedUSD");
-    return value!.toI32();
+    return value!.toBigInt();
   }
 
-  set totalGrantFundingDisbursedUSD(value: i32) {
-    this.set("totalGrantFundingDisbursedUSD", Value.fromI32(value));
+  set totalGrantFundingDisbursedUSD(value: BigInt) {
+    this.set("totalGrantFundingDisbursedUSD", Value.fromBigInt(value));
   }
 
   get workspace(): string {

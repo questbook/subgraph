@@ -1,4 +1,4 @@
-import { log } from '@graphprotocol/graph-ts'
+import { BigInt, log } from '@graphprotocol/graph-ts'
 import { Grant, Reward } from '../../generated/schema'
 import { GrantUpdateRequest, validateGrantUpdateRequest } from '../json-schema'
 import { validatedJsonFromIpfs } from '../json-schema/json'
@@ -82,12 +82,12 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 			if(oldUSDReward > 0 || newUSDReward > 0) {
 				// if it was USD, remove the old amount
 				if(oldUSDReward > 0) {
-					entity.totalGrantFundingCommittedUSD -= oldUSDReward
+					entity.totalGrantFundingCommittedUSD = entity.totalGrantFundingCommittedUSD.minus(BigInt.fromI32(oldUSDReward))
 				}
 
 				// if it is USD, add the new amount
 				if(newUSDReward > 0) {
-					entity.totalGrantFundingCommittedUSD += newUSDReward
+					entity.totalGrantFundingCommittedUSD = entity.totalGrantFundingCommittedUSD.plus(BigInt.fromI32(newUSDReward))
 				}
 
 				log.debug(`updated reward disbursed ${entity.id}`, [])

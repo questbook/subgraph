@@ -222,9 +222,9 @@ type Grant @entity {
   "Proposed reward for the grant"
   reward: Reward!
   "total grant funding committed in USD"
-  totalGrantFundingCommittedUSD: Int!
+  totalGrantFundingCommittedUSD: BigInt!
   "total grant funding committed in USD"
-  totalGrantFundingDisbursedUSD: Int!
+  totalGrantFundingDisbursedUSD: BigInt!
   "Workspace which created the grant"
   workspace: Workspace!
   "ISO formatted date string"

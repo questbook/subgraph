@@ -95,7 +95,7 @@ export function disburseReward(rewardProps: disburseRewardInterface): void {
 		if(disburseEntity.type != 'funds_disbursed_from_safe' && disburseEntity.type != 'funds_disbursed_from_wallet') {
 			const usd = getUSDReward(asset, amountPaid)
 			if(usd > 0) {
-				grantEntity.totalGrantFundingDisbursedUSD += usd
+				grantEntity.totalGrantFundingDisbursedUSD = grantEntity.totalGrantFundingDisbursedUSD.plus(BigInt.fromI32(usd))
 			}
 
 			grantEntity.save()
