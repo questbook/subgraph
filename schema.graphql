@@ -55,7 +55,8 @@ enum FundsTransferType {
 
 enum FundsTransferStatusType {
   queued,
-  executed
+  executed,
+  cancelled
 }
 
 enum MigrationType {

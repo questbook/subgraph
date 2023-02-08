@@ -15,6 +15,7 @@ const USDC_ADDRESSES = [
 export const ALLOWED_FUND_TRANSFER_VALUES = new Set<string>()
 ALLOWED_FUND_TRANSFER_VALUES.add('queued')
 ALLOWED_FUND_TRANSFER_VALUES.add('executed')
+ALLOWED_FUND_TRANSFER_VALUES.add('cancelled')
 
 // 10^6
 const USDC_DECIMALS = BigInt.fromI32(10).pow(6)
