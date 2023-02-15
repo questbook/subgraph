@@ -96,6 +96,48 @@ export class ApplicationSubmitted__Params {
   }
 }
 
+export class ApplicationSubmitted1 extends ethereum.Event {
+  get params(): ApplicationSubmitted1__Params {
+    return new ApplicationSubmitted1__Params(this);
+  }
+}
+
+export class ApplicationSubmitted1__Params {
+  _event: ApplicationSubmitted1;
+
+  constructor(event: ApplicationSubmitted1) {
+    this._event = event;
+  }
+
+  get applicationId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get grant(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get owner(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get metadataHash(): string {
+    return this._event.parameters[3].value.toString();
+  }
+
+  get milestoneCount(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get walletAddress(): Bytes {
+    return this._event.parameters[5].value.toBytes();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+}
+
 export class ApplicationUpdated extends ethereum.Event {
   get params(): ApplicationUpdated__Params {
     return new ApplicationUpdated__Params(this);
@@ -241,6 +283,36 @@ export class Upgraded__Params {
 
   get implementation(): Address {
     return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class WalletAddressUpdated extends ethereum.Event {
+  get params(): WalletAddressUpdated__Params {
+    return new WalletAddressUpdated__Params(this);
+  }
+}
+
+export class WalletAddressUpdated__Params {
+  _event: WalletAddressUpdated;
+
+  constructor(event: WalletAddressUpdated) {
+    this._event = event;
+  }
+
+  get applicationId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get grant(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get walletAddress(): Bytes {
+    return this._event.parameters[2].value.toBytes();
+  }
+
+  get time(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
   }
 }
 
@@ -419,6 +491,31 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     );
   }
 
+  eoaToScw(param0: Bytes, param1: Address): Address {
+    let result = super.call("eoaToScw", "eoaToScw(bytes32,address):(address)", [
+      ethereum.Value.fromFixedBytes(param0),
+      ethereum.Value.fromAddress(param1)
+    ]);
+
+    return result[0].toAddress();
+  }
+
+  try_eoaToScw(param0: Bytes, param1: Address): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "eoaToScw",
+      "eoaToScw(bytes32,address):(address)",
+      [
+        ethereum.Value.fromFixedBytes(param0),
+        ethereum.Value.fromAddress(param1)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   getApplicationGrant(_applicationId: BigInt): Address {
     let result = super.call(
       "getApplicationGrant",
@@ -551,6 +648,29 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+
+  walletAddressMapping(param0: Bytes): Address {
+    let result = super.call(
+      "walletAddressMapping",
+      "walletAddressMapping(bytes32):(address)",
+      [ethereum.Value.fromFixedBytes(param0)]
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_walletAddressMapping(param0: Bytes): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "walletAddressMapping",
+      "walletAddressMapping(bytes32):(address)",
+      [ethereum.Value.fromFixedBytes(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   workspaceReg(): Address {
@@ -907,6 +1027,10 @@ export class SubmitApplicationCall__Inputs {
   get _milestoneCount(): BigInt {
     return this._call.inputValues[3].value.toBigInt();
   }
+
+  get _applicantAddress(): Bytes {
+    return this._call.inputValues[4].value.toBytes();
+  }
 }
 
 export class SubmitApplicationCall__Outputs {
@@ -1023,6 +1147,40 @@ export class UpdateApplicationStateCall__Outputs {
   _call: UpdateApplicationStateCall;
 
   constructor(call: UpdateApplicationStateCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateWalletAddressCall extends ethereum.Call {
+  get inputs(): UpdateWalletAddressCall__Inputs {
+    return new UpdateWalletAddressCall__Inputs(this);
+  }
+
+  get outputs(): UpdateWalletAddressCall__Outputs {
+    return new UpdateWalletAddressCall__Outputs(this);
+  }
+}
+
+export class UpdateWalletAddressCall__Inputs {
+  _call: UpdateWalletAddressCall;
+
+  constructor(call: UpdateWalletAddressCall) {
+    this._call = call;
+  }
+
+  get _applicationId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _applicantAddress(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
+}
+
+export class UpdateWalletAddressCall__Outputs {
+  _call: UpdateWalletAddressCall;
+
+  constructor(call: UpdateWalletAddressCall) {
     this._call = call;
   }
 }

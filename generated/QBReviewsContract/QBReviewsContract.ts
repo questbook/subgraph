@@ -782,6 +782,56 @@ export class QBReviewsContract extends ethereum.SmartContract {
   }
 }
 
+export class AssignAndReviewCall extends ethereum.Call {
+  get inputs(): AssignAndReviewCall__Inputs {
+    return new AssignAndReviewCall__Inputs(this);
+  }
+
+  get outputs(): AssignAndReviewCall__Outputs {
+    return new AssignAndReviewCall__Outputs(this);
+  }
+}
+
+export class AssignAndReviewCall__Inputs {
+  _call: AssignAndReviewCall;
+
+  constructor(call: AssignAndReviewCall) {
+    this._call = call;
+  }
+
+  get _workspaceId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _applicationId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _grantAddress(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
+  get _reviewer(): Address {
+    return this._call.inputValues[3].value.toAddress();
+  }
+
+  get _active(): boolean {
+    return this._call.inputValues[4].value.toBoolean();
+  }
+
+  get _reviewMetadataHash(): string {
+    return this._call.inputValues[5].value.toString();
+  }
+}
+
+export class AssignAndReviewCall__Outputs {
+  _call: AssignAndReviewCall;
+
+  constructor(call: AssignAndReviewCall) {
+    this._call = call;
+  }
+}
+
 export class AssignReviewersCall extends ethereum.Call {
   get inputs(): AssignReviewersCall__Inputs {
     return new AssignReviewersCall__Inputs(this);
@@ -1068,40 +1118,6 @@ export class RenounceOwnershipCall__Outputs {
   }
 }
 
-export class ResetAllRubricsCall extends ethereum.Call {
-  get inputs(): ResetAllRubricsCall__Inputs {
-    return new ResetAllRubricsCall__Inputs(this);
-  }
-
-  get outputs(): ResetAllRubricsCall__Outputs {
-    return new ResetAllRubricsCall__Outputs(this);
-  }
-}
-
-export class ResetAllRubricsCall__Inputs {
-  _call: ResetAllRubricsCall;
-
-  constructor(call: ResetAllRubricsCall) {
-    this._call = call;
-  }
-
-  get _workspaceId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get _grantAddress(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-}
-
-export class ResetAllRubricsCall__Outputs {
-  _call: ResetAllRubricsCall;
-
-  constructor(call: ResetAllRubricsCall) {
-    this._call = call;
-  }
-}
-
 export class SetApplicationRegCall extends ethereum.Call {
   get inputs(): SetApplicationRegCall__Inputs {
     return new SetApplicationRegCall__Inputs(this);
@@ -1247,24 +1263,20 @@ export class SubmitReviewCall__Inputs {
     this._call = call;
   }
 
-  get _reviewerAddress(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
   get _workspaceId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[0].value.toBigInt();
   }
 
   get _applicationId(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt();
   }
 
   get _grantAddress(): Address {
-    return this._call.inputValues[3].value.toAddress();
+    return this._call.inputValues[2].value.toAddress();
   }
 
   get _metadataHash(): string {
-    return this._call.inputValues[4].value.toString();
+    return this._call.inputValues[3].value.toString();
   }
 }
 

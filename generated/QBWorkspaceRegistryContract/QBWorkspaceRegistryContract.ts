@@ -652,6 +652,29 @@ export class WorkspacesVisibleUpdated__Params {
   }
 }
 
+export class QBWorkspaceRegistryContract__splitSignatureResult {
+  value0: Bytes;
+  value1: Bytes;
+  value2: i32;
+
+  constructor(value0: Bytes, value1: Bytes, value2: i32) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromFixedBytes(this.value0));
+    map.set("value1", ethereum.Value.fromFixedBytes(this.value1));
+    map.set(
+      "value2",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value2))
+    );
+    return map;
+  }
+}
+
 export class QBWorkspaceRegistryContract__workspacesResultSafeStruct extends ethereum.Tuple {
   get _address(): Bytes {
     return this[0].toBytes();
@@ -696,6 +719,21 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
       "QBWorkspaceRegistryContract",
       address
     );
+  }
+
+  GUARD_OFFSET(): BigInt {
+    let result = super.call("GUARD_OFFSET", "GUARD_OFFSET():(uint256)", []);
+
+    return result[0].toBigInt();
+  }
+
+  try_GUARD_OFFSET(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("GUARD_OFFSET", "GUARD_OFFSET():(uint256)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   anonAuthoriserAddress(): Address {
@@ -764,6 +802,31 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
       "applicationReg",
       "applicationReg():(address)",
       []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  eoaToScw(param0: Address, param1: BigInt): Address {
+    let result = super.call("eoaToScw", "eoaToScw(address,uint96):(address)", [
+      ethereum.Value.fromAddress(param0),
+      ethereum.Value.fromUnsignedBigInt(param1)
+    ]);
+
+    return result[0].toAddress();
+  }
+
+  try_eoaToScw(param0: Address, param1: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "eoaToScw",
+      "eoaToScw(address,uint96):(address)",
+      [
+        ethereum.Value.fromAddress(param0),
+        ethereum.Value.fromUnsignedBigInt(param1)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -941,6 +1004,66 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     let result = super.tryCall("qbAdmins", "qbAdmins(uint256):(address)", [
       ethereum.Value.fromUnsignedBigInt(param0)
     ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  splitSignature(
+    sig: Bytes
+  ): QBWorkspaceRegistryContract__splitSignatureResult {
+    let result = super.call(
+      "splitSignature",
+      "splitSignature(bytes):(bytes32,bytes32,uint8)",
+      [ethereum.Value.fromBytes(sig)]
+    );
+
+    return new QBWorkspaceRegistryContract__splitSignatureResult(
+      result[0].toBytes(),
+      result[1].toBytes(),
+      result[2].toI32()
+    );
+  }
+
+  try_splitSignature(
+    sig: Bytes
+  ): ethereum.CallResult<QBWorkspaceRegistryContract__splitSignatureResult> {
+    let result = super.tryCall(
+      "splitSignature",
+      "splitSignature(bytes):(bytes32,bytes32,uint8)",
+      [ethereum.Value.fromBytes(sig)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new QBWorkspaceRegistryContract__splitSignatureResult(
+        value[0].toBytes(),
+        value[1].toBytes(),
+        value[2].toI32()
+      )
+    );
+  }
+
+  walletAddressToScwAddress(param0: Address): Address {
+    let result = super.call(
+      "walletAddressToScwAddress",
+      "walletAddressToScwAddress(address):(address)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_walletAddressToScwAddress(param0: Address): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "walletAddressToScwAddress",
+      "walletAddressToScwAddress(address):(address)",
+      [ethereum.Value.fromAddress(param0)]
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -1455,6 +1578,52 @@ export class PauseCall__Outputs {
   }
 }
 
+export class ProveMembershipCall extends ethereum.Call {
+  get inputs(): ProveMembershipCall__Inputs {
+    return new ProveMembershipCall__Inputs(this);
+  }
+
+  get outputs(): ProveMembershipCall__Outputs {
+    return new ProveMembershipCall__Outputs(this);
+  }
+}
+
+export class ProveMembershipCall__Inputs {
+  _call: ProveMembershipCall;
+
+  constructor(call: ProveMembershipCall) {
+    this._call = call;
+  }
+
+  get _id(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _metadataHash(): string {
+    return this._call.inputValues[1].value.toString();
+  }
+
+  get _walletAddress(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
+  get _role(): i32 {
+    return this._call.inputValues[3].value.toI32();
+  }
+
+  get _signature(): Bytes {
+    return this._call.inputValues[4].value.toBytes();
+  }
+}
+
+export class ProveMembershipCall__Outputs {
+  _call: ProveMembershipCall;
+
+  constructor(call: ProveMembershipCall) {
+    this._call = call;
+  }
+}
+
 export class RemoveQBAdminsCall extends ethereum.Call {
   get inputs(): RemoveQBAdminsCall__Inputs {
     return new RemoveQBAdminsCall__Inputs(this);
@@ -1537,6 +1706,36 @@ export class SetApplicationRegCall__Outputs {
   _call: SetApplicationRegCall;
 
   constructor(call: SetApplicationRegCall) {
+    this._call = call;
+  }
+}
+
+export class SetGuardOffsetCall extends ethereum.Call {
+  get inputs(): SetGuardOffsetCall__Inputs {
+    return new SetGuardOffsetCall__Inputs(this);
+  }
+
+  get outputs(): SetGuardOffsetCall__Outputs {
+    return new SetGuardOffsetCall__Outputs(this);
+  }
+}
+
+export class SetGuardOffsetCall__Inputs {
+  _call: SetGuardOffsetCall;
+
+  constructor(call: SetGuardOffsetCall) {
+    this._call = call;
+  }
+
+  get _guardOffset(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class SetGuardOffsetCall__Outputs {
+  _call: SetGuardOffsetCall;
+
+  constructor(call: SetGuardOffsetCall) {
     this._call = call;
   }
 }

@@ -2487,6 +2487,7 @@ export class GrantApplication extends Entity {
     this.set("pendingReviewerAddresses", Value.fromBytesArray(new Array(0)));
     this.set("doneReviewerAddresses", Value.fromBytesArray(new Array(0)));
     this.set("applicationReviewers", Value.fromStringArray(new Array(0)));
+    this.set("walletAddress", Value.fromBytes(Bytes.empty()));
   }
 
   save(): void {
@@ -2717,6 +2718,15 @@ export class GrantApplication extends Entity {
     } else {
       this.set("comments", Value.fromStringArray(<Array<string>>value));
     }
+  }
+
+  get walletAddress(): Bytes {
+    let value = this.get("walletAddress");
+    return value!.toBytes();
+  }
+
+  set walletAddress(value: Bytes) {
+    this.set("walletAddress", Value.fromBytes(value));
   }
 
   get version(): i32 {

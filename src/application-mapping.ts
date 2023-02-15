@@ -1,5 +1,5 @@
-import { log } from '@graphprotocol/graph-ts'
-import { ApplicationMigrate, ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
+import { Bytes, log } from '@graphprotocol/graph-ts'
+import { ApplicationMigrate, ApplicationSubmitted, ApplicationSubmitted1, ApplicationUpdated, MilestoneUpdated, WalletAddressUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
 import { ApplicationAction, ApplicationMilestone, Grant, GrantApplication, Migration, Workspace } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
@@ -50,6 +50,71 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	entity.version = 1
 	entity.doneReviewerAddresses = []
 	entity.pendingReviewerAddresses = []
+	entity.walletAddress = new Bytes(32)
+
+	if(json.pii) {
+		entity.pii = mapGrantPII(applicationId, grantId, json.pii!)
+	} else {
+		entity.pii = []
+	}
+
+	entity.save()
+
+	// increment number of applications recv for grant & workspace
+	grant.numberOfApplications += 1
+	grant.save()
+
+	workspace.numberOfApplications += 1
+	workspace.save()
+
+	addApplicationRevision(entity, event.transaction.from)
+	addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
+}
+
+export function handleApplicationSubmitted1(event: ApplicationSubmitted1): void {
+	const applicationId = event.params.applicationId.toHex()
+	const milestoneCount = event.params.milestoneCount.toI32()
+	const grantId = event.params.grant.toHex()
+
+	const grant = Grant.load(grantId)
+	if(!grant) {
+		log.warning(`[${event.transaction.hash.toHex()}] grant (${grantId}) not found for application submit (${applicationId})`, [])
+		return
+	}
+
+	const workspace = Workspace.load(grant.workspace)
+	if(!workspace) {
+		log.warning(`[${event.transaction.hash.toHex()}] workspace (${grant.workspace}) not found for application submit (${applicationId})`, [])
+		return
+	}
+
+	const jsonResult = validatedJsonFromIpfs<GrantApplicationRequest>(event.params.metadataHash, validateGrantApplicationRequest)
+	if(jsonResult.error) {
+	  log.warning(`[${event.transaction.hash.toHex()}] error in mapping application: "${jsonResult.error!}"`, [])
+	  return
+	}
+
+	const json = jsonResult.value!
+	if(json.milestones.length !== milestoneCount) {
+		log.warning(`[${event.transaction.hash.toHex()}] metadata has ${json.milestones.length} milestones, but contract specifies ${milestoneCount}, ID=${applicationId}`, [])
+		return
+	}
+
+	const entity = new GrantApplication(applicationId)
+	entity.grant = grantId
+	entity.applicantId = event.params.owner
+	entity.applicantPublicKey = json.applicantPublicKey
+	entity.state = 'submitted'
+	entity.fields = mapGrantFieldAnswers(applicationId, grantId, json.fields)
+	entity.createdAtS = event.params.time.toI32()
+	entity.updatedAtS = entity.createdAtS
+	entity.milestones = mapMilestones(applicationId, json.milestones)
+	entity.reviewers = []
+	entity.applicationReviewers = []
+	entity.version = 1
+	entity.doneReviewerAddresses = []
+	entity.pendingReviewerAddresses = []
+	entity.walletAddress = event.params.walletAddress
 
 	if(json.pii) {
 		entity.pii = mapGrantPII(applicationId, grantId, json.pii!)
@@ -232,4 +297,26 @@ export function handleApplicationMigrate(event: ApplicationMigrate): void {
 	migration.transactionHash = event.transaction.hash.toHex()
 	migration.timestamp = event.params.time.toI32()
 	migration.save()
+}
+
+export function handleWalletAddressUpdated(event: WalletAddressUpdated): void {
+	const applicationId = event.params.applicationId.toHex()
+	const grantAddress = event.params.grant
+	const walletAddress = event.params.walletAddress
+	const time = event.params.time.toI32()
+
+	const app = GrantApplication.load(applicationId)
+	if(!app) {
+		log.warning(`[${event.transaction.hash.toHex()}] recv wallet address update for unknown application: ID="${applicationId}"`, [])
+		return
+	}
+
+	if(app.grant !== grantAddress.toHexString()) {
+		log.warning(`[${event.transaction.hash.toHex()}] recv wallet address update for application with wrong grant: ID="${applicationId}"`, [])
+		return
+	}
+
+	app.walletAddress = walletAddress
+	app.updatedAtS = time
+	app.save()
 }
