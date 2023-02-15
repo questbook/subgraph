@@ -476,6 +476,8 @@ type GrantApplication @entity {
   applicationReviewers: [GrantApplicationReviewer!]!
   "IPFS hash of the comments on the application"
   comments: [Comment!] @derivedFrom(field: "application")
+  "Wallet Address of the applicant"
+  walletAddress: Bytes!
   "Version of the application, incremented on resubmission"
   version: Int!
 }

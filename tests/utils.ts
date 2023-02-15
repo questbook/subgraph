@@ -1,11 +1,11 @@
 import { Address, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { newMockEvent } from 'matchstick-as'
-import { ApplicationSubmitted } from '../generated/QBApplicationsContract/QBApplicationsContract'
+import { ApplicationSubmitted, ApplicationSubmitted1 } from '../generated/QBApplicationsContract/QBApplicationsContract'
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { ReviewSubmitted } from '../generated/QBReviewsContract/QBReviewsContract'
 import { WorkspaceCreated } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { Grant, GrantApplication, Review, Workspace } from '../generated/schema'
-import { handleApplicationSubmitted } from '../src/application-mapping'
+import { handleApplicationSubmitted, handleApplicationSubmitted1 } from '../src/application-mapping'
 import { handleGrantCreated } from '../src/grant-mapping'
 import { handleReviewSubmitted } from '../src/review-mapping'
 import { handleWorkspaceCreated } from '../src/workspace-mapping'
@@ -77,11 +77,12 @@ export function createApplication(): GrantApplication | null {
 		// the IPFS hash contains mock data for the workspace
 		new ethereum.EventParam('metadataHash', ethereum.Value.fromString(CREATE_APPLICATION_JSON)),
 		new ethereum.EventParam('milestoneCount', ethereum.Value.fromI32(5)),
+		new ethereum.EventParam('walletAddress', ethereum.Value.fromBytes(Bytes.fromByteArray(Bytes.fromHexString('0x000000000000000000000000F6C42302bC230BBA9c5379dDFb33ca72409E1624')))),
 		new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 	]
 	ev.transaction.hash = MOCK_APPLICATION_EVENT_ID
-	const event = new ApplicationSubmitted(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-	handleApplicationSubmitted(event)
+	const event = new ApplicationSubmitted1(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+	handleApplicationSubmitted1(event)
 
 	const testId = MOCK_APPLICATION_ID.toBigInt().toHex()
 	const w = GrantApplication.load(testId)
