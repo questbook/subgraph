@@ -77,8 +77,6 @@ dataSources:
       eventHandlers:
         - event: ApplicationSubmitted(indexed uint96,address,address,string,uint48,uint256)
           handler: handleApplicationSubmitted
-        - event: ApplicationSubmitted(indexed uint96,address,address,string,uint48,bytes32,uint256)
-          handler: handleApplicationSubmitted1
         - event: ApplicationUpdated(indexed uint96,address,string,uint8,uint48,uint256)
           handler: handleApplicationUpdated
         - event: MilestoneUpdated(uint96,uint96,uint8,string,uint256)
