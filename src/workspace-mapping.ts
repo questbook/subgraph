@@ -456,7 +456,7 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 
 		if(oldStatus == 'queued' && statuses[i] == 'executed' && (fundsTransferEntity.type == 'funds_disbursed_from_safe' || fundsTransferEntity.type == 'funds_disbursed_from_wallet')) {
 			// update grant balance
-			const grantEntity = Grant.load(applicationEntity!.grant)
+			const grantEntity = Grant.load(applicationEntity.grant)
 
 			if(!grantEntity) {
 				log.warning(`[${event.params.transactionHash}] Grant not found for status update`, [])
