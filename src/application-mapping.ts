@@ -247,8 +247,8 @@ export function handleWalletAddressUpdated(event: WalletAddressUpdated): void {
 		return
 	}
 
-	if(app.grant !== grantAddress.toHexString()) {
-		log.warning(`[${event.transaction.hash.toHex()}] recv wallet address update for application with wrong grant: ID="${applicationId}"`, [])
+	if(app.grant != grantAddress.toHexString()) {
+		log.warning(`[${event.transaction.hash.toHex()}] recv wallet address update for application with wrong grant: ID="${applicationId} [${app.grant} and ${grantAddress.toHexString()}]"`, [])
 		return
 	}
 

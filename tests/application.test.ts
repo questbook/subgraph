@@ -1,12 +1,12 @@
 import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
-import { ApplicationUpdated, MilestoneUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
+import { ApplicationUpdated, MilestoneUpdated, WalletAddressUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
 import { ApplicationAction, ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer, Workspace } from '../generated/schema'
 import { DisburseReward, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
-import { handleApplicationUpdated, handleMilestoneUpdated } from '../src/application-mapping'
+import { handleApplicationUpdated, handleMilestoneUpdated, handleWalletAddressUpdated } from '../src/application-mapping'
 import { handleDisburseReward, handleTransactionRecord } from '../src/grant-mapping'
 import { CUSD_DAI_ADDRESSES } from '../src/utils/generics'
-import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, MOCK_APPLICATION_EVENT_ID, MOCK_APPLICATION_ID } from './utils' 
+import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, MOCK_APPLICATION_EVENT_ID, MOCK_APPLICATION_ID, MOCK_GRANT_ID } from './utils' 
 
 export function runTests(): void {
 
@@ -253,6 +253,26 @@ export function runTests(): void {
 		const n = Notification.load(`n.${ev.transaction.hash.toHex()}`)
 		assert.assertNotNull(n)
 		assert.stringEquals(n!.type, 'funds_disbursed')
+	})
+
+	test('should update the wallet address against an application', () => {
+		const g = createApplication()
+
+		assert.bytesEquals(g!.walletAddress, Bytes.fromByteArray(Bytes.fromHexString('0x0000000000000000000000000000000000000000000000000000000000000000')))
+		const ev = newMockEvent()
+
+		ev.parameters = [
+			new ethereum.EventParam('applicationId', MOCK_APPLICATION_ID),
+			new ethereum.EventParam('grant', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
+			new ethereum.EventParam('walletAddress', ethereum.Value.fromBytes(Bytes.fromByteArray(Bytes.fromHexString('0x0000000000000000000000004bED464ce9D43758e826cfa173f1cDa82964b894')))),
+			new ethereum.EventParam('time', ethereum.Value.fromI32(127)),
+		]
+
+		const event = new WalletAddressUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		handleWalletAddressUpdated(event)
+
+		const app = GrantApplication.load(g!.id)
+		assert.bytesEquals(app!.walletAddress, Bytes.fromByteArray(Bytes.fromHexString('0x0000000000000000000000004bED464ce9D43758e826cfa173f1cDa82964b894')))
 	})
 }
 
