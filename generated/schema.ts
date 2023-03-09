@@ -1028,6 +1028,23 @@ export class Review extends Entity {
   set data(value: Array<string>) {
     this.set("data", Value.fromStringArray(value));
   }
+
+  get profile(): string | null {
+    let value = this.get("profile");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set profile(value: string | null) {
+    if (!value) {
+      this.unset("profile");
+    } else {
+      this.set("profile", Value.fromString(<string>value));
+    }
+  }
 }
 
 export class Grant extends Entity {
@@ -1580,34 +1597,32 @@ export class PIIData extends Entity {
   }
 }
 
-export class WorkspaceMember extends Entity {
+export class Profile extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
 
     this.set("actorId", Value.fromBytes(Bytes.empty()));
-    this.set("pii", Value.fromStringArray(new Array(0)));
-    this.set("accessLevel", Value.fromString(""));
-    this.set("outstandingReviewIds", Value.fromStringArray(new Array(0)));
-    this.set("workspace", Value.fromString(""));
-    this.set("lastKnownTxHash", Value.fromBytes(Bytes.empty()));
+    this.set("applications", Value.fromStringArray(new Array(0)));
+    this.set("reviews", Value.fromStringArray(new Array(0)));
+    this.set("workspaceMembers", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save WorkspaceMember entity without an ID");
+    assert(id != null, "Cannot save Profile entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save WorkspaceMember entity with non-string ID. " +
+        "Cannot save Profile entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("WorkspaceMember", id.toString(), this);
+      store.set("Profile", id.toString(), this);
     }
   }
 
-  static load(id: string): WorkspaceMember | null {
-    return changetype<WorkspaceMember | null>(store.get("WorkspaceMember", id));
+  static load(id: string): Profile | null {
+    return changetype<Profile | null>(store.get("Profile", id));
   }
 
   get id(): string {
@@ -1662,58 +1677,6 @@ export class WorkspaceMember extends Entity {
     }
   }
 
-  get pii(): Array<string> {
-    let value = this.get("pii");
-    return value!.toStringArray();
-  }
-
-  set pii(value: Array<string>) {
-    this.set("pii", Value.fromStringArray(value));
-  }
-
-  get emailId(): string | null {
-    let value = this.get("emailId");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set emailId(value: string | null) {
-    if (!value) {
-      this.unset("emailId");
-    } else {
-      this.set("emailId", Value.fromString(<string>value));
-    }
-  }
-
-  get email(): string | null {
-    let value = this.get("email");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set email(value: string | null) {
-    if (!value) {
-      this.unset("email");
-    } else {
-      this.set("email", Value.fromString(<string>value));
-    }
-  }
-
-  get accessLevel(): string {
-    let value = this.get("accessLevel");
-    return value!.toString();
-  }
-
-  set accessLevel(value: string) {
-    this.set("accessLevel", Value.fromString(value));
-  }
-
   get publicKey(): string | null {
     let value = this.get("publicKey");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1731,13 +1694,13 @@ export class WorkspaceMember extends Entity {
     }
   }
 
-  get addedAt(): i32 {
-    let value = this.get("addedAt");
+  get createdAt(): i32 {
+    let value = this.get("createdAt");
     return value!.toI32();
   }
 
-  set addedAt(value: i32) {
-    this.set("addedAt", Value.fromI32(value));
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
   }
 
   get updatedAt(): i32 {
@@ -1749,6 +1712,71 @@ export class WorkspaceMember extends Entity {
     this.set("updatedAt", Value.fromI32(value));
   }
 
+  get applications(): Array<string> {
+    let value = this.get("applications");
+    return value!.toStringArray();
+  }
+
+  set applications(value: Array<string>) {
+    this.set("applications", Value.fromStringArray(value));
+  }
+
+  get reviews(): Array<string> {
+    let value = this.get("reviews");
+    return value!.toStringArray();
+  }
+
+  set reviews(value: Array<string>) {
+    this.set("reviews", Value.fromStringArray(value));
+  }
+
+  get workspaceMembers(): Array<string> {
+    let value = this.get("workspaceMembers");
+    return value!.toStringArray();
+  }
+
+  set workspaceMembers(value: Array<string>) {
+    this.set("workspaceMembers", Value.fromStringArray(value));
+  }
+}
+
+export class WorkspaceMember extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("accessLevel", Value.fromString(""));
+    this.set("pii", Value.fromStringArray(new Array(0)));
+    this.set("workspace", Value.fromString(""));
+    this.set("addedBy", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save WorkspaceMember entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save WorkspaceMember entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("WorkspaceMember", id.toString(), this);
+    }
+  }
+
+  static load(id: string): WorkspaceMember | null {
+    return changetype<WorkspaceMember | null>(store.get("WorkspaceMember", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
   get enabled(): boolean {
     let value = this.get("enabled");
     return value!.toBoolean();
@@ -1758,31 +1786,22 @@ export class WorkspaceMember extends Entity {
     this.set("enabled", Value.fromBoolean(value));
   }
 
-  get removedAt(): i32 {
-    let value = this.get("removedAt");
-    return value!.toI32();
+  get accessLevel(): string {
+    let value = this.get("accessLevel");
+    return value!.toString();
   }
 
-  set removedAt(value: i32) {
-    this.set("removedAt", Value.fromI32(value));
+  set accessLevel(value: string) {
+    this.set("accessLevel", Value.fromString(value));
   }
 
-  get lastReviewSubmittedAt(): i32 {
-    let value = this.get("lastReviewSubmittedAt");
-    return value!.toI32();
-  }
-
-  set lastReviewSubmittedAt(value: i32) {
-    this.set("lastReviewSubmittedAt", Value.fromI32(value));
-  }
-
-  get outstandingReviewIds(): Array<string> {
-    let value = this.get("outstandingReviewIds");
+  get pii(): Array<string> {
+    let value = this.get("pii");
     return value!.toStringArray();
   }
 
-  set outstandingReviewIds(value: Array<string>) {
-    this.set("outstandingReviewIds", Value.fromStringArray(value));
+  set pii(value: Array<string>) {
+    this.set("pii", Value.fromStringArray(value));
   }
 
   get workspace(): string {
@@ -1794,30 +1813,22 @@ export class WorkspaceMember extends Entity {
     this.set("workspace", Value.fromString(value));
   }
 
-  get addedBy(): string | null {
+  get addedBy(): string {
     let value = this.get("addedBy");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
+    return value!.toString();
   }
 
-  set addedBy(value: string | null) {
-    if (!value) {
-      this.unset("addedBy");
-    } else {
-      this.set("addedBy", Value.fromString(<string>value));
-    }
+  set addedBy(value: string) {
+    this.set("addedBy", Value.fromString(value));
   }
 
-  get lastKnownTxHash(): Bytes {
-    let value = this.get("lastKnownTxHash");
-    return value!.toBytes();
+  get removedAt(): i32 {
+    let value = this.get("removedAt");
+    return value!.toI32();
   }
 
-  set lastKnownTxHash(value: Bytes) {
-    this.set("lastKnownTxHash", Value.fromBytes(value));
+  set removedAt(value: i32) {
+    this.set("removedAt", Value.fromI32(value));
   }
 }
 
@@ -1833,6 +1844,7 @@ export class Workspace extends Entity {
     this.set("logoIpfsHash", Value.fromString(""));
     this.set("partners", Value.fromStringArray(new Array(0)));
     this.set("supportedNetworks", Value.fromStringArray(new Array(0)));
+    this.set("members", Value.fromStringArray(new Array(0)));
     this.set("socials", Value.fromStringArray(new Array(0)));
     this.set("metadataHash", Value.fromString(""));
     this.set("grants", Value.fromStringArray(new Array(0)));
@@ -2478,7 +2490,7 @@ export class GrantApplication extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("grant", Value.fromString(""));
-    this.set("applicantId", Value.fromBytes(Bytes.empty()));
+    this.set("applicant", Value.fromString(""));
     this.set("state", Value.fromString(""));
     this.set("fields", Value.fromStringArray(new Array(0)));
     this.set("pii", Value.fromStringArray(new Array(0)));
@@ -2527,13 +2539,13 @@ export class GrantApplication extends Entity {
     this.set("grant", Value.fromString(value));
   }
 
-  get applicantId(): Bytes {
-    let value = this.get("applicantId");
-    return value!.toBytes();
+  get applicant(): string {
+    let value = this.get("applicant");
+    return value!.toString();
   }
 
-  set applicantId(value: Bytes) {
-    this.set("applicantId", Value.fromBytes(value));
+  set applicant(value: string) {
+    this.set("applicant", Value.fromString(value));
   }
 
   get applicantPublicKey(): string | null {
@@ -2736,6 +2748,23 @@ export class GrantApplication extends Entity {
 
   set version(value: i32) {
     this.set("version", Value.fromI32(value));
+  }
+
+  get profile(): string | null {
+    let value = this.get("profile");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set profile(value: string | null) {
+    if (!value) {
+      this.unset("profile");
+    } else {
+      this.set("profile", Value.fromString(<string>value));
+    }
   }
 }
 

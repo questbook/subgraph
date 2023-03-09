@@ -1,6 +1,6 @@
 import { Bytes, log, store } from '@graphprotocol/graph-ts'
-import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
-import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, WorkspaceMember } from '../generated/schema'
+import { ReviewersAssigned, ReviewMigrate, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
+import { Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { migrateApplicationReviewer, migrateGrant, migrateRubric } from './utils/migrations'
 import { reviewSubmittedNotification } from './utils/notifications'
@@ -22,12 +22,6 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	  return
 	}
 
-	const member = WorkspaceMember.load(memberId)
-	if(!member) {
-		log.warning(`[${event.transaction.hash.toHex()}] error in mapping review: "member ${memberId} not found"`, [])
-		return
-	}
-
 	const json = jsonResult.value!
 
 	let review = Review.load(reviewId)
@@ -37,7 +31,7 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 		review.application = event.params._applicationId.toHex()
 	}
 
-	review.reviewer = memberId
+	review.reviewer = reviewer
 	review.publicReviewDataHash = json.publicReviewDataHash
 
 	const items: string[] = []
@@ -56,21 +50,6 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 
 	review.data = items
 	review.save()
-	// finally update the member
-	// update the timestamp of when they submitted the last review
-	member.lastReviewSubmittedAt = review.createdAtS
-	// add to outstanding review IDs
-	const outstandingReviewIds = member.outstandingReviewIds
-	if(!outstandingReviewIds.includes(reviewId)) {
-		outstandingReviewIds.push(reviewId)
-	}
-
-	member.outstandingReviewIds = outstandingReviewIds
-	if(!member.publicKey && json.reviewerPublicKey) {
-		member.publicKey = json.reviewerPublicKey
-	}
-
-	member.save()
 
 	const counterId = `${grantId}.${reviewer}`
 	let counter = GrantReviewerCounter.load(counterId)
@@ -203,60 +182,6 @@ export function handleRubricsSet(event: RubricsSet): void {
 	const time = event.params.time
 
 	rubricSetHandler(event, grantId, workspaceId, metadataHash, time)
-}
-
-export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): void {
-	const transactionId = event.transaction.hash.toHex()
-	const reviewIds = event.params._reviewIds
-
-	const reviewer = event.params._reviewer
-
-	for(let i = 0;i < reviewIds.length;i++) {
-		const reviewId = reviewIds[i].toHex()
-		const review = Review.load(reviewId)
-		if(!review) {
-			log.warning(`[${event.transaction.hash.toHex()}] error in marking review payment done: "review (${reviewId}) not found"`, [])
-			continue
-		}
-
-		const memberId = review.reviewer
-		const member = WorkspaceMember.load(memberId)
-		if(!member) {
-			log.warning(`[${event.transaction.hash.toHex()}] error in marking review payment done: "member (${memberId}) not found"`, [])
-			continue
-		}
-
-		const app = GrantApplication.load(review.application)
-		if(!app) {
-			log.warning(`[${event.transaction.hash.toHex()}] error in marking review payment done: "application (${review.application}) not found"`, [])
-			continue
-		}
-
-		// remove from outstanding review ID
-		const outstandingReviewIds = member.outstandingReviewIds
-		const revIdx = outstandingReviewIds.indexOf(reviewId)
-		if(revIdx >= 0) {
-			outstandingReviewIds.splice(revIdx, 1)
-		}
-
-		member.outstandingReviewIds = outstandingReviewIds
-
-		member.save()
-
-		const fundEntity = new FundsTransfer(`${transactionId}.${reviewId}`)
-		fundEntity.review = reviewId
-		fundEntity.grant = app.grant
-		fundEntity.amount = event.params._amount
-		fundEntity.sender = event.transaction.from
-		fundEntity.to = reviewer
-		fundEntity.createdAtS = event.params.time.toI32()
-		fundEntity.type = 'review_payment_done'
-		fundEntity.status = 'executed'
-		fundEntity.asset = event.params._asset
-		fundEntity.transactionHash = transactionId
-
-		fundEntity.save()
-	}
 }
 
 export function handleReviewMigrate(event: ReviewMigrate): void {

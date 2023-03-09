@@ -1,6 +1,6 @@
 import { Bytes, log } from '@graphprotocol/graph-ts'
 import { ApplicationMigrate, ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated, WalletAddressUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationAction, ApplicationMilestone, Grant, GrantApplication, Migration, Workspace } from '../generated/schema'
+import { ApplicationAction, ApplicationMilestone, Grant, GrantApplication, Migration, Profile, Workspace } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
 import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
@@ -221,8 +221,15 @@ export function handleApplicationMigrate(event: ApplicationMigrate): void {
 		return
 	}
 
-	const fromWallet = entity.applicantId
-	entity.applicantId = event.params.newApplicantAddress
+	const profile = Profile.load(entity.applicant)
+	if(!profile) {
+		log.warning(`[${event.transaction.hash.toHex()}] recv migrate for unknown profile: ID="${entity.applicant}"`, [])
+		return
+	}
+
+	const fromWallet = profile.actorId
+	profile.actorId = 
+	entity.applicant = event.params.newApplicantAddress
 	entity.save()
 
 	const migration = new Migration(`${applicationId}.${fromWallet.toHexString()}.${event.params.newApplicantAddress.toHexString()}`)

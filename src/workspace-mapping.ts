@@ -14,7 +14,7 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, Profile, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -73,19 +73,22 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.numberOfApplicationsSelected = 0
 	entity.grants = []
 
+	const profile = new Profile(`${event.params.owner.toHex()}`)
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
-	member.actorId = event.params.owner
+	profile.actorId = event.params.owner
+	profile.publicKey = json.creatorPublicKey
+	profile.createdAt = entity.createdAtS
+	profile.updatedAt = entity.updatedAtS
+	profile.workspaceMembers = [member.id]
+	profile.applications = []
+	profile.reviews = []
+
 	member.accessLevel = 'owner'
 	member.workspace = entity.id
-	member.publicKey = json.creatorPublicKey
-	member.addedAt = entity.createdAtS
-	member.updatedAt = entity.updatedAtS
-	member.outstandingReviewIds = []
-	member.lastReviewSubmittedAt = 0
 	member.addedBy = member.id
-	member.lastKnownTxHash = event.transaction.hash
 	member.enabled = true
 
+	profile.save()
 	member.save()
 	entity.save()
 }
@@ -142,11 +145,11 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 
 	if(json.publicKey) {
 		const memberId = event.transaction.from.toHex()
-		const mem = WorkspaceMember.load(`${entityId}.${memberId}`)
-		if(mem) {
-			mem.publicKey = json.publicKey
-			mem.updatedAt = entity.updatedAtS
-			mem.save()
+		const profile = Profile.load(memberId)
+		if(profile) {
+			profile.publicKey = json.publicKey
+			profile.updatedAt = entity.updatedAtS
+			profile.save()
 		} else {
 			log.warning(`[${event.transaction.hash.toHex()}] recv publicKey update but member not found`, [])
 		}
@@ -342,7 +345,16 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 
 	store.remove('WorkspaceMember', member.id)
 	member.id = `${event.params.workspaceId.toHex()}.${toWallet.toHex()}`
-	member.actorId = toWallet
+
+	let profile = Profile.load(member.id)
+	if(!profile) {
+		profile = new Profile(member.id)
+	}
+
+	profile.actorId = toWallet
+	profile.applications = []
+	profile.reviews = []
+	profile.workspaceMembers = [member.id]
 
 	member.save()
 

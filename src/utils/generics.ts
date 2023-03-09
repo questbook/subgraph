@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes, log, store, Value } from '@graphprotocol/graph-ts'
-import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, PIIData, Reward, Social, Token, Workspace, WorkspaceMember } from '../../generated/schema'
+import { ApplicationMilestone, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, PIIData, Profile, Reward, Social, Token, Workspace, WorkspaceMember } from '../../generated/schema'
 import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem, validateWorkspaceMemberUpdate, WorkspaceMemberUpdate } from '../json-schema'
 import { Result, validatedJsonFromIpfs } from '../json-schema/json'
 
@@ -329,21 +329,25 @@ export function mapWorkspaceMembersUpdate(
 
 		const id = `${workspaceId}.${memberId.toHex()}`
 		let member = WorkspaceMember.load(id)
+		let profile = Profile.load(memberId.toHex())
+
+		if(!profile) {
+			profile = new Profile(memberId.toHex())
+			profile.createdAt = entity.updatedAtS
+			profile.updatedAt = entity.updatedAtS
+			profile.actorId = memberId
+			profile.applications = []
+			profile.reviews = []
+			profile.workspaceMembers = []
+		}
 
 		if(enabled[i]) {
 			if(!member) {
 				member = new WorkspaceMember(id)
-				member.addedAt = entity.updatedAtS
-				member.lastReviewSubmittedAt = 0
-				member.outstandingReviewIds = []
+				profile.workspaceMembers.push(id)
 			}
 
 			member.enabled = true
-			member.actorId = memberId
-			member.lastKnownTxHash = txHash
-			if(emails) {
-				member.email = emails[i]
-			}
 
 			if(metadataHash) {
 				const updateResult = validatedJsonFromIpfs<WorkspaceMemberUpdate>(metadataHash[i], validateWorkspaceMemberUpdate)
@@ -353,15 +357,15 @@ export function mapWorkspaceMembersUpdate(
 
 				const update = updateResult.value!
 				if(update.fullName) {
-					member.fullName = update.fullName
+					profile.fullName = update.fullName
 				}
 				
 				if(update.profilePictureIpfsHash) {
-					member.profilePictureIpfsHash = update.profilePictureIpfsHash
+					profile.profilePictureIpfsHash = update.profilePictureIpfsHash
 				}
 				
 				if(update.publicKey) {
-					member.publicKey = update.publicKey
+					profile.publicKey = update.publicKey
 				}
 
 				if(update.pii) {
@@ -369,7 +373,6 @@ export function mapWorkspaceMembersUpdate(
 				}
 			}
 			
-			member.updatedAt = entity.updatedAtS
 			if(role == 0) { // become an admin
 				if(member.accessLevel == 'owner') { // if already an owner
 					member.accessLevel = 'owner'
@@ -381,8 +384,9 @@ export function mapWorkspaceMembersUpdate(
 			}
 
 			member.workspace = workspaceId
-			member.addedBy = `${workspaceId}.${addedBy.toHex()}`
+			member.addedBy = `${addedBy.toHex()}`
 			member.set('removedAt', Value.fromNull())
+
 			member.save()
 		} else if(member) {
 			member.removedAt = entity.updatedAtS
@@ -391,6 +395,8 @@ export function mapWorkspaceMembersUpdate(
 		} else {
 			log.warning(`[${txHash.toHex()}] recv member remove but member not found`, [])
 		}
+
+		profile.save()
 	}
 
 	entity.save()
