@@ -166,13 +166,13 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	// }
 
 	if (previousState === 'submitted') {
-		grant.numberOfApplicationsPending -= 1;
+		grant.numberOfApplicationsPending -= 1
 	} else if (previousState === 'approved') {
-		grant.numberOfApplicationsSelected -= 1;
+		grant.numberOfApplicationsSelected -= 1
 	} else if (previousState === 'rejected') {
-		grant.numberOfApplicationsRejected -= 1;
+		grant.numberOfApplicationsRejected -= 1
 	} else if (previousState === 'resubmit') {
-		grant.numberOfApplicationsAwaitingResubmission -= 1;
+		grant.numberOfApplicationsAwaitingResubmission -= 1
 	}
 
 	if (strStateResult.value == 'submitted') {
@@ -180,9 +180,9 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	} else if (strStateResult.value == 'approved') {
 		grant.numberOfApplicationsSelected += 1
 	} else if (strStateResult.value == 'rejected') {
-		grant.numberOfApplicationsRejected += 1;
+		grant.numberOfApplicationsRejected += 1
 	} else if (strStateResult.value == 'resubmit') {
-		grant.numberOfApplicationsAwaitingResubmission += 1;
+		grant.numberOfApplicationsAwaitingResubmission += 1
 	} 
 
 	grant.save()
