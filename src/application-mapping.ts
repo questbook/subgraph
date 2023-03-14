@@ -165,23 +165,23 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	// 	workspace.save()
 	// }
 
-	if (previousState === 'submitted') {
+	if(previousState === 'submitted') {
 		grant.numberOfApplicationsPending -= 1
-	} else if (previousState === 'approved') {
+	} else if(previousState === 'approved') {
 		grant.numberOfApplicationsSelected -= 1
-	} else if (previousState === 'rejected') {
+	} else if(previousState === 'rejected') {
 		grant.numberOfApplicationsRejected -= 1
-	} else if (previousState === 'resubmit') {
+	} else if(previousState === 'resubmit') {
 		grant.numberOfApplicationsAwaitingResubmission -= 1
 	}
 
-	if (strStateResult.value == 'submitted') {
+	if(strStateResult.value == 'submitted') {
 		grant.numberOfApplicationsPending += 1
-	} else if (strStateResult.value == 'approved') {
+	} else if(strStateResult.value == 'approved') {
 		grant.numberOfApplicationsSelected += 1
-	} else if (strStateResult.value == 'rejected') {
+	} else if(strStateResult.value == 'rejected') {
 		grant.numberOfApplicationsRejected += 1
-	} else if (strStateResult.value == 'resubmit') {
+	} else if(strStateResult.value == 'resubmit') {
 		grant.numberOfApplicationsAwaitingResubmission += 1
 	} 
 
