@@ -1302,6 +1302,42 @@ export class Grant extends Entity {
     this.set("acceptingApplications", Value.fromBoolean(value));
   }
 
+  get numberOfApplicationsSelected(): i32 {
+    let value = this.get("numberOfApplicationsSelected");
+    return value!.toI32();
+  }
+
+  set numberOfApplicationsSelected(value: i32) {
+    this.set("numberOfApplicationsSelected", Value.fromI32(value));
+  }
+
+  get numberOfApplicationsRejected(): i32 {
+    let value = this.get("numberOfApplicationsRejected");
+    return value!.toI32();
+  }
+
+  set numberOfApplicationsRejected(value: i32) {
+    this.set("numberOfApplicationsRejected", Value.fromI32(value));
+  }
+
+  get numberOfApplicationsAwaitingResubmission(): i32 {
+    let value = this.get("numberOfApplicationsAwaitingResubmission");
+    return value!.toI32();
+  }
+
+  set numberOfApplicationsAwaitingResubmission(value: i32) {
+    this.set("numberOfApplicationsAwaitingResubmission", Value.fromI32(value));
+  }
+
+  get numberOfApplicationsPending(): i32 {
+    let value = this.get("numberOfApplicationsPending");
+    return value!.toI32();
+  }
+
+  set numberOfApplicationsPending(value: i32) {
+    this.set("numberOfApplicationsPending", Value.fromI32(value));
+  }
+
   get metadataHash(): string {
     let value = this.get("metadataHash");
     return value!.toString();
@@ -1978,24 +2014,6 @@ export class Workspace extends Entity {
 
   set mostRecentGrantPostedAtS(value: i32) {
     this.set("mostRecentGrantPostedAtS", Value.fromI32(value));
-  }
-
-  get numberOfApplications(): i32 {
-    let value = this.get("numberOfApplications");
-    return value!.toI32();
-  }
-
-  set numberOfApplications(value: i32) {
-    this.set("numberOfApplications", Value.fromI32(value));
-  }
-
-  get numberOfApplicationsSelected(): i32 {
-    let value = this.get("numberOfApplicationsSelected");
-    return value!.toI32();
-  }
-
-  set numberOfApplicationsSelected(value: i32) {
-    this.set("numberOfApplicationsSelected", Value.fromI32(value));
   }
 
   get members(): Array<string> {

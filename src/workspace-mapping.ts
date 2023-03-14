@@ -69,8 +69,6 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.metadataHash = event.params.metadataHash
 	entity.isVisible = true
 	entity.mostRecentGrantPostedAtS = 0
-	entity.numberOfApplications = 0
-	entity.numberOfApplicationsSelected = 0
 	entity.grants = []
 
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)

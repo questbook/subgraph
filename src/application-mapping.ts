@@ -62,10 +62,8 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 
 	// increment number of applications recv for grant & workspace
 	grant.numberOfApplications += 1
+	grant.numberOfApplicationsPending += 1
 	grant.save()
-
-	workspace.numberOfApplications += 1
-	workspace.save()
 
 	addApplicationRevision(entity, event.transaction.from)
 	addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
@@ -159,10 +157,35 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	actionEntity.save()
 	
 	// increment number of applicants selected for workspace
-	if(previousState == 'submitted' && (strStateResult.value == 'approved' || strStateResult.value == 'completed')) {
-		workspace.numberOfApplicationsSelected += 1
-		workspace.save()
+	// if(previousState == 'submitted' && (strStateResult.value == 'approved' || strStateResult.value == 'completed')) {
+	// 	entity.numberOfApplicationsSelected += 1
+	// 	workspace.save()
+	// } else if (previousState == 'approved' && strStateResult.value != 'completed') {
+	// 	workspace.numberOfApplicationsSelected -= 1
+	// 	workspace.save()
+	// }
+
+	if (previousState === 'submitted') {
+		grant.numberOfApplicationsPending -= 1;
+	} else if (previousState === 'approved') {
+		grant.numberOfApplicationsSelected -= 1;
+	} else if (previousState === 'rejected') {
+		grant.numberOfApplicationsRejected -= 1;
+	} else if (previousState === 'resubmit') {
+		grant.numberOfApplicationsAwaitingResubmission -= 1;
 	}
+
+	if (strStateResult.value == 'submitted') {
+		grant.numberOfApplicationsPending += 1
+	} else if (strStateResult.value == 'approved') {
+		grant.numberOfApplicationsSelected += 1
+	} else if (strStateResult.value == 'rejected') {
+		grant.numberOfApplicationsRejected += 1;
+	} else if (strStateResult.value == 'resubmit') {
+		grant.numberOfApplicationsAwaitingResubmission += 1;
+	} 
+
+	grant.save()
 
 	entity.version += 1
 	entity.save()

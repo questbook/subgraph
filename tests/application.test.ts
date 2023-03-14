@@ -71,7 +71,7 @@ export function runTests(): void {
 		const workspace = Workspace.load(grant!.workspace)
 
 		assert.assertNotNull(workspace)
-		assert.assertTrue(workspace!.numberOfApplications > 0)
+		assert.assertTrue(grant!.numberOfApplications > 0)
 	})
 
 	test('should update an application', () => {
@@ -120,7 +120,7 @@ export function runTests(): void {
 		assert.assertNotNull(actionItem)
 
 		// check workspace application submitted count increased
-		assert.i32Equals(workspace!.numberOfApplicationsSelected, 1)
+		assert.i32Equals(grant!.numberOfApplicationsSelected, 1)
 	})
 
 	test('should update a milestone with requesing payment', () => {
