@@ -91,6 +91,10 @@ export function handleGrantCreated(event: GrantCreated): void {
 	entity.createdAtS = time
 	entity.funding = new BigInt(0)
 	entity.numberOfApplications = 0
+	entity.numberOfApplicationsPending = 0
+	entity.numberOfApplicationsSelected = 0
+	entity.numberOfApplicationsRejected = 0
+	entity.numberOfApplicationsAwaitingResubmission = 0
 	entity.managers = mapGrantManagers(json.grantManagers, entity.id, entity.workspace)
 
 	const usdReward = getUSDReward(reward.asset, reward.committed)
