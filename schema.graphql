@@ -249,7 +249,15 @@ type Grant @entity {
   fields: [GrantField!]!
   "Whether the grant is currently accepting applications or not"
   acceptingApplications: Boolean!
-
+  "total number of approved applications in the grant program"
+  numberOfApplicationsSelected: Int!
+  "total number of rejected applications in the grant program"
+  numberOfApplicationsRejected: Int!
+  "total number of applications awaiting resubmission in the grant program"
+  numberOfApplicationsAwaitingResubmission: Int!
+  "total number of pending applications in the grant program"
+  numberOfApplicationsPending: Int!
+  "metadata hash that is used to fetch the grant details"
   metadataHash: String!
   "in seconds since epoch"
   createdAtS: Int!
@@ -363,10 +371,6 @@ type Workspace @entity {
   updatedAtS: Int!
   "timestamp of when the latest grant was posted"
   mostRecentGrantPostedAtS: Int!
-  "total number of applications the DAO has received"
-  numberOfApplications: Int!
-  "total number of applications the DAO has accepted"
-  numberOfApplicationsSelected: Int!
   "Members of the workspace"
   members: [WorkspaceMember!]! @derivedFrom(field: "workspace")
   "List of social media handles of the workspace"
