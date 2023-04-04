@@ -111,10 +111,10 @@ export function migrateGrant(grant: Grant, fromWallet: Address, toWallet: Addres
 }
 
 export function migrateProfile(profile: Profile, workspaceId: string, fromWallet: Address, toWallet: Address): void {
-	for (let i = 0; i < profile.workspaceMembers.length; ++i) {
-		if (profile.workspaceMembers[i] == `${workspaceId}.${fromWallet.toHex()}`) {
+	for(let i = 0; i < profile.workspaceMembers.length; ++i) {
+		if(profile.workspaceMembers[i] == `${workspaceId}.${fromWallet.toHex()}`) {
 			const member = WorkspaceMember.load(profile.workspaceMembers[i])
-			if (!member) {
+			if(!member) {
 				continue
 			}
 
@@ -124,18 +124,18 @@ export function migrateProfile(profile: Profile, workspaceId: string, fromWallet
 		}
 	}
 
-	for (let i = 0; i < profile.reviews.length; ++i) {
+	for(let i = 0; i < profile.reviews.length; ++i) {
 		const review = Review.load(profile.reviews[i])
-		if (!review) {
+		if(!review) {
 			continue
 		}
 
 		const reviewerProfile = Profile.load(review.profile)
-		if (!reviewerProfile) {
+		if(!reviewerProfile) {
 			continue
 		}
 
-		if (reviewerProfile.actorId == fromWallet) {
+		if(reviewerProfile.actorId == fromWallet) {
 			review.reviewer = toWallet.toHex()
 			review.profile = profile.id
 			review.save()
@@ -144,11 +144,11 @@ export function migrateProfile(profile: Profile, workspaceId: string, fromWallet
 
 	for(let i = 0; i < profile.applications.length; ++i) {
 		const application = GrantApplication.load(profile.applications[i])
-		if (!application) {
+		if(!application) {
 			continue
 		}
 
-		if (application.profile == profile.id) {
+		if(application.profile == profile.id) {
 			application.applicant = toWallet.toHex()
 			application.profile = profile.id
 			application.save()

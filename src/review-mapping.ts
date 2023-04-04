@@ -216,6 +216,7 @@ export function handleReviewMigrate(event: ReviewMigrate): void {
 	} else {
 		log.info(`[${event.transaction.hash.toHex()}] 2 migrating review: "rubric (${grant.id}) found"`, [])
 	}
+
 	migrateApplicationReviewer(application, fromWallet, toWallet)
 	
 	log.info(`[${event.transaction.hash.toHex()}] migrating review: "review (${reviewId}) from ${fromWallet.toHexString()} to ${toWallet.toHexString()} for grant ${grant.id}"`, [])

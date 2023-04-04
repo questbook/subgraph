@@ -1,15 +1,15 @@
 import { Address, ethereum } from '@graphprotocol/graph-ts'
-import { assert, log, newMockEvent, test } from 'matchstick-as'
+import { assert, newMockEvent, test } from 'matchstick-as'
 import { ApplicationMigrate } from '../generated/QBApplicationsContract/QBApplicationsContract'
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { ReviewersAssigned, ReviewMigrate } from '../generated/QBReviewsContract/QBReviewsContract'
 import { WorkspaceMemberMigrate } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Grant, GrantApplication, GrantManager, Profile, Review, Workspace, WorkspaceMember } from '../generated/schema'
+import { Grant, GrantApplication, GrantManager, Profile, Workspace, WorkspaceMember } from '../generated/schema'
 import { handleApplicationMigrate } from '../src/application-mapping'
 import { handleGrantCreated } from '../src/grant-mapping'
 import { handleReviewersAssigned, handleReviewMigrate } from '../src/review-mapping'
-import { CREATE_GRANT_JSON, createApplication, createReview, createWorkspace, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_REVIEWER_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
 import { handleWorkspaceMemberMigrate } from '../src/workspace-mapping'
+import { CREATE_GRANT_JSON, createApplication, createWorkspace, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
 
 export function runTests(): void {
 
