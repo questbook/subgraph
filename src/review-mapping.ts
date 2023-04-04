@@ -42,7 +42,7 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 
 		const item = new PIIAnswer(`${reviewId}.${info.key}`)
 		item.data = info.value
-		item.manager = `${grantId}.${info.key}`
+		item.manager = info.key
 
 		item.save()
 		items.push(item.id)
@@ -130,7 +130,7 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 		if(active[i]) { // add reviewer if not already added
 			if(idx < 0) {
 				const reviewer = new GrantApplicationReviewer(reviewerId)
-				reviewer.member = memberId
+				reviewer.member = reviewerAddressHex
 				reviewer.assignedAtS = eventTimestampS
 				reviewer.save()
 
@@ -202,21 +202,33 @@ export function handleReviewMigrate(event: ReviewMigrate): void {
 		return
 	}
 	
+	let tempReview = Rubric.load(grant.id)
+	if(!tempReview) {
+		log.warning(`[${event.transaction.hash.toHex()}] 1 error in migrating review: "rubric (${grant.id}) not found"`, [])
+	} else {
+		log.info(`[${event.transaction.hash.toHex()}] 1 migrating review: "rubric (${grant.id}) found"`, [])
+	}
+
 	migrateGrant(grant, fromWallet, toWallet)
+	tempReview = Rubric.load(grant.id)
+	if(!tempReview) {
+		log.warning(`[${event.transaction.hash.toHex()}] 2 error in migrating review: "rubric (${grant.id}) not found"`, [])
+	} else {
+		log.info(`[${event.transaction.hash.toHex()}] 2 migrating review: "rubric (${grant.id}) found"`, [])
+	}
 	migrateApplicationReviewer(application, fromWallet, toWallet)
 	
+	log.info(`[${event.transaction.hash.toHex()}] migrating review: "review (${reviewId}) from ${fromWallet.toHexString()} to ${toWallet.toHexString()} for grant ${grant.id}"`, [])
 	const rubric = Rubric.load(grant.id)
 	if(rubric) {
 		migrateRubric(rubric, fromWallet, toWallet)
 	} else {
-		log.warning(`[${event.transaction.hash.toHex()}] error in migrating review: "rubric (${grant.id}) not found"`, [])
+		log.warning(`[${event.transaction.hash.toHex()}] 3 error in migrating review: "rubric (${grant.id}) not found"`, [])
 	}
 
 	const review = Review.load(reviewId)
 	if(review) {
-		const reviewerId = `${grant.workspace}.${toWallet.toHex()}`
-		review.reviewer = reviewerId
-
+		review.reviewer = toWallet.toHex()
 		review.save()
 	} else {
 		log.warning(`[${event.transaction.hash.toHex()}] error in migrating review: "review (${reviewId}) not found"`, [])

@@ -208,7 +208,7 @@ type Review @entity {
   publicReviewDataHash: String
   "The encrypted data of the review"
   data: [PIIAnswer!]!
-  profile: Profile
+  profile: Profile!
 }
 
 type Grant @entity {
@@ -332,7 +332,8 @@ type WorkspaceMember @entity {
   pii: [PIIData!]!
   workspace: Workspace!
   addedBy: Profile!
-  removedAt: Int!
+  addedAt: Int!
+  removedAt: Int
 }
 
 "Schema for a Workspace or DAO"
@@ -545,7 +546,7 @@ type Notification @entity {
   "The IDs of the entity being affected"
   entityIds: [String!]!
   "Who all should recv the notification"
-  recipientIds: [Bytes!]!
+  recipientIds: [String!]!
   "Who caused the notification to be sent"
   actorId: Bytes
   "Descending order of cursor"

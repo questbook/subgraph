@@ -948,6 +948,7 @@ export class Review extends Entity {
     this.set("application", Value.fromString(""));
     this.set("reviewer", Value.fromString(""));
     this.set("data", Value.fromStringArray(new Array(0)));
+    this.set("profile", Value.fromString(""));
   }
 
   save(): void {
@@ -1029,21 +1030,13 @@ export class Review extends Entity {
     this.set("data", Value.fromStringArray(value));
   }
 
-  get profile(): string | null {
+  get profile(): string {
     let value = this.get("profile");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
+    return value!.toString();
   }
 
-  set profile(value: string | null) {
-    if (!value) {
-      this.unset("profile");
-    } else {
-      this.set("profile", Value.fromString(<string>value));
-    }
+  set profile(value: string) {
+    this.set("profile", Value.fromString(value));
   }
 }
 
@@ -1856,6 +1849,15 @@ export class WorkspaceMember extends Entity {
 
   set addedBy(value: string) {
     this.set("addedBy", Value.fromString(value));
+  }
+
+  get addedAt(): i32 {
+    let value = this.get("addedAt");
+    return value!.toI32();
+  }
+
+  set addedAt(value: i32) {
+    this.set("addedAt", Value.fromI32(value));
   }
 
   get removedAt(): i32 {
@@ -3177,7 +3179,7 @@ export class Notification extends Entity {
     this.set("content", Value.fromString(""));
     this.set("type", Value.fromString(""));
     this.set("entityIds", Value.fromStringArray(new Array(0)));
-    this.set("recipientIds", Value.fromBytesArray(new Array(0)));
+    this.set("recipientIds", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
@@ -3242,13 +3244,13 @@ export class Notification extends Entity {
     this.set("entityIds", Value.fromStringArray(value));
   }
 
-  get recipientIds(): Array<Bytes> {
+  get recipientIds(): Array<string> {
     let value = this.get("recipientIds");
-    return value!.toBytesArray();
+    return value!.toStringArray();
   }
 
-  set recipientIds(value: Array<Bytes>) {
-    this.set("recipientIds", Value.fromBytesArray(value));
+  set recipientIds(value: Array<string>) {
+    this.set("recipientIds", Value.fromStringArray(value));
   }
 
   get actorId(): Bytes | null {

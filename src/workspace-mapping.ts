@@ -14,7 +14,7 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, Profile, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, Profile, QBAdmin, Review, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -26,7 +26,7 @@ import {
 	mapWorkspaceTokens
 } from './utils/generics'
 import { disburseReward } from './utils/handle-disburse-reward'
-import { migrateGrant } from './utils/migrations'
+import { migrateGrant, migrateProfile } from './utils/migrations'
 import { addFundsTransferNotification } from './utils/notifications'
 import {
 	validateWorkspaceCreateRequest,
@@ -39,7 +39,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	const entityId = event.params.id.toHex()
 
 	const jsonResult = validatedJsonFromIpfs<WorkspaceCreateRequest>(event.params.metadataHash, validateWorkspaceCreateRequest)
-	if(jsonResult.error) {
+	if (jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace create: "${jsonResult.error!}"`, [])
 		return
 	}
@@ -50,13 +50,13 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.ownerId = event.params.owner
 	entity.title = json.title
 	entity.about = json.about
-	if(json.bio) {
+	if (json.bio) {
 		entity.bio = json.bio!
 	}
 
 	entity.logoIpfsHash = json.logoIpfsHash
 	entity.coverImageIpfsHash = json.coverImageIpfsHash
-	if(json.partners) {
+	if (json.partners) {
 		entity.partners = mapWorkspacePartners(entityId, json.partners!)
 	} else {
 		entity.partners = []
@@ -71,19 +71,30 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.mostRecentGrantPostedAtS = 0
 	entity.grants = []
 
-	const profile = new Profile(`${event.params.owner.toHex()}`)
+	let profile = Profile.load(event.params.owner.toHex())
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
-	profile.actorId = event.params.owner
+
+	if (!profile) {
+		profile = new Profile(event.params.owner.toHex())
+		profile.actorId = event.params.owner
+		profile.createdAt = entity.createdAtS
+		profile.workspaceMembers = [member.id]
+	}
+
 	profile.publicKey = json.creatorPublicKey
-	profile.createdAt = entity.createdAtS
 	profile.updatedAt = entity.updatedAtS
-	profile.workspaceMembers = [member.id]
+
+	const members = profile.workspaceMembers
+	members.push(member.id)
+	profile.workspaceMembers = members
+
 	profile.applications = []
 	profile.reviews = []
 
 	member.accessLevel = 'owner'
 	member.workspace = entity.id
 	member.addedBy = member.id
+	member.addedAt = entity.createdAtS
 	member.enabled = true
 
 	profile.save()
@@ -95,7 +106,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 	const entityId = event.params.id.toHex()
 
 	const entity = Workspace.load(entityId)
-	if(!entity) {
+	if (!entity) {
 		log.warning(`recv workspace update without workspace existing, ID = ${entityId}`, [])
 		return
 	}
@@ -103,48 +114,48 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 	entity.updatedAtS = event.params.time.toI32()
 
 	const jsonResult = validatedJsonFromIpfs<WorkspaceUpdateRequest>(event.params.metadataHash, validateWorkspaceUpdateRequest)
-	if(jsonResult.error) {
+	if (jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace update: "${jsonResult.error!}"`, [])
 		return
 	}
 
 	const json = jsonResult.value!
-	if(json.title) {
+	if (json.title) {
 		entity.title = json.title!
 	}
 
-	if(json.about) {
+	if (json.about) {
 		entity.about = json.about!
 	}
 
-	if(json.bio) {
+	if (json.bio) {
 		entity.bio = json.bio!
 	}
 
-	if(json.logoIpfsHash) {
+	if (json.logoIpfsHash) {
 		entity.logoIpfsHash = json.logoIpfsHash!
 	}
 
-	if(json.coverImageIpfsHash) {
+	if (json.coverImageIpfsHash) {
 		entity.coverImageIpfsHash = json.coverImageIpfsHash
 	}
 
-	if(json.partners) {
+	if (json.partners) {
 		entity.partners = mapWorkspacePartners(entityId, json.partners!)
 	}
 
-	if(json.socials) {
+	if (json.socials) {
 		entity.socials = mapWorkspaceSocials(entityId, json.socials!)
 	}
 
-	if(json.tokens) {
+	if (json.tokens) {
 		mapWorkspaceTokens(entity.id, json.tokens!)
 	}
 
-	if(json.publicKey) {
+	if (json.publicKey) {
 		const memberId = event.transaction.from.toHex()
 		const profile = Profile.load(memberId)
-		if(profile) {
+		if (profile) {
 			profile.publicKey = json.publicKey
 			profile.updatedAt = entity.updatedAtS
 			profile.save()
@@ -158,7 +169,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 
 export function handleWorkspaceSafeUpdated(event: WorkspaceSafeUpdated): void {
 	const entityId = event.params.id.toHex()
-	if(event.params.safeChainId.gt(new BigInt(0))) {
+	if (event.params.safeChainId.gt(new BigInt(0))) {
 		const entity = new WorkspaceSafe(entityId)
 		entity.workspace = entityId
 		entity.chainId = event.params.safeChainId
@@ -182,7 +193,7 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 		event.transaction.from,
 		event.transaction.hash
 	)
-	if(result.error) {
+	if (result.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace member update: "${result.error!}"`, [])
 	}
 }
@@ -199,7 +210,7 @@ export function handleWorkspaceMemberUpdated(event: WorkspaceMemberUpdated): voi
 		event.transaction.from,
 		event.transaction.hash
 	)
-	if(result.error) {
+	if (result.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping single workspace member update: "${result.error!}"`, [])
 	}
 }
@@ -232,7 +243,7 @@ export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): voi
 	const amounts = event.params.amounts
 	const isP2P = event.params.isP2P
 
-	for(let i = 0; i < applicationIds.length; i++) {
+	for (let i = 0; i < applicationIds.length; i++) {
 		disburseReward({
 			event,
 			depositType,
@@ -261,7 +272,7 @@ export function handleDisburseRewardFromSafe1(event: DisburseRewardFromSafe1): v
 	const amounts = event.params.amounts
 	const isP2P = event.params.isP2P
 
-	for(let i = 0; i < applicationIds.length; i++) {
+	for (let i = 0; i < applicationIds.length; i++) {
 		disburseReward({
 			event,
 			depositType,
@@ -290,7 +301,7 @@ export function handleDisburseRewardFromWallet(event: DisburseRewardFromWallet):
 	const amounts = event.params.amounts
 	const isP2P = event.params.isP2P
 
-	for(let i = 0; i < applicationIds.length; i++) {
+	for (let i = 0; i < applicationIds.length; i++) {
 		disburseReward({
 			event,
 			depositType,
@@ -311,24 +322,23 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 	const fromWallet = event.params.from
 	const toWallet = event.params.to
 	const workspaceId = event.params.workspaceId.toHex()
-	const workspaceMemberId = `${workspaceId}.${fromWallet.toHex()}`
 
 	const workspace = Workspace.load(workspaceId)
-	if(!workspace) {
+	if (!workspace) {
 		log.warning(`[${event.transaction.hash.toHex()}] workspace not found for member migrate`, [])
 		return
 	}
 
-	const member = WorkspaceMember.load(workspaceMemberId)
-	if(!member) {
-		log.warning(`[${event.transaction.hash.toHex()}] member not found for migrate`, [])
+	const profile = Profile.load(fromWallet.toHex());
+	if (!profile) {
+		log.warning(`[${event.transaction.hash.toHex()}] profile not found for member migrate`, [])
 		return
 	}
 
-	for(let i = 0; i < workspace.grants.length; ++i) {
+	for (let i = 0; i < workspace.grants.length; ++i) {
 		const grantId = workspace.grants[i]
 		const grant = Grant.load(grantId)
-		if(!grant) {
+		if (!grant) {
 			log.warning(`[${event.transaction.hash.toHex()}] grant not found for member migrate`, [])
 			return
 		}
@@ -336,25 +346,17 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 		migrateGrant(grant, fromWallet, toWallet)
 	}
 
-	if(workspace.ownerId.toHex() == fromWallet.toHex()) {
+	if (workspace.ownerId.toHex() == fromWallet.toHex()) {
 		workspace.ownerId = toWallet
 		workspace.save()
 	}
 
-	store.remove('WorkspaceMember', member.id)
-	member.id = `${event.params.workspaceId.toHex()}.${toWallet.toHex()}`
-
-	let profile = Profile.load(member.id)
-	if(!profile) {
-		profile = new Profile(member.id)
-	}
-
+	store.remove('Profile', profile.id)
+	profile.id = toWallet.toHex()
 	profile.actorId = toWallet
-	profile.applications = []
-	profile.reviews = []
-	profile.workspaceMembers = [member.id]
+	profile.save()
 
-	member.save()
+	migrateProfile(profile, workspaceId, fromWallet, toWallet)
 
 	const migration = new Migration(`${workspaceId}.${fromWallet.toHexString()}.${toWallet.toHexString()}`)
 	migration.fromWallet = fromWallet
@@ -370,11 +372,11 @@ export function handleWorkspacesVisibleUpdated(event: WorkspacesVisibleUpdated):
 	const workspaceIds = event.params.workspaceId
 	const isVisibleArr = event.params.isVisible
 
-	for(let idx = 0; idx < workspaceIds.length; idx++) {
+	for (let idx = 0; idx < workspaceIds.length; idx++) {
 		const workspaceId = workspaceIds[idx].toHex()
 
 		const workspace = Workspace.load(workspaceId)
-		if(!workspace) {
+		if (!workspace) {
 			log.warning(`workspace [${workspaceId}] not found for visibility update`, [])
 			continue
 		}
@@ -388,13 +390,13 @@ export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
 	const walletAddresses = event.params.walletAddresses
 	const isAdded = event.params.isAdded
 
-	for(let i = 0; i < walletAddresses.length; i++) {
+	for (let i = 0; i < walletAddresses.length; i++) {
 		const walletAddress = walletAddresses[i].toHex()
 
 		const adminExists = QBAdmin.load(walletAddress)
 
-		if(isAdded) {
-			if(adminExists) {
+		if (isAdded) {
+			if (adminExists) {
 				log.warning(`Admin ${walletAddress} already exists!`, [])
 				return
 			}
@@ -405,7 +407,7 @@ export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
 
 			entity.save()
 		} else {
-			if(!adminExists) {
+			if (!adminExists) {
 				log.warning(`Admin ${walletAddress} does not exist!`, [])
 				return
 			}
@@ -423,7 +425,7 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 	const tokenUSDValues = event.params.tokenUSDValue
 	const executionTimestamps = event.params.executionTimestamp
 
-	for(let i = 0; i < safeTxnHashes.length; ++i) {
+	for (let i = 0; i < safeTxnHashes.length; ++i) {
 		const safeTxnHash = safeTxnHashes[i]
 		const applicationId = applicationIds[i].toString()
 		const status = statuses[i]
@@ -432,19 +434,19 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 		log.info(`(Funds Transfer Status Update) - Received: ${safeTxnHash}, ${applicationId}, ${status}, ${tokenUSDValue}, ${executionTimestamps[i].toString()}`, [])
 	}
 
-	for(let i = 0; i < safeTxnHashes.length; i++) {
-		if(executionTimestamps[i].toString().length != 10) {
+	for (let i = 0; i < safeTxnHashes.length; i++) {
+		if (executionTimestamps[i].toString().length != 10) {
 			log.warning(`(Funds Transfer Status Update) - Invalid execution timestamp: ${executionTimestamps[i].toString()}`, [])
 			continue
 		}
 
 		const fundsTransferEntity = FundsTransfer.load(`${safeTxnHashes[i]}.${applicationIds[i].toHexString()}`)
-		if(!fundsTransferEntity) {
+		if (!fundsTransferEntity) {
 			log.warning(`[${event.transaction.hash.toHex()}] funds transfer not found for status update`, [])
 			continue
 		}
 
-		if(!ALLOWED_FUND_TRANSFER_VALUES.has(statuses[i])) {
+		if (!ALLOWED_FUND_TRANSFER_VALUES.has(statuses[i])) {
 			log.warning(`[${event.transaction.hash.toHex()}] incorrect value for enum ${statuses[i]}`, [])
 			continue
 		}
@@ -457,28 +459,28 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 		log.info(`[${event.params.transactionHash}] Funds transfer status updated with ${statuses[i]}}`, [])
 
 		const applicationEntity = GrantApplication.load(applicationIds[i].toHexString())
-		if(!applicationEntity) {
+		if (!applicationEntity) {
 			log.warning(`[${event.params.transactionHash}] Application entity not found for ${applicationIds[i].toHexString()}}`, [])
 			continue
 		}
 
 		log.info(`[${event.params.transactionHash}] Application entity found for ${applicationIds[i].toHexString()}}`, [])
 
-		if(oldStatus == 'queued' && statuses[i] == 'executed' && (fundsTransferEntity.type == 'funds_disbursed_from_safe' || fundsTransferEntity.type == 'funds_disbursed_from_wallet')) {
+		if (oldStatus == 'queued' && statuses[i] == 'executed' && (fundsTransferEntity.type == 'funds_disbursed_from_safe' || fundsTransferEntity.type == 'funds_disbursed_from_wallet')) {
 			// update grant balance
 			const grantEntity = Grant.load(applicationEntity.grant)
 
-			if(!grantEntity) {
+			if (!grantEntity) {
 				log.warning(`[${event.params.transactionHash}] Grant not found for status update`, [])
 				continue
 			}
 
 			grantEntity.totalGrantFundingDisbursedUSD = grantEntity.totalGrantFundingDisbursedUSD.plus(fundsTransferEntity.amount)
-			
+
 
 			// update milestone amount paid value
 			const milestoneEntity = ApplicationMilestone.load(fundsTransferEntity.milestone!)
-			if(!milestoneEntity) {
+			if (!milestoneEntity) {
 				log.warning(`[${event.params.transactionHash}] Milestone not found for status update`, [])
 				continue
 			}
@@ -502,10 +504,10 @@ export function handleGrantsSectionUpdate(event: GrantsSectionUpdated): void {
 
 	const grants: string[] = []
 	// first check if all grants exist
-	for(let i = 0; i < grantIds.length; i++) {
+	for (let i = 0; i < grantIds.length; i++) {
 		const grantId = grantIds[i].toHexString()
 		const grant = Grant.load(grantId)
-		if(!grant) {
+		if (!grant) {
 			log.warning(`[${event.transaction.hash.toHex()}] Grant not found for section update`, [])
 			return
 		} else {
@@ -516,16 +518,16 @@ export function handleGrantsSectionUpdate(event: GrantsSectionUpdated): void {
 	const sectionEntity = Section.load(`${sectionName}`)
 
 	// if grantIds is empty, remove the section
-	if(grantIds.length == 0) {
-		if(sectionEntity) {
+	if (grantIds.length == 0) {
+		if (sectionEntity) {
 			store.remove('Section', `${sectionName}`)
 		}
 
 		return
 	}
-	
+
 	// if section does not exist, create it
-	if(!sectionEntity) {
+	if (!sectionEntity) {
 		const newSectionEntity = new Section(`${sectionName}`)
 		newSectionEntity.sectionName = sectionName
 		newSectionEntity.sectionLogoIpfsHash = sectionLogoIpfsHash
@@ -533,7 +535,7 @@ export function handleGrantsSectionUpdate(event: GrantsSectionUpdated): void {
 		newSectionEntity.save()
 	} else { // if section exists, update it
 		sectionEntity.grants = grants
-		if(sectionEntity.sectionLogoIpfsHash) {
+		if (sectionEntity.sectionLogoIpfsHash) {
 			sectionEntity.sectionLogoIpfsHash = sectionLogoIpfsHash
 			sectionEntity.save()
 		}

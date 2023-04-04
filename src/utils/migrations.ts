@@ -1,5 +1,5 @@
 import { Address, Bytes, store } from '@graphprotocol/graph-ts'
-import { Grant, GrantApplication, GrantApplicationReviewer, GrantManager, Rubric } from '../../generated/schema'
+import { Grant, GrantApplication, GrantApplicationReviewer, GrantManager, Profile, Review, Rubric, WorkspaceMember } from '../../generated/schema'
 
 /** migrate one of the reviewers' address in an application */
 export function migrateApplicationReviewer(app: GrantApplication, fromWallet: Address, toWallet: Address): void {
@@ -47,7 +47,7 @@ export function migrateApplicationReviewer(app: GrantApplication, fromWallet: Ad
 			store.remove('GrantApplicationReviewer', appReviewerId)
 
 			appReviewer.id = newAppReviewerId
-			appReviewer.member = appReviewer.member.replace(fromWalletHex, toWalletHex)
+			appReviewer.member = toWalletHex
 			appReviewer.save()
 		}
 
@@ -67,10 +67,8 @@ export function migrateRubric(rubric: Rubric, fromWallet: Address, toWallet: Add
 	const fromWalletHex = fromWallet.toHex()
 	const toWalletHex = toWallet.toHex()
 	const addedBy = rubric.addedBy
-	if(addedBy && addedBy.endsWith(fromWalletHex)) {
-		const newAddedBy = addedBy.replace(fromWalletHex, toWalletHex)
-		rubric.addedBy = newAddedBy
-
+	if(addedBy && addedBy === fromWalletHex) {
+		rubric.addedBy = toWalletHex
 		rubric.save()
 	}
 }
@@ -97,7 +95,7 @@ export function migrateGrant(grant: Grant, fromWallet: Address, toWallet: Addres
 			if(grantManager) {
 				store.remove('GrantManager', grantManager.id)
 				grantManager.id = toWalletGrantManager
-				grantManager.member = `${grant.workspace}.${toWalletHex}`
+				grantManager.member = toWalletHex
 				grantManager.save()
 			}
 
@@ -110,6 +108,54 @@ export function migrateGrant(grant: Grant, fromWallet: Address, toWallet: Addres
 	if(didUpdate) {
 		grant.save()
 	}
+}
+
+export function migrateProfile(profile: Profile, workspaceId: string, fromWallet: Address, toWallet: Address): void {
+	for (let i = 0; i < profile.workspaceMembers.length; ++i) {
+		if (profile.workspaceMembers[i] == `${workspaceId}.${fromWallet.toHex()}`) {
+			const member = WorkspaceMember.load(profile.workspaceMembers[i])
+			if (!member) {
+				continue
+			}
+
+			store.remove('WorkspaceMember', member.id)
+			member.id = `${workspaceId}.${toWallet.toHex()}`
+			member.save()
+		}
+	}
+
+	for (let i = 0; i < profile.reviews.length; ++i) {
+		const review = Review.load(profile.reviews[i])
+		if (!review) {
+			continue
+		}
+
+		const reviewerProfile = Profile.load(review.profile)
+		if (!reviewerProfile) {
+			continue
+		}
+
+		if (reviewerProfile.actorId == fromWallet) {
+			review.reviewer = toWallet.toHex()
+			review.profile = profile.id
+			review.save()
+		}
+	}
+
+	for(let i = 0; i < profile.applications.length; ++i) {
+		const application = GrantApplication.load(profile.applications[i])
+		if (!application) {
+			continue
+		}
+
+		if (application.profile == profile.id) {
+			application.applicant = toWallet.toHex()
+			application.profile = profile.id
+			application.save()
+		}
+	}
+
+	profile.save()
 }
 
 function findAddressInIDArray(arr: string[], addressHex: string): i32 {

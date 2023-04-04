@@ -36,9 +36,20 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 		return
 	}
 
+	let builderProfile = Profile.load(event.params.owner.toHex())
+	if(!builderProfile) {
+		builderProfile = new Profile(event.params.owner.toHex())
+		builderProfile.actorId = event.params.owner
+		builderProfile.createdAt = event.params.time.toI32()
+		builderProfile.updatedAt = event.params.time.toI32()
+		builderProfile.workspaceMembers = []
+		builderProfile.applications = [applicationId]
+		builderProfile.save()
+	}
+
 	const entity = new GrantApplication(applicationId)
 	entity.grant = grantId
-	entity.applicantId = event.params.owner
+	entity.applicant = event.params.owner.toHex()
 	entity.applicantPublicKey = json.applicantPublicKey
 	entity.state = 'submitted'
 	entity.fields = mapGrantFieldAnswers(applicationId, grantId, json.fields)
@@ -251,8 +262,8 @@ export function handleApplicationMigrate(event: ApplicationMigrate): void {
 	}
 
 	const fromWallet = profile.actorId
-	profile.actorId = 
-	entity.applicant = event.params.newApplicantAddress
+	profile.actorId = event.params.newApplicantAddress
+	entity.applicant = event.params.newApplicantAddress.toHex()
 	entity.save()
 
 	const migration = new Migration(`${applicationId}.${fromWallet.toHexString()}.${event.params.newApplicantAddress.toHexString()}`)

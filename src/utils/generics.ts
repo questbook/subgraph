@@ -222,7 +222,7 @@ export function mapGrantManagers(managerWalletIds: Bytes[] | null, grantId: stri
 			const walletId = managerWalletIds[i].toHex()
 			const manager = new GrantManager(`${grantId}.${walletId}`)
 			manager.grant = grantId
-			manager.member = `${workspaceId}.${walletId}`
+			manager.member = walletId
 
 			manager.save()
 			items.push(manager.id)
@@ -384,7 +384,8 @@ export function mapWorkspaceMembersUpdate(
 			}
 
 			member.workspace = workspaceId
-			member.addedBy = `${addedBy.toHex()}`
+			member.addedBy = addedBy.toHex()
+			member.addedAt = entity.updatedAtS
 			member.set('removedAt', Value.fromNull())
 
 			member.save()
