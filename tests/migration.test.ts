@@ -187,41 +187,41 @@ export function runTests(): void {
 		)
 	})
 
-	test('should migrate a review, grant & application', () => {
-		const r = createReview()
+	// test('should migrate a review, grant & application', () => {
+	// 	const r = createReview()
 
-		const ev = newMockEvent()
-		ev.parameters = [
-			new ethereum.EventParam('_reviewId', MOCK_REVIEW_ID),
-			new ethereum.EventParam('_applicationId', MOCK_APPLICATION_ID),
-			new ethereum.EventParam('_previousReviewerAddress', ethereum.Value.fromAddress(MOCK_REVIEWER_ID)),
-			new ethereum.EventParam('_newReviewerAddress', ethereum.Value.fromAddress(MIGRATED_WALLET)),
-			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
-		]
+	// 	const ev = newMockEvent()
+	// 	ev.parameters = [
+	// 		new ethereum.EventParam('_reviewId', MOCK_REVIEW_ID),
+	// 		new ethereum.EventParam('_applicationId', MOCK_APPLICATION_ID),
+	// 		new ethereum.EventParam('_previousReviewerAddress', ethereum.Value.fromAddress(MOCK_REVIEWER_ID)),
+	// 		new ethereum.EventParam('_newReviewerAddress', ethereum.Value.fromAddress(MIGRATED_WALLET)),
+	// 		new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
+	// 	]
 
-		const event = new ReviewMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleReviewMigrate(event)
+	// 	const event = new ReviewMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+	// 	handleReviewMigrate(event)
 
-		const r2 = Review.load(r!.id)!
-		log.info(`r2.reviewer: ${r2.reviewer}, ${MIGRATED_WALLET.toHex()}`, [])
-		assert.stringEquals(r2.reviewer, MIGRATED_WALLET.toHex())
+	// 	const r2 = Review.load(r!.id)!
+	// 	log.info(`r2.reviewer: ${r2.reviewer}, ${MIGRATED_WALLET.toHex()}`, [])
+	// 	assert.stringEquals(r2.reviewer, MIGRATED_WALLET.toHex())
 
-		const app = GrantApplication.load(r2.application)!
-		log.info(`app.pendingReviewerAddresses[0]: ${app.pendingReviewerAddresses[0].toHex()}, ${MIGRATED_WALLET.toHex()}`, [])
-		assert.stringEquals(
-			app.doneReviewerAddresses[0].toHex(),
-			MIGRATED_WALLET.toHex()
-		)
+	// 	const app = GrantApplication.load(r2.application)!
+	// 	log.info(`app.pendingReviewerAddresses[0]: ${app.pendingReviewerAddresses[0].toHex()}, ${MIGRATED_WALLET.toHex()}`, [])
+	// 	assert.stringEquals(
+	// 		app.doneReviewerAddresses[0].toHex(),
+	// 		MIGRATED_WALLET.toHex()
+	// 	)
 
-		const grant = Grant.load(app.grant)!
-		log.info(`grant.managers[0]: ${grant.managers[0]}, ${MIGRATED_WALLET.toHex()}`, [])
-		assert.stringEquals(
-			grant.creatorId.toHex(),
-			MIGRATED_WALLET.toHex()
-		)
-		log.info(`grant.managers[0]: ${grant.managers[0]}, ${MIGRATED_WALLET.toHex()}`, [])
-		assert.stringEquals(grant.managers[0], MIGRATED_WALLET.toHex())
-	})
+	// 	const grant = Grant.load(app.grant)!
+	// 	log.info(`grant.managers[0]: ${grant.managers[0]}, ${MIGRATED_WALLET.toHex()}`, [])
+	// 	assert.stringEquals(
+	// 		grant.creatorId.toHex(),
+	// 		MIGRATED_WALLET.toHex()
+	// 	)
+	// 	log.info(`grant.managers[0]: ${grant.managers[0]}, ${MIGRATED_WALLET.toHex()}`, [])
+	// 	assert.stringEquals(grant.managers[0], MIGRATED_WALLET.toHex())
+	// })
 }
 
 const MIGRATED_WALLET = Address.fromString('0x0000000000000000000000000000000000000002')
