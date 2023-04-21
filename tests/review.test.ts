@@ -1,8 +1,8 @@
 import { Address, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
-import { ReviewersAssigned, ReviewPaymentMarkedDone, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
-import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, PIIAnswer, Rubric, RubricItem, WorkspaceMember } from '../generated/schema'
-import { handleReviewersAssigned, handleReviewPaymentMarkedDone, handleRubricsSet } from '../src/review-mapping'
+import { ReviewersAssigned, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
+import { Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, PIIAnswer, Profile, Rubric, RubricItem } from '../generated/schema'
+import { handleReviewersAssigned, handleRubricsSet } from '../src/review-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, createGrant, createReview, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_REVIEW_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils' 
 
 export function runTests(): void {
@@ -20,10 +20,10 @@ export function runTests(): void {
 			assertStringNotEmpty(pii!.data, 'pii.data')
 		}
 
-		const member = WorkspaceMember.load(review!.reviewer)
-		assert.assertNotNull(member)
-		assert.i32Equals(member!.lastReviewSubmittedAt, review!.createdAtS)
-		assert.assertTrue(!!member!.outstandingReviewIds.includes(review!.id))
+		const profile = Profile.load(review!.reviewer)
+		assert.assertNotNull(profile)
+		// assert.i32Equals(member!.lastReviewSubmittedAt, review!.createdAtS)
+		// assert.assertTrue(!!member!.outstandingReviewIds.includes(review!.id))
 
 		const app = GrantApplication.load(review!.application)
 		assertArrayNotEmpty(app!.doneReviewerAddresses)
@@ -133,35 +133,6 @@ export function runTests(): void {
 			assert.assertNotNull(item)
 			assert.assertTrue(item!.maximumPoints > 0)
 		}
-	})
-
-	test('should mark a review payment done', () => {
-		const review = createReview()
-
-		const idArr: ethereum.Value[] = [ MOCK_REVIEW_ID ]
-
-		const ev = newMockEvent()
-		ev.parameters = [
-			new ethereum.EventParam('_reviewIds', ethereum.Value.fromArray(idArr)),
-			new ethereum.EventParam('_asset', ethereum.Value.fromAddress(MOCK_GRANT_ID)),
-			new ethereum.EventParam('_reviewer', ethereum.Value.fromAddress(Address.fromString(WORKSPACE_CREATOR_ID))),
-			new ethereum.EventParam('_amount', ethereum.Value.fromI32(100)),
-			// the IPFS hash contains mock data for the workspace
-			new ethereum.EventParam('_transactionHash', ethereum.Value.fromString('12345')),
-			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
-		]
-
-		const event = new ReviewPaymentMarkedDone(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleReviewPaymentMarkedDone(event)
-
-		const member = WorkspaceMember.load(review!.reviewer)
-		assert.assertNotNull(member)
-		assert.assertTrue(!member!.outstandingReviewIds.includes(review!.id))
-
-		const transferId = `${event.transaction.hash.toHex()}.${review!.id}`
-		const transfer = FundsTransfer.load(transferId)
-		assert.assertNotNull(transfer!)
-		assert.stringEquals(transfer!.type, 'review_payment_done')
 	})
 }
 

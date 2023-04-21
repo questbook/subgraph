@@ -96,48 +96,6 @@ export class ApplicationSubmitted__Params {
   }
 }
 
-export class ApplicationSubmitted1 extends ethereum.Event {
-  get params(): ApplicationSubmitted1__Params {
-    return new ApplicationSubmitted1__Params(this);
-  }
-}
-
-export class ApplicationSubmitted1__Params {
-  _event: ApplicationSubmitted1;
-
-  constructor(event: ApplicationSubmitted1) {
-    this._event = event;
-  }
-
-  get applicationId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get grant(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get owner(): Address {
-    return this._event.parameters[2].value.toAddress();
-  }
-
-  get metadataHash(): string {
-    return this._event.parameters[3].value.toString();
-  }
-
-  get milestoneCount(): BigInt {
-    return this._event.parameters[4].value.toBigInt();
-  }
-
-  get walletAddress(): Bytes {
-    return this._event.parameters[5].value.toBytes();
-  }
-
-  get time(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
-  }
-}
-
 export class ApplicationUpdated extends ethereum.Event {
   get params(): ApplicationUpdated__Params {
     return new ApplicationUpdated__Params(this);
@@ -625,6 +583,21 @@ export class QBApplicationsContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
+  utilityReg(): Address {
+    let result = super.call("utilityReg", "utilityReg():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_utilityReg(): ethereum.CallResult<Address> {
+    let result = super.tryCall("utilityReg", "utilityReg():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   walletAddressMapping(param0: Bytes): Address {
     let result = super.call(
       "walletAddressMapping",
@@ -940,6 +913,36 @@ export class SetApplicationReviewRegCall__Outputs {
   }
 }
 
+export class SetUtilityRegistryCall extends ethereum.Call {
+  get inputs(): SetUtilityRegistryCall__Inputs {
+    return new SetUtilityRegistryCall__Inputs(this);
+  }
+
+  get outputs(): SetUtilityRegistryCall__Outputs {
+    return new SetUtilityRegistryCall__Outputs(this);
+  }
+}
+
+export class SetUtilityRegistryCall__Inputs {
+  _call: SetUtilityRegistryCall;
+
+  constructor(call: SetUtilityRegistryCall) {
+    this._call = call;
+  }
+
+  get _utilityReg(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetUtilityRegistryCall__Outputs {
+  _call: SetUtilityRegistryCall;
+
+  constructor(call: SetUtilityRegistryCall) {
+    this._call = call;
+  }
+}
+
 export class SetWorkspaceRegCall extends ethereum.Call {
   get inputs(): SetWorkspaceRegCall__Inputs {
     return new SetWorkspaceRegCall__Inputs(this);
@@ -1073,6 +1076,10 @@ export class UpdateApplicationMetadataCall__Inputs {
 
   get _milestoneCount(): BigInt {
     return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get _applicantAddress(): Bytes {
+    return this._call.inputValues[3].value.toBytes();
   }
 }
 

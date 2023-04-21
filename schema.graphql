@@ -193,7 +193,7 @@ type Rubric @entity {
   "Unix timestamp of when the rubric was updated"
   updatedAtS: Int!
   "Who added this rubric"
-  addedBy: WorkspaceMember
+  addedBy: Profile
 }
 
 type Review @entity {
@@ -201,13 +201,14 @@ type Review @entity {
   "Application for which the review is"
   application: GrantApplication!
   "Workspace member that reviewed the app"
-  reviewer: WorkspaceMember!
+  reviewer: Profile!
   "created at S"
   createdAtS: Int!
   "IPFS Hash to the publicly accessible review"
   publicReviewDataHash: String
   "The encrypted data of the review"
   data: [PIIAnswer!]!
+  profile: Profile!
 }
 
 type Grant @entity {
@@ -298,7 +299,7 @@ type GrantManager @entity {
   "Grant for which this entity is the manager"
   grant: Grant!
   "Workspace member"
-  member: WorkspaceMember
+  member: Profile
 }
 
 type PIIData @entity {
@@ -307,42 +308,32 @@ type PIIData @entity {
   data: String!
 }
 
-type WorkspaceMember @entity {
-  "Globally unique ID of the member"
+type Profile @entity {
+  "Globally unqiue ID of the profile"
   id: ID!
-  "the ID of the member itself"
   actorId: Bytes!
   "Full name of the user"
   fullName: String
   "Hash of profile picture on IPFS"
   profilePictureIpfsHash: String
-  "PII data of the member"
-  pii: [PIIData!]!
-  "Encrypted email"
-  emailId: String
-
-  email: String
-  "What permissions the member has on the workspace"
-  accessLevel: WorkspaceMemberAccessLevel!
-  "Public key of the workspace member"
   publicKey: String
-  "When the member was added"
-  addedAt: Int!
-  "Last update on member"
+  createdAt: Int!
   updatedAt: Int!
-  "An indicator if the person is an active part of the workspace or not"
+
+  applications: [GrantApplication!]!
+  reviews: [Review!]!
+  workspaceMembers: [WorkspaceMember!]!
+}
+
+type WorkspaceMember @entity {
+  id: ID!
   enabled: Boolean!
-  "If the member was removed, when"
-  removedAt: Int
-  "Timestamp of when the last review was done"
-  lastReviewSubmittedAt: Int!
-  "The review IDs for which this member is owed a payment"
-  outstandingReviewIds: [String!]!
+  accessLevel: WorkspaceMemberAccessLevel!
+  pii: [PIIData!]!
   workspace: Workspace!
-  "Address of the workspace member who added this member"
-  addedBy: WorkspaceMember
-  "Last known hash of the TX made by this user"
-  lastKnownTxHash: Bytes!
+  addedBy: Profile!
+  addedAt: Int!
+  removedAt: Int
 }
 
 "Schema for a Workspace or DAO"
@@ -372,7 +363,7 @@ type Workspace @entity {
   "timestamp of when the latest grant was posted"
   mostRecentGrantPostedAtS: Int!
   "Members of the workspace"
-  members: [WorkspaceMember!]! @derivedFrom(field: "workspace")
+  members: [Profile!]!
   "List of social media handles of the workspace"
   socials: [Social!]!
   "Hash of the IPFS file from which the details about the workspace were pulled"
@@ -420,7 +411,7 @@ type PIIAnswer @entity {
 type GrantApplicationReviewer @entity {
   id: ID!
   "The member who was assigned"
-  member: WorkspaceMember!
+  member: Profile!
   "Unix timestamp of when the user was assigned"
   assignedAtS: Int!
 }
@@ -446,8 +437,8 @@ type GrantApplication @entity {
   id: ID!
   "The grant for which the application is for"
   grant: Grant!
-  "Address of the applicant"
-  applicantId: Bytes!
+  "Profile of the applicant"
+  applicant: Profile!
   "Public key of the applicant, used for PII"
   applicantPublicKey: String
   "Current state of the application"
@@ -471,7 +462,7 @@ type GrantApplication @entity {
   "Reviews of the application"
   reviews: [Review!]! @derivedFrom(field: "application")
   "@deprecated (use 'applicationReviewers') People who will review the grant application"
-  reviewers: [WorkspaceMember!]!
+  reviewers: [Profile!]!
   "Addresses of the assigned reviewers who are yet to review"
   pendingReviewerAddresses: [Bytes!]!
   "Addresses of the assigned reviewers who have reviewed"
@@ -484,6 +475,7 @@ type GrantApplication @entity {
   walletAddress: Bytes!
   "Version of the application, incremented on resubmission"
   version: Int!
+  profile: Profile
 }
 
 "A revision after an update"
@@ -554,7 +546,7 @@ type Notification @entity {
   "The IDs of the entity being affected"
   entityIds: [String!]!
   "Who all should recv the notification"
-  recipientIds: [Bytes!]!
+  recipientIds: [String!]!
   "Who caused the notification to be sent"
   actorId: Bytes
   "Descending order of cursor"

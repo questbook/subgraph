@@ -2,7 +2,7 @@ import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
-import { FundsTransfer, Grant, GrantManager, Notification, Reward, Workspace, WorkspaceMember } from '../generated/schema'
+import { FundsTransfer, Grant, GrantManager, Notification, Profile, Reward, Workspace } from '../generated/schema'
 import { FundsWithdrawn } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdatedFromFactory } from '../src/grant-mapping'
 import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, CUSTOM_TOKEN_ADDRESS_GRANT, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
@@ -23,8 +23,7 @@ export function runTests(): void {
 		const mem = GrantManager.load(memId)
 		assert.assertNotNull(mem)
 		assert.assertNotNull(mem!.member)
-
-		assert.assertNotNull(WorkspaceMember.load(mem!.member!))
+		assert.assertNotNull(Profile.load(mem!.member!))
 
 		const w = Workspace.load(g!.workspace)
 		assert.assertNotNull(w)

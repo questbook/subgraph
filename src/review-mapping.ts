@@ -1,6 +1,6 @@
 import { Bytes, log, store } from '@graphprotocol/graph-ts'
-import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
-import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, WorkspaceMember } from '../generated/schema'
+import { ReviewersAssigned, ReviewMigrate, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
+import { Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { migrateApplicationReviewer, migrateGrant, migrateRubric } from './utils/migrations'
 import { reviewSubmittedNotification } from './utils/notifications'
@@ -22,12 +22,6 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 	  return
 	}
 
-	const member = WorkspaceMember.load(memberId)
-	if(!member) {
-		log.warning(`[${event.transaction.hash.toHex()}] error in mapping review: "member ${memberId} not found"`, [])
-		return
-	}
-
 	const json = jsonResult.value!
 
 	let review = Review.load(reviewId)
@@ -37,7 +31,7 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 		review.application = event.params._applicationId.toHex()
 	}
 
-	review.reviewer = memberId
+	review.reviewer = reviewer
 	review.publicReviewDataHash = json.publicReviewDataHash
 
 	const items: string[] = []
@@ -48,7 +42,7 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 
 		const item = new PIIAnswer(`${reviewId}.${info.key}`)
 		item.data = info.value
-		item.manager = `${grantId}.${info.key}`
+		item.manager = info.key
 
 		item.save()
 		items.push(item.id)
@@ -56,21 +50,6 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 
 	review.data = items
 	review.save()
-	// finally update the member
-	// update the timestamp of when they submitted the last review
-	member.lastReviewSubmittedAt = review.createdAtS
-	// add to outstanding review IDs
-	const outstandingReviewIds = member.outstandingReviewIds
-	if(!outstandingReviewIds.includes(reviewId)) {
-		outstandingReviewIds.push(reviewId)
-	}
-
-	member.outstandingReviewIds = outstandingReviewIds
-	if(!member.publicKey && json.reviewerPublicKey) {
-		member.publicKey = json.reviewerPublicKey
-	}
-
-	member.save()
 
 	const counterId = `${grantId}.${reviewer}`
 	let counter = GrantReviewerCounter.load(counterId)
@@ -151,7 +130,7 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 		if(active[i]) { // add reviewer if not already added
 			if(idx < 0) {
 				const reviewer = new GrantApplicationReviewer(reviewerId)
-				reviewer.member = memberId
+				reviewer.member = reviewerAddressHex
 				reviewer.assignedAtS = eventTimestampS
 				reviewer.save()
 
@@ -205,60 +184,6 @@ export function handleRubricsSet(event: RubricsSet): void {
 	rubricSetHandler(event, grantId, workspaceId, metadataHash, time)
 }
 
-export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): void {
-	const transactionId = event.transaction.hash.toHex()
-	const reviewIds = event.params._reviewIds
-
-	const reviewer = event.params._reviewer
-
-	for(let i = 0;i < reviewIds.length;i++) {
-		const reviewId = reviewIds[i].toHex()
-		const review = Review.load(reviewId)
-		if(!review) {
-			log.warning(`[${event.transaction.hash.toHex()}] error in marking review payment done: "review (${reviewId}) not found"`, [])
-			continue
-		}
-
-		const memberId = review.reviewer
-		const member = WorkspaceMember.load(memberId)
-		if(!member) {
-			log.warning(`[${event.transaction.hash.toHex()}] error in marking review payment done: "member (${memberId}) not found"`, [])
-			continue
-		}
-
-		const app = GrantApplication.load(review.application)
-		if(!app) {
-			log.warning(`[${event.transaction.hash.toHex()}] error in marking review payment done: "application (${review.application}) not found"`, [])
-			continue
-		}
-
-		// remove from outstanding review ID
-		const outstandingReviewIds = member.outstandingReviewIds
-		const revIdx = outstandingReviewIds.indexOf(reviewId)
-		if(revIdx >= 0) {
-			outstandingReviewIds.splice(revIdx, 1)
-		}
-
-		member.outstandingReviewIds = outstandingReviewIds
-
-		member.save()
-
-		const fundEntity = new FundsTransfer(`${transactionId}.${reviewId}`)
-		fundEntity.review = reviewId
-		fundEntity.grant = app.grant
-		fundEntity.amount = event.params._amount
-		fundEntity.sender = event.transaction.from
-		fundEntity.to = reviewer
-		fundEntity.createdAtS = event.params.time.toI32()
-		fundEntity.type = 'review_payment_done'
-		fundEntity.status = 'executed'
-		fundEntity.asset = event.params._asset
-		fundEntity.transactionHash = transactionId
-
-		fundEntity.save()
-	}
-}
-
 export function handleReviewMigrate(event: ReviewMigrate): void {
 	const reviewId = event.params._reviewId.toHex()
 	const fromWallet = event.params._previousReviewerAddress
@@ -277,21 +202,34 @@ export function handleReviewMigrate(event: ReviewMigrate): void {
 		return
 	}
 	
+	let tempReview = Rubric.load(grant.id)
+	if(!tempReview) {
+		log.warning(`[${event.transaction.hash.toHex()}] 1 error in migrating review: "rubric (${grant.id}) not found"`, [])
+	} else {
+		log.info(`[${event.transaction.hash.toHex()}] 1 migrating review: "rubric (${grant.id}) found"`, [])
+	}
+
 	migrateGrant(grant, fromWallet, toWallet)
+	tempReview = Rubric.load(grant.id)
+	if(!tempReview) {
+		log.warning(`[${event.transaction.hash.toHex()}] 2 error in migrating review: "rubric (${grant.id}) not found"`, [])
+	} else {
+		log.info(`[${event.transaction.hash.toHex()}] 2 migrating review: "rubric (${grant.id}) found"`, [])
+	}
+
 	migrateApplicationReviewer(application, fromWallet, toWallet)
 	
+	log.info(`[${event.transaction.hash.toHex()}] migrating review: "review (${reviewId}) from ${fromWallet.toHexString()} to ${toWallet.toHexString()} for grant ${grant.id}"`, [])
 	const rubric = Rubric.load(grant.id)
 	if(rubric) {
 		migrateRubric(rubric, fromWallet, toWallet)
 	} else {
-		log.warning(`[${event.transaction.hash.toHex()}] error in migrating review: "rubric (${grant.id}) not found"`, [])
+		log.warning(`[${event.transaction.hash.toHex()}] 3 error in migrating review: "rubric (${grant.id}) not found"`, [])
 	}
 
 	const review = Review.load(reviewId)
 	if(review) {
-		const reviewerId = `${grant.workspace}.${toWallet.toHex()}`
-		review.reviewer = reviewerId
-
+		review.reviewer = toWallet.toHex()
 		review.save()
 	} else {
 		log.warning(`[${event.transaction.hash.toHex()}] error in migrating review: "review (${reviewId}) not found"`, [])
