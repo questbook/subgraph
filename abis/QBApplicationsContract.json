@@ -98,55 +98,6 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "grant",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "metadataHash",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint48",
-        "name": "milestoneCount",
-        "type": "uint48"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "walletAddress",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "time",
-        "type": "uint256"
-      }
-    ],
-    "name": "ApplicationSubmitted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint96",
-        "name": "applicationId",
-        "type": "uint96"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
         "name": "owner",
         "type": "address"
       },
@@ -665,6 +616,19 @@
   {
     "inputs": [
       {
+        "internalType": "contract IUtilityRegistry",
+        "name": "_utilityReg",
+        "type": "address"
+      }
+    ],
+    "name": "setUtilityRegistry",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "contract IWorkspaceRegistry",
         "name": "_workspaceReg",
         "type": "address"
@@ -737,6 +701,11 @@
         "internalType": "uint48",
         "name": "_milestoneCount",
         "type": "uint48"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_applicantAddress",
+        "type": "bytes32"
       }
     ],
     "name": "updateApplicationMetadata",
@@ -819,6 +788,19 @@
     "name": "upgradeToAndCall",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "utilityReg",
+    "outputs": [
+      {
+        "internalType": "contract IUtilityRegistry",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

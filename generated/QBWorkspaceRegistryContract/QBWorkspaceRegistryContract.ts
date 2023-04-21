@@ -652,29 +652,6 @@ export class WorkspacesVisibleUpdated__Params {
   }
 }
 
-export class QBWorkspaceRegistryContract__splitSignatureResult {
-  value0: Bytes;
-  value1: Bytes;
-  value2: i32;
-
-  constructor(value0: Bytes, value1: Bytes, value2: i32) {
-    this.value0 = value0;
-    this.value1 = value1;
-    this.value2 = value2;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromFixedBytes(this.value0));
-    map.set("value1", ethereum.Value.fromFixedBytes(this.value1));
-    map.set(
-      "value2",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value2))
-    );
-    return map;
-  }
-}
-
 export class QBWorkspaceRegistryContract__workspacesResultSafeStruct extends ethereum.Tuple {
   get _address(): Bytes {
     return this[0].toBytes();
@@ -1011,41 +988,19 @@ export class QBWorkspaceRegistryContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  splitSignature(
-    sig: Bytes
-  ): QBWorkspaceRegistryContract__splitSignatureResult {
-    let result = super.call(
-      "splitSignature",
-      "splitSignature(bytes):(bytes32,bytes32,uint8)",
-      [ethereum.Value.fromBytes(sig)]
-    );
+  utilityReg(): Address {
+    let result = super.call("utilityReg", "utilityReg():(address)", []);
 
-    return new QBWorkspaceRegistryContract__splitSignatureResult(
-      result[0].toBytes(),
-      result[1].toBytes(),
-      result[2].toI32()
-    );
+    return result[0].toAddress();
   }
 
-  try_splitSignature(
-    sig: Bytes
-  ): ethereum.CallResult<QBWorkspaceRegistryContract__splitSignatureResult> {
-    let result = super.tryCall(
-      "splitSignature",
-      "splitSignature(bytes):(bytes32,bytes32,uint8)",
-      [ethereum.Value.fromBytes(sig)]
-    );
+  try_utilityReg(): ethereum.CallResult<Address> {
+    let result = super.tryCall("utilityReg", "utilityReg():(address)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new QBWorkspaceRegistryContract__splitSignatureResult(
-        value[0].toBytes(),
-        value[1].toBytes(),
-        value[2].toI32()
-      )
-    );
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   walletAddressToScwAddress(param0: Address): Address {
@@ -1736,6 +1691,36 @@ export class SetGuardOffsetCall__Outputs {
   _call: SetGuardOffsetCall;
 
   constructor(call: SetGuardOffsetCall) {
+    this._call = call;
+  }
+}
+
+export class SetUtilityRegistryCall extends ethereum.Call {
+  get inputs(): SetUtilityRegistryCall__Inputs {
+    return new SetUtilityRegistryCall__Inputs(this);
+  }
+
+  get outputs(): SetUtilityRegistryCall__Outputs {
+    return new SetUtilityRegistryCall__Outputs(this);
+  }
+}
+
+export class SetUtilityRegistryCall__Inputs {
+  _call: SetUtilityRegistryCall;
+
+  constructor(call: SetUtilityRegistryCall) {
+    this._call = call;
+  }
+
+  get _utilityReg(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetUtilityRegistryCall__Outputs {
+  _call: SetUtilityRegistryCall;
+
+  constructor(call: SetUtilityRegistryCall) {
     this._call = call;
   }
 }
