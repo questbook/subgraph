@@ -25,6 +25,10 @@ export class Token {
 	iconHash: string = ''
 }
 
+export class GrantProposedClaims{
+	title:string
+	link:string
+}
 export class GrantField {
 	id: string | null = null
 	title: string = ''
@@ -58,6 +62,7 @@ export class GrantApplicationRequest {
 	fields: GrantApplicationFieldAnswers = new GrantApplicationFieldAnswers()
 	pii: PIIAnswers | null = null
 	milestones: GrantProposedMilestone[] = []
+	claims: GrantProposedClaims[] = []
 }
 
 export class WorkspaceMemberUpdate {

@@ -3,7 +3,7 @@ import { ApplicationMigrate, ApplicationSubmitted, ApplicationUpdated, Milestone
 import { ApplicationAction, ApplicationMilestone, Grant, GrantApplication, Migration, Profile, Workspace } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
-import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
+import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapClaims, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
 import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from './utils/notifications'
 import { ApplicationMilestoneUpdate, GrantApplicationRequest, GrantApplicationUpdate, validateApplicationMilestoneUpdate, validateGrantApplicationRequest, validateGrantApplicationUpdate } from './json-schema'
 
@@ -62,7 +62,8 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	entity.doneReviewerAddresses = []
 	entity.pendingReviewerAddresses = []
 	entity.walletAddress = new Bytes(32)
-
+	entity.claims = mapClaims(applicationId, json.claims)
+	
 	if(json.pii) {
 		entity.pii = mapGrantPII(applicationId, grantId, json.pii!)
 	} else {
