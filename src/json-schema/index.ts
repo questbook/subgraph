@@ -3,6 +3,7 @@
 
 import { TypedMap, BigInt, BigDecimal, Bytes, JSONValue } from '@graphprotocol/graph-ts'
 import { Boolean, Result, toSet, validateObject, validateNumber, validateInteger, validateArray, validateBoolean, validateString, validateTypedMap, validateBytesFromStringResult, validateStringResultInteger, validateStringResultNumber, validateDateTimeFromStringResult } from './json'
+import { Claim } from '../../generated/schema'
 
 const SupportedNetworkEnumSet = toSet(['42220', '5', '10', '137'])
 const PayoutTypeEnumSet = toSet(['in_one_go', 'milestones'])
@@ -78,6 +79,7 @@ export class GrantApplicationUpdate {
 	milestones: GrantProposedMilestone[] | null = null
 	feedback: string | null = null
 	applicantPublicKey: string | null = null
+	claims: GrantProposedClaims[] | null = null
 }
 
 export class PrivateCommentAddRequest {

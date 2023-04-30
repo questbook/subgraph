@@ -148,6 +148,9 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 			entity.milestones = mapMilestones(entity.id, json.milestones!)
 		}
 
+		if(json.claims){
+			entity.claims = mapClaims (entity.id, json.claims!)
+		}
 		if(json.feedback) {
 			// when state moves to resubmit or reject -- that's when DAO adds feedback
 			if(entity.state == 'resubmit' || entity.state == 'rejected') {
