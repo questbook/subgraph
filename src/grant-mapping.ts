@@ -1,13 +1,14 @@
 import { BigInt, log } from '@graphprotocol/graph-ts'
 import { GrantCreated, GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
-import { Grant, Workspace } from '../generated/schema'
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from '../generated/schema'
 import { QBGrantsContract } from '../generated/templates'
-import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated } from '../generated/templates/QBGrantsContract/QBGrantsContract'
+import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { applyGrantFundUpdate } from './utils/apply-grant-deposit'
 import { dateToUnixTimestamp, getUSDReward, mapGrantFieldMap, mapGrantManagers, mapGrantRewardAndListen } from './utils/generics'
 import { grantUpdateHandler } from './utils/grantUpdateHandler'
 import { disburseReward } from './utils/handle-disburse-reward'
+import { addFundsTransferNotification } from './utils/notifications'
 import { GrantCreateRequest, validateGrantCreateRequest } from './json-schema'
 
 export function handleGrantCreated(event: GrantCreated): void {
@@ -131,6 +132,48 @@ export function handleDisburseReward(event: DisburseReward): void {
 		_txnHash: '',
 		_tokenName: ''
 	})
+}
+
+// We should deprecate this handler. The event is not in use
+export function handleTransactionRecord(event: TransactionRecord): void {
+	const applicationId = event.params.applicationId.toHex()
+	const milestoneIndex = event.params.milestoneId.toI32()
+	const milestoneId = `${applicationId}.${milestoneIndex}`
+	const transactionHash = event.params.transactionHash
+	const amountPaid = event.params.amount
+
+	const application = GrantApplication.load(applicationId)
+	if(!application) {
+		log.warning(`[${event.transaction.hash.toHex()}] recv disburse reward for unknown application: ID="${applicationId}"`, [])
+		return
+	}
+
+	const disburseEntity = new FundsTransfer(event.transaction.hash.toHex())
+	disburseEntity.createdAtS = event.params.time.toI32()
+	disburseEntity.amount = amountPaid
+	disburseEntity.sender = event.params.sender
+	disburseEntity.to = application.applicantId
+	disburseEntity.application = applicationId
+	disburseEntity.milestone = milestoneId
+	disburseEntity.type = 'funds_disbursed'
+	disburseEntity.status = 'executed'
+	disburseEntity.grant = application.grant
+	disburseEntity.transactionHash = event.params.transactionHash.toHexString()
+
+	disburseEntity.save()
+
+	const entity = ApplicationMilestone.load(milestoneId)
+	if(!entity) {
+		log.warning(`[${event.transaction.hash.toHex()}] recv milestone updated for unknown application: ID="${milestoneId}"`, [])
+		return
+	}
+
+	entity.amountPaid = entity.amountPaid.plus(amountPaid)
+	entity.updatedAtS = event.params.time.toI32()
+
+	entity.save()
+
+	addFundsTransferNotification(disburseEntity)
 }
 
 export function handleDisburseRewardFailed(event: DisburseRewardFailed): void {
