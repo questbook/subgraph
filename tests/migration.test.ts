@@ -4,7 +4,7 @@ import { ApplicationMigrate } from '../generated/QBApplicationsContract/QBApplic
 import { GrantCreated } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
 import { ReviewersAssigned, ReviewMigrate } from '../generated/QBReviewsContract/QBReviewsContract'
 import { WorkspaceMemberMigrate } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { Grant, GrantApplication, GrantManager, Profile, Workspace, WorkspaceMember } from '../generated/schema'
+import { Grant, GrantApplication, GrantManager, Workspace, WorkspaceMember } from '../generated/schema'
 import { handleApplicationMigrate } from '../src/application-mapping'
 import { handleGrantCreated } from '../src/grant-mapping'
 import { handleReviewersAssigned, handleReviewMigrate } from '../src/review-mapping'
@@ -40,10 +40,10 @@ export function runTests(): void {
 		assert.assertNull(memOld)
 		// check new member got created
 		// and has the correct properties set
-		const profile = Profile.load(`${MIGRATED_WALLET.toHex()}`)
-		assert.assertNotNull(profile)
+		const memNew = WorkspaceMember.load(`${workspace!.id}.${MIGRATED_WALLET.toHex()}`)
+		assert.assertNotNull(memNew)
 		assert.addressEquals(
-			Address.fromString(profile!.actorId.toHex()),
+			Address.fromString(memNew!.actorId.toHex()),
 			MIGRATED_WALLET
 		)
 	})
@@ -66,8 +66,8 @@ export function runTests(): void {
 
 		let grant = Grant.load(MOCK_GRANT_ID.toHex())!
 		for(let i = 0; i < grant.managers.length; ++i) {
-			const profile = Profile.load(`${WORKSPACE_CREATOR_ID}`)!
-			assert.addressEquals(Address.fromString(profile.actorId.toHex()), Address.fromString(WORKSPACE_CREATOR_ID))
+			const manager = WorkspaceMember.load(`${workspace!.id}.${WORKSPACE_CREATOR_ID}`)!
+			assert.addressEquals(Address.fromString(manager.actorId.toHex()), Address.fromString(WORKSPACE_CREATOR_ID))
 		}
 
 		const ev = newMockEvent()
@@ -94,10 +94,10 @@ export function runTests(): void {
 		assert.assertNull(memOld)
 		// check new member got created
 		// and has the correct properties set
-		const profile = Profile.load(`${MIGRATED_WALLET.toHex()}`)
-		assert.assertNotNull(profile)
+		const memNew = WorkspaceMember.load(`${workspace!.id}.${MIGRATED_WALLET.toHex()}`)
+		assert.assertNotNull(memNew)
 		assert.addressEquals(
-			Address.fromString(profile!.actorId.toHex()),
+			Address.fromString(memNew!.actorId.toHex()),
 			MIGRATED_WALLET
 		)
 		// check the grant managers have been updated
@@ -106,9 +106,9 @@ export function runTests(): void {
 			const manager = GrantManager.load(grant.managers[i])
 			assert.assertNotNull(manager)
 			assert.assertNotNull(manager!.member)
-			const profile = Profile.load(manager!.member!)
-			assert.assertNotNull(profile)
-			assert.addressEquals(Address.fromString(profile!.actorId.toHex()), MIGRATED_WALLET)
+			const workspaceMember = WorkspaceMember.load(manager!.member!)
+			assert.assertNotNull(workspaceMember)
+			assert.addressEquals(Address.fromString(workspaceMember!.actorId.toHex()), MIGRATED_WALLET)
 		}
 
 		// check if the old grant managers have been deleted
@@ -134,7 +134,7 @@ export function runTests(): void {
 		// check the applicant address has been changed correctly
 		const app2 = GrantApplication.load(app!.id)!
 		assert.addressEquals(
-			Address.fromString(app2.applicant),
+			Address.fromString(app2.applicantId.toHex()),
 			MIGRATED_WALLET
 		)
 	})
@@ -202,25 +202,24 @@ export function runTests(): void {
 	// 	const event = new ReviewMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 	// 	handleReviewMigrate(event)
 
+	// 	const newWorkspaceMemberId = `${MOCK_WORKSPACE_ID.toBigInt().toHex()}.${MIGRATED_WALLET.toHex()}`
+
 	// 	const r2 = Review.load(r!.id)!
-	// 	log.info(`r2.reviewer: ${r2.reviewer}, ${MIGRATED_WALLET.toHex()}`, [])
-	// 	assert.stringEquals(r2.reviewer, MIGRATED_WALLET.toHex())
+	// 	assert.stringEquals(r2.reviewer, newWorkspaceMemberId)
 
 	// 	const app = GrantApplication.load(r2.application)!
-	// 	log.info(`app.pendingReviewerAddresses[0]: ${app.pendingReviewerAddresses[0].toHex()}, ${MIGRATED_WALLET.toHex()}`, [])
 	// 	assert.stringEquals(
 	// 		app.doneReviewerAddresses[0].toHex(),
 	// 		MIGRATED_WALLET.toHex()
 	// 	)
 
 	// 	const grant = Grant.load(app.grant)!
-	// 	log.info(`grant.managers[0]: ${grant.managers[0]}, ${MIGRATED_WALLET.toHex()}`, [])
+
 	// 	assert.stringEquals(
 	// 		grant.creatorId.toHex(),
 	// 		MIGRATED_WALLET.toHex()
 	// 	)
-	// 	log.info(`grant.managers[0]: ${grant.managers[0]}, ${MIGRATED_WALLET.toHex()}`, [])
-	// 	assert.stringEquals(grant.managers[0], MIGRATED_WALLET.toHex())
+	// 	assert.stringEquals(grant.managers[0], `${grant.id}.${MIGRATED_WALLET.toHex()}`)
 	// })
 }
 

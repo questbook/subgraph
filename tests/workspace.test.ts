@@ -17,7 +17,6 @@ import {
 	FundsTransfer,
 	Grant,
 	Partner,
-	Profile,
 	QBAdmin,
 	Section,
 	Social,
@@ -142,7 +141,7 @@ export function runTests(): void {
 		const event = new WorkspaceUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspaceUpdated(event)
 
-		const wUpdate = Profile.load(`${ev.transaction.from.toHex()}`)
+		const wUpdate = WorkspaceMember.load(`${w.id}.${ev.transaction.from.toHex()}`)
 
 		assert.assertNotNull(wUpdate)
 		assert.stringEquals(wUpdate!.publicKey!, '-1i2jrc12rc13rc')
@@ -197,13 +196,12 @@ export function runTests(): void {
 		handleWorkspaceMemberUpdated(event)
 
 		const memberAddedId = `${w.id}.${address.toHex()}`
-		const profile = Profile.load(address.toHex())
 		const member = WorkspaceMember.load(memberAddedId)
 		
 		assert.assertNotNull(member)
 		assert.stringEquals(member!.accessLevel, 'admin')
-		assertStringNotEmpty(profile!.fullName, 'Admin')
-		assertStringNotEmpty(profile!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
+		assertStringNotEmpty(member!.fullName, 'Admin')
+		assertStringNotEmpty(member!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
 	})
 
 	test('should update member without pii', () => {
@@ -228,7 +226,6 @@ export function runTests(): void {
 		handleWorkspaceMemberUpdated(event)
 
 		const memberAddedId = `${w.id}.${address.toHex()}`
-		const profile = Profile.load(address.toHex())
 		const member = WorkspaceMember.load(memberAddedId)
 		// log.info(`member: ${member?.pii}`, [])
 		
@@ -238,8 +235,8 @@ export function runTests(): void {
 			assert.i32Equals(member.pii.length, 0)
 		}
 
-		assertStringNotEmpty(profile!.fullName, 'Admin')
-		assertStringNotEmpty(profile!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
+		assertStringNotEmpty(member!.fullName, 'Admin')
+		assertStringNotEmpty(member!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
 	})
 
 	test('should remove admins from a workspace', () => {
@@ -299,13 +296,12 @@ export function runTests(): void {
 		handleWorkspaceMemberUpdated(adminAddEvent)
 
 		const adminAddedId = `${w.id}.${adminAddress.toHex()}`
-		const adminProfile = Profile.load(adminAddress.toHex())
 		const admin = WorkspaceMember.load(adminAddedId)
 
 		assert.assertNotNull(admin)
 		assert.stringEquals(admin!.accessLevel, 'admin')
-		assertStringNotEmpty(adminProfile!.fullName, 'Admin')
-		assertStringNotEmpty(adminProfile!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
+		assertStringNotEmpty(admin!.fullName, 'Admin')
+		assertStringNotEmpty(admin!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
 
 		const ownerAddress = Address.fromString(WORKSPACE_CREATOR_ID)
 		const ownerRole = 0x0
@@ -326,15 +322,14 @@ export function runTests(): void {
 		handleWorkspaceMemberUpdated(event)
 
 		const ownerAddedId = `${w.id}.${ownerAddress.toHex()}`
-		const ownerProfile = Profile.load(ownerAddress.toHex())
 		const owner = WorkspaceMember.load(ownerAddedId)
 
 		// const newAccessLevel = member?.accessLevel ?? ''
 		// log.info(`member: ${newAccessLevel}`, [])
 		assert.assertNotNull(owner)
 		assert.stringEquals(owner!.accessLevel, 'owner')
-		assertStringNotEmpty(ownerProfile!.fullName, 'Owner')
-		assertStringNotEmpty(ownerProfile!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
+		assertStringNotEmpty(owner!.fullName, 'Owner')
+		assertStringNotEmpty(owner!.profilePictureIpfsHash, 'member.profilePictureIpfsHash')
 	})
 
 	test('update a safe', () => {

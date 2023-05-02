@@ -164,29 +164,6 @@ dataSources:
         - event: CommentAdded(uint96,address,uint96,bool,string,address,uint256)
           handler: handleCommentAdded
       file: ./src/communication-mapping.ts
-  - kind: ethereum
-    name: QbUtilityRegistryContract
-    network: {{network}}
-    source:
-      address: "{{utility.address}}"
-      abi: QbUtilityRegistryContract
-      startBlock: {{utility.startBlock}}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - ProfileCreated
-        - ProfileUpdated
-      abis:
-        - name: QbUtilityRegistryContract
-          file: ./abis/QbUtilityRegistryContract.json
-      eventHandlers:
-        - event: ProfileCreated(indexed address,string,uint256)
-          handler: handleProfileCreated
-        - event: ProfileUpdated(indexed address,string,uint256)
-          handler: handleProfileUpdated
-      file: ./src/utilities-mapping.ts
 templates:
   - kind: ethereum
     name: QBGrantsContract
