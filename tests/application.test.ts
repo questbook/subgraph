@@ -1,12 +1,12 @@
 import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
 import { ApplicationUpdated, MilestoneUpdated, WalletAddressUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationAction, ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer, Workspace } from '../generated/schema'
+import { ApplicationAction, ApplicationMilestone, Claim, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer, Workspace } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleApplicationUpdated, handleMilestoneUpdated, handleWalletAddressUpdated } from '../src/application-mapping'
 import { handleDisburseReward } from '../src/grant-mapping'
 import { CUSD_DAI_ADDRESSES } from '../src/utils/generics'
-import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, MOCK_APPLICATION_EVENT_ID, MOCK_APPLICATION_ID, MOCK_GRANT_ID } from './utils' 
+import { assertArrayNotEmpty, assertStringNotEmpty, createApplication, MOCK_APPLICATION_EVENT_ID, MOCK_APPLICATION_ID, MOCK_GRANT_ID } from './utils'
 
 export function runTests(): void {
 
@@ -19,7 +19,7 @@ export function runTests(): void {
 		assert.i32Equals(g!.version, 1)
 		assertArrayNotEmpty(g!.fields)
 
-		for(let i = 0;i < g!.fields.length;i++) {
+		for(let i = 0; i < g!.fields.length; i++) {
 			const field = GrantFieldAnswer.load(g!.fields[i])
 			assert.assertNotNull(field)
 
@@ -31,16 +31,20 @@ export function runTests(): void {
 		assert.i32Equals(g!.createdAtS, 123)
 		assertArrayNotEmpty(g!.milestones)
 
+		if(g?.claims) {
+			assertArrayNotEmpty(g.claims)
+		}
+
 		assertArrayNotEmpty(g!.pii)
 		const pii1 = PIIAnswer.load(g!.pii[0])
 		assert.assertNotNull(pii1)
-		
+
 		const gm = GrantManager.load(pii1!.manager!)
 		assert.assertNotNull(gm)
 
 		assertStringNotEmpty(pii1!.data)
 
-		for(let i = 0;i < g!.milestones.length;i++) {
+		for(let i = 0; i < g!.milestones.length; i++) {
 			const milestone = ApplicationMilestone.load(g!.milestones[i])
 			assert.assertNotNull(milestone)
 			assertStringNotEmpty(milestone!.title, 'milestone.value')
@@ -48,12 +52,21 @@ export function runTests(): void {
 			assert.assertTrue(milestone!.amount.gt(BigInt.fromString('0')))
 		}
 
+		if(g?.claims) {
+			for(let i = 0; i < g!.claims.length; i++) {
+				const claim = Claim.load(g!.claims[i])
+				assert.assertNotNull(claim)
+				assertStringNotEmpty(claim!.title, 'claim.title')
+				assertStringNotEmpty(claim!.link, 'claim.link')
+			}
+		}
+
 		// check notification
 		const n = Notification.load(`n.${MOCK_APPLICATION_EVENT_ID.toHex()}`)
 		assert.assertNotNull(n)
 		assert.stringEquals(n!.type, 'application_submitted')
 		assert.stringEquals(n!.actorId!.toHex(), g!.applicant)
-		
+
 		// check revision was generated
 		const rev = GrantApplicationRevision.load(`${g!.id}.${g!.updatedAtS}`)
 		assert.assertNotNull(rev)
@@ -63,7 +76,7 @@ export function runTests(): void {
 
 		// check grant application count increased
 		const grant = Grant.load(g!.grant)
-		
+
 		assert.assertNotNull(grant)
 		assert.assertTrue(grant!.numberOfApplications > 0)
 
@@ -105,7 +118,7 @@ export function runTests(): void {
 		// check new revision was generated
 		const rev0 = GrantApplicationRevision.load(`${g!.id}.${g!.updatedAtS}`)
 		const rev1 = GrantApplicationRevision.load(`${g!.id}.${gUpdate!.updatedAtS}`)
-		
+
 		assert.assertNotNull(rev0)
 		assert.assertNotNull(rev1)
 
@@ -151,7 +164,7 @@ export function runTests(): void {
 
 	test('should approve a milestone', () => {
 		const g = createApplication()
-		
+
 		const milestoneId = g!.milestones[0]
 
 		const ev = newMockEvent()
@@ -197,7 +210,7 @@ export function runTests(): void {
 		ev.transaction.hash = Bytes.fromByteArray(Bytes.fromHexString('0xA13191E360e3847006dB660bae1c6d1b2e17eC2B'))
 
 		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
-		handleDisburseReward(event)		
+		handleDisburseReward(event)
 
 		const gUpdate = ApplicationMilestone.load(milestoneId)
 		assert.i32Equals(gUpdate!.updatedAtS, 127)
