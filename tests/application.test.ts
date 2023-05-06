@@ -1,8 +1,8 @@
 import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { assert, newMockEvent, test } from 'matchstick-as'
 import { ApplicationUpdated, MilestoneUpdated, WalletAddressUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationAction, ApplicationMilestone, Claim, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer, Workspace } from '../generated/schema'
-import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
+import { ApplicationAction, ApplicationMilestone, FundsTransfer, Grant, GrantApplication, GrantApplicationRevision, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Notification, PIIAnswer, Workspace } from '../generated/schema'
+import { DisburseReward, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { handleApplicationUpdated, handleMilestoneUpdated, handleWalletAddressUpdated } from '../src/application-mapping'
 import { handleDisburseReward, handleTransactionRecord } from '../src/grant-mapping'
 import { CUSD_DAI_ADDRESSES } from '../src/utils/generics'
@@ -31,10 +31,6 @@ export function runTests(): void {
 		assert.i32Equals(g!.createdAtS, 123)
 		assertArrayNotEmpty(g!.milestones)
 
-		if(g?.claims) {
-			assertArrayNotEmpty(g.claims)
-		}
-
 		assertArrayNotEmpty(g!.pii)
 		const pii1 = PIIAnswer.load(g!.pii[0])
 		assert.assertNotNull(pii1)
@@ -52,14 +48,6 @@ export function runTests(): void {
 			assert.assertTrue(milestone!.amount.gt(BigInt.fromString('0')))
 		}
 
-		if(g?.claims) {
-			for(let i = 0; i < g!.claims.length; i++) {
-				const claim = Claim.load(g!.claims[i])
-				assert.assertNotNull(claim)
-				assertStringNotEmpty(claim!.title, 'claim.title')
-				assertStringNotEmpty(claim!.link, 'claim.link')
-			}
-		}
 
 		// check notification
 		const n = Notification.load(`n.${MOCK_APPLICATION_EVENT_ID.toHex()}`)

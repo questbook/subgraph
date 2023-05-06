@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes, log, store, Value } from '@graphprotocol/graph-ts'
-import { ApplicationMilestone, Claim, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, PIIData, Profile, Reward, Social, Token, Workspace, WorkspaceMember } from '../../generated/schema'
+import { ApplicationMilestone, Claim, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, PIIData, Reward, Social, Token, Workspace, WorkspaceMember } from '../../generated/schema'
 import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedClaims, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem, validateWorkspaceMemberUpdate, WorkspaceMemberUpdate } from '../json-schema'
 import { Result, validatedJsonFromIpfs } from '../json-schema/json'
 
