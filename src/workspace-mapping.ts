@@ -14,7 +14,7 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, Profile, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -26,7 +26,7 @@ import {
 	mapWorkspaceTokens
 } from './utils/generics'
 import { disburseReward } from './utils/handle-disburse-reward'
-import { migrateGrant, migrateProfile } from './utils/migrations'
+import { migrateGrant } from './utils/migrations'
 import { addFundsTransferNotification } from './utils/notifications'
 import {
 	validateWorkspaceCreateRequest,
@@ -71,33 +71,19 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.mostRecentGrantPostedAtS = 0
 	entity.grants = []
 
-	let profile = Profile.load(event.params.owner.toHex())
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
-
-	if(!profile) {
-		profile = new Profile(event.params.owner.toHex())
-		profile.actorId = event.params.owner
-		profile.createdAt = entity.createdAtS
-		profile.workspaceMembers = [member.id]
-	}
-
-	profile.publicKey = json.creatorPublicKey
-	profile.updatedAt = entity.updatedAtS
-
-	const members = profile.workspaceMembers
-	members.push(member.id)
-	profile.workspaceMembers = members
-
-	profile.applications = []
-	profile.reviews = []
-
+	member.actorId = event.params.owner
 	member.accessLevel = 'owner'
 	member.workspace = entity.id
-	member.addedBy = member.id
+	member.publicKey = json.creatorPublicKey
 	member.addedAt = entity.createdAtS
+	member.updatedAt = entity.updatedAtS
+	member.outstandingReviewIds = []
+	member.lastReviewSubmittedAt = 0
+	member.addedBy = member.id
+	member.lastKnownTxHash = event.transaction.hash
 	member.enabled = true
 
-	profile.save()
 	member.save()
 	entity.save()
 }
@@ -154,11 +140,11 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 
 	if(json.publicKey) {
 		const memberId = event.transaction.from.toHex()
-		const profile = Profile.load(memberId)
-		if(profile) {
-			profile.publicKey = json.publicKey
-			profile.updatedAt = entity.updatedAtS
-			profile.save()
+		const mem = WorkspaceMember.load(`${entityId}.${memberId}`)
+		if(mem) {
+			mem.publicKey = json.publicKey
+			mem.updatedAt = entity.updatedAtS
+			mem.save()
 		} else {
 			log.warning(`[${event.transaction.hash.toHex()}] recv publicKey update but member not found`, [])
 		}
@@ -322,6 +308,7 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 	const fromWallet = event.params.from
 	const toWallet = event.params.to
 	const workspaceId = event.params.workspaceId.toHex()
+	const workspaceMemberId = `${workspaceId}.${fromWallet.toHex()}`
 
 	const workspace = Workspace.load(workspaceId)
 	if(!workspace) {
@@ -329,9 +316,9 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 		return
 	}
 
-	const profile = Profile.load(fromWallet.toHex())
-	if(!profile) {
-		log.warning(`[${event.transaction.hash.toHex()}] profile not found for member migrate`, [])
+	const member = WorkspaceMember.load(workspaceMemberId)
+	if(!member) {
+		log.warning(`[${event.transaction.hash.toHex()}] member not found for migrate`, [])
 		return
 	}
 
@@ -351,12 +338,11 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 		workspace.save()
 	}
 
-	store.remove('Profile', profile.id)
-	profile.id = toWallet.toHex()
-	profile.actorId = toWallet
-	profile.save()
+	store.remove('WorkspaceMember', member.id)
+	member.id = `${event.params.workspaceId.toHex()}.${toWallet.toHex()}`
+	member.actorId = toWallet
 
-	migrateProfile(profile, workspaceId, fromWallet, toWallet)
+	member.save()
 
 	const migration = new Migration(`${workspaceId}.${fromWallet.toHexString()}.${toWallet.toHexString()}`)
 	migration.fromWallet = fromWallet
@@ -476,7 +462,7 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 			}
 
 			grantEntity.totalGrantFundingDisbursedUSD = grantEntity.totalGrantFundingDisbursedUSD.plus(fundsTransferEntity.amount)
-
+			
 
 			// update milestone amount paid value
 			const milestoneEntity = ApplicationMilestone.load(fundsTransferEntity.milestone!)
@@ -525,7 +511,7 @@ export function handleGrantsSectionUpdate(event: GrantsSectionUpdated): void {
 
 		return
 	}
-
+	
 	// if section does not exist, create it
 	if(!sectionEntity) {
 		const newSectionEntity = new Section(`${sectionName}`)

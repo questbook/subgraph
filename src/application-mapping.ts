@@ -1,6 +1,6 @@
 import { Bytes, log } from '@graphprotocol/graph-ts'
 import { ApplicationMigrate, ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated, WalletAddressUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationAction, ApplicationMilestone, Grant, GrantApplication, Migration, Profile, Workspace } from '../generated/schema'
+import { ApplicationAction, ApplicationMilestone, Grant, GrantApplication, Migration, Workspace } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
 import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapClaims, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
@@ -36,20 +36,9 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 		return
 	}
 
-	let builderProfile = Profile.load(event.params.owner.toHex())
-	if(!builderProfile) {
-		builderProfile = new Profile(event.params.owner.toHex())
-		builderProfile.actorId = event.params.owner
-		builderProfile.createdAt = event.params.time.toI32()
-		builderProfile.updatedAt = event.params.time.toI32()
-		builderProfile.workspaceMembers = []
-		builderProfile.applications = [applicationId]
-		builderProfile.save()
-	}
-
 	const entity = new GrantApplication(applicationId)
 	entity.grant = grantId
-	entity.applicant = event.params.owner.toHex()
+	entity.applicantId = event.params.owner
 	entity.applicantPublicKey = json.applicantPublicKey
 	entity.state = 'submitted'
 	entity.fields = mapGrantFieldAnswers(applicationId, grantId, json.fields)
@@ -262,15 +251,8 @@ export function handleApplicationMigrate(event: ApplicationMigrate): void {
 		return
 	}
 
-	const profile = Profile.load(entity.applicant)
-	if(!profile) {
-		log.warning(`[${event.transaction.hash.toHex()}] recv migrate for unknown profile: ID="${entity.applicant}"`, [])
-		return
-	}
-
-	const fromWallet = profile.actorId
-	profile.actorId = event.params.newApplicantAddress
-	entity.applicant = event.params.newApplicantAddress.toHex()
+	const fromWallet = entity.applicantId
+	entity.applicantId = event.params.newApplicantAddress
 	entity.save()
 
 	const migration = new Migration(`${applicationId}.${fromWallet.toHexString()}.${event.params.newApplicantAddress.toHexString()}`)
