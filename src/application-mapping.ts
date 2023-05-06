@@ -3,7 +3,7 @@ import { ApplicationMigrate, ApplicationSubmitted, ApplicationUpdated, Milestone
 import { ApplicationAction, ApplicationMilestone, Grant, GrantApplication, Migration, Workspace } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
-import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
+import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapClaims, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
 import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from './utils/notifications'
 import { ApplicationMilestoneUpdate, GrantApplicationRequest, GrantApplicationUpdate, validateApplicationMilestoneUpdate, validateGrantApplicationRequest, validateGrantApplicationUpdate } from './json-schema'
 
@@ -26,8 +26,8 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 
 	const jsonResult = validatedJsonFromIpfs<GrantApplicationRequest>(event.params.metadataHash, validateGrantApplicationRequest)
 	if(jsonResult.error) {
-	  log.warning(`[${event.transaction.hash.toHex()}] error in mapping application: "${jsonResult.error!}"`, [])
-	  return
+		log.warning(`[${event.transaction.hash.toHex()}] error in mapping application: "${jsonResult.error!}"`, [])
+		return
 	}
 
 	const json = jsonResult.value!
@@ -51,6 +51,9 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	entity.doneReviewerAddresses = []
 	entity.pendingReviewerAddresses = []
 	entity.walletAddress = new Bytes(32)
+	if(json.claims) {
+		entity.claims = mapClaims(applicationId, json.claims)
+	}
 
 	if(json.pii) {
 		entity.pii = mapGrantPII(applicationId, grantId, json.pii!)
@@ -136,6 +139,10 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 			entity.milestones = mapMilestones(entity.id, json.milestones!)
 		}
 
+		if(json.claims) {
+			entity.claims = mapClaims(entity.id, json.claims!)
+		}
+
 		if(json.feedback) {
 			// when state moves to resubmit or reject -- that's when DAO adds feedback
 			if(entity.state == 'resubmit' || entity.state == 'rejected') {
@@ -148,14 +155,14 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		if(json.applicantPublicKey) {
 			entity.applicantPublicKey = json.applicantPublicKey
 		}
-		
+
 		if(json.feedback) {
 			actionEntity.feedback = json.feedback
 		}
 	}
-	
+
 	actionEntity.save()
-	
+
 	// increment number of applicants selected for workspace
 	// if(previousState == 'submitted' && (strStateResult.value == 'approved' || strStateResult.value == 'completed')) {
 	// 	entity.numberOfApplicationsSelected += 1
@@ -183,7 +190,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 		grant.numberOfApplicationsRejected += 1
 	} else if(strStateResult.value == 'resubmit') {
 		grant.numberOfApplicationsAwaitingResubmission += 1
-	} 
+	}
 
 	grant.save()
 

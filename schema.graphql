@@ -441,7 +441,11 @@ type ApplicationAction @entity {
   state: ApplicationState!
   feedback: String
 }
-
+type Claim @entity {
+  id: ID!
+  link: String!
+  title: String!
+}
 type GrantApplication @entity {
   id: ID!
   "The grant for which the application is for"
@@ -484,6 +488,8 @@ type GrantApplication @entity {
   walletAddress: Bytes!
   "Version of the application, incremented on resubmission"
   version: Int!
+  profile: Profile
+  claims: [Claim!]
 }
 
 "A revision after an update"

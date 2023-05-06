@@ -2490,6 +2490,60 @@ export class ApplicationAction extends Entity {
   }
 }
 
+export class Claim extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("link", Value.fromString(""));
+    this.set("title", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Claim entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Claim entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Claim", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Claim | null {
+    return changetype<Claim | null>(store.get("Claim", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get link(): string {
+    let value = this.get("link");
+    return value!.toString();
+  }
+
+  set link(value: string) {
+    this.set("link", Value.fromString(value));
+  }
+
+  get title(): string {
+    let value = this.get("title");
+    return value!.toString();
+  }
+
+  set title(value: string) {
+    this.set("title", Value.fromString(value));
+  }
+}
+
 export class GrantApplication extends Entity {
   constructor(id: string) {
     super();
@@ -2755,6 +2809,41 @@ export class GrantApplication extends Entity {
   set version(value: i32) {
     this.set("version", Value.fromI32(value));
   }
+
+  get profile(): string | null {
+    let value = this.get("profile");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set profile(value: string | null) {
+    if (!value) {
+      this.unset("profile");
+    } else {
+      this.set("profile", Value.fromString(<string>value));
+    }
+  }
+
+  get claims(): Array<string> | null {
+    let value = this.get("claims");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set claims(value: Array<string> | null) {
+    if (!value) {
+      this.unset("claims");
+    } else {
+      this.set("claims", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
 }
 
 export class GrantApplicationRevision extends Entity {
