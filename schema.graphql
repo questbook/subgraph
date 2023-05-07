@@ -306,7 +306,22 @@ type PIIData @entity {
   "The encrypted data"
   data: String!
 }
+type Profile @entity {
+  "Globally unqiue ID of the profile"
+  id: ID!
+  actorId: Bytes!
+  "Full name of the user"
+  fullName: String
+  "Hash of profile picture on IPFS"
+  profilePictureIpfsHash: String
+  publicKey: String
+  createdAt: Int!
+  updatedAt: Int!
 
+  applications: [GrantApplication!]!
+  reviews: [Review!]!
+  workspaceMembers: [WorkspaceMember!]!
+}
 type WorkspaceMember @entity {
   "Globally unique ID of the member"
   id: ID!
