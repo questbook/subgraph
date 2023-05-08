@@ -306,7 +306,6 @@ type PIIData @entity {
   "The encrypted data"
   data: String!
 }
-
 type WorkspaceMember @entity {
   "Globally unique ID of the member"
   id: ID!
@@ -488,7 +487,6 @@ type GrantApplication @entity {
   walletAddress: Bytes!
   "Version of the application, incremented on resubmission"
   version: Int!
-  profile: Profile
   claims: [Claim!]
 }
 
