@@ -3,7 +3,6 @@
 
 import { TypedMap, BigInt, BigDecimal, Bytes, JSONValue } from '@graphprotocol/graph-ts'
 import { Boolean, Result, toSet, validateObject, validateNumber, validateInteger, validateArray, validateBoolean, validateString, validateTypedMap, validateBytesFromStringResult, validateStringResultInteger, validateStringResultNumber, validateDateTimeFromStringResult } from './json'
-import { Claim } from '../../generated/schema'
 
 const SupportedNetworkEnumSet = toSet(['42220', '5', '10', '137'])
 const PayoutTypeEnumSet = toSet(['in_one_go', 'milestones'])
@@ -26,10 +25,6 @@ export class Token {
 	iconHash: string = ''
 }
 
-export class GrantProposedClaims{
-	title:string
-	link:string
-}
 export class GrantField {
 	id: string | null = null
 	title: string = ''
@@ -37,6 +32,11 @@ export class GrantField {
 	inputType: string = ''
 	enum: string[] | null = null
 	pii: Boolean | null = null
+}
+
+export class GrantProposedClaim {
+	title: string = ''
+	link: string = ''
 }
 
 export class GrantProposedMilestone {
@@ -63,7 +63,7 @@ export class GrantApplicationRequest {
 	fields: GrantApplicationFieldAnswers = new GrantApplicationFieldAnswers()
 	pii: PIIAnswers | null = null
 	milestones: GrantProposedMilestone[] = []
-	claims: GrantProposedClaims[] = []
+	claims: GrantProposedClaim[] | null = null
 }
 
 export class WorkspaceMemberUpdate {
@@ -79,7 +79,7 @@ export class GrantApplicationUpdate {
 	milestones: GrantProposedMilestone[] | null = null
 	feedback: string | null = null
 	applicantPublicKey: string | null = null
-	claims: GrantProposedClaims[] | null = null
+	claims: GrantProposedClaim[] | null = null
 }
 
 export class PrivateCommentAddRequest {
@@ -198,6 +198,7 @@ export class GrantCreateRequest {
 	fields: GrantFieldMap = new GrantFieldMap()
 	milestones: string[] | null = null
 	grantManagers: Bytes[] | null = null
+	fundingMode: string | null = null
 }
 
 export class GrantUpdateRequest {
@@ -215,6 +216,13 @@ export class GrantUpdateRequest {
 	fields: GrantFieldMap | null = null
 	milestones: string[] | null = null
 	grantManagers: Bytes[] | null = null
+	fundingMode: string | null = null
+}
+
+export class ProfileCreateRequest {
+	fullName: string | null = null
+	profilePictureIpfsHash: string | null = null
+	publicKey: string | null = null
 }
 
 export function validateAddress(json: JSONValue): Result<Bytes> {
@@ -433,6 +441,38 @@ export function validateGrantField_enumItem(json: JSONValue): Result<string> {
 return validateString(json, -1, 1024, null)
 }
 
+export function validateGrantProposedClaim(json: JSONValue): Result<GrantProposedClaim> {
+const value = new GrantProposedClaim()
+const objResult = validateObject(json)
+if(objResult.error) {
+	return { value: null, error: objResult.error }
+}
+const obj = objResult.value!
+const titleJson = obj.get('title')
+if(!titleJson) return { value: null, error: "Expected 'title' to be present in GrantProposedClaim" }
+if(titleJson) {
+	const titleResult = validateString(titleJson, -1, 1024, null)
+	if(titleResult.error) {
+		return { value: null, error: ["Error in mapping 'title': ", titleResult.error!].join('') }
+	}
+	if(titleResult.value) {
+		value.title = titleResult.value!
+	}
+}
+const linkJson = obj.get('link')
+if(!linkJson) return { value: null, error: "Expected 'link' to be present in GrantProposedClaim" }
+if(linkJson) {
+	const linkResult = validateString(linkJson, -1, 1024, null)
+	if(linkResult.error) {
+		return { value: null, error: ["Error in mapping 'link': ", linkResult.error!].join('') }
+	}
+	if(linkResult.value) {
+		value.link = linkResult.value!
+	}
+}
+return { value, error: null }
+}
+
 export function validateGrantProposedMilestone(json: JSONValue): Result<GrantProposedMilestone> {
 const value = new GrantProposedMilestone()
 const objResult = validateObject(json)
@@ -601,11 +641,25 @@ if(milestonesJson) {
 		value.milestones = milestonesResult.value!
 	}
 }
+const claimsJson = obj.get('claims')
+if(claimsJson) {
+	const claimsResult = validateGrantApplicationRequest_claims(claimsJson)
+	if(claimsResult.error) {
+		return { value: null, error: ["Error in mapping 'claims': ", claimsResult.error!].join('') }
+	}
+	if(claimsResult.value) {
+		value.claims = claimsResult.value!
+	}
+}
 return { value, error: null }
 }
 
 export function validateGrantApplicationRequest_milestones(json: JSONValue): Result<GrantProposedMilestone[]> {
 return validateArray(json, -1, 100, validateGrantProposedMilestone)
+}
+
+export function validateGrantApplicationRequest_claims(json: JSONValue): Result<GrantProposedClaim[]> {
+return validateArray(json, -1, 100, validateGrantProposedClaim)
 }
 
 export function validateWorkspaceMemberUpdate(json: JSONValue): Result<WorkspaceMemberUpdate> {
@@ -715,11 +769,25 @@ if(applicantPublicKeyJson) {
 		value.applicantPublicKey = applicantPublicKeyResult.value!
 	}
 }
+const claimsJson = obj.get('claims')
+if(claimsJson) {
+	const claimsResult = validateGrantApplicationUpdate_claims(claimsJson)
+	if(claimsResult.error) {
+		return { value: null, error: ["Error in mapping 'claims': ", claimsResult.error!].join('') }
+	}
+	if(claimsResult.value) {
+		value.claims = claimsResult.value!
+	}
+}
 return { value, error: null }
 }
 
 export function validateGrantApplicationUpdate_milestones(json: JSONValue): Result<GrantProposedMilestone[]> {
 return validateArray(json, -1, 100, validateGrantProposedMilestone)
+}
+
+export function validateGrantApplicationUpdate_claims(json: JSONValue): Result<GrantProposedClaim[]> {
+return validateArray(json, -1, 100, validateGrantProposedClaim)
 }
 
 export function validatePrivateCommentAddRequest(json: JSONValue): Result<PrivateCommentAddRequest> {
@@ -1606,6 +1674,16 @@ if(grantManagersJson) {
 		value.grantManagers = grantManagersResult.value!
 	}
 }
+const fundingModeJson = obj.get('fundingMode')
+if(fundingModeJson) {
+	const fundingModeResult = validateString(fundingModeJson, -1, 20, null)
+	if(fundingModeResult.error) {
+		return { value: null, error: ["Error in mapping 'fundingMode': ", fundingModeResult.error!].join('') }
+	}
+	if(fundingModeResult.value) {
+		value.fundingMode = fundingModeResult.value!
+	}
+}
 return { value, error: null }
 }
 
@@ -1768,6 +1846,16 @@ if(grantManagersJson) {
 		value.grantManagers = grantManagersResult.value!
 	}
 }
+const fundingModeJson = obj.get('fundingMode')
+if(fundingModeJson) {
+	const fundingModeResult = validateString(fundingModeJson, -1, 20, null)
+	if(fundingModeResult.error) {
+		return { value: null, error: ["Error in mapping 'fundingMode': ", fundingModeResult.error!].join('') }
+	}
+	if(fundingModeResult.value) {
+		value.fundingMode = fundingModeResult.value!
+	}
+}
 return { value, error: null }
 }
 
@@ -1785,4 +1873,44 @@ return validateArray(json, 1, -1, validateAddress)
 
 export function validateOwnerID(json: JSONValue): Result<string> {
 return validateString(json, 16, 255, null)
+}
+
+export function validateProfileCreateRequest(json: JSONValue): Result<ProfileCreateRequest> {
+const value = new ProfileCreateRequest()
+const objResult = validateObject(json)
+if(objResult.error) {
+	return { value: null, error: objResult.error }
+}
+const obj = objResult.value!
+const fullNameJson = obj.get('fullName')
+if(fullNameJson) {
+	const fullNameResult = validateString(fullNameJson, -1, 255, null)
+	if(fullNameResult.error) {
+		return { value: null, error: ["Error in mapping 'fullName': ", fullNameResult.error!].join('') }
+	}
+	if(fullNameResult.value) {
+		value.fullName = fullNameResult.value!
+	}
+}
+const profilePictureIpfsHashJson = obj.get('profilePictureIpfsHash')
+if(profilePictureIpfsHashJson) {
+	const profilePictureIpfsHashResult = validateString(profilePictureIpfsHashJson, -1, 128, null)
+	if(profilePictureIpfsHashResult.error) {
+		return { value: null, error: ["Error in mapping 'profilePictureIpfsHash': ", profilePictureIpfsHashResult.error!].join('') }
+	}
+	if(profilePictureIpfsHashResult.value) {
+		value.profilePictureIpfsHash = profilePictureIpfsHashResult.value!
+	}
+}
+const publicKeyJson = obj.get('publicKey')
+if(publicKeyJson) {
+	const publicKeyResult = validatePublicKey(publicKeyJson)
+	if(publicKeyResult.error) {
+		return { value: null, error: ["Error in mapping 'publicKey': ", publicKeyResult.error!].join('') }
+	}
+	if(publicKeyResult.value) {
+		value.publicKey = publicKeyResult.value!
+	}
+}
+return { value, error: null }
 }

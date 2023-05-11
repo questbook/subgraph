@@ -28,8 +28,11 @@ export function runTests(): void {
 			assertStringNotEmpty(fieldAns!.value, 'field.value')
 		}
 
+
 		assert.i32Equals(g!.createdAtS, 123)
 		assertArrayNotEmpty(g!.milestones)
+
+		assertArrayNotEmpty(g!.claims!)
 
 		assertArrayNotEmpty(g!.pii)
 		const pii1 = PIIAnswer.load(g!.pii[0])
