@@ -5,7 +5,7 @@ import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
 import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapClaims, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
 import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from './utils/notifications'
-import { ApplicationMilestoneUpdate, GrantApplicationRequest, GrantApplicationUpdate, validateApplicationMilestoneUpdate, validateGrantApplicationRequest, validateGrantApplicationUpdate } from './json-schema'
+import { ApplicationMilestoneUpdate, GrantApplicationRequest, GrantApplicationUpdate, GrantProposedClaim, validateApplicationMilestoneUpdate, validateGrantApplicationRequest, validateGrantApplicationUpdate } from './json-schema'
 
 export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	const applicationId = event.params.applicationId.toHex()
@@ -52,9 +52,11 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	entity.pendingReviewerAddresses = []
 	entity.walletAddress = new Bytes(32)
 	if(json.claims) {
-		entity.claims = mapClaims(applicationId, json.claims)
+		entity.claims = mapClaims(applicationId, json.claims as GrantProposedClaim[])
+	} else {
+		entity.claims = []
 	}
-
+	
 	if(json.pii) {
 		entity.pii = mapGrantPII(applicationId, grantId, json.pii!)
 	} else {

@@ -1,6 +1,6 @@
 import { Address, BigInt, Bytes, log, store, Value } from '@graphprotocol/graph-ts'
 import { ApplicationMilestone, Claim, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, PIIData, Reward, Social, Token, Workspace, WorkspaceMember } from '../../generated/schema'
-import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedClaims, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem, validateWorkspaceMemberUpdate, WorkspaceMemberUpdate } from '../json-schema'
+import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedClaim, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem, validateWorkspaceMemberUpdate, WorkspaceMemberUpdate } from '../json-schema'
 import { Result, validatedJsonFromIpfs } from '../json-schema/json'
 
 export const USD_ASSET_ADDRESS_HEX = '0x0000000000000000000000000000000000000001'
@@ -97,7 +97,7 @@ export function mapMemberPII(memberId: string, map: PIIAnswers): string[] {
 	return items
 }
 
-export function mapClaims(applicationId:string, claimsList:GrantProposedClaims[]): string[] {
+export function mapClaims(applicationId:string, claimsList:GrantProposedClaim[]): string[] {
 	const claims:string[] = []
 	for(let i = 0; i < claimsList.length; i++) {
 		const claim = new Claim (`${applicationId}.${i}`)
