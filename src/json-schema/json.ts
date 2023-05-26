@@ -1,4 +1,10 @@
-import { BigDecimal, BigInt, Bytes, ipfs, json, JSONValue, JSONValueKind, TypedMap } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, Bytes, ipfs, json, JSONValue, JSONValueKind, log, TypedMap } from '@graphprotocol/graph-ts'
+// import { config } from 'dotenv';
+
+// config({ path: '.env.production' })
+
+// const infuraIpfsProjectId = process.env.INFURA_IPFS_PROJECT_ID || ''
+// const infuraIpfsApiKey = process.env.INFURA_IPFS_API_KEY || ''
 
 /** Generic result structure to catch successful & errorred results */
 export class Result<T> {
@@ -231,10 +237,13 @@ export function validatedJsonFromIpfs<T>(hash: string, mapFunction: (json: JSONV
 	if(hash.slice(0, 5) == 'json:') {
 		data = Bytes.fromUTF8(hash.slice(5))
 	} else {
+		log.info('Fetching IPFS hash...', [hash])
 		data = ipfs.cat(hash)
+		log.info('Fetched IPFS hash', [hash])
 	}
 
 	if(!data) {
+		log.warning('File at IPFS hash not found', [hash])
 		return { value: null, error: 'File not found' }
 	}
 
