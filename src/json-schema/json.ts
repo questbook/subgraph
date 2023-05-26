@@ -238,9 +238,8 @@ export function validatedJsonFromIpfs<T>(hash: string, mapFunction: (json: JSONV
 		data = Bytes.fromUTF8(hash.slice(5))
 	} else {
 		log.info('Fetching IPFS hash...', [hash])
-		const startTime = Date.now()
 		data = ipfs.cat(hash)
-		log.info('Fetched IPFS hash at', [hash, ((Date.now() - startTime) / 1000).toString()])
+		log.info('Fetched IPFS hash', [hash])
 	}
 
 	if(!data) {

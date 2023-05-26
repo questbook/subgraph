@@ -23,6 +23,10 @@ jobs:
 
     - name: Install packages
       run: yarn --network-concurrency 1
+    
+    - name: Copy Env
+      run: |
+          echo -e "${{secrets.INFURA_ENV}}" > .env.production
 
     - name: Run tests
       run: |
