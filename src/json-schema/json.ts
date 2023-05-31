@@ -1,10 +1,7 @@
 import { BigDecimal, BigInt, Bytes, ipfs, json, JSONValue, JSONValueKind, log, TypedMap } from '@graphprotocol/graph-ts'
-// import { config } from 'dotenv';
+import axios from 'axios';
 
-// config({ path: '.env.production' })
-
-// const infuraIpfsProjectId = process.env.INFURA_IPFS_PROJECT_ID || ''
-// const infuraIpfsApiKey = process.env.INFURA_IPFS_API_KEY || ''
+const IPFS_DOWNLOAD_ENDPOINT = 'https://api.thegraph.com/ipfs/api/v0/cat'
 
 /** Generic result structure to catch successful & errorred results */
 export class Result<T> {
@@ -230,7 +227,7 @@ export function validateBytesFromStringResult(r: Result<string>): Result<Bytes> 
 }
 
 /// Fetch a JSON file from IPFS & validate it using a given function
-export function validatedJsonFromIpfs<T>(hash: string, mapFunction: (json: JSONValue) => Result<T>): Result<T> {
+export async function validatedJsonFromIpfs<T> (hash: string, mapFunction: (json: JSONValue) => Result<T>): Result<T> {
 	let data: Bytes | null
 	// this mechanism exists to prevent IPFS calls while testing
 	// since IPFS is not supported on matchstick as of now
@@ -238,7 +235,17 @@ export function validatedJsonFromIpfs<T>(hash: string, mapFunction: (json: JSONV
 		data = Bytes.fromUTF8(hash.slice(5))
 	} else {
 		log.info('Fetching IPFS hash...', [hash])
-		data = ipfs.cat(hash)
+		
+		const result = await getFromIPFS(hash) as string
+		
+		log.info('Fetched results (new way)', [result])
+
+		if(result){
+			data = Bytes.fromUTF8(result)
+		}
+		else {
+			data = ipfs.cat(hash)
+		}	
 		log.info('Fetched IPFS hash', [hash])
 	}
 
@@ -257,4 +264,37 @@ export function validatedJsonFromIpfs<T>(hash: string, mapFunction: (json: JSONV
 	}
 
 	return mapFunction(jsonDataResult.value)
+}
+
+export const getFromIPFS = async (hash: string) => {
+    if(hash === '') {
+        return ''
+    }
+	let data
+    try {
+        const result = await axios.get(`${IPFS_DOWNLOAD_ENDPOINT}?arg=${hash}`, {
+            timeout: 10000
+        })
+        
+		data = result.data
+
+		return data
+        
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch(e: any) {
+        // console.log(e)
+    }
+    // fallback
+    try {
+        const result = await axios.get(`https://ipfs.io/ipfs/${hash}`, {
+            timeout: 10000
+        })
+        data = result.data
+
+		return data
+
+    } catch(e: any) {
+        
+    }
+	return ''
 }
