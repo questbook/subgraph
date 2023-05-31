@@ -11,7 +11,7 @@ import { disburseReward } from './utils/handle-disburse-reward'
 import { addFundsTransferNotification } from './utils/notifications'
 import { GrantCreateRequest, validateGrantCreateRequest } from './json-schema'
 
-export function handleGrantCreated(event: GrantCreated): void {
+export async function handleGrantCreated(event: GrantCreated): void {
 	const workspaceId = event.params.workspaceId.toHex()
 	const grantAddress = event.params.grantAddress
 	const time = event.params.time.toI32()
@@ -22,7 +22,7 @@ export function handleGrantCreated(event: GrantCreated): void {
 		return
 	}
 
-	const entityResult = validatedJsonFromIpfs<GrantCreateRequest>(event.params.metadataHash, validateGrantCreateRequest)
+	const entityResult = await validatedJsonFromIpfs<GrantCreateRequest>(event.params.metadataHash, validateGrantCreateRequest)
 	if(entityResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping grant with metadata hash "${entityResult.error!}"`, [])
 		return

@@ -7,7 +7,7 @@ import { contractApplicationStateToString, contractMilestoneStateToString, isPla
 import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from './utils/notifications'
 import { ApplicationMilestoneUpdate, GrantApplicationRequest, GrantApplicationUpdate, GrantProposedClaim, validateApplicationMilestoneUpdate, validateGrantApplicationRequest, validateGrantApplicationUpdate } from './json-schema'
 
-export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
+export async function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	const applicationId = event.params.applicationId.toHex()
 	const milestoneCount = event.params.milestoneCount.toI32()
 	const grantId = event.params.grant.toHex()
@@ -24,7 +24,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 		return
 	}
 
-	const jsonResult = validatedJsonFromIpfs<GrantApplicationRequest>(event.params.metadataHash, validateGrantApplicationRequest)
+	const jsonResult = await validatedJsonFromIpfs<GrantApplicationRequest>(event.params.metadataHash, validateGrantApplicationRequest)
 	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping application: "${jsonResult.error!}"`, [])
 		return
@@ -74,7 +74,7 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 	addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.params.owner)
 }
 
-export function handleApplicationUpdated(event: ApplicationUpdated): void {
+export async function handleApplicationUpdated(event: ApplicationUpdated): void {
 	const applicationId = event.params.applicationId.toHex()
 	const metaHash = event.params.metadataHash
 	const milestoneCount = event.params.milestoneCount.toI32()
@@ -116,7 +116,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	entity.state = strStateResult.value!
 	// some valid IPFS hash
 	if(isPlausibleIPFSHash(metaHash)) {
-		const jsonResult = validatedJsonFromIpfs<GrantApplicationUpdate>(event.params.metadataHash, validateGrantApplicationUpdate)
+		const jsonResult = await validatedJsonFromIpfs<GrantApplicationUpdate>(event.params.metadataHash, validateGrantApplicationUpdate)
 		if(jsonResult.error) {
 			log.warning(`[${event.transaction.hash.toHex()}] error in mapping application update: "${jsonResult.error!}"`, [])
 			return
@@ -203,7 +203,7 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 	addApplicationUpdateNotification(entity, event.transaction.hash.toHex(), event.transaction.from)
 }
 
-export function handleMilestoneUpdated(event: MilestoneUpdated): void {
+export async function handleMilestoneUpdated(event: MilestoneUpdated): void {
 	const applicationId = event.params._id.toHex()
 	const milestoneId = `${applicationId}.${event.params._milestoneId.toI32()}`
 
@@ -223,7 +223,7 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 	entity.state = strStateResult.value!
 
 	if(isPlausibleIPFSHash(event.params._metadataHash)) {
-		const jsonResult = validatedJsonFromIpfs<ApplicationMilestoneUpdate>(event.params._metadataHash, validateApplicationMilestoneUpdate)
+		const jsonResult = await validatedJsonFromIpfs<ApplicationMilestoneUpdate>(event.params._metadataHash, validateApplicationMilestoneUpdate)
 		if(jsonResult.error) {
 			log.warning(`[${event.transaction.hash.toHex()}] failed to update milestone from IPFS, ID="${milestoneId}" error=${jsonResult.error!}`, [])
 			return

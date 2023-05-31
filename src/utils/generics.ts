@@ -316,7 +316,7 @@ export function getUSDReward(asset: Bytes, value: BigInt): i32 {
 	return result.toI32()
 }
 
-export function mapWorkspaceMembersUpdate(
+export async function mapWorkspaceMembersUpdate(
 	workspaceId: string,
 	time: BigInt,
 	members: Address[],
@@ -360,7 +360,7 @@ export function mapWorkspaceMembersUpdate(
 			}
 
 			if(metadataHash) {
-				const updateResult = validatedJsonFromIpfs<WorkspaceMemberUpdate>(metadataHash[i], validateWorkspaceMemberUpdate)
+				const updateResult = await validatedJsonFromIpfs<WorkspaceMemberUpdate>(metadataHash[i], validateWorkspaceMemberUpdate)
 				if(updateResult.error) {
 					return { error: updateResult.error, value: null }
 				}

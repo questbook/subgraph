@@ -3,7 +3,7 @@ import { Grant, Rubric, RubricItem } from '../../generated/schema'
 import { RubricSetRequest, validateRubricSetRequest } from '../json-schema'
 import { validatedJsonFromIpfs } from '../json-schema/json'
 
-export function rubricSetHandler(
+export async function rubricSetHandler(
 	event: ethereum.Event,
 	_grantId: string,
 	_workspaceId: string,
@@ -14,7 +14,7 @@ export function rubricSetHandler(
 	const grantId = _grantId
 	const workspaceId = _workspaceId
 
-	const jsonResult = validatedJsonFromIpfs<RubricSetRequest>(_metadataHash, validateRubricSetRequest)
+	const jsonResult = await validatedJsonFromIpfs<RubricSetRequest>(_metadataHash, validateRubricSetRequest)
 	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping application: "${jsonResult.error!}"`, [])
 		return

@@ -35,10 +35,10 @@ import {
 	WorkspaceUpdateRequest
 } from './json-schema'
 
-export function handleWorkspaceCreated(event: WorkspaceCreated): void {
+export async function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	const entityId = event.params.id.toHex()
 
-	const jsonResult = validatedJsonFromIpfs<WorkspaceCreateRequest>(event.params.metadataHash, validateWorkspaceCreateRequest)
+	const jsonResult = await validatedJsonFromIpfs<WorkspaceCreateRequest>(event.params.metadataHash, validateWorkspaceCreateRequest)
 	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace create: "${jsonResult.error!}"`, [])
 		return
@@ -88,7 +88,7 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.save()
 }
 
-export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
+export async function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 	const entityId = event.params.id.toHex()
 
 	const entity = Workspace.load(entityId)
@@ -99,7 +99,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 
 	entity.updatedAtS = event.params.time.toI32()
 
-	const jsonResult = validatedJsonFromIpfs<WorkspaceUpdateRequest>(event.params.metadataHash, validateWorkspaceUpdateRequest)
+	const jsonResult = await validatedJsonFromIpfs<WorkspaceUpdateRequest>(event.params.metadataHash, validateWorkspaceUpdateRequest)
 	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace update: "${jsonResult.error!}"`, [])
 		return

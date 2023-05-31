@@ -13,7 +13,7 @@ class GrantUpdateParams {
 	hash: string
 }
 
-export function grantUpdateHandler(params: GrantUpdateParams): void {
+export async function grantUpdateHandler(params: GrantUpdateParams): void {
 	const grantId = params.grantId
 	const entity = Grant.load(grantId)
 	if(!entity) {
@@ -27,7 +27,7 @@ export function grantUpdateHandler(params: GrantUpdateParams): void {
 	entity.acceptingApplications = params.acceptingApplications
 
 	if(isPlausibleIPFSHash(params.hash)) {
-		const jsonResult = validatedJsonFromIpfs<GrantUpdateRequest>(params.hash, validateGrantUpdateRequest)
+		const jsonResult = await validatedJsonFromIpfs<GrantUpdateRequest>(params.hash, validateGrantUpdateRequest)
 		if(jsonResult.error) {
 			log.warning(`[${params.transactionHash}] error in updating grant metadata, error: ${jsonResult.error!}`, [])
 			return

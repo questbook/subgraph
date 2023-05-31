@@ -5,7 +5,7 @@ import { validatedJsonFromIpfs } from './json-schema/json'
 import { addCommentAddedNotification } from './utils/notifications'
 import { PrivateCommentAddRequest, validatePrivateCommentAddRequest } from './json-schema'
 
-export function handleCommentAdded(event: CommentAdded): void {
+export async function handleCommentAdded(event: CommentAdded): void {
 	const workspaceId = event.params.workspaceId.toHex()
 	const grantAddress = event.params.grantAddress.toHex()
 	const applicationId = event.params.applicationId.toHex()
@@ -30,7 +30,7 @@ export function handleCommentAdded(event: CommentAdded): void {
 	commentEntity.createdAt = timestamp
 
 	if(isPrivate) {
-		const result = validatedJsonFromIpfs<PrivateCommentAddRequest>(commentMetadataHash, validatePrivateCommentAddRequest)
+		const result = await validatedJsonFromIpfs<PrivateCommentAddRequest>(commentMetadataHash, validatePrivateCommentAddRequest)
 
 		if(result) {
 			if(result.value == null) {
