@@ -240,12 +240,12 @@ export async function validatedJsonFromIpfs<T> (hash: string, mapFunction: (json
 		
 		log.info('Fetched results (new way)', [result])
 
-		if(result){
+		// if(result){
 			data = Bytes.fromUTF8(result)
-		}
-		else {
-			data = ipfs.cat(hash)
-		}	
+		// }
+		// else {
+		// 	data = ipfs.cat(hash)
+		// }	
 		log.info('Fetched IPFS hash', [hash])
 	}
 
