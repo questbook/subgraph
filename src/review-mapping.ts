@@ -7,7 +7,7 @@ import { reviewSubmittedNotification } from './utils/notifications'
 import { rubricSetHandler } from './utils/rubricSetHandler'
 import { ReviewSetRequest, validateReviewSetRequest } from './json-schema'
 
-export function handleReviewSubmitted(event: ReviewSubmitted): void {
+export async function handleReviewSubmitted(event: ReviewSubmitted): void {
 	const reviewId = event.params._reviewId.toHex()
 	const workspace = event.params._workspaceId.toHex()
 	const reviewerAddress = event.params._reviewerAddress
@@ -16,7 +16,7 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 
 	const memberId = `${workspace}.${reviewer}`
 
-	const jsonResult = validatedJsonFromIpfs<ReviewSetRequest>(event.params._metadataHash, validateReviewSetRequest)
+	const jsonResult = await validatedJsonFromIpfs<ReviewSetRequest>(event.params._metadataHash, validateReviewSetRequest)
 	if(jsonResult.error) {
 	  log.warning(`[${event.transaction.hash.toHex()}] error in mapping review: "${jsonResult.error!}"`, [])
 	  return
