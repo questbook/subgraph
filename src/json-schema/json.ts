@@ -239,7 +239,7 @@ export function validatedJsonFromIpfs<T>(hash: string, mapFunction: (json: JSONV
 	} else {
 		log.info('Fetching IPFS hash...', [hash])
 		data = ipfs.cat(hash)
-		log.info('Fetched IPFS hash', [hash])
+		log.info('Fetched IPFS hash', [hash, data?.toString()!])
 	}
 
 	if(!data) {
