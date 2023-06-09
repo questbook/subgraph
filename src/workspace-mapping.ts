@@ -38,7 +38,7 @@ import {
 export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	const entityId = event.params.id.toHex()
 
-	log.info('Workspace Metadata hash', ['G', event.params.metadataHash, 'G'])
+	log.info(`Workspace Metadata hash ${event.params.metadataHash}`, [])
 	const jsonResult = validatedJsonFromIpfs<WorkspaceCreateRequest>(event.params.metadataHash, validateWorkspaceCreateRequest)
 	if(jsonResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping workspace create: "${jsonResult.error!}"`, [])

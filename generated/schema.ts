@@ -2810,23 +2810,6 @@ export class GrantApplication extends Entity {
     this.set("version", Value.fromI32(value));
   }
 
-  get profile(): string | null {
-    let value = this.get("profile");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set profile(value: string | null) {
-    if (!value) {
-      this.unset("profile");
-    } else {
-      this.set("profile", Value.fromString(<string>value));
-    }
-  }
-
   get claims(): Array<string> | null {
     let value = this.get("claims");
     if (!value || value.kind == ValueKind.NULL) {
@@ -2843,7 +2826,6 @@ export class GrantApplication extends Entity {
       this.set("claims", Value.fromStringArray(<Array<string>>value));
     }
   }
-
 }
 
 export class GrantApplicationRevision extends Entity {
