@@ -95,7 +95,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
 		]
 
-		const event = new ApplicationUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new ApplicationUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleApplicationUpdated(event)
 
 		const gUpdate = GrantApplication.load(g!.id)
@@ -144,7 +144,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
 		]
 
-		const event = new MilestoneUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new MilestoneUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleMilestoneUpdated(event)
 
 		const gUpdate = ApplicationMilestone.load(milestoneId)
@@ -170,7 +170,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(126)),
 		]
 
-		const event = new MilestoneUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new MilestoneUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleMilestoneUpdated(event)
 
 		const gUpdate = ApplicationMilestone.load(milestoneId)
@@ -201,7 +201,7 @@ export function runTests(): void {
 
 		ev.transaction.hash = Bytes.fromByteArray(Bytes.fromHexString('0xA13191E360e3847006dB660bae1c6d1b2e17eC2B'))
 
-		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleDisburseReward(event)
 
 		const gUpdate = ApplicationMilestone.load(milestoneId)
@@ -242,7 +242,7 @@ export function runTests(): void {
 
 		ev.transaction.hash = Bytes.fromByteArray(Bytes.fromHexString('0xA13191E360e3847006dB660bae1c6d1b2e17eC2B'))
 
-		const event = new TransactionRecord(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new TransactionRecord(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleTransactionRecord(event)		
 
 		const gUpdate = ApplicationMilestone.load(milestoneId)
@@ -273,7 +273,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(127)),
 		]
 
-		const event = new WalletAddressUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new WalletAddressUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWalletAddressUpdated(event)
 
 		const app = GrantApplication.load(g!.id)
