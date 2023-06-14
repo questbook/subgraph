@@ -57,7 +57,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 		]
 
-		const event = new ReviewersAssigned(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new ReviewersAssigned(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleReviewersAssigned(event)
 
 		const app = GrantApplication.load(a!.id)
@@ -86,7 +86,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 		]
 
-		const eventRemove = new ReviewersAssigned(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const eventRemove = new ReviewersAssigned(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleReviewersAssigned(eventRemove)
 		
 		const app2 = GrantApplication.load(a!.id)
@@ -116,7 +116,7 @@ export function runTests(): void {
 		]
 		ev.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
 
-		const event = new RubricsSet(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new RubricsSet(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleRubricsSet(event)
 
 		const g2 = Grant.load(MOCK_GRANT_ID.toHex())
@@ -151,7 +151,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 		]
 
-		const event = new ReviewPaymentMarkedDone(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new ReviewPaymentMarkedDone(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleReviewPaymentMarkedDone(event)
 
 		const member = WorkspaceMember.load(review!.reviewer)

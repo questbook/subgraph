@@ -37,7 +37,7 @@ export function createWorkspace(): Workspace | null {
 		new ethereum.EventParam('time', ethereum.Value.fromI32(123))
 	]
 
-	const event = new WorkspaceCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+	const event = new WorkspaceCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 	handleWorkspaceCreated(event)
 
 	const testId = ev.parameters[0].value.toBigInt().toHex()
@@ -59,7 +59,7 @@ export function createGrant(grantId: Address): Grant | null {
 	]
 	ev.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
 
-	const event = new GrantCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+	const event = new GrantCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 	handleGrantCreated(event)
 
 	const testId = MOCK_GRANT_ID.toHex()
@@ -80,7 +80,7 @@ export function createApplication(): GrantApplication | null {
 		new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 	]
 	ev.transaction.hash = MOCK_APPLICATION_EVENT_ID
-	const event = new ApplicationSubmitted(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+	const event = new ApplicationSubmitted(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 	handleApplicationSubmitted(event)
 
 	const testId = MOCK_APPLICATION_ID.toBigInt().toHex()
@@ -103,7 +103,7 @@ export function createGrantApplication(applicationId: ethereum.Value): GrantAppl
 		new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 	]
 	ev.transaction.hash = MOCK_APPLICATION_EVENT_ID
-	const event = new ApplicationSubmitted(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+	const event = new ApplicationSubmitted(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 	handleApplicationSubmitted(event)
 
 	const testId = MOCK_APPLICATION_ID.toBigInt().toHex()
@@ -128,7 +128,7 @@ export function createReview(): Review | null {
 		new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 	]
 
-	const event = new ReviewSubmitted(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+	const event = new ReviewSubmitted(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 	handleReviewSubmitted(event)
 
 	const review = Review.load(MOCK_REVIEW_ID.toBigInt().toHex())

@@ -26,7 +26,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 		]
 
-		const event = new WorkspaceMemberMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new WorkspaceMemberMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspaceMemberMigrate(event)
 
 		// check the workspace owner has been changed
@@ -61,7 +61,7 @@ export function runTests(): void {
 		]
 		grantCreateEv.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
 		
-		const grantCreateEvent = new GrantCreated(grantCreateEv.address, grantCreateEv.logIndex, grantCreateEv.transactionLogIndex, grantCreateEv.logType, grantCreateEv.block, grantCreateEv.transaction, grantCreateEv.parameters, grantCreateEv.receipt)
+		const grantCreateEvent = new GrantCreated(grantCreateEv.address, grantCreateEv.logIndex, grantCreateEv.transactionLogIndex, grantCreateEv.logType, grantCreateEv.block, grantCreateEv.transaction, grantCreateEv.parameters)
 		handleGrantCreated(grantCreateEvent)
 
 		let grant = Grant.load(MOCK_GRANT_ID.toHex())!
@@ -80,7 +80,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 		]
 
-		const event = new WorkspaceMemberMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new WorkspaceMemberMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleWorkspaceMemberMigrate(event)
 
 		// check the workspace owner has been changed
@@ -128,7 +128,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
 		]
 
-		const event = new ApplicationMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new ApplicationMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleApplicationMigrate(event)
 
 		// check the applicant address has been changed correctly
@@ -160,7 +160,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 		]
 
-		const assignEvent = new ReviewersAssigned(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const assignEvent = new ReviewersAssigned(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleReviewersAssigned(assignEvent)
 
 		ev.parameters = [
@@ -171,7 +171,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125)),
 		]
 
-		const migrateEvent = new ReviewMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const migrateEvent = new ReviewMigrate(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleReviewMigrate(migrateEvent)
 
 		const memberId = `${MOCK_WORKSPACE_ID.toBigInt().toHex()}.${MIGRATED_WALLET.toHex()}`

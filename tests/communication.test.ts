@@ -23,7 +23,7 @@ function runTests(): void {
 			new ethereum.EventParam('timestamp', ethereum.Value.fromI32(1665726957)),
 
 		]
-		const event = new CommentAdded(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new CommentAdded(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleCommentAdded(event)
 
 		const commentEntity = Comment.load(`${ev.transaction.hash.toHex()}.${Address.fromString('0x471e82e77bc5d751411863a21cee3d88e49f0699').toHex()}.${MOCK_APPLICATION_ID.toBigInt().toHex()}`)
@@ -50,7 +50,7 @@ function runTests(): void {
 			new ethereum.EventParam('timestamp', ethereum.Value.fromI32(1665726957)),
 
 		]
-		const event = new CommentAdded(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new CommentAdded(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleCommentAdded(event)
 
 		const commentEntity = Comment.load(`${ev.transaction.hash.toHex()}.${Address.fromString('0x471e82e77bc5d751411863a21cee3d88e49f0699').toHex()}.${MOCK_APPLICATION_ID.toBigInt().toHex()}`)
@@ -86,7 +86,7 @@ function runTests(): void {
 			new ethereum.EventParam('timestamp', ethereum.Value.fromI32(1665726957)),
 
 		]
-		const event = new CommentAdded(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
+		const event = new CommentAdded(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
 		handleCommentAdded(event)
 
 		const commentEntity = Comment.load(`${ev.transaction.hash.toHex()}.${Address.fromString('0xD1bfd92aB161983E007aAde98312B83eecA14f9A').toHex()}.${MOCK_APPLICATION_ID.toBigInt().toHex()}`)
