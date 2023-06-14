@@ -267,6 +267,7 @@ export function handleApplicationMigrate(event: ApplicationMigrate): void {
 		log.warning(`[${event.transaction.hash.toHex()}] recv migrate for unknown application: ID="${applicationId}"`, [])
 		return
 	}
+
 	const fromWallet = entity.applicantId
 	entity.applicantId = event.params.newApplicantAddress
 	entity.save()
