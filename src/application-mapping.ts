@@ -1,6 +1,6 @@
 import { Bytes, log } from '@graphprotocol/graph-ts'
 import { ApplicationMigrate, ApplicationSubmitted, ApplicationUpdated, MilestoneUpdated, WalletAddressUpdated } from '../generated/QBApplicationsContract/QBApplicationsContract'
-import { ApplicationAction, ApplicationMilestone, Grant, GrantApplication, Migration, Workspace } from '../generated/schema'
+import { ApplicationAction, ApplicationMilestone, Claim, Grant, GrantApplication, Migration, Workspace } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addApplicationRevision } from './utils/add-application-revision'
 import { contractApplicationStateToString, contractMilestoneStateToString, isPlausibleIPFSHash, mapClaims, mapGrantFieldAnswers, mapGrantPII, mapMilestones, removeEntityCollection } from './utils/generics'
@@ -8,10 +8,15 @@ import { addApplicationUpdateNotification, addMilestoneUpdateNotification } from
 import { ApplicationMilestoneUpdate, GrantApplicationRequest, GrantApplicationUpdate, GrantProposedClaim, validateApplicationMilestoneUpdate, validateGrantApplicationRequest, validateGrantApplicationUpdate } from './json-schema'
 
 export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
+	const e = new Claim(event.params.metadataHash)
+	e.link='handleApplicationSubmitted'
+	e.title='df'
+	e.save()
+	return
 	const applicationId = event.params.applicationId.toHex()
 	const milestoneCount = event.params.milestoneCount.toI32()
 	const grantId = event.params.grant.toHex()
-
+	
 	const grant = Grant.load(grantId)
 	if(!grant) {
 		log.warning(`[${event.transaction.hash.toHex()}] grant (${grantId}) not found for application submit (${applicationId})`, [])
@@ -75,10 +80,15 @@ export function handleApplicationSubmitted(event: ApplicationSubmitted): void {
 }
 
 export function handleApplicationUpdated(event: ApplicationUpdated): void {
+	const e = new Claim(event.params.metadataHash)
+	e.link='handleApplicationUpdated'
+	e.title='df'
+	e.save()
+	return
 	const applicationId = event.params.applicationId.toHex()
 	const metaHash = event.params.metadataHash
 	const milestoneCount = event.params.milestoneCount.toI32()
-
+	
 	const strStateResult = contractApplicationStateToString(event.params.state)
 	if(strStateResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping app state: "${strStateResult.error!}"`, [])
@@ -206,7 +216,11 @@ export function handleApplicationUpdated(event: ApplicationUpdated): void {
 export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 	const applicationId = event.params._id.toHex()
 	const milestoneId = `${applicationId}.${event.params._milestoneId.toI32()}`
-
+	const e = new Claim(event.params._metadataHash)
+	e.link='handleMilestoneUpdated'
+	e.title='df'
+	e.save()
+	return
 	const strStateResult = contractMilestoneStateToString(event.params._state)
 	if(strStateResult.error) {
 		log.warning(`[${event.transaction.hash.toHex()}] error in mapping milestone state: "${strStateResult.error!}"`, [])
@@ -246,13 +260,13 @@ export function handleMilestoneUpdated(event: MilestoneUpdated): void {
 }
 
 export function handleApplicationMigrate(event: ApplicationMigrate): void {
+	return
 	const applicationId = event.params.applicationId.toHex()
 	const entity = GrantApplication.load(applicationId)
 	if(!entity) {
 		log.warning(`[${event.transaction.hash.toHex()}] recv migrate for unknown application: ID="${applicationId}"`, [])
 		return
 	}
-
 	const fromWallet = entity.applicantId
 	entity.applicantId = event.params.newApplicantAddress
 	entity.save()
@@ -268,11 +282,12 @@ export function handleApplicationMigrate(event: ApplicationMigrate): void {
 }
 
 export function handleWalletAddressUpdated(event: WalletAddressUpdated): void {
+	return
 	const applicationId = event.params.applicationId.toHex()
 	const grantAddress = event.params.grant
 	const walletAddress = event.params.walletAddress
 	const time = event.params.time.toI32()
-
+	
 	const app = GrantApplication.load(applicationId)
 	if(!app) {
 		log.warning(`[${event.transaction.hash.toHex()}] recv wallet address update for unknown application: ID="${applicationId}"`, [])
