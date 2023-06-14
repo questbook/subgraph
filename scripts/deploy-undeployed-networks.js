@@ -21,7 +21,7 @@ const run = async() => {
 				console.log(`deployed "${network}"`)
 			}
 		} catch(error) {
-			console.log(`error in deploying to ${network}: ${err.message}`)
+			console.log(`error in deploying to ${network}: ${error.message}`)
 		}
 		
 	}	
