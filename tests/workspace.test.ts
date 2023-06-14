@@ -97,7 +97,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(124))
 		]
 
-		const event = new WorkspaceUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new WorkspaceUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleWorkspaceUpdated(event)
 
 		const wUpdate = Workspace.load(w.id)
@@ -138,7 +138,7 @@ export function runTests(): void {
 
 		ev.transaction.from = Address.fromString(WORKSPACE_CREATOR_ID)
 
-		const event = new WorkspaceUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new WorkspaceUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleWorkspaceUpdated(event)
 
 		const wUpdate = WorkspaceMember.load(`${w.id}.${ev.transaction.from.toHex()}`)
@@ -192,7 +192,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 		]
 
-		const event = new WorkspaceMemberUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new WorkspaceMemberUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleWorkspaceMemberUpdated(event)
 
 		const memberAddedId = `${w.id}.${address.toHex()}`
@@ -222,7 +222,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 		]
 
-		const event = new WorkspaceMemberUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new WorkspaceMemberUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleWorkspaceMemberUpdated(event)
 
 		const memberAddedId = `${w.id}.${address.toHex()}`
@@ -258,7 +258,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(126))
 		]
 
-		const event = new WorkspaceMembersUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new WorkspaceMembersUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleWorkspaceMembersUpdated(event)
 
 		wUpdate = Workspace.load(wUpdate!.id)
@@ -292,7 +292,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(130))
 		]
 
-		const adminAddEvent = new WorkspaceMemberUpdated(adminEv.address, adminEv.logIndex, adminEv.transactionLogIndex, adminEv.logType, adminEv.block, adminEv.transaction, adminEv.parameters)
+		const adminAddEvent = new WorkspaceMemberUpdated(adminEv.address, adminEv.logIndex, adminEv.transactionLogIndex, adminEv.logType, adminEv.block, adminEv.transaction, adminEv.parameters, adminEv.receipt)
 		handleWorkspaceMemberUpdated(adminAddEvent)
 
 		const adminAddedId = `${w.id}.${adminAddress.toHex()}`
@@ -318,7 +318,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 		]
 
-		const event = new WorkspaceMemberUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new WorkspaceMemberUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleWorkspaceMemberUpdated(event)
 
 		const ownerAddedId = `${w.id}.${ownerAddress.toHex()}`
@@ -345,7 +345,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(126))
 		]
 
-		const event = new WorkspaceSafeUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new WorkspaceSafeUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleWorkspaceSafeUpdated(event)
 
 		const safe = WorkspaceSafe.load(w.id)!
@@ -361,7 +361,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(126))
 		]
 
-		const eventDel = new WorkspaceSafeUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const eventDel = new WorkspaceSafeUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleWorkspaceSafeUpdated(eventDel)
 
 		const safe2 = WorkspaceSafe.load(w.id)
@@ -384,7 +384,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 		]
 
-		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new DisburseReward(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleDisburseReward(event)
 
 		const fundTransfer = FundsTransfer.load(`${ev.transaction.hash.toHex()}.${a!.id}`)
@@ -411,7 +411,7 @@ export function runTests(): void {
 		]
 
 		assert.stringEquals(ev.parameters[5].value.toString(), '0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')
-		const event = new DisburseRewardFromSafe1(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new DisburseRewardFromSafe1(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleDisburseRewardFromSafe1(event)
 
 		const fundTransfer = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x123}`)
@@ -447,7 +447,7 @@ export function runTests(): void {
 		]
 
 		assert.stringEquals(ev.parameters[5].value.toString(), '0xB17081F360e3847006dB660bae1c6d1b2e17eC2A')
-		const event = new DisburseRewardFromWallet(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new DisburseRewardFromWallet(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleDisburseRewardFromWallet(event)
 
 		const fundTransfer = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x123}`)
@@ -478,7 +478,7 @@ export function runTests(): void {
 			new ethereum.EventParam('executionTimestamp', ethereum.Value.fromI32Array([1665726957]))
 		]
 
-		const event = new FundsTransferStatusUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new FundsTransferStatusUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleFundsTransferStatusUpdated(event)
 		const fundsTransferStatusEntity = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x0123}`)
 		if(fundsTransferStatusEntity != null) {
@@ -513,7 +513,7 @@ export function runTests(): void {
 		]
 
 		assert.stringEquals(ev.parameters[5].value.toString(), '0x5a0218acbc835d99aea9a6c4dd2868952463a3d4f0a204653cc68ba97eb90563')
-		const event = new DisburseRewardFromSafe1(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new DisburseRewardFromSafe1(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleDisburseRewardFromSafe1(event)
 
 		const fundTransfer = FundsTransfer.load(`0x5a0218acbc835d99aea9a6c4dd2868952463a3d4f0a204653cc68ba97eb90563.${0x123}`)
@@ -536,7 +536,7 @@ export function runTests(): void {
 			new ethereum.EventParam('executionTimestamp', ethereum.Value.fromI32Array([1665726957]))
 		]
 
-		const event2 = new FundsTransferStatusUpdated(ev2.address, ev2.logIndex, ev2.transactionLogIndex, ev2.logType, ev2.block, ev2.transaction, ev2.parameters)
+		const event2 = new FundsTransferStatusUpdated(ev2.address, ev2.logIndex, ev2.transactionLogIndex, ev2.logType, ev2.block, ev2.transaction, ev2.parameters, ev.receipt)
 		handleFundsTransferStatusUpdated(event2)
 
 		const fundsTransferStatusEntity = FundsTransfer.load(`0x5a0218acbc835d99aea9a6c4dd2868952463a3d4f0a204653cc68ba97eb90563.${0x0123}`)
@@ -566,7 +566,7 @@ export function runTests(): void {
 			new ethereum.EventParam('executionTimestamp', ethereum.Value.fromI32Array([1665726957]))
 		]
 
-		const event = new FundsTransferStatusUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new FundsTransferStatusUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleFundsTransferStatusUpdated(event)
 		const fundsTransferStatusEntity = FundsTransfer.load(`${0xB17081F360e3847006dB660bae1c6d1b2e17eC2A}.${0x0123}`)
 		if(fundsTransferStatusEntity != null) {
@@ -596,7 +596,7 @@ export function runTests(): void {
 			new ethereum.EventParam('isVisible', ethereum.Value.fromBooleanArray(isVisibleArr)),
 		]
 
-		const event = new WorkspacesVisibleUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new WorkspacesVisibleUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleWorkspacesVisibleUpdated(event)
 
 		for(let idx = 0; idx < workspaceIds.length; idx++) {
@@ -623,7 +623,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123))
 		]
 
-		const addEvent = new QBAdminsUpdated(addEventMock.address, addEventMock.logIndex, addEventMock.transactionLogIndex, addEventMock.logType, addEventMock.block, addEventMock.transaction, addEventMock.parameters)
+		const addEvent = new QBAdminsUpdated(addEventMock.address, addEventMock.logIndex, addEventMock.transactionLogIndex, addEventMock.logType, addEventMock.block, addEventMock.transaction, addEventMock.parameters, addEventMock.receipt)
 		handleQBAdminsUpdated(addEvent)
 
 		const addedAdmin = QBAdmin.load(MOCK_QB_ADMIN_ID.toHex())
@@ -637,7 +637,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123))
 		]
 
-		const removeEvent = new QBAdminsUpdated(removeEventMock.address, removeEventMock.logIndex, removeEventMock.transactionLogIndex, removeEventMock.logType, removeEventMock.block, removeEventMock.transaction, removeEventMock.parameters)
+		const removeEvent = new QBAdminsUpdated(removeEventMock.address, removeEventMock.logIndex, removeEventMock.transactionLogIndex, removeEventMock.logType, removeEventMock.block, removeEventMock.transaction, removeEventMock.parameters, removeEventMock.receipt)
 		handleQBAdminsUpdated(removeEvent)
 
 		const removedAdmin = QBAdmin.load(MOCK_QB_ADMIN_ID.toHex())
@@ -657,7 +657,7 @@ export function runTests(): void {
 			new ethereum.EventParam('sectionName', ethereum.Value.fromString('Section 1')),
 			new ethereum.EventParam('sectionLogoIpfsHash', ethereum.Value.fromString('Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3')),
 		]
-		const event = new GrantsSectionUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new GrantsSectionUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleGrantsSectionUpdate(event)
 
 		const sectionEntity = Section.load('Section 1')
@@ -681,7 +681,7 @@ export function runTests(): void {
 			new ethereum.EventParam('sectionName', ethereum.Value.fromString('Section 1')),
 			new ethereum.EventParam('sectionLogoIpfsHash', ethereum.Value.fromString('Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3')),
 		]
-		const event = new GrantsSectionUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new GrantsSectionUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleGrantsSectionUpdate(event)
 
 		const sectionEntity = Section.load('Section 1')
@@ -701,7 +701,7 @@ export function runTests(): void {
 			new ethereum.EventParam('sectionName', ethereum.Value.fromString('Section 1')),
 			new ethereum.EventParam('sectionLogoIpfsHash', ethereum.Value.fromString('Qmb8Vm1GtuNrwjraN658czDMovibvExcRMT7bpaSGTToR3')),
 		]
-		const event = new GrantsSectionUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new GrantsSectionUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleGrantsSectionUpdate(event)
 
 		const sectionEntity = Section.load('Section 1')
@@ -734,7 +734,7 @@ function workspaceWithAdditionalMembers(addresses: Address[], emails: string[]):
 		new ethereum.EventParam('time', ethereum.Value.fromI32(125))
 	]
 
-	const event = new WorkspaceMembersUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+	const event = new WorkspaceMembersUpdated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 	handleWorkspaceMembersUpdated(event)
 
 	return Workspace.load(w.id)
