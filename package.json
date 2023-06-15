@@ -18,10 +18,7 @@
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.33.1",
-    "@graphprotocol/graph-ts": "0.31.0",
-    "dotenv": "^16.0.3",
-    "ethers": "^6.3.0",
-    "winston": "^3.8.2"
+    "@graphprotocol/graph-ts": "0.31.0"
   },
   "devDependencies": {
     "@creatoros/eslint-config": "git+https://github.com/creatoros/eslint-config",
