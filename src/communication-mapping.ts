@@ -1,11 +1,16 @@
 import { log } from '@graphprotocol/graph-ts'
 import { CommentAdded, EmailAdded } from '../generated/QBCommunicationContract/QBCommunicationContract'
-import { Comment, GrantApplication, PIIData } from '../generated/schema'
+import { Claim, Comment, GrantApplication, PIIData } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addCommentAddedNotification } from './utils/notifications'
 import { PrivateCommentAddRequest, validatePrivateCommentAddRequest } from './json-schema'
 
 export function handleCommentAdded(event: CommentAdded): void {
+	const e = new Claim(event.params.commentMetadataHash)
+	e.link='handleCommentAdded'
+	e.title='df'
+	e.save()
+	return
 	const workspaceId = event.params.workspaceId.toHex()
 	const grantAddress = event.params.grantAddress.toHex()
 	const applicationId = event.params.applicationId.toHex()

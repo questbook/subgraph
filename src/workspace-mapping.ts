@@ -14,7 +14,7 @@ import {
 	WorkspacesVisibleUpdated,
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
-import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { ApplicationMilestone, Claim, FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -36,6 +36,11 @@ import {
 } from './json-schema'
 
 export function handleWorkspaceCreated(event: WorkspaceCreated): void {
+	const e = new Claim(event.params.metadataHash)
+	e.link='handleWorkspaceCreated'
+	e.title='df'
+	e.save()
+	return
 	const entityId = event.params.id.toHex()
 
 	log.info(`Workspace Metadata hash ${event.params.metadataHash}`, [])
@@ -90,6 +95,11 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 }
 
 export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
+	const e = new Claim(event.params.metadataHash)
+	e.link='handleWorkspaceUpdated'
+	e.title='df'
+	e.save()
+	return
 	const entityId = event.params.id.toHex()
 
 	const entity = Workspace.load(entityId)
@@ -155,6 +165,7 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 }
 
 export function handleWorkspaceSafeUpdated(event: WorkspaceSafeUpdated): void {
+	return
 	const entityId = event.params.id.toHex()
 	if(event.params.safeChainId.gt(new BigInt(0))) {
 		const entity = new WorkspaceSafe(entityId)
@@ -169,6 +180,7 @@ export function handleWorkspaceSafeUpdated(event: WorkspaceSafeUpdated): void {
 }
 
 export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): void {
+	return
 	const result = mapWorkspaceMembersUpdate(
 		event.params.id.toHex(),
 		event.params.time,
@@ -186,6 +198,11 @@ export function handleWorkspaceMembersUpdated(event: WorkspaceMembersUpdated): v
 }
 
 export function handleWorkspaceMemberUpdated(event: WorkspaceMemberUpdated): void {
+	const e = new Claim(event.params.metadataHash)
+	e.link='handleWorkspaceMemberUpdated'
+	e.title='df'
+	e.save()
+	return
 	const result = mapWorkspaceMembersUpdate(
 		event.params.id.toHex(),
 		event.params.time,
@@ -203,6 +220,8 @@ export function handleWorkspaceMemberUpdated(event: WorkspaceMemberUpdated): voi
 }
 
 export function handleDisburseReward(event: DisburseReward): void {
+	return
+	
 	disburseReward({
 		event,
 		depositType: 'funds_disbursed',
@@ -219,6 +238,7 @@ export function handleDisburseReward(event: DisburseReward): void {
 }
 
 export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): void {
+	return
 	const depositType = 'funds_disbursed_from_safe'
 	const applicationIds = event.params.applicationIds
 	const milestoneIds = event.params.milestoneIds
@@ -248,6 +268,8 @@ export function handleDisburseRewardFromSafe(event: DisburseRewardFromSafe): voi
 }
 
 export function handleDisburseRewardFromSafe1(event: DisburseRewardFromSafe1): void {
+
+	return
 	const depositType = 'funds_disbursed_from_safe'
 	const applicationIds = event.params.applicationIds
 	const milestoneIds = event.params.milestoneIds
@@ -277,6 +299,7 @@ export function handleDisburseRewardFromSafe1(event: DisburseRewardFromSafe1): v
 }
 
 export function handleDisburseRewardFromWallet(event: DisburseRewardFromWallet): void {
+	return
 	const depositType = 'funds_disbursed_from_wallet'
 	const applicationIds = event.params.applicationIds
 	const milestoneIds = event.params.milestoneIds
@@ -306,6 +329,7 @@ export function handleDisburseRewardFromWallet(event: DisburseRewardFromWallet):
 }
 
 export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): void {
+	return
 	const fromWallet = event.params.from
 	const toWallet = event.params.to
 	const workspaceId = event.params.workspaceId.toHex()
@@ -356,6 +380,7 @@ export function handleWorkspaceMemberMigrate(event: WorkspaceMemberMigrate): voi
 }
 
 export function handleWorkspacesVisibleUpdated(event: WorkspacesVisibleUpdated): void {
+	return
 	const workspaceIds = event.params.workspaceId
 	const isVisibleArr = event.params.isVisible
 
@@ -374,6 +399,7 @@ export function handleWorkspacesVisibleUpdated(event: WorkspacesVisibleUpdated):
 }
 
 export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
+	return
 	const walletAddresses = event.params.walletAddresses
 	const isAdded = event.params.isAdded
 
@@ -406,6 +432,7 @@ export function handleQBAdminsUpdated(event: QBAdminsUpdated): void {
 }
 
 export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdated): void {
+	return
 	const safeTxnHashes = event.params.transactionHash
 	const applicationIds = event.params.applicationId
 	const statuses = event.params.status
@@ -485,6 +512,11 @@ export function handleFundsTransferStatusUpdated(event: FundsTransferStatusUpdat
 }
 
 export function handleGrantsSectionUpdate(event: GrantsSectionUpdated): void {
+	const e = new Claim(event.params.sectionLogoIpfsHash)
+	e.link='handleGrantsSectionUpdate'
+	e.title='df'
+	e.save()
+	return
 	const grantIds = event.params.grantIds
 	const sectionName = event.params.sectionName
 	const sectionLogoIpfsHash = event.params.sectionLogoIpfsHash
