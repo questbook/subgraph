@@ -9,7 +9,7 @@
     "test": "graph test",
     "prepare-subgraph": "mustache config/$NETWORK.json template.subgraph.yaml > subgraph.yaml",
     "create-subgraph": "graph create --node $GRAPH_NODE qb-subgraph-$NETWORK",
-    "deploy-subgraph": "yarn prepare-subgraph && graph deploy --node $GRAPH_NODE --ipfs https://api.thegraph.com/ipfs/ qb-subgraph-$NETWORK",
+    "deploy-subgraph": "yarn prepare-subgraph && graph deploy --node $GRAPH_NODE --ipfs https://ipfs.questbook.app qb-subgraph-$NETWORK",
     "remove-subgraph": "graph remove --node $GRAPH_NODE qb-subgraph-$NETWORK",
     "deploy:all": "node scripts/deploy",
     "deploy:undeployed": "node scripts/deploy-undeployed-networks",
