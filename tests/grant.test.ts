@@ -8,7 +8,7 @@ import { handleFundsWithdrawn, handleGrantCreated, handleGrantUpdatedFromFactory
 import { assertArrayNotEmpty, assertStringNotEmpty, createGrant, CUSTOM_TOKEN_ADDRESS_GRANT, MOCK_GRANT_ID, MOCK_WORKSPACE_ID, WORKSPACE_CREATOR_ID } from './utils'
 
 export function runTests(): void {
-	return
+
 	test('should create a grant', () => {
 		const g = createGrant(MOCK_GRANT_ID)
 		assert.i32Equals(g!.createdAtS, 123)

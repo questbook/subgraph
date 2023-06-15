@@ -1,6 +1,6 @@
 import { Bytes, log, store } from '@graphprotocol/graph-ts'
 import { ReviewersAssigned, ReviewMigrate, ReviewPaymentMarkedDone, ReviewSubmitted, RubricsSet } from '../generated/QBReviewsContract/QBReviewsContract'
-import { Claim, FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, WorkspaceMember } from '../generated/schema'
+import { FundsTransfer, Grant, GrantApplication, GrantApplicationReviewer, GrantReviewerCounter, Migration, PIIAnswer, Review, Rubric, WorkspaceMember } from '../generated/schema'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { migrateApplicationReviewer, migrateGrant, migrateRubric } from './utils/migrations'
 import { reviewSubmittedNotification } from './utils/notifications'
@@ -8,11 +8,6 @@ import { rubricSetHandler } from './utils/rubricSetHandler'
 import { ReviewSetRequest, validateReviewSetRequest } from './json-schema'
 
 export function handleReviewSubmitted(event: ReviewSubmitted): void {
-	const e = new Claim(event.params._metadataHash)
-	e.link='handleGrantUpdatedFromFactory'
-	e.title='df'
-	e.save()
-	return
 	const reviewId = event.params._reviewId.toHex()
 	const workspace = event.params._workspaceId.toHex()
 	const reviewerAddress = event.params._reviewerAddress
@@ -119,7 +114,6 @@ export function handleReviewSubmitted(event: ReviewSubmitted): void {
 }
 
 export function handleReviewersAssigned(event: ReviewersAssigned): void {
-	return
 	const applicationId = event.params._applicationId.toHex()
 	const workspace = event.params._workspaceId.toHex()
 	const reviewerAddresses = event.params._reviewers
@@ -202,11 +196,6 @@ export function handleReviewersAssigned(event: ReviewersAssigned): void {
 }
 
 export function handleRubricsSet(event: RubricsSet): void {
-	const e = new Claim(event.params._metadataHash)
-	e.link='handleRubricsSet'
-	e.title='df'
-	e.save()
-	return
 	const grantId = event.params._grantAddress.toHex()
 	const workspaceId = event.params._workspaceId.toHex()
 
@@ -217,7 +206,6 @@ export function handleRubricsSet(event: RubricsSet): void {
 }
 
 export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): void {
-	return
 	const transactionId = event.transaction.hash.toHex()
 	const reviewIds = event.params._reviewIds
 
@@ -272,7 +260,6 @@ export function handleReviewPaymentMarkedDone(event: ReviewPaymentMarkedDone): v
 }
 
 export function handleReviewMigrate(event: ReviewMigrate): void {
-	return
 	const reviewId = event.params._reviewId.toHex()
 	const fromWallet = event.params._previousReviewerAddress
 	const toWallet = event.params._newReviewerAddress

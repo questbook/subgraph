@@ -1,6 +1,6 @@
 import { BigInt, log } from '@graphprotocol/graph-ts'
 import { GrantCreated, GrantUpdatedFromFactory } from '../generated/QBGrantFactoryContract/QBGrantFactoryContract'
-import { ApplicationMilestone, Claim, FundsTransfer, Grant, GrantApplication, Workspace } from '../generated/schema'
+import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Workspace } from '../generated/schema'
 import { QBGrantsContract } from '../generated/templates'
 import { DisburseReward, DisburseRewardFailed, FundsDepositFailed, FundsWithdrawn, GrantUpdated, TransactionRecord } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
@@ -12,11 +12,6 @@ import { addFundsTransferNotification } from './utils/notifications'
 import { GrantCreateRequest, validateGrantCreateRequest } from './json-schema'
 
 export function handleGrantCreated(event: GrantCreated): void {
-	const e = new Claim(event.params.metadataHash)
-	e.link='handleGrantCreated'
-	e.title='df'
-	e.save()
-	return
 	const workspaceId = event.params.workspaceId.toHex()
 	const grantAddress = event.params.grantAddress
 	const time = event.params.time.toI32()
@@ -124,7 +119,6 @@ export function handleGrantCreated(event: GrantCreated): void {
 }
 
 export function handleDisburseReward(event: DisburseReward): void {
-	return
 	disburseReward({
 		event,
 		depositType: 'funds_disbursed',
@@ -142,7 +136,6 @@ export function handleDisburseReward(event: DisburseReward): void {
 
 // We should deprecate this handler. The event is not in use
 export function handleTransactionRecord(event: TransactionRecord): void {
-	return
 	const applicationId = event.params.applicationId.toHex()
 	const milestoneIndex = event.params.milestoneId.toI32()
 	const milestoneId = `${applicationId}.${milestoneIndex}`
@@ -192,7 +185,6 @@ export function handleFundsDepositFailed(event: FundsDepositFailed): void {
 }
 
 export function handleFundsWithdrawn(event: FundsWithdrawn): void {
-	return
 	const grantId = event.transaction.to!.toHex()
 	const success = applyGrantFundUpdate(event, false, grantId, event.params.amount, event.params.recipient, event.params.time.toI32())
 	if(!success) {
@@ -201,11 +193,6 @@ export function handleFundsWithdrawn(event: FundsWithdrawn): void {
 }
 
 export function handleGrantUpdated(event: GrantUpdated): void {
-	const e = new Claim(event.params.metadataHash)
-	e.link='handleGrantUpdated'
-	e.title='df'
-	e.save()
-	return
 	const grantId = event.transaction.to!.toHex()
 	const time = event.params.time.toI32()
 	const workspace = event.params.workspaceId.toHex()
@@ -216,11 +203,6 @@ export function handleGrantUpdated(event: GrantUpdated): void {
 }
 
 export function handleGrantUpdatedFromFactory(event: GrantUpdatedFromFactory): void {
-	const e = new Claim(event.params.metadataHash)
-	e.link='handleGrantUpdatedFromFactory'
-	e.title='df'
-	e.save()
-	return
 	const grantId = event.params.grantAddress.toHex()
 	const time = event.params.time.toI32()
 	const workspace = event.params.workspaceId.toHex()

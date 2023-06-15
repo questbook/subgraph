@@ -53,7 +53,7 @@ import {
 import { MOCK_APPLICATION_ID } from './utils'
 
 export function runTests(): void {
-	return
+
 	test('should create a workspace', () => {
 		const w = createWorkspace()
 
@@ -712,7 +712,6 @@ export function runTests(): void {
 }
 
 function workspaceWithAdditionalMembers(addresses: Address[], emails: string[]): Workspace | null {
-	return null
 	const w = createWorkspace()!
 
 	const roles: i32[] = []

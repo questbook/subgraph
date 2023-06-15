@@ -7,7 +7,7 @@ import { createApplication, MOCK_APPLICATION_ID, MOCK_GRANT_ID, MOCK_WORKSPACE_I
 
 
 function runTests(): void {
-	return
+
 	test('add public comment', () => {
 		const a = createApplication()
         
