@@ -21,10 +21,13 @@
     "@graphprotocol/graph-ts": "0.31.0"
   },
   "devDependencies": {
+    "@celo-tools/celo-ethers-wrapper": "^0.4.0",
     "@creatoros/eslint-config": "git+https://github.com/creatoros/eslint-config",
     "@questbook/graph-json-validator": "git+https://github.com/questbook/graph-json-validator",
     "axios": "^0.27.2",
+    "dotenv": "^16.2.0",
     "eslint": "^7.14.0",
+    "ethers": "^5.7.2",
     "matchstick-as": "^0.5.2",
     "mustache": "^4.2.0",
     "typescript": "^4.6.4"
