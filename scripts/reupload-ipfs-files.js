@@ -6,7 +6,7 @@ const fs = require('fs/promises')
 const IPFS_FROM_ENDPOINT = 'https://api.thegraph.com/ipfs'
 const IPFS_FROM_AUTH = undefined
 const IPFS_UPLOAD_ENDPOINT = 'https://ipfs.questbook.app'
-const TEMP_HASH_LIST_JSON_NAME = 'temp-hash-list2.json'
+const TEMP_HASH_LIST_JSON_NAME = 'temp-hash-list.json'
 
 const NETWORK_CONFIG = {
 	'optimism-mainnet': {
@@ -49,7 +49,7 @@ const IPFS_HASH_KEYS = [
 	'_rubricsMetadataHash',
 	'rubricsMetadataHash',
 	'_reviewMetadataHash',
-	'sectionLogoIpfsHash'
+	'sectionLogoIpfsHash',
 ]
 
 async function getIpfsHashes(contractName, network, contractAddress) {
@@ -64,18 +64,33 @@ async function getIpfsHashes(contractName, network, contractAddress) {
 		NETWORK_CONFIG[network].name,
 		NETWORK_CONFIG[network].apiKey
 	)
-	const history = await provider.getHistory(contractAddress)
-	const hashes = []
-	const newGrantAddresses = []
+	const history = await provider.getLogs({
+		address: contractAddress
+	})
+
+	const hashes = new Set()
+	const newGrantAddresses = new Set()
 	for(const item of history) {
-		let decoded
 		try {
-			// decode the tx, check the name of the function
-			decoded = abi.parseTransaction(item)
-			await extractGrantAddressIfThere(decoded, item.hash)
-			for(const key in decoded.args) {
+			// decode the tx logs,
+			// check the name of the function
+			const log = abi.parseLog(item)
+			// we'll extract hashes from the created
+			// grant as well
+			if(log.name === 'createGrant') {
+				newGrantAddresses.add(
+					logs.args.grantAddress
+				)
+			}
+
+			for(const key in log.args) {
 				if(IPFS_HASH_KEYS.includes(key)) {
-					hashes.push(decoded.args[key])
+					// could be hash or array of hashes
+					let value = log.args[key]
+					value = Array.isArray(value) ? value : [value]
+					for(const hash of value) {
+						hashes.add(hash)
+					}
 				}
 			}
 		} catch(err) {
@@ -88,31 +103,6 @@ async function getIpfsHashes(contractName, network, contractAddress) {
 	}
 
 	return { hashes, newGrantAddresses }
-
-	async function extractGrantAddressIfThere(tx, hash) {
-		if(tx.name !== 'createGrant') {
-			return
-		}
-
-		await delay(1000)
-		const rcpt = await provider.getTransactionReceipt(hash)
-		const logs = rcpt.logs.map(l => {
-			try {
-				return abi.parseLog(l)
-			} catch {
-
-			}
-		})
-
-		const grantAddress = logs
-			.find(l => l?.name === 'GrantCreated')
-			.args.grantAddress
-		newGrantAddresses.push(grantAddress)
-	}
-
-	function delay(ms) {
-		return new Promise(resolve => setTimeout(resolve, ms))
-	}
 }
 
 async function reuploadToIpfs(hash) {
@@ -135,15 +125,25 @@ async function reuploadToIpfs(hash) {
 	console.log(`reuploading ${hash} (${body.byteLength} bytes) to ipfs`)
 
 	const data = new FormData()
-	data.append('file', body)
+	data.append('file', Buffer.from(body))
 
-	await fetch(
-		`${IPFS_UPLOAD_ENDPOINT}/api/v0/add?pin=true`,
+	const uploadResult = await fetch(
+		`${IPFS_UPLOAD_ENDPOINT}/api/v0/add`,
 		{
 			method: 'POST',
 			body: data
 		}
 	)
+
+	if(uploadResult.status !== 200) {
+		const txt = await uploadResult.text()
+		throw new Error(`failed to upload ${hash} to ipfs: ${txt}`)
+	}
+
+	// const jsonResult = await uploadResult.json()
+	// if(jsonResult.Hash !== hash) {
+	// 	throw new Error(`uploaded hash ${jsonResult.Hash} does not match ${hash}`)
+	// }
 
 	console.log(`reuploaded ${hash} to ipfs`)
 }
@@ -162,7 +162,7 @@ async function main() {
 	console.log('all done')
 
 	async function extractHashes() {
-		const hashes = []
+		const hashes = new Set()
 		for(const network in NETWORK_CONFIG) {
 			for(const key in ABI_MAP) {
 				// grant doesn't have an explicit contract
@@ -172,12 +172,14 @@ async function main() {
 	
 				console.log(`extracting from "${key} contract" on ${network}`)
 				const result = await getIpfsHashes(key, network)
-				hashes.push(...result.hashes)
+				for(const hash of result.hashes) {
+					hashes.add(hash)
+				}
 				await saveHashes()
 	
-				console.log(`extracted ${result.hashes.length} hashes`)
-	
-				for(const grantAddress of result.newGrantAddresses) {
+				console.log(`extracted ${result.hashes.size} hashes`)
+
+				for(const grantAddress of Array.from(result.newGrantAddresses)) {
 					console.log(`extracting from "grants contract (${grantAddress})" on ${network}`)
 					const result = await getIpfsHashes('grant', network, grantAddress)
 					hashes.push(...result.hashes)
@@ -191,9 +193,10 @@ async function main() {
 		return hashes
 
 		async function saveHashes() {
+			const hashesList = Array.from(hashes)
 			await fs.writeFile(
 				`./${TEMP_HASH_LIST_JSON_NAME}`,
-				JSON.stringify({ hashes })
+				JSON.stringify({ hashes: hashesList })
 			)
 		}
 	}
