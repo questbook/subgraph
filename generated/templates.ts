@@ -19,3 +19,13 @@ export class QBGrantsContract extends DataSourceTemplate {
     );
   }
 }
+
+export class PIICollection extends DataSourceTemplate {
+  static create(cid: string): void {
+    DataSourceTemplate.create("PIICollection", [cid]);
+  }
+
+  static createWithContext(cid: string, context: DataSourceContext): void {
+    DataSourceTemplate.createWithContext("PIICollection", [cid], context);
+  }
+}

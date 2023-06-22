@@ -361,6 +361,38 @@ export class QBApplicationsContract__applicationsResult {
     );
     return map;
   }
+
+  getId(): BigInt {
+    return this.value0;
+  }
+
+  getWorkspaceId(): BigInt {
+    return this.value1;
+  }
+
+  getGrant(): Address {
+    return this.value2;
+  }
+
+  getOwner(): Address {
+    return this.value3;
+  }
+
+  getMilestoneCount(): BigInt {
+    return this.value4;
+  }
+
+  getMilestonesDone(): BigInt {
+    return this.value5;
+  }
+
+  getMetadataHash(): string {
+    return this.value6;
+  }
+
+  getState(): i32 {
+    return this.value7;
+  }
 }
 
 export class QBApplicationsContract extends ethereum.SmartContract {

@@ -1,6 +1,7 @@
-import { log } from '@graphprotocol/graph-ts'
+import { DataSourceContext, log } from '@graphprotocol/graph-ts'
 import { CommentAdded, EmailAdded } from '../generated/QBCommunicationContract/QBCommunicationContract'
 import { Comment, GrantApplication, PIIData } from '../generated/schema'
+import { PIICollection as PIICollectionTemplate } from '../generated/templates'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import { addCommentAddedNotification } from './utils/notifications'
 import { PrivateCommentAddRequest, validatePrivateCommentAddRequest } from './json-schema'
@@ -30,28 +31,38 @@ export function handleCommentAdded(event: CommentAdded): void {
 	commentEntity.createdAt = timestamp
 
 	if(isPrivate) {
-		const result = validatedJsonFromIpfs<PrivateCommentAddRequest>(commentMetadataHash, validatePrivateCommentAddRequest)
+		// this mechanism exists to prevent IPFS calls while testing
+		// since IPFS is not supported on matchstick as of now
+		if(commentMetadataHash.slice(0, 5) == 'json:') {
 
-		if(result) {
-			if(result.value == null) {
-				log.warning(`[${event.transaction.hash.toHex()}] No PII data found in private comment`, [])
-				return
-			}
-
-			const encryptedCommentPiiDataList = result.value!.pii.additionalProperties.entries
-			const items: string[] = []
-			if(encryptedCommentPiiDataList) {
-				log.info(`[${event.transaction.hash.toHex()}] Found {} encrypted comment PII data`, [encryptedCommentPiiDataList.length.toString()])
-				for(let i=0; i<encryptedCommentPiiDataList.length; i++) {
-					const encryptedCommentEntity = new PIIData(`${event.transaction.hash.toHex()}.${encryptedCommentPiiDataList[i].key}.${applicationId}`)
-
-					encryptedCommentEntity.data = encryptedCommentPiiDataList[i].value
-					encryptedCommentEntity.save()
-					items.push(encryptedCommentEntity.id)
+			const result = validatedJsonFromIpfs<PrivateCommentAddRequest>(commentMetadataHash, validatePrivateCommentAddRequest)
+	
+			if(result) {
+				if(result.value == null) {
+					log.warning(`[${event.transaction.hash.toHex()}] No PII data found in private comment`, [])
+					return
 				}
-
-				commentEntity.commentsEncryptedData = items
+	
+				const encryptedCommentPiiDataList = result.value!.pii.additionalProperties.entries
+				const items: string[] = []
+				if(encryptedCommentPiiDataList) {
+					log.info(`[${event.transaction.hash.toHex()}] Found {} encrypted comment PII data`, [encryptedCommentPiiDataList.length.toString()])
+					for(let i=0; i<encryptedCommentPiiDataList.length; i++) {
+						const encryptedCommentEntity = new PIIData(`${event.transaction.hash.toHex()}.${encryptedCommentPiiDataList[i].key}.${applicationId}`)
+	
+						encryptedCommentEntity.data = encryptedCommentPiiDataList[i].value
+						encryptedCommentEntity.save()
+						items.push(encryptedCommentEntity.id)
+					}
+	
+					commentEntity.commentsEncryptedData = items
+				}
 			}
+		} else {
+			const context = new DataSourceContext()
+			context.setString('transactionHashHex', event.transaction.hash.toHex())
+			context.setString('applicationId', applicationId)
+			PIICollectionTemplate.createWithContext(commentMetadataHash, context)
 		}
 	} else {
 		commentEntity.commentsPublicHash = commentMetadataHash

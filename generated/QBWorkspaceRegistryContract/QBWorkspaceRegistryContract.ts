@@ -673,6 +673,18 @@ export class QBWorkspaceRegistryContract__splitSignatureResult {
     );
     return map;
   }
+
+  getR(): Bytes {
+    return this.value0;
+  }
+
+  getS(): Bytes {
+    return this.value1;
+  }
+
+  getV(): i32 {
+    return this.value2;
+  }
 }
 
 export class QBWorkspaceRegistryContract__workspacesResultSafeStruct extends ethereum.Tuple {
@@ -710,6 +722,22 @@ export class QBWorkspaceRegistryContract__workspacesResult {
     map.set("value2", ethereum.Value.fromString(this.value2));
     map.set("value3", ethereum.Value.fromTuple(this.value3));
     return map;
+  }
+
+  getId(): BigInt {
+    return this.value0;
+  }
+
+  getOwner(): Address {
+    return this.value1;
+  }
+
+  getMetadataHash(): string {
+    return this.value2;
+  }
+
+  getSafe(): QBWorkspaceRegistryContract__workspacesResultSafeStruct {
+    return this.value3;
   }
 }
 

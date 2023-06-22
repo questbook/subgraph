@@ -1,586 +1,595 @@
 enum GrantFieldInputType {
-  short_form,
-  long_form,
-  numeric,
-  array
+	short_form
+	long_form
+	numeric
+	array
 }
 
 enum WorkspaceMemberAccessLevel {
-  owner,
-  admin,
-  member,
-  reviewer
+	owner
+	admin
+	member
+	reviewer
 }
 
 enum MilestoneState {
-  submitted,
-  requested,
-  approved
+	submitted
+	requested
+	approved
 }
 
 enum ApplicationState {
-  submitted,
-  resubmit,
-  approved,
-  rejected,
-  completed
+	submitted
+	resubmit
+	approved
+	rejected
+	completed
 }
 
 enum NotificationType {
-  application_submitted,
-  application_resubmitted,
-  application_rejected,
-  application_accepted,
-  milestone_requested,
-  milestone_accepted,
-  milestone_rejected,
-  funds_disbursed,
-  funds_deposited,
-  funds_withdrawn,
-  funds_disbursed_from_safe,
-  funds_disbursed_from_wallet,
-  application_completed,
-  comment_added,
-  review_submitted
+	application_submitted
+	application_resubmitted
+	application_rejected
+	application_accepted
+	milestone_requested
+	milestone_accepted
+	milestone_rejected
+	funds_disbursed
+	funds_deposited
+	funds_withdrawn
+	funds_disbursed_from_safe
+	funds_disbursed_from_wallet
+	application_completed
+	comment_added
+	review_submitted
 }
 
 enum FundsTransferType {
-  funds_disbursed,
-  funds_disbursed_from_safe,
-  funds_disbursed_from_wallet,
-  funds_deposited,
-  funds_withdrawn,
-  review_payment_done,
+	funds_disbursed
+	funds_disbursed_from_safe
+	funds_disbursed_from_wallet
+	funds_deposited
+	funds_withdrawn
+	review_payment_done
 }
 
 enum FundsTransferStatusType {
-  queued,
-  executed,
-  cancelled
+	queued
+	executed
+	cancelled
 }
 
 enum MigrationType {
-  WorkspaceMember,
-  Review,
-  Application
+	WorkspaceMember
+	Review
+	Application
 }
 
 enum SupportedNetwork {
-  chain_42220, # celo-mainnet
-  chain_5, # goerli-testnet
-  chain_10, # optimism-mainnet
-  chain_137, # polygon-mainnet
+	chain_42220 # celo-mainnet
+	chain_5 # goerli-testnet
+	chain_10 # optimism-mainnet
+	chain_137 # polygon-mainnet
 }
 
 enum PayoutType {
-  in_one_go,
-  milestones
+	in_one_go
+	milestones
 }
 
 enum ReviewType {
-  voting,
-  rubrics
+	voting
+	rubrics
 }
 
 type WorkspaceSafe @entity {
-  id: ID!
-  "Workspace of the space"
-  workspace: Workspace!
-  "Address of the safe"
-  address: String!
-  "Chain ID of the chain"
-  chainId: BigInt!
+	id: ID!
+	"Workspace of the space"
+	workspace: Workspace!
+	"Address of the safe"
+	address: String!
+	"Chain ID of the chain"
+	chainId: BigInt!
 }
 
 type Social @entity {
-  id: ID!
-  "Name of the network. Eg. twitter, discord"
-  name: String!
-  "Handle or URL"
-  value: String!
+	id: ID!
+	"Name of the network. Eg. twitter, discord"
+	name: String!
+	"Handle or URL"
+	value: String!
 }
 
 type Section @entity {
-  id: ID!
-  "grants under this section"
-  grants: [Grant!]!
-  "Name of the section"
-  sectionName: String!
-  "IPFS hash of the section logo"
-  sectionLogoIpfsHash: String!
+	id: ID!
+	"grants under this section"
+	grants: [Grant!]!
+	"Name of the section"
+	sectionName: String!
+	"IPFS hash of the section logo"
+	sectionLogoIpfsHash: String!
 }
 
 type Comment @entity {
-  id: ID!
-  "comment public metadata hash"
-  commentsPublicHash: String
-  "comments encrypted data"
-  commentsEncryptedData: [PIIData!]
-  "Workspace that the application belongs to"
-  workspace: Workspace!
-  "Grant the application was submitted to"
-  grant: Grant!
-  "Application where the comment was added"
-  application: GrantApplication!
-  "Denotes if the comment should be private or public"
-  isPrivate: Boolean!
-  "Last comment added date and time in epochs"
-  createdAt: Int!
-  "Denotes who added the comment"
-  createdBy: Bytes!
+	id: ID!
+	"comment public metadata hash"
+	commentsPublicHash: String
+	"comments encrypted data"
+	commentsEncryptedData: [PIIData!]
+	"comments encrypted data file"
+	commentsEncryptedDataCollection: PIICollection
+	"Workspace that the application belongs to"
+	workspace: Workspace!
+	"Grant the application was submitted to"
+	grant: Grant!
+	"Application where the comment was added"
+	application: GrantApplication!
+	"Denotes if the comment should be private or public"
+	isPrivate: Boolean!
+	"Last comment added date and time in epochs"
+	createdAt: Int!
+	"Denotes who added the comment"
+	createdBy: Bytes!
 }
 
 type Partner @entity {
-  id: ID!
-  name: String!
-  industry: String!
-  website: String
-  partnerImageHash: String
+	id: ID!
+	name: String!
+	industry: String!
+	website: String
+	partnerImageHash: String
 }
 
 type GrantField @entity {
-  id: ID!
-  title: String!
-  inputType: GrantFieldInputType!
-  possibleValues: [String!]
-  isPii: Boolean!
+	id: ID!
+	title: String!
+	inputType: GrantFieldInputType!
+	possibleValues: [String!]
+	isPii: Boolean!
 }
 
 type GrantFieldAnswerItem @entity {
-  id: ID!
-  answer: GrantFieldAnswer!
-  value: String!
-  walletId: Bytes
+	id: ID!
+	answer: GrantFieldAnswer!
+	value: String!
+	walletId: Bytes
 }
 
 type GrantFieldAnswer @entity {
-  id: ID!
-  field: GrantField!
-  values: [GrantFieldAnswerItem!]! @derivedFrom(field: "answer")
+	id: ID!
+	field: GrantField!
+	values: [GrantFieldAnswerItem!]! @derivedFrom(field: "answer")
 }
 
 type Reward @entity {
-  id: ID!
+	id: ID!
 	asset: Bytes!
 	committed: BigInt!
-  token: Token
+	token: Token
 }
 
 type Token @entity {
-  id: ID!
-  label: String!
-  address: Bytes!
-  decimal: Int!
-  iconHash: String!
-  workspace: Workspace!
-  chainId: BigInt
+	id: ID!
+	label: String!
+	address: Bytes!
+	decimal: Int!
+	iconHash: String!
+	workspace: Workspace!
+	chainId: BigInt
 }
 
 type RubricItem @entity {
-  id: ID!
-  title: String!
-  details: String!
-  maximumPoints: Int!
+	id: ID!
+	title: String!
+	details: String!
+	maximumPoints: Int!
 }
 
 type Rubric @entity {
-  id: ID!
-  items: [RubricItem!]!
-  "Is private evaluation"
-  isPrivate: Boolean!
-  "Unix timestamp of when the rubric was created"
-  createdAtS: Int!
-  "Unix timestamp of when the rubric was updated"
-  updatedAtS: Int!
-  "Who added this rubric"
-  addedBy: WorkspaceMember
+	id: ID!
+	items: [RubricItem!]!
+	"Is private evaluation"
+	isPrivate: Boolean!
+	"Unix timestamp of when the rubric was created"
+	createdAtS: Int!
+	"Unix timestamp of when the rubric was updated"
+	updatedAtS: Int!
+	"Who added this rubric"
+	addedBy: WorkspaceMember
 }
 
 type Review @entity {
-  id: ID!
-  "Application for which the review is"
-  application: GrantApplication!
-  "Workspace member that reviewed the app"
-  reviewer: WorkspaceMember!
-  "created at S"
-  createdAtS: Int!
-  "IPFS Hash to the publicly accessible review"
-  publicReviewDataHash: String
-  "The encrypted data of the review"
-  data: [PIIAnswer!]!
+	id: ID!
+	"Application for which the review is"
+	application: GrantApplication!
+	"Workspace member that reviewed the app"
+	reviewer: WorkspaceMember!
+	"created at S"
+	createdAtS: Int!
+	"IPFS Hash to the publicly accessible review"
+	publicReviewDataHash: String
+	"The encrypted data of the review"
+	data: [PIIAnswer!]!
 }
 
 type Grant @entity {
-  id: ID!
-  "Address of who created the grant"
-  creatorId: Bytes!
+	id: ID!
+	"Address of who created the grant"
+	creatorId: Bytes!
 	title: String!
-  "Short description of the grant"
-  summary: String!
-  "Expectations & other details of the grant"
-  details: String!
-  "Proposed reward for the grant"
-  reward: Reward!
-  "total grant funding committed in USD"
-  totalGrantFundingCommittedUSD: BigInt!
-  "total grant funding committed in USD"
-  totalGrantFundingDisbursedUSD: BigInt!
-  "Workspace which created the grant"
-  workspace: Workspace!
-  "ISO formatted date string"
-  startDate: String #v2
-  "ISO formatted date string"
-  deadline: String
-  "Start time for accepting applications, in seconds since epoch"
-  startDateS: Int #v2
-  "Deadlint for the grant, in seconds since epoch"
-  deadlineS: Int!
-  "type of payout"
-  payoutType: PayoutType #v2
-  "Review type"
-  reviewType: ReviewType #v2
-  "External link to any other website"
-  link: String #v2
-  "IPFS hash of the documnet uploaded"
-  docIpfsHash: String
-  "milestones required"
-  milestones: [String!]
-  "Expected fields from the applicants of the grant"
-  fields: [GrantField!]!
-  "Whether the grant is currently accepting applications or not"
-  acceptingApplications: Boolean!
-  "total number of approved applications in the grant program"
-  numberOfApplicationsSelected: Int!
-  "total number of rejected applications in the grant program"
-  numberOfApplicationsRejected: Int!
-  "total number of applications awaiting resubmission in the grant program"
-  numberOfApplicationsAwaitingResubmission: Int!
-  "total number of pending applications in the grant program"
-  numberOfApplicationsPending: Int!
-  "metadata hash that is used to fetch the grant details"
-  metadataHash: String!
-  "in seconds since epoch"
-  createdAtS: Int!
-  "in seconds since epoch"
-  updatedAtS: Int
-  "Funding currently present in the grant"
-  funding: BigInt!
-  "Number of applications in the grant"
-  numberOfApplications: Int!
-  "List of applications for the grant"
-  applications: [GrantApplication!]! @derivedFrom(field: "grant")
-  "People who will manage the grant. They can see the PII submitted in an application"
-  managers: [GrantManager!]!
-  "List of fund transfer records for the grant"
-  fundTransfers: [FundsTransfer!]! @derivedFrom(field: "grant")
-  "Rubric for evaulating the grant"
-  rubric: Rubric
+	"Short description of the grant"
+	summary: String!
+	"Expectations & other details of the grant"
+	details: String!
+	"Proposed reward for the grant"
+	reward: Reward!
+	"total grant funding committed in USD"
+	totalGrantFundingCommittedUSD: BigInt!
+	"total grant funding committed in USD"
+	totalGrantFundingDisbursedUSD: BigInt!
+	"Workspace which created the grant"
+	workspace: Workspace!
+	"ISO formatted date string"
+	startDate: String #v2
+	"ISO formatted date string"
+	deadline: String
+	"Start time for accepting applications, in seconds since epoch"
+	startDateS: Int #v2
+	"Deadlint for the grant, in seconds since epoch"
+	deadlineS: Int!
+	"type of payout"
+	payoutType: PayoutType #v2
+	"Review type"
+	reviewType: ReviewType #v2
+	"External link to any other website"
+	link: String #v2
+	"IPFS hash of the documnet uploaded"
+	docIpfsHash: String
+	"milestones required"
+	milestones: [String!]
+	"Expected fields from the applicants of the grant"
+	fields: [GrantField!]!
+	"Whether the grant is currently accepting applications or not"
+	acceptingApplications: Boolean!
+	"total number of approved applications in the grant program"
+	numberOfApplicationsSelected: Int!
+	"total number of rejected applications in the grant program"
+	numberOfApplicationsRejected: Int!
+	"total number of applications awaiting resubmission in the grant program"
+	numberOfApplicationsAwaitingResubmission: Int!
+	"total number of pending applications in the grant program"
+	numberOfApplicationsPending: Int!
+	"metadata hash that is used to fetch the grant details"
+	metadataHash: String!
+	"in seconds since epoch"
+	createdAtS: Int!
+	"in seconds since epoch"
+	updatedAtS: Int
+	"Funding currently present in the grant"
+	funding: BigInt!
+	"Number of applications in the grant"
+	numberOfApplications: Int!
+	"List of applications for the grant"
+	applications: [GrantApplication!]! @derivedFrom(field: "grant")
+	"People who will manage the grant. They can see the PII submitted in an application"
+	managers: [GrantManager!]!
+	"List of fund transfer records for the grant"
+	fundTransfers: [FundsTransfer!]! @derivedFrom(field: "grant")
+	"Rubric for evaulating the grant"
+	rubric: Rubric
 }
 
 type GrantReviewerCounter @entity {
-  "ID of the entity, grantID . reviewerAddress"
-  id: ID!
-  "The grant itself"
-  grant: Grant!
-  "Address of the reviewer"
-  reviewerAddress: Bytes!
-  "total number of applications assigned in grant"
-  counter: Int!
-  "number of applications assigned, pending in the grant"
-  pendingCounter: Int!
-  "number of applications reviewed in the grant"
-  doneCounter: Int!
+	"ID of the entity, grantID . reviewerAddress"
+	id: ID!
+	"The grant itself"
+	grant: Grant!
+	"Address of the reviewer"
+	reviewerAddress: Bytes!
+	"total number of applications assigned in grant"
+	counter: Int!
+	"number of applications assigned, pending in the grant"
+	pendingCounter: Int!
+	"number of applications reviewed in the grant"
+	doneCounter: Int!
 }
 
 type GrantManager @entity {
-  "Globally unique ID of the member"
-  id: ID!
-  "Grant for which this entity is the manager"
-  grant: Grant!
-  "Workspace member"
-  member: WorkspaceMember
+	"Globally unique ID of the member"
+	id: ID!
+	"Grant for which this entity is the manager"
+	grant: Grant!
+	"Workspace member"
+	member: WorkspaceMember
 }
 
 type PIIData @entity {
-  id: ID!
-  "The encrypted data"
-  data: String!
+	id: ID!
+	"The encrypted data"
+	data: String!
 }
-type WorkspaceMember @entity {
-  "Globally unique ID of the member"
-  id: ID!
-  "the ID of the member itself"
-  actorId: Bytes!
-  "Full name of the user"
-  fullName: String
-  "Hash of profile picture on IPFS"
-  profilePictureIpfsHash: String
-  "PII data of the member"
-  pii: [PIIData!]!
-  "Encrypted email"
-  emailId: String
 
-  email: String
-  "What permissions the member has on the workspace"
-  accessLevel: WorkspaceMemberAccessLevel!
-  "Public key of the workspace member"
-  publicKey: String
-  "When the member was added"
-  addedAt: Int!
-  "Last update on member"
-  updatedAt: Int!
-  "An indicator if the person is an active part of the workspace or not"
-  enabled: Boolean!
-  "If the member was removed, when"
-  removedAt: Int
-  "Timestamp of when the last review was done"
-  lastReviewSubmittedAt: Int!
-  "The review IDs for which this member is owed a payment"
-  outstandingReviewIds: [String!]!
-  workspace: Workspace!
-  "Address of the workspace member who added this member"
-  addedBy: WorkspaceMember
-  "Last known hash of the TX made by this user"
-  lastKnownTxHash: Bytes!
+type PIICollection @entity {
+	id: ID!
+	"The encrypted data"
+	collection: [PIIData!]
+}
+
+type WorkspaceMember @entity {
+	"Globally unique ID of the member"
+	id: ID!
+	"the ID of the member itself"
+	actorId: Bytes!
+	"Full name of the user"
+	fullName: String
+	"Hash of profile picture on IPFS"
+	profilePictureIpfsHash: String
+	"PII data of the member"
+	pii: [PIIData!]!
+	"Encrypted email"
+	emailId: String
+
+	email: String
+	"What permissions the member has on the workspace"
+	accessLevel: WorkspaceMemberAccessLevel!
+	"Public key of the workspace member"
+	publicKey: String
+	"When the member was added"
+	addedAt: Int!
+	"Last update on member"
+	updatedAt: Int!
+	"An indicator if the person is an active part of the workspace or not"
+	enabled: Boolean!
+	"If the member was removed, when"
+	removedAt: Int
+	"Timestamp of when the last review was done"
+	lastReviewSubmittedAt: Int!
+	"The review IDs for which this member is owed a payment"
+	outstandingReviewIds: [String!]!
+	workspace: Workspace!
+	"Address of the workspace member who added this member"
+	addedBy: WorkspaceMember
+	"Last known hash of the TX made by this user"
+	lastKnownTxHash: Bytes!
 }
 
 "Schema for a Workspace or DAO"
 type Workspace @entity {
-  id: ID!
-  "Address of the owner of the workspace"
-  ownerId: Bytes!
-  "Title of the workspace"
-  title: String!
-  "Quick description of the workspace"
-  bio: String!
-  "General info about the workspace"
-  about: String!
-  "Whether the workspace is visible to users in the explore page"
-  isVisible: Boolean!
-  "Hash to fetch the logo"
-  logoIpfsHash: String!
-  "Cover image for the workspace"
-  coverImageIpfsHash: String
-  partners: [Partner!]!
-  "List of supported networks of the workspace"
-  supportedNetworks: [SupportedNetwork!]!
-  "in seconds since epoch"
-  createdAtS: Int!
-  "in seconds since epoch"
-  updatedAtS: Int!
-  "timestamp of when the latest grant was posted"
-  mostRecentGrantPostedAtS: Int!
-  "Members of the workspace"
-  members: [WorkspaceMember!]! @derivedFrom(field: "workspace")
-  "List of social media handles of the workspace"
-  socials: [Social!]!
-  "Hash of the IPFS file from which the details about the workspace were pulled"
-  metadataHash: String!
-  "Custom tokens setup by the workspace"
-  tokens: [Token!]! @derivedFrom(field: "workspace")
-  "Workpsace safe"
-  safe: WorkspaceSafe @derivedFrom(field: "workspace")
-  "List of grant addresses in the workspace"
-  grants: [String!]!
+	id: ID!
+	"Address of the owner of the workspace"
+	ownerId: Bytes!
+	"Title of the workspace"
+	title: String!
+	"Quick description of the workspace"
+	bio: String!
+	"General info about the workspace"
+	about: String!
+	"Whether the workspace is visible to users in the explore page"
+	isVisible: Boolean!
+	"Hash to fetch the logo"
+	logoIpfsHash: String!
+	"Cover image for the workspace"
+	coverImageIpfsHash: String
+	partners: [Partner!]!
+	"List of supported networks of the workspace"
+	supportedNetworks: [SupportedNetwork!]!
+	"in seconds since epoch"
+	createdAtS: Int!
+	"in seconds since epoch"
+	updatedAtS: Int!
+	"timestamp of when the latest grant was posted"
+	mostRecentGrantPostedAtS: Int!
+	"Members of the workspace"
+	members: [WorkspaceMember!]! @derivedFrom(field: "workspace")
+	"List of social media handles of the workspace"
+	socials: [Social!]!
+	"Hash of the IPFS file from which the details about the workspace were pulled"
+	metadataHash: String!
+	"Custom tokens setup by the workspace"
+	tokens: [Token!]! @derivedFrom(field: "workspace")
+	"Workpsace safe"
+	safe: WorkspaceSafe @derivedFrom(field: "workspace")
+	"List of grant addresses in the workspace"
+	grants: [String!]!
 }
 
 "the milestone of a grant application"
 type ApplicationMilestone @entity {
-  id: ID!
-  "The grant application this milestone belongs to"
-  application: GrantApplication!
-  "Current state of the milestone"
-  state: MilestoneState!
-  title: String!
-  "amount expected by applicant"
-  amount: BigInt!
-  "amount paid by DAO"
-  amountPaid: BigInt!
-  "in seconds since epoch"
-  updatedAtS: Int
-  "Feedback from the grant DAO manager/applicant"
-  feedbackDao: String
-  "Time in epoch when the feedback was submitted by the admin"
-  feedbackDaoUpdatedAtS: Int
-  "Feedback from the developer"
-  feedbackDev: String
-  "Time in epoch when the feedback was submitted by the applicant"
-  feedbackDevUpdatedAtS: Int
+	id: ID!
+	"The grant application this milestone belongs to"
+	application: GrantApplication!
+	"Current state of the milestone"
+	state: MilestoneState!
+	title: String!
+	"amount expected by applicant"
+	amount: BigInt!
+	"amount paid by DAO"
+	amountPaid: BigInt!
+	"in seconds since epoch"
+	updatedAtS: Int
+	"Feedback from the grant DAO manager/applicant"
+	feedbackDao: String
+	"Time in epoch when the feedback was submitted by the admin"
+	feedbackDaoUpdatedAtS: Int
+	"Feedback from the developer"
+	feedbackDev: String
+	"Time in epoch when the feedback was submitted by the applicant"
+	feedbackDevUpdatedAtS: Int
 }
 
 type PIIAnswer @entity {
-  id: ID!
-  "Grant manager who can access this encrypted info"
-  manager: GrantManager
-  "The encrypted data"
-  data: String!
+	id: ID!
+	"Grant manager who can access this encrypted info"
+	manager: GrantManager
+	"The encrypted data"
+	data: String!
 }
 
 type GrantApplicationReviewer @entity {
-  id: ID!
-  "The member who was assigned"
-  member: WorkspaceMember!
-  "Unix timestamp of when the user was assigned"
-  assignedAtS: Int!
+	id: ID!
+	"The member who was assigned"
+	member: WorkspaceMember!
+	"Unix timestamp of when the user was assigned"
+	assignedAtS: Int!
 }
 
 type QBAdmin @entity {
-  id: ID!
-  "Address of the admin"
-  walletAddress: Bytes!
-  "When the admin was added"
-  addedAt: Int!
+	id: ID!
+	"Address of the admin"
+	walletAddress: Bytes!
+	"When the admin was added"
+	addedAt: Int!
 }
 
 type ApplicationAction @entity {
-  id: ID!
-  updatedAtS: Int!
-  updatedBy: Bytes!
-  application: GrantApplication!
-  state: ApplicationState!
-  feedback: String
+	id: ID!
+	updatedAtS: Int!
+	updatedBy: Bytes!
+	application: GrantApplication!
+	state: ApplicationState!
+	feedback: String
 }
 type Claim @entity {
-  id: ID!
-  link: String!
-  title: String!
+	id: ID!
+	link: String!
+	title: String!
 }
 type GrantApplication @entity {
-  id: ID!
-  "The grant for which the application is for"
-  grant: Grant!
-  "Address of the applicant"
-  applicantId: Bytes!
-  "Public key of the applicant, used for PII"
-  applicantPublicKey: String
-  "Current state of the application"
-  state: ApplicationState!
-  "Answers to the fields requested in the grant"
-  fields: [GrantFieldAnswer!]!
-  "PII Data"
-  pii: [PIIAnswer!]!
-  "in seconds since epoch"
-  createdAtS: Int!
-  "in seconds since epoch"
-  updatedAtS: Int!
-  "Actions taken on an application"
-  actions: [ApplicationAction!] @derivedFrom(field: "application")
-  "Milestones of the application"
-  milestones: [ApplicationMilestone!]!
-  "Feedback from the grant DAO manager/applicant"
-  feedbackDao: String
-  "Feedback from the developer"
-  feedbackDev: String
-  "Reviews of the application"
-  reviews: [Review!]! @derivedFrom(field: "application")
-  "@deprecated (use 'applicationReviewers') People who will review the grant application"
-  reviewers: [WorkspaceMember!]!
-  "Addresses of the assigned reviewers who are yet to review"
-  pendingReviewerAddresses: [Bytes!]!
-  "Addresses of the assigned reviewers who have reviewed"
-  doneReviewerAddresses: [Bytes!]!
-  "People who will review this grant application"
-  applicationReviewers: [GrantApplicationReviewer!]!
-  "IPFS hash of the comments on the application"
-  comments: [Comment!] @derivedFrom(field: "application")
-  "Wallet Address of the applicant"
-  walletAddress: Bytes!
-  "Version of the application, incremented on resubmission"
-  version: Int!
-  claims: [Claim!]
+	id: ID!
+	"The grant for which the application is for"
+	grant: Grant!
+	"Address of the applicant"
+	applicantId: Bytes!
+	"Public key of the applicant, used for PII"
+	applicantPublicKey: String
+	"Current state of the application"
+	state: ApplicationState!
+	"Answers to the fields requested in the grant"
+	fields: [GrantFieldAnswer!]!
+	"PII Data"
+	pii: [PIIAnswer!]!
+	"in seconds since epoch"
+	createdAtS: Int!
+	"in seconds since epoch"
+	updatedAtS: Int!
+	"Actions taken on an application"
+	actions: [ApplicationAction!] @derivedFrom(field: "application")
+	"Milestones of the application"
+	milestones: [ApplicationMilestone!]!
+	"Feedback from the grant DAO manager/applicant"
+	feedbackDao: String
+	"Feedback from the developer"
+	feedbackDev: String
+	"Reviews of the application"
+	reviews: [Review!]! @derivedFrom(field: "application")
+	"@deprecated (use 'applicationReviewers') People who will review the grant application"
+	reviewers: [WorkspaceMember!]!
+	"Addresses of the assigned reviewers who are yet to review"
+	pendingReviewerAddresses: [Bytes!]!
+	"Addresses of the assigned reviewers who have reviewed"
+	doneReviewerAddresses: [Bytes!]!
+	"People who will review this grant application"
+	applicationReviewers: [GrantApplicationReviewer!]!
+	"IPFS hash of the comments on the application"
+	comments: [Comment!] @derivedFrom(field: "application")
+	"Wallet Address of the applicant"
+	walletAddress: Bytes!
+	"Version of the application, incremented on resubmission"
+	version: Int!
+	claims: [Claim!]
 }
 
 "A revision after an update"
 type GrantApplicationRevision @entity {
-  id: ID!
+	id: ID!
 
-  application: GrantApplication!
-  "Who caused the update to create the revision"
-  actorId: Bytes!
-  "The state that was set in the revision"
-  state: ApplicationState!
-  "Answers to the fields requested in the grant"
-  fields: [GrantFieldAnswer!]!
-  "Milestones of the application"
-  milestones: [ApplicationMilestone!]!
-  "in seconds since epoch, when was this revision created"
-  createdAtS: Int!
-  "Feedback from the grant DAO manager/applicant"
-  feedbackDao: String
-  "Feedback from the developer"
-  feedbackDev: String
-  "Version number of the grant application"
-  version: Int!
+	application: GrantApplication!
+	"Who caused the update to create the revision"
+	actorId: Bytes!
+	"The state that was set in the revision"
+	state: ApplicationState!
+	"Answers to the fields requested in the grant"
+	fields: [GrantFieldAnswer!]!
+	"Milestones of the application"
+	milestones: [ApplicationMilestone!]!
+	"in seconds since epoch, when was this revision created"
+	createdAtS: Int!
+	"Feedback from the grant DAO manager/applicant"
+	feedbackDao: String
+	"Feedback from the developer"
+	feedbackDev: String
+	"Version number of the grant application"
+	version: Int!
 }
 
 type FundsTransfer @entity {
-  id: ID!
-  "Application for which the funds were released"
-  application: GrantApplication
-  "Milestone for which the funds were released"
-  milestone: ApplicationMilestone
-  "Reviw for which the payment was done"
-  review: Review
-  "Which grant were the funds transferred to/from"
-  grant: Grant!
-  "How much of the funds were allocated"
-  amount: BigInt!
-  "Address of who released the funds"
-  sender: Bytes!
-  "The address to which funds were sent"
-  to: Bytes!
-  "in seconds since epoch"
-  createdAtS: Int!
-  "What the type of funds transfer is"
-  type: FundsTransferType!
-  "Asset that was used in the funds transfer"
-  asset: Bytes!
-  nonEvmAsset: String
-  "Hash/signature of the transaction"
-  transactionHash: String
-  status: FundsTransferStatusType!
-  "Token name"
-  tokenName: String
-  "Token amount transferred value in USD"
-  tokenUSDValue: BigInt
-  "Funds transfer execution timestamp"
-  executionTimestamp: Int
+	id: ID!
+	"Application for which the funds were released"
+	application: GrantApplication
+	"Milestone for which the funds were released"
+	milestone: ApplicationMilestone
+	"Reviw for which the payment was done"
+	review: Review
+	"Which grant were the funds transferred to/from"
+	grant: Grant!
+	"How much of the funds were allocated"
+	amount: BigInt!
+	"Address of who released the funds"
+	sender: Bytes!
+	"The address to which funds were sent"
+	to: Bytes!
+	"in seconds since epoch"
+	createdAtS: Int!
+	"What the type of funds transfer is"
+	type: FundsTransferType!
+	"Asset that was used in the funds transfer"
+	asset: Bytes!
+	nonEvmAsset: String
+	"Hash/signature of the transaction"
+	transactionHash: String
+	status: FundsTransferStatusType!
+	"Token name"
+	tokenName: String
+	"Token amount transferred value in USD"
+	tokenUSDValue: BigInt
+	"Funds transfer execution timestamp"
+	executionTimestamp: Int
 }
 
 type Notification @entity {
-  id: ID!
-  "title of the notification"
-  title: String!
-  "rich content of the notification"
-  content: String!
+	id: ID!
+	"title of the notification"
+	title: String!
+	"rich content of the notification"
+	content: String!
 
-  type: NotificationType!
-  "The IDs of the entity being affected"
-  entityIds: [String!]!
-  "Who all should recv the notification"
-  recipientIds: [Bytes!]!
-  "Who caused the notification to be sent"
-  actorId: Bytes
-  "Descending order of cursor"
-  cursor: Int!
+	type: NotificationType!
+	"The IDs of the entity being affected"
+	entityIds: [String!]!
+	"Who all should recv the notification"
+	recipientIds: [Bytes!]!
+	"Who caused the notification to be sent"
+	actorId: Bytes
+	"Descending order of cursor"
+	cursor: Int!
 }
 
 type Migration @entity {
-  id: ID!
-  "The wallet that initiated the migration"
-  fromWallet: Bytes!
-  "The wallet to which the migration was done"
-  toWallet: Bytes!
-  "The type of migration that took place"
-  type: MigrationType!
-  "This is null if type !== WorkspaceMemberMigrate"
-  workspace: Workspace
-  "This is null if type !== ApplicationMigrate"
-  application: GrantApplication
-  "This is null if type !== ReviewrMigrate"
-  review: Review
-  "The hash of the transaction that caused the migration"
-  transactionHash: String!
-  "in seconds since epoch"
-  timestamp: Int!
+	id: ID!
+	"The wallet that initiated the migration"
+	fromWallet: Bytes!
+	"The wallet to which the migration was done"
+	toWallet: Bytes!
+	"The type of migration that took place"
+	type: MigrationType!
+	"This is null if type !== WorkspaceMemberMigrate"
+	workspace: Workspace
+	"This is null if type !== ApplicationMigrate"
+	application: GrantApplication
+	"This is null if type !== ReviewrMigrate"
+	review: Review
+	"The hash of the transaction that caused the migration"
+	transactionHash: String!
+	"in seconds since epoch"
+	timestamp: Int!
 }

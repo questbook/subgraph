@@ -1,4 +1,6 @@
 specVersion: 0.0.2
+features:
+  - ipfsOnEthereumContracts
 schema:
   file: ./schema.graphql
 dataSources:
@@ -197,3 +199,16 @@ templates:
           handler: handleTransactionRecord
         - event: GrantUpdated(indexed uint96,string,bool,uint256)
           handler: handleGrantUpdated
+  - name: PIICollection
+    kind: file/ipfs
+    mapping:
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/metadata-mapping.ts
+      handler: handlePIICollection
+      entities:
+        - PIICollection
+        - PIIData
+      abis: # Note: the abis is irrelevant for file data sources
+        - name: QBCommunicationContract
+          file: ./abis/QBCommunicationContract.json

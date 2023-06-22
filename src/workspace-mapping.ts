@@ -85,8 +85,10 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	member.lastKnownTxHash = event.transaction.hash
 	member.enabled = true
 
+	log.info(`workspace created: ${entityId}`, [])
 	member.save()
 	entity.save()
+	log.info(`workspace saved: ${entityId}`, [])
 }
 
 export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {

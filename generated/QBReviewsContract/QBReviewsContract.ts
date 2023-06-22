@@ -362,6 +362,26 @@ export class QBReviewsContract__grantReviewStatesResult {
     map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
     return map;
   }
+
+  getGrant(): Address {
+    return this.value0;
+  }
+
+  getWorkspaceId(): BigInt {
+    return this.value1;
+  }
+
+  getNumOfReviews(): BigInt {
+    return this.value2;
+  }
+
+  getRubricsMetadataHash(): string {
+    return this.value3;
+  }
+
+  getNumOfReviewersPerApplication(): BigInt {
+    return this.value4;
+  }
 }
 
 export class QBReviewsContract__reviewsResult {
@@ -401,6 +421,34 @@ export class QBReviewsContract__reviewsResult {
     map.set("value5", ethereum.Value.fromString(this.value5));
     map.set("value6", ethereum.Value.fromBoolean(this.value6));
     return map;
+  }
+
+  getId(): BigInt {
+    return this.value0;
+  }
+
+  getWorkspaceId(): BigInt {
+    return this.value1;
+  }
+
+  getApplicationId(): BigInt {
+    return this.value2;
+  }
+
+  getGrant(): Address {
+    return this.value3;
+  }
+
+  getReviewer(): Address {
+    return this.value4;
+  }
+
+  getMetadataHash(): string {
+    return this.value5;
+  }
+
+  getActive(): boolean {
+    return this.value6;
   }
 }
 
