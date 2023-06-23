@@ -34,7 +34,7 @@ export function handleCommentAdded(event: CommentAdded): void {
 		// this mechanism exists to prevent IPFS calls while testing
 		// since IPFS is not supported on matchstick as of now
 		if(commentMetadataHash.slice(0, 5) == 'json:') {
-
+			// in fact IPFS won't be polled here because the metadatahash is bytes (see `validatedJsonFromIpfs`)
 			const result = validatedJsonFromIpfs<PrivateCommentAddRequest>(commentMetadataHash, validatePrivateCommentAddRequest)
 	
 			if(result) {
