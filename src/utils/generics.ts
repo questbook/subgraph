@@ -350,6 +350,8 @@ export function mapWorkspaceMembersUpdate(
 				member.addedAt = entity.updatedAtS
 				member.lastReviewSubmittedAt = 0
 				member.outstandingReviewIds = []
+				member.pii = []
+				member.accessLevel = 'member'
 			}
 
 			member.enabled = true
@@ -392,7 +394,7 @@ export function mapWorkspaceMembersUpdate(
 				}
 			} else if(role == 1) { // become a reviewer
 				member.accessLevel = 'reviewer'
-			}
+			} 
 
 			member.workspace = workspaceId
 			member.addedBy = `${workspaceId}.${addedBy.toHex()}`

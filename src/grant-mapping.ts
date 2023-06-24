@@ -35,6 +35,8 @@ export function handleGrantCreated(event: GrantCreated): void {
 
 	if(json.summary) {
 		entity.summary = json.summary!
+	} else {
+		entity.summary = ''
 	}
 
 	const reward = mapGrantRewardAndListen(entity.id, workspaceId, json.reward)
@@ -62,6 +64,8 @@ export function handleGrantCreated(event: GrantCreated): void {
 
 	if(json.details) {
 		entity.details = json.details!
+	} else {
+		entity.details = ''
 	}
 
 	if(json.link) {

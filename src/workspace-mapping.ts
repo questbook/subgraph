@@ -53,6 +53,8 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.about = json.about
 	if(json.bio) {
 		entity.bio = json.bio!
+	} else {
+		entity.bio = ''
 	}
 
 	entity.logoIpfsHash = json.logoIpfsHash
@@ -80,12 +82,12 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	member.addedAt = entity.createdAtS
 	member.updatedAt = entity.updatedAtS
 	member.outstandingReviewIds = []
+	member.pii = []
 	member.lastReviewSubmittedAt = 0
 	member.addedBy = member.id
 	member.lastKnownTxHash = event.transaction.hash
 	member.enabled = true
 
-	log.info(`workspace created: ${entityId}`, [])
 	member.save()
 	entity.save()
 	log.info(`workspace saved: ${entityId}`, [])
