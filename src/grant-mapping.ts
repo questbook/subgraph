@@ -145,6 +145,7 @@ export function handleTransactionRecord(event: TransactionRecord): void {
 	const milestoneId = `${applicationId}.${milestoneIndex}`
 	const transactionHash = event.params.transactionHash
 	const amountPaid = event.params.amount
+	const asset = event.params.asset
 
 	const application = GrantApplication.load(applicationId)
 	if(!application) {
@@ -155,6 +156,7 @@ export function handleTransactionRecord(event: TransactionRecord): void {
 	const disburseEntity = new FundsTransfer(event.transaction.hash.toHex())
 	disburseEntity.createdAtS = event.params.time.toI32()
 	disburseEntity.amount = amountPaid
+	disburseEntity.asset = asset
 	disburseEntity.sender = event.params.sender
 	disburseEntity.to = application.applicantId
 	disburseEntity.application = applicationId
