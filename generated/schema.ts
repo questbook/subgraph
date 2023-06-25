@@ -2320,6 +2320,158 @@ export class WorkspaceMember extends Entity {
   }
 }
 
+export class WorkspaceMetadata extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save WorkspaceMetadata entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type WorkspaceMetadata must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("WorkspaceMetadata", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): WorkspaceMetadata | null {
+    return changetype<WorkspaceMetadata | null>(
+      store.get_in_block("WorkspaceMetadata", id)
+    );
+  }
+
+  static load(id: string): WorkspaceMetadata | null {
+    return changetype<WorkspaceMetadata | null>(
+      store.get("WorkspaceMetadata", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get title(): string {
+    let value = this.get("title");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set title(value: string) {
+    this.set("title", Value.fromString(value));
+  }
+
+  get about(): string {
+    let value = this.get("about");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set about(value: string) {
+    this.set("about", Value.fromString(value));
+  }
+
+  get bio(): string {
+    let value = this.get("bio");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set bio(value: string) {
+    this.set("bio", Value.fromString(value));
+  }
+
+  get logoIpfsHash(): string {
+    let value = this.get("logoIpfsHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set logoIpfsHash(value: string) {
+    this.set("logoIpfsHash", Value.fromString(value));
+  }
+
+  get coverImageIpfsHash(): string | null {
+    let value = this.get("coverImageIpfsHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set coverImageIpfsHash(value: string | null) {
+    if (!value) {
+      this.unset("coverImageIpfsHash");
+    } else {
+      this.set("coverImageIpfsHash", Value.fromString(<string>value));
+    }
+  }
+
+  get partners(): Array<string> {
+    let value = this.get("partners");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set partners(value: Array<string>) {
+    this.set("partners", Value.fromStringArray(value));
+  }
+
+  get supportedNetworks(): Array<string> {
+    let value = this.get("supportedNetworks");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set supportedNetworks(value: Array<string>) {
+    this.set("supportedNetworks", Value.fromStringArray(value));
+  }
+
+  get socials(): Array<string> {
+    let value = this.get("socials");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set socials(value: Array<string>) {
+    this.set("socials", Value.fromStringArray(value));
+  }
+}
+
 export class Workspace extends Entity {
   constructor(id: string) {
     super();
@@ -2576,6 +2728,23 @@ export class Workspace extends Entity {
 
   set grants(value: Array<string>) {
     this.set("grants", Value.fromStringArray(value));
+  }
+
+  get workspacemMetadata(): string | null {
+    let value = this.get("workspacemMetadata");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set workspacemMetadata(value: string | null) {
+    if (!value) {
+      this.unset("workspacemMetadata");
+    } else {
+      this.set("workspacemMetadata", Value.fromString(<string>value));
+    }
   }
 }
 

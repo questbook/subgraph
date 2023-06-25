@@ -1,4 +1,4 @@
-import { BigInt, log, store } from '@graphprotocol/graph-ts'
+import { BigInt, DataSourceContext, log, store } from '@graphprotocol/graph-ts'
 import {
 	DisburseRewardFromSafe,
 	DisburseRewardFromSafe1,
@@ -15,6 +15,7 @@ import {
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
+import { WorkspaceMetadata as WorkspaceMetadataTemplate } from '../generated/templates'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -73,6 +74,11 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.isVisible = true
 	entity.mostRecentGrantPostedAtS = 0
 	entity.grants = []
+
+	entity.workspacemMetadata = event.params.metadataHash
+	const context = new DataSourceContext()
+	context.setString('workspaceId', entityId)
+	WorkspaceMetadataTemplate.createWithContext(event.params.metadataHash, context)
 
 	const member = new WorkspaceMember(`${entityId}.${event.params.owner.toHex()}`)
 	member.actorId = event.params.owner

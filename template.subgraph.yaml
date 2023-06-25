@@ -212,3 +212,18 @@ templates:
       abis: # Note: the abis is irrelevant for file data sources
         - name: QBCommunicationContract
           file: ./abis/QBCommunicationContract.json
+  - name: WorkspaceMetadata
+    kind: file/ipfs
+    mapping:
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/metadata-mapping.ts
+      handler: handleWorkspaceMetadata
+      entities:
+        - WorkspaceMetadata
+        - Partner
+        - SupportedNetwork
+        - Social
+      abis: # Note: the abis is irrelevant for file data sources
+        - name: QBWorkspaceRegistryContract
+          file: ./abis/QBWorkspaceRegistryContract.json

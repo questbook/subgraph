@@ -353,6 +353,25 @@ type WorkspaceMember @entity {
 	lastKnownTxHash: Bytes!
 }
 
+type WorkspaceMetadata @entity {
+	id: ID!
+	"Title of the workspace"
+	title: String!
+	"General info about the workspace"
+	about: String!
+	"Quick description of the workspace"
+	bio: String!
+	"Hash to fetch the logo"
+	logoIpfsHash: String!
+	"Cover image for the workspace"
+	coverImageIpfsHash: String
+	partners: [Partner!]!
+	"List of supported networks of the workspace"
+	supportedNetworks: [SupportedNetwork!]!
+	"List of social media handles of the workspace"
+	socials: [Social!]!
+}
+
 "Schema for a Workspace or DAO"
 type Workspace @entity {
 	id: ID!
@@ -391,6 +410,7 @@ type Workspace @entity {
 	safe: WorkspaceSafe @derivedFrom(field: "workspace")
 	"List of grant addresses in the workspace"
 	grants: [String!]!
+	workspacemMetadata: WorkspaceMetadata
 }
 
 "the milestone of a grant application"

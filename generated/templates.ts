@@ -29,3 +29,13 @@ export class PIICollection extends DataSourceTemplate {
     DataSourceTemplate.createWithContext("PIICollection", [cid], context);
   }
 }
+
+export class WorkspaceMetadata extends DataSourceTemplate {
+  static create(cid: string): void {
+    DataSourceTemplate.create("WorkspaceMetadata", [cid]);
+  }
+
+  static createWithContext(cid: string, context: DataSourceContext): void {
+    DataSourceTemplate.createWithContext("WorkspaceMetadata", [cid], context);
+  }
+}
