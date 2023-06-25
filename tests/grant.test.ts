@@ -45,7 +45,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 		]
 
-		const event = new GrantCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new GrantCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleGrantCreated(event)
 
 		const g = Grant.load(FAIL_GRANT_ID.toHex())
@@ -65,7 +65,7 @@ export function runTests(): void {
 			new ethereum.EventParam('time', ethereum.Value.fromI32(123)),
 		]
 
-		const event = new GrantCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new GrantCreated(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleGrantCreated(event)
 
 		const g = Grant.load(GRANT_ID.toHex())
@@ -87,7 +87,7 @@ export function runTests(): void {
 		ev.transaction.to = MOCK_GRANT_ID
 		ev.transaction.hash = Bytes.fromByteArray(Bytes.fromHexString('0xC13081F360e3847006dB660bae1c6d1b2e17eC2C'))
 
-		const event = new FundsWithdrawn(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new FundsWithdrawn(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleFundsWithdrawn(event)
 
 		const gUpdate = Grant.load(g!.id)
@@ -125,7 +125,7 @@ export function runTests(): void {
 		]
 		ev.transaction.to = MOCK_GRANT_ID
 
-		const event = new GrantUpdatedFromFactory(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new GrantUpdatedFromFactory(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleGrantUpdatedFromFactory(event)
 
 		const gUpdate = Grant.load(g!.id)
@@ -159,7 +159,7 @@ export function runTests(): void {
 		]
 		ev.transaction.to = MOCK_GRANT_ID
 
-		const event = new GrantUpdatedFromFactory(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new GrantUpdatedFromFactory(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleGrantUpdatedFromFactory(event)
 
 		const gUpdate = Grant.load(g!.id)
@@ -193,7 +193,7 @@ export function runTests(): void {
 		]
 		ev.transaction.to = MOCK_GRANT_ID
 
-		const event = new GrantUpdatedFromFactory(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters)
+		const event = new GrantUpdatedFromFactory(ev.address, ev.logIndex, ev.transactionLogIndex, ev.logType, ev.block, ev.transaction, ev.parameters, ev.receipt)
 		handleGrantUpdatedFromFactory(event)
 
 		const gUpdate = Grant.load(g!.id)
