@@ -59,6 +59,7 @@ export function handleCommentAdded(event: CommentAdded): void {
 				}
 			}
 		} else {
+			commentEntity.commentsEncryptedDataCollection = commentMetadataHash
 			const context = new DataSourceContext()
 			context.setString('transactionHashHex', event.transaction.hash.toHex())
 			context.setString('applicationId', applicationId)
