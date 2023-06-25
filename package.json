@@ -9,7 +9,7 @@
     "test": "graph test",
     "prepare-subgraph": "mustache config/$NETWORK.json template.subgraph.yaml > subgraph.yaml",
     "create-subgraph": "graph create --node $GRAPH_NODE qb-subgraph-$NETWORK",
-    "deploy-subgraph": "yarn prepare-subgraph && graph deploy --node $GRAPH_NODE --ipfs https://api.thegraph.com/ipfs/ qb-subgraph-$NETWORK",
+    "deploy-subgraph": "yarn prepare-subgraph && graph deploy --node $GRAPH_NODE --ipfs https://ipfs.questbook.app qb-subgraph-$NETWORK",
     "remove-subgraph": "graph remove --node $GRAPH_NODE qb-subgraph-$NETWORK",
     "deploy:all": "node scripts/deploy",
     "deploy:undeployed": "node scripts/deploy-undeployed-networks",
@@ -19,16 +19,16 @@
   "dependencies": {
     "@graphprotocol/graph-cli": "0.51.1",
     "@graphprotocol/graph-ts": "0.31.0",
-    "dotenv": "^16.0.3",
-    "ethers": "^6.3.0",
-    "winston": "^3.8.2"
   },
   "devDependencies": {
+    "@celo-tools/celo-ethers-wrapper": "^0.4.0",
     "@creatoros/eslint-config": "git+https://github.com/creatoros/eslint-config",
     "@questbook/graph-json-validator": "git+https://github.com/questbook/graph-json-validator",
     "axios": "^0.27.2",
+    "dotenv": "^16.2.0",
     "eslint": "^7.14.0",
-    "matchstick-as": "^0.2.3",
+    "ethers": "^5.7.2",
+    "matchstick-as": "^0.5.2",
     "mustache": "^4.2.0",
     "typescript": "^4.6.4"
   }

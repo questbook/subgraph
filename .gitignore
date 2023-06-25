@@ -5,3 +5,5 @@ build
 subgraph.yaml
 
 .env.production
+.env
+temp-hash-list*
