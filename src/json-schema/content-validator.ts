@@ -4,7 +4,7 @@ import { Result } from './json'
 /// Validate a Bytes object using a given function
 export function validatedContent<T>(content: Bytes, mapFunction: (json: JSONValue) => Result<T>): Result<T> {
 	if(!content) {
-		log.warning(`The content for is empty`, [])
+		log.warning(`The content is empty`, [])
 		return { value: null, error: 'File not found' }
 	}
 
