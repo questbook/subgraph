@@ -54,8 +54,6 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	entity.about = json.about
 	if(json.bio) {
 		entity.bio = json.bio!
-	} else {
-		entity.bio = ''
 	}
 
 	entity.logoIpfsHash = json.logoIpfsHash

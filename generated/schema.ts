@@ -1327,30 +1327,38 @@ export class Grant extends Entity {
     this.set("title", Value.fromString(value));
   }
 
-  get summary(): string {
+  get summary(): string | null {
     let value = this.get("summary");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return null;
     } else {
       return value.toString();
     }
   }
 
-  set summary(value: string) {
-    this.set("summary", Value.fromString(value));
+  set summary(value: string | null) {
+    if (!value) {
+      this.unset("summary");
+    } else {
+      this.set("summary", Value.fromString(<string>value));
+    }
   }
 
-  get details(): string {
+  get details(): string | null {
     let value = this.get("details");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return null;
     } else {
       return value.toString();
     }
   }
 
-  set details(value: string) {
-    this.set("details", Value.fromString(value));
+  set details(value: string | null) {
+    if (!value) {
+      this.unset("details");
+    } else {
+      this.set("details", Value.fromString(<string>value));
+    }
   }
 
   get reward(): string {
@@ -2389,17 +2397,21 @@ export class WorkspaceMetadata extends Entity {
     this.set("about", Value.fromString(value));
   }
 
-  get bio(): string {
+  get bio(): string | null {
     let value = this.get("bio");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return null;
     } else {
       return value.toString();
     }
   }
 
-  set bio(value: string) {
-    this.set("bio", Value.fromString(value));
+  set bio(value: string | null) {
+    if (!value) {
+      this.unset("bio");
+    } else {
+      this.set("bio", Value.fromString(<string>value));
+    }
   }
 
   get logoIpfsHash(): string {
@@ -2537,17 +2549,21 @@ export class Workspace extends Entity {
     this.set("title", Value.fromString(value));
   }
 
-  get bio(): string {
+  get bio(): string | null {
     let value = this.get("bio");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return null;
     } else {
       return value.toString();
     }
   }
 
-  set bio(value: string) {
-    this.set("bio", Value.fromString(value));
+  set bio(value: string | null) {
+    if (!value) {
+      this.unset("bio");
+    } else {
+      this.set("bio", Value.fromString(<string>value));
+    }
   }
 
   get about(): string {

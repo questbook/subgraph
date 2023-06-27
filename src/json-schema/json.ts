@@ -1,10 +1,4 @@
 import { BigDecimal, BigInt, Bytes, ipfs, json, JSONValue, JSONValueKind, log, TypedMap } from '@graphprotocol/graph-ts'
-// import { config } from 'dotenv';
-
-// config({ path: '.env.production' })
-
-// const infuraIpfsProjectId = process.env.INFURA_IPFS_PROJECT_ID || ''
-// const infuraIpfsApiKey = process.env.INFURA_IPFS_API_KEY || ''
 
 /** Generic result structure to catch successful & errorred results */
 export class Result<T> {
@@ -248,25 +242,6 @@ export function validatedJsonFromIpfs<T>(hash: string, mapFunction: (json: JSONV
 	}
 
 	const jsonDataResult = json.try_fromBytes(data)
-	if(!jsonDataResult.isOk) {
-		return { value: null, error: 'Invalid JSON' }
-	}
-
-	if(!jsonDataResult.value) {
-		return { value: null, error: 'Null JSON' }
-	}
-
-	return mapFunction(jsonDataResult.value)
-}
-
-/// Validate a Bytes object using a given function
-export function validatedContent<T>(content: Bytes, mapFunction: (json: JSONValue) => Result<T>): Result<T> {
-	if(!content) {
-		log.warning(`The content for is empty`, [])
-		return { value: null, error: 'File not found' }
-	}
-
-	const jsonDataResult = json.try_fromBytes(content)
 	if(!jsonDataResult.isOk) {
 		return { value: null, error: 'Invalid JSON' }
 	}

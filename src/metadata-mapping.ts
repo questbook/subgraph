@@ -1,6 +1,6 @@
 import { Bytes, dataSource, log } from '@graphprotocol/graph-ts'
 import { PIICollection, PIIData, WorkspaceMetadata } from '../generated/schema'
-import { validatedContent } from './json-schema/json'
+import { validatedContent } from './json-schema/content-validator'
 import { mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks } from './utils/generics'
 import { PrivateCommentAddRequest, validatePrivateCommentAddRequest, validateWorkspaceCreateRequest, WorkspaceCreateRequest } from './json-schema'
 
@@ -47,6 +47,7 @@ export function handlePIICollection(content: Bytes): void {
 }
 
 export function handleWorkspaceMetadata(content: Bytes): void {
+	log.info(`File data source for workspace metadata found at ${dataSource.stringParam()}`, [])
 	const hash = dataSource.stringParam()
 	const workspaceMetadataEntity = new WorkspaceMetadata(hash)
 
@@ -59,9 +60,7 @@ export function handleWorkspaceMetadata(content: Bytes): void {
 		workspaceMetadataEntity.about = json.about
 		if(json.bio) {
 			workspaceMetadataEntity.bio = json.bio!
-		} else {
-			workspaceMetadataEntity.bio = ''
-		}
+		} 
 
 		workspaceMetadataEntity.logoIpfsHash = json.logoIpfsHash
 		workspaceMetadataEntity.coverImageIpfsHash = json.coverImageIpfsHash

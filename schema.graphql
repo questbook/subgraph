@@ -218,9 +218,9 @@ type Grant @entity {
 	creatorId: Bytes!
 	title: String!
 	"Short description of the grant"
-	summary: String!
+	summary: String
 	"Expectations & other details of the grant"
-	details: String!
+	details: String
 	"Proposed reward for the grant"
 	reward: Reward!
 	"total grant funding committed in USD"
@@ -360,7 +360,7 @@ type WorkspaceMetadata @entity {
 	"General info about the workspace"
 	about: String!
 	"Quick description of the workspace"
-	bio: String!
+	bio: String
 	"Hash to fetch the logo"
 	logoIpfsHash: String!
 	"Cover image for the workspace"
@@ -380,7 +380,7 @@ type Workspace @entity {
 	"Title of the workspace"
 	title: String!
 	"Quick description of the workspace"
-	bio: String!
+	bio: String
 	"General info about the workspace"
 	about: String!
 	"Whether the workspace is visible to users in the explore page"
