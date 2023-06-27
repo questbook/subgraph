@@ -15,7 +15,7 @@ import {
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
-import { WorkspaceMetadata as WorkspaceMetadataTemplate } from '../generated/templates'
+import { WorkspaceMemberMetadata as WorkspaceMemberMetadataTemplate, WorkspaceMetadata as WorkspaceMetadataTemplate } from '../generated/templates'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -91,6 +91,8 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	member.addedBy = member.id
 	member.lastKnownTxHash = event.transaction.hash
 	member.enabled = true
+	member.workspaceMemberMetadata = event.params.metadataHash
+	WorkspaceMemberMetadataTemplate.create(event.params.metadataHash)
 
 	member.save()
 	entity.save()

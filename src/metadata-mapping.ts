@@ -1,5 +1,5 @@
 import { Bytes, dataSource, log } from '@graphprotocol/graph-ts'
-import { PIICollection, PIIData, WorkspaceMetadata } from '../generated/schema'
+import { PIICollection, PIIData, WorkspaceMemberMetadata, WorkspaceMetadata } from '../generated/schema'
 import { validatedContent } from './json-schema/content-validator'
 import { mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks } from './utils/generics'
 import { PrivateCommentAddRequest, validatePrivateCommentAddRequest, validateWorkspaceCreateRequest, WorkspaceCreateRequest } from './json-schema'
@@ -75,4 +75,18 @@ export function handleWorkspaceMetadata(content: Bytes): void {
 
 		workspaceMetadataEntity.save()
 	}
+}
+
+export function handleWorkspaceMemberMetadata(content: Bytes): void {
+	log.info(`File data source for workspace member metadata found at ${dataSource.stringParam()}`, [])
+	const hash = dataSource.stringParam()
+	const workspaceMemberMetadataEntity = new WorkspaceMemberMetadata(hash)
+
+	const result = validatedContent<WorkspaceCreateRequest>(content, validateWorkspaceCreateRequest)
+	const json = result.value
+	if(json) {
+		workspaceMemberMetadataEntity.publicKey = json.creatorPublicKey
+	}
+
+	workspaceMemberMetadataEntity.save()
 }

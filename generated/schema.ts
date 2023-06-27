@@ -2041,6 +2041,70 @@ export class PIICollection extends Entity {
   }
 }
 
+export class WorkspaceMemberMetadata extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save WorkspaceMemberMetadata entity without an ID"
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type WorkspaceMemberMetadata must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("WorkspaceMemberMetadata", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): WorkspaceMemberMetadata | null {
+    return changetype<WorkspaceMemberMetadata | null>(
+      store.get_in_block("WorkspaceMemberMetadata", id)
+    );
+  }
+
+  static load(id: string): WorkspaceMemberMetadata | null {
+    return changetype<WorkspaceMemberMetadata | null>(
+      store.get("WorkspaceMemberMetadata", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get publicKey(): string | null {
+    let value = this.get("publicKey");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set publicKey(value: string | null) {
+    if (!value) {
+      this.unset("publicKey");
+    } else {
+      this.set("publicKey", Value.fromString(<string>value));
+    }
+  }
+}
+
 export class WorkspaceMember extends Entity {
   constructor(id: string) {
     super();
@@ -2325,6 +2389,23 @@ export class WorkspaceMember extends Entity {
 
   set lastKnownTxHash(value: Bytes) {
     this.set("lastKnownTxHash", Value.fromBytes(value));
+  }
+
+  get workspaceMemberMetadata(): string | null {
+    let value = this.get("workspaceMemberMetadata");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set workspaceMemberMetadata(value: string | null) {
+    if (!value) {
+      this.unset("workspaceMemberMetadata");
+    } else {
+      this.set("workspaceMemberMetadata", Value.fromString(<string>value));
+    }
   }
 }
 
