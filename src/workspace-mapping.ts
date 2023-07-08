@@ -15,7 +15,7 @@ import {
 	WorkspaceUpdated
 } from '../generated/QBWorkspaceRegistryContract/QBWorkspaceRegistryContract'
 import { ApplicationMilestone, FundsTransfer, Grant, GrantApplication, Migration, QBAdmin, Section, Workspace, WorkspaceMember, WorkspaceSafe } from '../generated/schema'
-import { WorkspaceMemberMetadata as WorkspaceMemberMetadataTemplate, WorkspaceMetadata as WorkspaceMetadataTemplate } from '../generated/templates'
+import { PublicKeyF as PublicKeyFTemplate, WorkspaceMetadata as WorkspaceMetadataTemplate } from '../generated/templates'
 import { DisburseReward } from '../generated/templates/QBGrantsContract/QBGrantsContract'
 import { validatedJsonFromIpfs } from './json-schema/json'
 import {
@@ -91,8 +91,8 @@ export function handleWorkspaceCreated(event: WorkspaceCreated): void {
 	member.addedBy = member.id
 	member.lastKnownTxHash = event.transaction.hash
 	member.enabled = true
-	member.workspaceMemberMetadata = event.params.metadataHash
-	WorkspaceMemberMetadataTemplate.create(event.params.metadataHash)
+	member.publicKeyF = event.params.metadataHash
+	PublicKeyFTemplate.create(event.params.metadataHash)
 
 	member.save()
 	entity.save()
@@ -156,9 +156,19 @@ export function handleWorkspaceUpdated(event: WorkspaceUpdated): void {
 			mem.publicKey = json.publicKey
 			mem.updatedAt = entity.updatedAtS
 			mem.save()
+			log.info(`Workspace member public key updated: ${entityId}.${memberId}`, [])
 		} else {
 			log.warning(`[${event.transaction.hash.toHex()}] recv publicKey update but member not found`, [])
 		}
+	}
+
+	const memberId = event.transaction.from.toHex()
+	const mem = WorkspaceMember.load(`${entityId}.${memberId}`)
+	if(mem) {
+		mem.publicKeyF = event.params.metadataHash
+		PublicKeyFTemplate.create(event.params.metadataHash)
+		mem.updatedAt = entity.updatedAtS
+		mem.save()
 	}
 
 	entity.save()

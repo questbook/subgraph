@@ -1,5 +1,6 @@
 import { Address, BigInt, Bytes, log, store, Value } from '@graphprotocol/graph-ts'
 import { ApplicationMilestone, Claim, GrantField, GrantFieldAnswer, GrantFieldAnswerItem, GrantManager, Partner, PIIAnswer, PIIData, Reward, Social, Token, Workspace, WorkspaceMember } from '../../generated/schema'
+import { PublicKeyF as PublicKeyFTemplate } from '../../generated/templates'
 import { GrantApplicationFieldAnswerItem, GrantApplicationFieldAnswers, GrantField as GrantFieldJSON, GrantFieldMap, GrantProposedClaim, GrantProposedMilestone, GrantReward, Partner as PartnerItem, PIIAnswers, SocialItem, Token as TokenItem, validateWorkspaceMemberUpdate, WorkspaceMemberUpdate } from '../json-schema'
 import { Result, validatedJsonFromIpfs } from '../json-schema/json'
 
@@ -378,11 +379,15 @@ export function mapWorkspaceMembersUpdate(
 				
 				if(update.publicKey) {
 					member.publicKey = update.publicKey
+					log.info(`Workspace member public key updated from member update request: ${memberId.toHexString()}`, [])
 				}
 
 				if(update.pii) {
 					member.pii = mapMemberPII(id, update.pii!)
 				}
+
+				member.publicKeyF = metadataHash[i]
+				PublicKeyFTemplate.create(metadataHash[i])
 			}
 			
 			member.updatedAt = entity.updatedAtS

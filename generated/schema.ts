@@ -2041,70 +2041,6 @@ export class PIICollection extends Entity {
   }
 }
 
-export class WorkspaceMemberMetadata extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(
-      id != null,
-      "Cannot save WorkspaceMemberMetadata entity without an ID"
-    );
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type WorkspaceMemberMetadata must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("WorkspaceMemberMetadata", id.toString(), this);
-    }
-  }
-
-  static loadInBlock(id: string): WorkspaceMemberMetadata | null {
-    return changetype<WorkspaceMemberMetadata | null>(
-      store.get_in_block("WorkspaceMemberMetadata", id)
-    );
-  }
-
-  static load(id: string): WorkspaceMemberMetadata | null {
-    return changetype<WorkspaceMemberMetadata | null>(
-      store.get("WorkspaceMemberMetadata", id)
-    );
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toString();
-    }
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get publicKey(): string | null {
-    let value = this.get("publicKey");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set publicKey(value: string | null) {
-    if (!value) {
-      this.unset("publicKey");
-    } else {
-      this.set("publicKey", Value.fromString(<string>value));
-    }
-  }
-}
-
 export class WorkspaceMember extends Entity {
   constructor(id: string) {
     super();
@@ -2391,8 +2327,8 @@ export class WorkspaceMember extends Entity {
     this.set("lastKnownTxHash", Value.fromBytes(value));
   }
 
-  get workspaceMemberMetadata(): string | null {
-    let value = this.get("workspaceMemberMetadata");
+  get publicKeyF(): string | null {
+    let value = this.get("publicKeyF");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -2400,11 +2336,11 @@ export class WorkspaceMember extends Entity {
     }
   }
 
-  set workspaceMemberMetadata(value: string | null) {
+  set publicKeyF(value: string | null) {
     if (!value) {
-      this.unset("workspaceMemberMetadata");
+      this.unset("publicKeyF");
     } else {
-      this.set("workspaceMemberMetadata", Value.fromString(<string>value));
+      this.set("publicKeyF", Value.fromString(<string>value));
     }
   }
 }
@@ -2562,6 +2498,63 @@ export class WorkspaceMetadata extends Entity {
 
   set socials(value: Array<string>) {
     this.set("socials", Value.fromStringArray(value));
+  }
+}
+
+export class Text extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Text entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Text must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Text", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): Text | null {
+    return changetype<Text | null>(store.get_in_block("Text", id));
+  }
+
+  static load(id: string): Text | null {
+    return changetype<Text | null>(store.get("Text", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get text(): string | null {
+    let value = this.get("text");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set text(value: string | null) {
+    if (!value) {
+      this.unset("text");
+    } else {
+      this.set("text", Value.fromString(<string>value));
+    }
   }
 }
 

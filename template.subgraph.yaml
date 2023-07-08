@@ -227,15 +227,15 @@ templates:
       abis: # Note: the abis is irrelevant for file data sources
         - name: QBWorkspaceRegistryContract
           file: ./abis/QBWorkspaceRegistryContract.json
-  - name: WorkspaceMemberMetadata
+  - name: PublicKeyF
     kind: file/ipfs
     mapping:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/metadata-mapping.ts
-      handler: handleWorkspaceMemberMetadata
+      handler: handlePublicKeyF
       entities:
-        - WorkspaceMemberMetadata
+        - Text
       abis: # Note: the abis is irrelevant for file data sources
         - name: QBWorkspaceRegistryContract
           file: ./abis/QBWorkspaceRegistryContract.json

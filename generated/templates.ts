@@ -40,16 +40,12 @@ export class WorkspaceMetadata extends DataSourceTemplate {
   }
 }
 
-export class WorkspaceMemberMetadata extends DataSourceTemplate {
+export class PublicKeyF extends DataSourceTemplate {
   static create(cid: string): void {
-    DataSourceTemplate.create("WorkspaceMemberMetadata", [cid]);
+    DataSourceTemplate.create("PublicKeyF", [cid]);
   }
 
   static createWithContext(cid: string, context: DataSourceContext): void {
-    DataSourceTemplate.createWithContext(
-      "WorkspaceMemberMetadata",
-      [cid],
-      context
-    );
+    DataSourceTemplate.createWithContext("PublicKeyF", [cid], context);
   }
 }

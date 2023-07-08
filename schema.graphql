@@ -315,13 +315,6 @@ type PIICollection @entity {
 	collection: [PIIData!]
 }
 
-type WorkspaceMemberMetadata @entity {
-	"Hash of the metadata"
-	id: ID!
-	"Public key of the workspace member"
-	publicKey: String
-}
-
 type WorkspaceMember @entity {
 	"Globally unique ID of the member"
 	id: ID!
@@ -359,7 +352,7 @@ type WorkspaceMember @entity {
 	"Last known hash of the TX made by this user"
 	lastKnownTxHash: Bytes!
 	"Metadata of the member"
-	workspaceMemberMetadata: WorkspaceMemberMetadata
+	publicKeyF: Text
 }
 
 type WorkspaceMetadata @entity {
@@ -379,6 +372,11 @@ type WorkspaceMetadata @entity {
 	supportedNetworks: [SupportedNetwork!]!
 	"List of social media handles of the workspace"
 	socials: [Social!]!
+}
+
+type Text @entity {
+	id: ID!
+	text: String
 }
 
 "Schema for a Workspace or DAO"

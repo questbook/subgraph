@@ -1,8 +1,8 @@
 import { Bytes, dataSource, log } from '@graphprotocol/graph-ts'
-import { PIICollection, PIIData, WorkspaceMemberMetadata, WorkspaceMetadata } from '../generated/schema'
+import { PIICollection, PIIData, Text, WorkspaceMetadata } from '../generated/schema'
 import { validatedContent } from './json-schema/content-validator'
 import { mapWorkspacePartners, mapWorkspaceSocials, mapWorkspaceSupportedNetworks } from './utils/generics'
-import { PrivateCommentAddRequest, validatePrivateCommentAddRequest, validateWorkspaceCreateRequest, WorkspaceCreateRequest } from './json-schema'
+import { PrivateCommentAddRequest, validatePrivateCommentAddRequest, validateWorkspaceCreateRequest, validateWorkspaceMemberUpdate, WorkspaceCreateRequest, WorkspaceMemberUpdate } from './json-schema'
 
 export function handlePIICollection(content: Bytes): void {
 	log.info(`File data source for PII data collection found at ${dataSource.stringParam()}`, [])
@@ -77,16 +77,16 @@ export function handleWorkspaceMetadata(content: Bytes): void {
 	}
 }
 
-export function handleWorkspaceMemberMetadata(content: Bytes): void {
-	log.info(`File data source for workspace member metadata found at ${dataSource.stringParam()}`, [])
+export function handlePublicKeyF(content: Bytes): void {
 	const hash = dataSource.stringParam()
-	const workspaceMemberMetadataEntity = new WorkspaceMemberMetadata(hash)
+	const PublicKeyFEntity = new Text(hash)
+	log.info(`File data source for workspace member public key F found at ${hash}`, [])
 
-	const result = validatedContent<WorkspaceCreateRequest>(content, validateWorkspaceCreateRequest)
+	const result = validatedContent<WorkspaceMemberUpdate>(content, validateWorkspaceMemberUpdate)
 	const json = result.value
 	if(json) {
-		workspaceMemberMetadataEntity.publicKey = json.creatorPublicKey
+		PublicKeyFEntity.text = json.publicKey
+		PublicKeyFEntity.save()
+		log.info(`updated public key entity at ${hash}`, [])
 	}
-
-	workspaceMemberMetadataEntity.save()
 }
