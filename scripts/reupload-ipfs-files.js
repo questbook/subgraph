@@ -1,5 +1,6 @@
 require('dotenv').config()
 const { providers, utils, } = require('ethers')
+const { default: PQueue } = require('p-queue')
 const { CeloProvider } = require('@celo-tools/celo-ethers-wrapper')
 const fs = require('fs/promises')
 
@@ -64,9 +65,8 @@ async function getIpfsHashes(contractName, network, contractAddress) {
 		NETWORK_CONFIG[network].name,
 		NETWORK_CONFIG[network].apiKey
 	)
-	const history = await provider.getLogs({
-		address: contractAddress
-	})
+
+	const history = await fetchAllLogs()
 
 	const hashes = new Set()
 	const newGrantAddresses = new Set()
@@ -103,9 +103,31 @@ async function getIpfsHashes(contractName, network, contractAddress) {
 	}
 
 	return { hashes, newGrantAddresses }
+
+	async function fetchAllLogs() {
+		let fromBlock
+		let logs = []
+		do {
+			const history = await provider.getLogs({
+				address: contractAddress,
+				fromBlock
+			})
+			logs.push(...history)
+			fromBlock = history[history.length - 1]?.blockNumber + 1
+		} while(fromBlock)
+
+		console.log(`got ${logs.length} ${contractName} logs`)
+		
+		return logs
+	}
 }
 
 async function reuploadToIpfs(hash) {
+	const version = hash.startsWith('Qm') ? 0 : 1
+	if(version === 1) {
+		return
+	}
+
 	const result = await fetch(
 		`${IPFS_FROM_ENDPOINT}/api/v0/cat?arg=${hash}`,
 		{
@@ -115,6 +137,7 @@ async function reuploadToIpfs(hash) {
 			}
 		}
 	)
+
 	if(result.status !== 200) {
 		const txt = await result.text()
 		console.warn(`failed to fetch ${hash} from ipfs: ${txt}`)
@@ -125,10 +148,10 @@ async function reuploadToIpfs(hash) {
 	console.log(`reuploading ${hash} (${body.byteLength} bytes) to ipfs`)
 
 	const data = new FormData()
-	data.append('file', Buffer.from(body))
+	data.append('file', new Blob([body]))
 
 	const uploadResult = await fetch(
-		`${IPFS_UPLOAD_ENDPOINT}/api/v0/add`,
+		`${IPFS_UPLOAD_ENDPOINT}/api/v0/add?cid-version=${version}&pin=true`,
 		{
 			method: 'POST',
 			body: data
@@ -140,10 +163,10 @@ async function reuploadToIpfs(hash) {
 		throw new Error(`failed to upload ${hash} to ipfs: ${txt}`)
 	}
 
-	// const jsonResult = await uploadResult.json()
-	// if(jsonResult.Hash !== hash) {
-	// 	throw new Error(`uploaded hash ${jsonResult.Hash} does not match ${hash}`)
-	// }
+	const jsonResult = await uploadResult.json()
+	if(jsonResult.Hash !== hash) {
+		throw new Error(`uploaded hash ${jsonResult.Hash} does not match ${hash}`)
+	}
 
 	console.log(`reuploaded ${hash} to ipfs`)
 }
@@ -153,11 +176,15 @@ async function main() {
 	// uncomment below line, and comment above line
 	// to reupload hashes from file
 	// const { hashes } = require(`../${TEMP_HASH_LIST_JSON_NAME}`)
-	console.log(`got ${hashes.length} hashes, uploading to ipfs`)
+	const hashesSize = hashes.size || hashes.length
+	console.log(`got ${hashesSize} hashes, uploading to ipfs`)
 
-	for(const hash of hashes) {
-		await reuploadToIpfs(hash)
-	}
+	const pQueue = new PQueue({ concurrency: 10 })
+	await Promise.all(
+		Array.from(hashes).map(
+			hash => pQueue.add(() => reuploadToIpfs(hash))
+		)
+	)
 
 	console.log('all done')
 

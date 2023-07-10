@@ -30,6 +30,7 @@
     "ethers": "^5.7.2",
     "matchstick-as": "^0.5.2",
     "mustache": "^4.2.0",
+    "p-queue": "^6.0.0",
     "typescript": "^4.6.4"
   }
 }
