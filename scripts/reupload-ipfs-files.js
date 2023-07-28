@@ -1,6 +1,5 @@
 require('dotenv').config()
 const { providers, utils, } = require('ethers')
-const { CeloProvider } = require('@celo-tools/celo-ethers-wrapper')
 const fs = require('fs/promises')
 
 const IPFS_FROM_ENDPOINT = 'https://api.thegraph.com/ipfs'
@@ -12,18 +11,6 @@ const NETWORK_CONFIG = {
 	'optimism-mainnet': {
 		apiKey: process.env.OPTIMISM_API_KEY,
 		name: 'optimism'
-	},
-	'polygon-mainnet': {
-		apiKey: process.env.POLYGON_API_KEY,
-		name: 'matic'
-	},
-	'celo-mainnet': {
-		apiKey: process.env.CELO_API_KEY,
-		name: {
-			name: 'celo',
-			chainId: 42220,
-			_defaultProvider: CeloProvider
-		},
 	}
 }
 

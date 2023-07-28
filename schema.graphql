@@ -66,10 +66,8 @@ enum MigrationType {
 }
 
 enum SupportedNetwork {
-  chain_42220, # celo-mainnet
   chain_5, # goerli-testnet
   chain_10, # optimism-mainnet
-  chain_137, # polygon-mainnet
 }
 
 enum PayoutType {
