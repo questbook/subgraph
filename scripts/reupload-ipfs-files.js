@@ -1,7 +1,6 @@
 require('dotenv').config()
 const { providers, utils, } = require('ethers')
 const { default: PQueue } = require('p-queue')
-const { CeloProvider } = require('@celo-tools/celo-ethers-wrapper')
 const fs = require('fs/promises')
 
 const IPFS_FROM_ENDPOINT = 'https://api.thegraph.com/ipfs'
@@ -14,18 +13,6 @@ const NETWORK_CONFIG = {
 		apiKey: process.env.OPTIMISM_API_KEY,
 		name: 'optimism'
 	},
-	'polygon-mainnet': {
-		apiKey: process.env.POLYGON_API_KEY,
-		name: 'matic'
-	},
-	'celo-mainnet': {
-		apiKey: process.env.CELO_API_KEY,
-		name: {
-			name: 'celo',
-			chainId: 42220,
-			_defaultProvider: CeloProvider
-		},
-	}
 }
 
 const ABI_MAP = {
@@ -77,9 +64,9 @@ async function getIpfsHashes(contractName, network, contractAddress) {
 			const log = abi.parseLog(item)
 			// we'll extract hashes from the created
 			// grant as well
-			if(log.name === 'createGrant') {
+			if(log.name === 'GrantCreated') {
 				newGrantAddresses.add(
-					logs.args.grantAddress
+					log.args.grantAddress
 				)
 			}
 
@@ -128,27 +115,53 @@ async function reuploadToIpfs(hash) {
 		return
 	}
 
-	const result = await fetch(
-		`${IPFS_FROM_ENDPOINT}/api/v0/cat?arg=${hash}`,
-		{
-			method: 'POST',
-			headers: {
-				Authorization: IPFS_FROM_AUTH,
+	let result
+	try {
+		result = await fetch(
+			`${IPFS_FROM_ENDPOINT}/api/v0/cat?arg=${hash}`,
+			{
+				method: 'POST',
+				headers: {
+					Authorization: IPFS_FROM_AUTH,
+				}
 			}
-		}
-	)
+		)
 
-	if(result.status !== 200) {
-		const txt = await result.text()
-		console.warn(`failed to fetch ${hash} from ipfs: ${txt}`)
-		return
+		if(result.status !== 200) {
+			const txt = await result.text()
+			throw new Error(`failed to fetch ${hash} from ipfs: ${txt}`)
+		}
+	} catch(error) {
+		throw new Error(`failed to fetch ${hash}: ${error.message}`)
 	}
 
-	const body = await result.arrayBuffer()
-	console.log(`reuploading ${hash} (${body.byteLength} bytes) to ipfs`)
+	const bodyArrayBuffer = await result.arrayBuffer()
+	console.log(`reuploading ${hash} (${bodyArrayBuffer.byteLength} bytes) to ipfs`)
+
+	const bodyString = new TextDecoder().decode(bodyArrayBuffer) // Convert ArrayBuffer to string
+	try {
+		const bodyJson = JSON.parse(bodyString)
+		const recursiveHashes = findHashesInJson(bodyJson)
+		console.log(`found ${recursiveHashes.length} recursive hashes`)
+		recursiveHashes.forEach(async (hash) => {
+			console.log(`reuploading recursive ${hash} to ipfs`)
+			await reuploadToIpfs(hash)
+
+			// Append the JSON data to the file
+			fs.appendFile('recursive_hashes.txt', hash + '\n', (err) => {
+				if (err) {
+					console.warn('Error appending to the file:', err);
+				} else {
+					console.log('Recursive hashes appended to recursive_hashes.txt');
+				}
+			})
+		})
+	} catch (error) {
+		console.warn("Error parsing JSON:", error.message);
+	}
 
 	const data = new FormData()
-	data.append('file', new Blob([body]))
+	data.append('file', new Blob([bodyArrayBuffer]))
 
 	const uploadResult = await fetch(
 		`${IPFS_UPLOAD_ENDPOINT}/api/v0/add?cid-version=${version}&pin=true`,
@@ -171,22 +184,57 @@ async function reuploadToIpfs(hash) {
 	console.log(`reuploaded ${hash} to ipfs`)
 }
 
+// Recursive function to find IPFS hashes in a JSON object
+function findHashesInJson(obj) {
+	const ipfsHashes = []
+
+	if (typeof obj === 'string') {
+	  // Check if the value is a valid IPFS hash
+	  const ipfsHashRegex = /^Qm[A-Za-z0-9]+$/
+	  if (obj.match(ipfsHashRegex)) {
+		ipfsHashes.push(obj)
+	  }
+	} else if (Array.isArray(obj)) {
+	  // Recursively check each element of the array
+	  obj.forEach((item) => {
+		ipfsHashes.push(...findHashesInJson(item))
+	  })
+	} else if (typeof obj === 'object' && obj !== null) {
+	  // Recursively check each value of the object
+	  Object.values(obj).forEach((value) => {
+		ipfsHashes.push(...findHashesInJson(value))
+	  })
+	}
+  
+	return ipfsHashes
+  }
+
 async function main() {
-	const hashes = await extractHashes()
+	// const hashes = await extractHashes()
 	// uncomment below line, and comment above line
 	// to reupload hashes from file
-	// const { hashes } = require(`../${TEMP_HASH_LIST_JSON_NAME}`)
+	const { hashes } = require(`./${TEMP_HASH_LIST_JSON_NAME}`)
 	const hashesSize = hashes.size || hashes.length
 	console.log(`got ${hashesSize} hashes, uploading to ipfs`)
 
-	const pQueue = new PQueue({ concurrency: 10 })
+	const failedHashes = new Set()
+
+	const pQueue = new PQueue({ concurrency: 1 })
 	await Promise.all(
 		Array.from(hashes).map(
-			hash => pQueue.add(() => reuploadToIpfs(hash))
+			async(hash) => {
+				try {
+					await pQueue.add(() => reuploadToIpfs(hash))
+				} catch(error) {
+					console.error(`Failed to reupload ${hash}: ${error.message}`)
+					failedHashes.add(hash)
+				}
+			}
 		)
 	)
 
 	console.log('all done')
+	console.log(`failed hashes count: ${failedHashes.size}`)
 
 	async function extractHashes() {
 		const hashes = new Set()
@@ -205,14 +253,15 @@ async function main() {
 				await saveHashes()
 	
 				console.log(`extracted ${result.hashes.size} hashes`)
+				console.log(`found ${result.newGrantAddresses.size} new grant addresses`)
 
 				for(const grantAddress of Array.from(result.newGrantAddresses)) {
 					console.log(`extracting from "grants contract (${grantAddress})" on ${network}`)
 					const result = await getIpfsHashes('grant', network, grantAddress)
-					hashes.push(...result.hashes)
+					hashes.add(...result.hashes)
 					await saveHashes()
 		
-					console.log(`extracted ${result.hashes.length} hashes`)
+					console.log(`extracted ${result.hashes.size} hashes`)
 				}
 			}
 		}
@@ -220,6 +269,7 @@ async function main() {
 		return hashes
 
 		async function saveHashes() {
+			console.log(`saving to file...`)
 			const hashesList = Array.from(hashes)
 			await fs.writeFile(
 				`./${TEMP_HASH_LIST_JSON_NAME}`,

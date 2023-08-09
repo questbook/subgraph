@@ -7,3 +7,4 @@ subgraph.yaml
 .env.production
 .env
 temp-hash-list*
+recursive_hashes*
